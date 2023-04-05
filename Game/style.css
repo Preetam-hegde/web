@@ -1,0 +1,39 @@
+body {
+    background-image: url('https://picsum.photos/1920/1080?blur=0.1');
+    background-size: cover;
+    background-position: center;
+    color: rgb(255, 255, 255);
+    font-family: Arial, sans-serif;
+    font-size: 36px;
+    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100vh;
+  }
+  .contain{
+    margin: 30px;
+    padding: 20px;
+    background-color: rgba(0, 0, 0, 0.562);
+  }
+  blockquote {
+    margin: 0;
+    padding: 0;
+  }
+  
+  span {
+    display: block;
+    font-size: 24px;
+    margin-top: 20px;
+    font-style: italic;
+  }
+  
+  @media (max-width: 768px) {
+    body {
+      font-size: 24px;
+    }
+    
+    span {
+      font-size: 18px;
+    }
+  }
