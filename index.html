@@ -1,57 +1,225 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <title>My Website</title>
-    <link rel="stylesheet" type="text/css" href="style.css">
-  </head>
-  <body>
-    <div class="container">
-      <div class="profile">
-        <img class="profile-pic" src="https://picsum.photos/id/70/700" alt="Preetam's profile picture">
-        <div class="intro">
-          <h1>Preetam</h1>
-          <p>Student at BMSCE College studying Information Science Engineering</p>
-        </div>
-      </div>
-      <p>Hello, my name is Preetam and I'm currently a student at BMSCE College studying Information Science Engineering. 
-        I'm passionate about programming, web development, and open source software. 
-        In my free time, I enjoy contributing to open source projects and learning new technologies. 
-        I hope to use my skills and knowledge to make a positive impact on the world.</p>
-      <dev class="list">
-        <h1>Here are some time pass webpages/projects </h1>
-      </dev>
-        <div class="card-container">
-          <div class="card">
-            <a href="Pomodoro\timer.html">
-              <img src="https://images.pexels.com/photos/552774/pexels-photo-552774.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Pomodoro">
-              <h2>Pomodoro timer</h2>
-              <p>A Pomodoro timer is a time management tool that helps you work in focused 25-minute intervals, followed by short breaks.</p>
-            </a>
-          </div>
-          <div class="card">
-            <a href="circle\circle.html">
-              <img src="https://images.pexels.com/photos/370799/pexels-photo-370799.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="circle">
-              <h2>Click the circle Game</h2>
-              <p>Simple Game to click on the circle for time pass</p>
-            </a>
-          </div>
-          <div class="card">
-            <a href="Game\Game.html">
-              <img src="https://images.pexels.com/photos/1459534/pexels-photo-1459534.jpeg?auto=compress&cs=tinysrgb&w=1600" alt="Game">
-              <h2>RANDOM Background</h2>
-              <p>Always different Background with some lines by the great PTWO</p>
-            </a>
-          </div>
-          <div class="card">
-            <a href="https://www.example.com">
-              <img src="https://picsum.photos/id/69/700/400" alt="Card image 4">
-              <h2>Card title 4</h2>
-              <p>Card description 4</p>
-            </a>
-          </div>
-        </div>
-        
+<html lang="en" >
+<head>
+  <meta charset="UTF-8">
+  <title>My Home</title>
+  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
+
+<link href='https://fonts.googleapis.com/css?family=Muli:300|Raleway:300,700' rel='stylesheet' type='text/css'><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
+<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css'><link rel="stylesheet" href="./style.css">
+
+</head>
+<body>
+<!-- partial:index.partial.html -->
+<header class="header container-fluid">
+  <div class="nav-toggle-wrapper">
+    <button class="nav-toggle-btn">
+					      <span class="line"></span>
+      					<span class="line"></span>
+					      <span class="line"></span>
+				    </button>
+  </div>
+  <nav class="header__nav">
+    <ul class="nav">
+      <li class="header__nav__item"><a href="#about" data-ref="about">about</a></li>
+      <li class="header__nav__item"><a href="#portfolio" data-ref="portfolio">work</a></li>
+      <li class="header__nav__item"><a href="#contact" data-ref="contact">contact</a></li>
+    </ul>
+  </nav>
+  <ul class="header__social-btns">
+    <li>
+      <a class="fa fa-instagram" href="https://www.instagram.com/ptwo_/?hl=en"></a>
+    </li>
+    <li>
+      <a class="fa fa-github" href="https://github.com/Preetam-Ptwo" target="_blank"></a>
+    </li>
+    <li>
+      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/preetam-hegde-8b53311a7/" target="_blank"></a>
+    </li>
+    <li>
+      <a class="fa fa-fire" href="https://preetam-ptwo.github.io/Portfolio/" target="_blank"></a>
+    </li>
+  </ul>
+</header>
+
+<main>
+
+  <section id="about" class="main-section">
+    <div class="wrapper">
+      <p class="about__intro">
+        Hello, I'm Preetem Ganesh Hegde, a software developer navigating the tech world within Oracle, honing my skills in coding and development. <br> Hailing from Karnataka, I've journeyed from the roots of my birthplace to the bustling tech landscapes.
+        While my days are filled with debugging and coding challenges, my interests extend far beyond screens and keyboards.
+      </p>
+      <a href="#portfolio" class="global-button rotated scroll"> see my work </a>
     </div>
-    <script type="text/javascript" src="script.js"></script>
-  </body>
+  </section>
+
+  <section id="portfolio" class="container main-section">
+    <div class="filters row js-dis">
+      <h4 class="filters__title"> <i class="fa fa-tags"></i> </h4>
+      <ul class="filters__list">
+        <li class="filters__label is-active"> all </li>
+        <li class="filters__label" data-cat="fcc"> fun Project </li>
+        <li class="filters__label" data-cat="personal"> personal projects </li>
+      </ul>
+    </div>
+
+    <div class="portfolio__project-wrapper row">
+
+      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4 text-center" data-cat="fcc">
+        <a href="circle/circle.html" target="_blank" title="view live">
+          <div class="portfolio__project__preview">
+            <img src="resource/Image/gamecircle.svg" alt="gamecircle">
+          </div>
+          <div class="portfolio__project__description">
+            <div class="info-wrapper">
+              <h3 class="portfolio__project__name">Click The Circle!</h3>
+              <p class="portfolio__project__category"> WebApp Game </p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="fcc">
+        <a href="Game/Game.html" target="_blank" title="view live">
+          <div class="portfolio__project__preview">
+            <img src="resource/Image/randomQuota.svg" alt="randquota">
+          </div>
+          <div class="portfolio__project__description">
+            <div class="info-wrapper">
+              <h3 class="portfolio__project__name">Random quotes</h3>
+              <p class="portfolio__project__category">#Free Api</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+
+      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="fcc">
+        <a href="Pomodoro/timer.html" target="_blank" title="view live">
+          <div class="portfolio__project__preview">
+            <img src="resource/Image/pomoTimer.svg" alt="pomodoro">
+          </div>
+          <div class="portfolio__project__description">
+            <div class="info-wrapper">
+              <h3 class="portfolio__project__name">Pomodoro Timer</h3>
+              <p class="portfolio__project__category">#GET prodective</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="fcc">
+        <a href="https://preetam-ptwo.github.io/Portfolio/" title="portfolio">
+          <div class="portfolio__project__preview">
+            <img src="resource/Image/portfolio.svg" alt="portfolioFace">
+          </div>
+          <div class="portfolio__project__description">
+            <div class="info-wrapper">
+              <h3 class="portfolio__project__name">Personal Portfolio</h3>
+              <p class="portfolio__project__category"> My First Portfolio</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="personal">
+        <a href="#" title="coming soon">
+          <div class="portfolio__project__preview">
+            <img src="https://eevu.github.io/img/txt.svg" alt="text editor">
+          </div>
+          <div class="portfolio__project__description">
+            <div class="info-wrapper">
+              <h3 class="portfolio__project__name">Text Editor</h3>
+              <p class="portfolio__project__category">#personal project</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="personal">
+        <a href="https://en.wikipedia.org/wiki/Bacteriophage" target="_blank" title="what's a becteriophage?">
+          <div class="portfolio__project__preview">
+            <img src="https://eevu.github.io/img/bacteriophage.svg" alt="random placeholder">
+          </div>
+          <div class="portfolio__project__description">
+            <div class="info-wrapper">
+              <h3 class="portfolio__project__name"> Bacteriophage </h3>
+              <p class="portfolio__project__category">#placeholder</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="personal">
+        <a href="#" title="coming soon">
+          <div class="portfolio__project__preview">
+            <img src="https://eevu.github.io/img/desktop.svg" alt="random placeholder">
+          </div>
+          <div class="portfolio__project__description">
+            <div class="info-wrapper">
+              <h3 class="portfolio__project__name"> Desktop </h3>
+              <p class="portfolio__project__category">#placeholder</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="personal">
+        <a href="#" title="coming soon">
+          <div class="portfolio__project__preview">
+            <img src="https://eevu.github.io/img/laptop.svg" alt="random placeholder">
+          </div>
+          <div class="portfolio__project__description">
+            <div class="info-wrapper">
+              <h3 class="portfolio__project__name"> Laptop </h3>
+              <p class="portfolio__project__category">#placeholder</p>
+            </div>
+          </div>
+        </a>
+      </div>
+
+    </div>
+
+  </section>
+
+</main>
+
+<footer class="container">
+  <section id="contact" class="row main-section ">
+    <div class="col-xs-12 contact-form-wrapper">
+      <h2 class="heading"> drop me a line </h2>
+      <form class="contact-form">
+        <div class="contact-form-el">
+          <input type="text" id="name" class="input" required></input>
+          <label for="name"> your name </label>
+        </div>
+        <div class="contact-form-el">
+          <input type="email" id="email" class="input" required></input>
+          <label for="email"> your e-mail </label>
+        </div>
+        <div class="contact-form-el">
+          <textarea rows="3 " id="message" class="input" required></textarea>
+          <label for="message"> your message </label>
+        </div>
+        <div class="text-right">
+          <button type="submit" class="global-button"> send </button>
+        </div>
+      </form>
+    </div>
+    <!-- <div id="map" class="col-xs-12 col-md-7 "><img src="resource/Image/sword.svg"></div> -->
+  </section>
+
+  <section id="credit" class="row">
+    <p>
+      -- With Love ❤️ By Preetam Ptwo -- 
+    </p>
+    
+  </section>
+</footer>
+
+<!-- partial -->
+  <script  src="./script.js"></script>
+
+</body>
 </html>

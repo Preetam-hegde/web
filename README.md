@@ -1,6 +1,6 @@
 # web
 
-sample webpage
+Simple Portfolio Webpage/site <in Development>
 
 Check out the **webSite**
 
