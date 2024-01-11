@@ -32,11 +32,12 @@ async function sendData() {
       body: raw,
       redirect: 'follow'
     };
-
- 
+    const month=["jan","feb","mar","apr","may","jun","jul","aug","sep","oct","nov","dec"];
+    const urlMonth=month[parseInt(formData['date'][5]+formData['date'][6])-1 ];
+    const url="https://api.sheetson.com/v2/sheets/"+urlMonth;
     
 
-    fetch("https://api.sheetson.com/v2/sheets/Main", requestOptions)
+    fetch(url, requestOptions)
         .then(response => response.text())
         .then(result => console.log(result))
         .catch(error => console.log('error', error));
