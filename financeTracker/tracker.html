@@ -1,0 +1,104 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        <!-- Favicon -->
+        <link rel="icon" href="./assets/image/favicon-32x32.png" type="image/gif" sizes="32x32">
+        <link rel="shortcut icon" href="./assets/image/favicon-32x32.png" type="image/gif" sizes="32x32">
+        <link rel="apple-touch-icon" href="./assets/image/apple-touch-icon.png" type="image/gif">
+        <!-- Google Font CDN -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <!-- Fontawesome -->
+        <link rel="stylesheet" href="https://pro.fontawesome.com/releases/v5.10.0/css/all.css"
+            integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p" crossorigin="anonymous" />
+        <!-- Main CSS -->
+        <link rel="stylesheet" href="styles.css">
+        <title>Sweet Money</title>
+    </head>
+  <body class="text-center">
+
+  <div class="back-primary">
+  <div class="container-fluid p-5 h2">
+    Sweet Money
+    <div class="text-muted h6">Finance Tracker</div>
+  </div></div>
+  <div class="container ">
+    <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="waste-tab" data-bs-toggle="tab" data-bs-target="#waste" type="button" role="tab" aria-controls="waste" aria-selected="true">Wasted</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="income-tab" data-bs-toggle="tab" data-bs-target="#income" type="button" role="tab" aria-controls="income" aria-selected="false">Income</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="contact-tab" data-bs-toggle="tab" data-bs-target="#contact" type="button" role="tab" aria-controls="contact" aria-selected="false">Contact</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="waste" role="tabpanel" aria-labelledby="waste-tab">
+          <div class="back-secondary">
+          <div class="container-fluid p-5 my-5">
+            <form class="was-validated" id="waste-form" enctype="multipart/form-data" method="post">
+              <div class="row g3 my-5">
+                <div class="col-md-8">
+                  <input type="text" class="form-control" placeholder="For What Wasted!" name="expense" id="expense_name" required>
+                  <div class="valid-feedback">
+                    I See!
+                  </div>
+                </div>
+                <div class="col-md-4">
+                  <select class="form-select" id="cat" name="sellist1" required>
+                    <option>General</option>
+                    <option>Food</option>
+                    <option>Self-dress</option>
+                    <option>Self-others</option>
+                    <option>House Util</option>
+                    <option>Saj</option>
+                    <option>Others</option>
+                  </select>
+                </div>
+              
+                <div class="col-md-6 pt-5">
+                  <div class="input-group has-validation">
+                    <span class="input-group-text" id="inputGroupPrepend">Rs.</span>
+                    <input type="number" class="form-control" placeholder="00" name="expense" id="expense_rs" required>
+                    <div class="invalid-feedback">
+                      How Much!!!
+                    </div>
+                  </div>
+                </div>
+                <div class="col-md-6 pt-5">
+                  <input type="date" class="form-control" id="datePicker" required>
+                </div>
+                <div class="col-md-12 pt-5">
+                  <button type="submit" class="btn">
+                    Submit
+                  </button>
+                </div>
+              </div>
+            </form>
+            
+          </div>
+          </div>
+      </div>
+      <div class="tab-pane fade" id="income" role="tabpanel" aria-labelledby="income-tab">...
+
+      </div>
+      <div class="tab-pane fade" id="contact" role="tabpanel" aria-labelledby="contact-tab">...
+
+      </div>
+    </div>
+  </div>
+
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <!-- Main JS -->
+    <script src="script.js"></script>
+  </body>
+</html>

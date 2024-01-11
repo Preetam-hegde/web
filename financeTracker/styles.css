@@ -1,0 +1,45 @@
+/* Basic styling */
+
+body {
+    font-family: 'Courier New', Courier, monospace;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    background-color: #d6caba;
+  }
+  
+  header {
+    background-color: #f0f0f0;
+    padding: 20px;
+    text-align: center;
+  }
+  
+  main {
+    display: flex;
+    justify-content: space-around;
+    align-items: flex-start;
+    margin-top: 20px;
+  }
+
+
+  .back-primary{
+    background-color: #d2b48c;
+    color: #f4ece1;
+  }
+  .back-secondary{
+    background-color: #f4ece1;
+    color: #d2b48c;
+  }
+  
+  button{
+    background-color:  #d2b48c ;
+  }
+  .input-section {
+    margin-right: 20px;
+  }
+  
+  .transactions-list {
+    flex: 1;
+  }
+  
+  
