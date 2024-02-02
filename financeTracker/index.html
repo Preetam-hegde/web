@@ -1,0 +1,130 @@
+<!doctype html>
+<html lang="en">
+    <head>
+        <!-- Required meta tags -->
+        <meta charset="utf-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1">
+        
+        <!-- Google Font CDN -->
+        <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600&display=swap" rel="stylesheet">
+        <!-- Bootstrap CSS -->
+        <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/css/bootstrap.min.css" rel="stylesheet"
+            integrity="sha384-EVSTQN3/azprG1Anm3QDgpJLIm9Nao0Yz1ztcQTwFspd3yD65VohhpuuCOmLASjC" crossorigin="anonymous">
+        <!--font asm-->
+        <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
+        <!-- Main CSS -->
+        <link rel="stylesheet" href="styles.css">
+        <title>Sweet Money</title>
+        <link rel="icon" href="logo.png" type="image/x-icon">
+        <script src="http://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    </head>
+  <body class="text-center">
+
+  <div class="back-primary">
+  <div class="container-fluid p-5 h2">
+    Sweet Money
+    <div class="text-muted h6">Finance Tracker</div>
+  </div></div>
+  <div class="container ">
+    <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
+      <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="waste-tab" data-bs-toggle="tab" data-bs-target="#waste" type="button" role="tab" aria-controls="waste" aria-selected="true">Wasted</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="income-tab" data-bs-toggle="tab" data-bs-target="#income" type="button" role="tab" aria-controls="income" aria-selected="false">Income</button>
+      </li>
+      <li class="nav-item" role="presentation">
+        <button class="nav-link" id="graph-tab" data-bs-toggle="tab" data-bs-target="#graph" type="button" role="tab" aria-controls="graph" aria-selected="false">Graph</button>
+      </li>
+    </ul>
+    <div class="tab-content" id="myTabContent">
+      <div class="tab-pane fade show active" id="waste" role="tabpanel" aria-labelledby="waste-tab">
+          <div class="back-secondary">
+          <div class="container-fluid p-5 my-5">
+
+            <form class="was-validated" id="waste-form" enctype="multipart/form-data" method="post">
+
+              <div class="row g3 my-5">
+                <div class="col-md-8 pt-5">
+                  <input type="text" class="form-control" placeholder="For What Wasted!" name="expense" id="expense_name" required>
+                  <div class="valid-feedback">I See!</div>
+                </div>
+
+                <div class="col-md-4 pt-5">
+                  <select class="form-select" id="cat" name="sellist1" required>
+                    <option>General</option>
+                    <option>Food</option>
+                    <option>Self-dress</option>
+                    <option>Self-others</option>
+                    <option>House Util</option>
+                    <option>Saj</option>
+                    <option>Others</option>
+                  </select>
+                </div>
+              
+                <div class="col-md-6 pt-5">
+                  <div class="input-group has-validation">
+                    <span class="input-group-text" id="inputGroupPrepend">Rs.</span>
+                    <input type="number" class="form-control" placeholder="00" name="expense" id="expense_rs" required>
+                    <div class="invalid-feedback">How Much!!!</div>
+                  </div>
+                </div>
+
+                <div class="col-md-6 pt-5">
+                  <input type="date" class="form-control" id="datePicker" required>
+                </div>
+
+                <div class="col-md-12 pt-5">
+                  <button type="submit" class="btn">Submit</button>
+                </div>
+              </div>
+            </form>
+            
+          </div>
+          </div>
+      </div>
+      <div class="tab-pane fade" id="income" role="tabpanel" aria-labelledby="income-tab">
+          <iform-com></iform-com>
+      </div>
+      <div class="tab-pane fade" id="graph" role="tabpanel" aria-labelledby="graph-tab">
+        <div class="back-secondary">
+          <div class="container-fluid p-5 my-5">
+            <div class="col-md-12 pt-2">
+              <iframe width="462" height="286" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQUL7bsU0ypy_6jKs-T6WHYOAr7TDmCpDBrAnydBUK97dbdsc6Z9MsuW9Hv7Su81Ehzv_P9L3IEBYQ6/pubchart?oid=1643540159&amp;format=interactive"></iframe>
+            </div>
+            <div class="col-md-12 pt-2">
+              <iframe width="454" height="286" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQUL7bsU0ypy_6jKs-T6WHYOAr7TDmCpDBrAnydBUK97dbdsc6Z9MsuW9Hv7Su81Ehzv_P9L3IEBYQ6/pubchart?oid=1394366932&amp;format=interactive"></iframe>
+            </div>
+            <div class="col-md-12 pt-2">
+              <Hr>
+              <p>JAN:</p>
+              <iframe width="600" height="371" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQUL7bsU0ypy_6jKs-T6WHYOAr7TDmCpDBrAnydBUK97dbdsc6Z9MsuW9Hv7Su81Ehzv_P9L3IEBYQ6/pubchart?oid=26902732&amp;format=interactive"></iframe>            </div>
+          </div></div>
+      </div>
+
+      <div class="toasts"></div>
+        <div class="master-toast-notification hide-toast">
+          <div class="toast-content">
+            <div class="toast-icon">
+              <i class="fa-solid"></i>
+            </div>
+            <div class="toast-msg"></div>
+          </div>
+          <div class="toast-progress">
+            <div class="toast-progress-bar"></div>
+          </div>
+        </div>
+  </div>
+  </div>
+  <footer>
+    
+    -- With Love ❤️ By Preetam Ptwo -- 
+    
+  </footer>
+
+    <!-- Bootstrap Bundle with Popper -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.0.2/dist/js/bootstrap.bundle.min.js" integrity="sha384-MrcW6ZMFYlzcLA8Nl+NtUVF0sA7MsXsP1UyJoMp4YLEuNSfAP+JcXn/tWtIaxVXM" crossorigin="anonymous"></script>
+    <!-- Main JS -->
+    <script src="script.js"></script>
+  </body>
+</html>

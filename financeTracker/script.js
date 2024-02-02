@@ -1,3 +1,4 @@
+
 function getTodayDate() {
   const today = new Date();
   const year = today.getFullYear();
@@ -6,12 +7,38 @@ function getTodayDate() {
   return `${year}-${month}-${day}`;
 }
 
+var toastCounter = 1;
+
+function displayToastNotification(msg, icon, icon_color, animation) {
+      var class_name = "toast-" + toastCounter;
+      var new_node;
+
+      new_node = $(".master-toast-notification")
+        .clone()
+        .appendTo(".toasts")
+        .addClass(class_name + " toast-notification")
+        .removeClass("master-toast-notification");
+      new_node.find(".toast-msg").text(msg);
+      new_node.find(".toast-icon i").addClass(icon);
+      new_node
+        .find(".toast-icon")
+        .addClass("wiggle-me")
+        .css("background-color", icon_color);
+      new_node.removeClass("hide-toast").addClass(animation);
+      setTimeout(function () {
+        new_node.remove();
+      }, 5800);
+      toastCounter++;
+}
+
+
 document.getElementById('datePicker').value = getTodayDate();
 
 const form = document.getElementById('waste-form');
 
 async function sendData() {
-  
+
+
     const formData ={};
     formData['expense_name']=document.getElementById("expense_name").value;
     formData['expense_rs']=document.getElementById("expense_rs").value;
@@ -39,8 +66,14 @@ async function sendData() {
 
     fetch(url, requestOptions)
         .then(response => response.text())
-        .then(result => console.log(result))
-        .catch(error => console.log('error', error));
+        .then(result =>{ console.log(result);
+                          window.rowResult=JSON.parse(result).rowIndex;
+                          displayToastNotification(formData.date+"  ,  "+formData.category , "fa-check", "#c0392b", "slide-in-slide-out");
+                          displayToastNotification(formData.expense_name+" : "+formData.expense_rs , "fa-check", "#27ae60", "slide-in-slide-out");
+                        })
+        .catch(error => {console.log('error', error)
+                          displayToastNotification("Not Saved!", "fa-xmark", "#c0392b", "slide-in-slide-out");
+                        });
     
     
 }
