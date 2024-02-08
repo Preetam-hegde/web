@@ -26,6 +26,7 @@
     <div class="text-muted h6">Finance Tracker</div>
   </div></div>
   <div class="container ">
+    
     <ul class="nav nav-tabs justify-content-center" id="myTab" role="tablist">
       <li class="nav-item" role="presentation">
         <button class="nav-link active" id="waste-tab" data-bs-toggle="tab" data-bs-target="#waste" type="button" role="tab" aria-controls="waste" aria-selected="true">Wasted</button>
@@ -37,10 +38,18 @@
         <button class="nav-link" id="graph-tab" data-bs-toggle="tab" data-bs-target="#graph" type="button" role="tab" aria-controls="graph" aria-selected="false">Graph</button>
       </li>
     </ul>
+
+   
+      
     <div class="tab-content" id="myTabContent">
       <div class="tab-pane fade show active" id="waste" role="tabpanel" aria-labelledby="waste-tab">
           <div class="back-secondary">
           <div class="container-fluid p-5 my-5">
+
+                          <div class="bs-callout bs-callout-success hide" id="successBlock">
+                                <div class="successmsg1" id="successmsg1">Primary</div>
+                                <div class="successmsg2" id="successmsg2">Secondary</div>
+                              </div>
 
             <form class="was-validated" id="waste-form" enctype="multipart/form-data" method="post">
 
@@ -103,18 +112,7 @@
               <iframe width="600" height="371" seamless frameborder="0" scrolling="no" src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQUL7bsU0ypy_6jKs-T6WHYOAr7TDmCpDBrAnydBUK97dbdsc6Z9MsuW9Hv7Su81Ehzv_P9L3IEBYQ6/pubchart?oid=1222965120&amp;format=interactive"></iframe>          </div></div>
       </div>
 
-      <div class="toasts"></div>
-        <div class="master-toast-notification hide-toast">
-          <div class="toast-content">
-            <div class="toast-icon">
-              <i class="fa-solid"></i>
-            </div>
-            <div class="toast-msg"></div>
-          </div>
-          <div class="toast-progress">
-            <div class="toast-progress-bar"></div>
-          </div>
-        </div>
+      
   </div>
   </div>
   <footer>

@@ -7,29 +7,6 @@ function getTodayDate() {
   return `${year}-${month}-${day}`;
 }
 
-var toastCounter = 1;
-
-function displayToastNotification(msg, icon, icon_color, animation) {
-      var class_name = "toast-" + toastCounter;
-      var new_node;
-
-      new_node = $(".master-toast-notification")
-        .clone()
-        .appendTo(".toasts")
-        .addClass(class_name + " toast-notification")
-        .removeClass("master-toast-notification");
-      new_node.find(".toast-msg").text(msg);
-      new_node.find(".toast-icon i").addClass(icon);
-      new_node
-        .find(".toast-icon")
-        .addClass("wiggle-me")
-        .css("background-color", icon_color);
-      new_node.removeClass("hide-toast").addClass(animation);
-      setTimeout(function () {
-        new_node.remove();
-      }, 5800);
-      toastCounter++;
-}
 
 
 document.getElementById('datePicker').value = getTodayDate();
@@ -68,11 +45,10 @@ async function sendData() {
         .then(response => response.text())
         .then(result =>{ console.log(result);
                           window.rowResult=JSON.parse(result).rowIndex;
-                          displayToastNotification(formData.date+"  ,  "+formData.category , "fa-check", "#c0392b", "slide-in-slide-out");
-                          displayToastNotification(formData.expense_name+" : "+formData.expense_rs , "fa-check", "#27ae60", "slide-in-slide-out");
+                          showBlock(formData.expense_name +" : " +formData.expense_rs,formData.category +" , "+formData.date);
                         })
         .catch(error => {console.log('error', error)
-                          displayToastNotification("Not Saved!", "fa-xmark", "#c0392b", "slide-in-slide-out");
+                         showBlock("Error",error);
                         });
     
     
@@ -86,3 +62,22 @@ form.addEventListener("submit", (event) => {
   document.getElementById('datePicker').value = getTodayDate();
 
 });
+
+
+function showBlock(primary,secondary) {
+  var successBlock = document.getElementById('successBlock');
+  var msg1=document.getElementById('successmsg1');
+  var msg2=document.getElementById('successmsg2');
+
+  if (successBlock.classList.contains('hide')) {
+    
+    msg1.textContent = primary;
+    msg2.textContent = secondary;
+
+    successBlock.classList.remove('hide');
+
+    setTimeout(function () {
+        successBlock.classList.add('hide');
+    }, 3000);
+}
+}
