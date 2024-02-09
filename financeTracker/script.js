@@ -7,16 +7,19 @@ function getTodayDate() {
 }
 
 function getFormData() {
-  const formData = {};
-  formData['expense_name'] = document.getElementById("expense_name").value;
-  formData['expense_rs'] = document.getElementById("expense_rs").value;
-  formData['category'] = document.getElementById("cat").value;
-  formData['date'] = document.getElementById("datePicker").value;
+  const formData = {
+    'expense_name': document.getElementById("expense_name").value,
+    'expense_rs': document.getElementById("expense_rs").value,
+    'category': document.getElementById("cat").value,
+    'date': document.getElementById("datePicker").value
+  };
   return formData;
 }
 
 async function makeAPICall(formData) {
-  const urlMonth = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"][parseInt(formData['date'][5] + formData['date'][6]) - 1];
+  const monthIndex = parseInt(formData['date'].slice(5, 7)) - 1;
+  const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  const urlMonth = months[monthIndex];
   const url = `https://api.sheetson.com/v2/sheets/${urlMonth}`;
 
   const myHeaders = new Headers({
@@ -26,19 +29,27 @@ async function makeAPICall(formData) {
     "Cookie": "_cfuvid=9FeoLb_oWmPRe_eH9MedE0zO9EGKHhRjdHDNED_rMrU-1704957294765-0-604800000"
   });
 
+  const abortController = new AbortController();
+  const signal = abortController.signal;
+
   const requestOptions = {
     method: 'POST',
     headers: myHeaders,
     body: JSON.stringify(formData),
-    redirect: 'follow'
+    signal: signal
   };
 
-  const response = await fetch(url, requestOptions);
-  if (!response.ok) {
-    throw new Error(`API request failed with status: ${response.status}`);
+  try {
+    const response = await fetch(url, requestOptions);
+    if (!response.ok) {
+      throw new Error(`API request failed with status: ${response.status}`);
+    }
+    return await response.text();
+  } catch (error) {
+    throw new Error(`API request error: ${error.message}`);
+  } finally {
+    abortController.abort(); // Cancel the request
   }
-
-  return response.text();
 }
 
 function resetForm() {
@@ -67,17 +78,34 @@ const form = document.getElementById('waste-form');
 
 form.addEventListener("submit", async (event) => {
   event.preventDefault();
-  const formData = getFormData();
   try {
+    const formData = getFormData();
+    showLoadingSpinner();
     const result = await makeAPICall(formData);
-    console.log(result);
     window.rowResult = JSON.parse(result).rowIndex;
     showBlock(`${formData.expense_name} : ${formData.expense_rs}`, `${formData.category} , ${formData.date}`);
   } catch (error) {
     console.error('API request error:', error.message);
     showBlock("Error", error.message);
+  } finally {
+    hideLoadingSpinner();
+    resetForm();
   }
-  resetForm();
 });
 
 document.getElementById('datePicker').value = getTodayDate();
+
+function showLoadingSpinner() {
+  const spinner = document.getElementById('loader');
+  const btn=document.getElementById('btn');
+  btn.classList.add('hide');
+  spinner.classList.remove('hide') ;
+
+}
+
+function hideLoadingSpinner() {
+  const spinner = document.getElementById('loader');
+  const btn=document.getElementById('btn');
+  btn.classList.remove('hide');
+  spinner.classList.add('hide') ;
+}

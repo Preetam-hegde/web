@@ -10,8 +10,8 @@
     <link href="//netdna.bootstrapcdn.com/font-awesome/3.2.1/css/font-awesome.css" rel="stylesheet">
     <link rel="stylesheet" href="styles.css">
     <title>Sweet Money</title>
-    <link rel="icon" href="logo.png" type="image/x-icon">
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js" type="text/javascript"></script>
+    <link rel="icon" href="res/logo.png" type="image/x-icon">
+    
 </head>
 
 <body class="text-center">
@@ -87,7 +87,10 @@
                                 </div>
 
                                 <div class="col-md-12 pt-5">
-                                    <button type="submit" class="btn">Submit</button>
+                                    <button type="submit" class="btn" id="btn">Submit</button>
+                              
+                                    <div id="loader" class="loader hide"><iframe src="https://giphy.com/embed/LPfsx5f9o0E557pdrF" width="100px" height="100px" frameBorder="0" class="giphy-embed" allowFullScreen></iframe></div>
+
                                 </div>
                             </div>
                         </form>
@@ -96,7 +99,7 @@
                 </div>
             </div>
             <div class="tab-pane fade" id="income" role="tabpanel" aria-labelledby="income-tab">
-                <iform-com></iform-com>
+                
             </div>
             <div class="tab-pane fade" id="graph" role="tabpanel" aria-labelledby="graph-tab">
                 <div class="back-secondary">
