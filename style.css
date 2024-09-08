@@ -850,3 +850,7 @@ a.global-button,
     font-size: 1.1em;
   }
 }
+
+.theme-btn.active {
+  color: var(--accent-color);
+}

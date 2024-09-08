@@ -111,13 +111,24 @@ const customThemeBtn = document.getElementById('customTheme');
 function setTheme(themeName) {
   document.body.className = themeName;
   localStorage.setItem('theme', themeName);
+  updateThemeButtons(themeName);
 }
 
-function toggleTheme() {
-  if (localStorage.getItem('theme') === 'dark-theme') {
-    setTheme('light-theme');
+function updateThemeButtons(activeTheme) {
+  [lightThemeBtn, darkThemeBtn, customThemeBtn].forEach(btn => {
+    btn.classList.remove('active');
+    btn.style.display = 'inline-block';
+  });
+
+  if (activeTheme === 'light-theme') {
+    lightThemeBtn.classList.add('active');
+    lightThemeBtn.style.display = 'none';
+  } else if (activeTheme === 'dark-theme') {
+    darkThemeBtn.classList.add('active');
+    darkThemeBtn.style.display = 'none';
   } else {
-    setTheme('dark-theme');
+    customThemeBtn.classList.add('active');
+    customThemeBtn.style.display = 'none';
   }
 }
 
