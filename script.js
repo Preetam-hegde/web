@@ -80,7 +80,6 @@ function jsInit() {
     function hideEl(el) {
       el.style.display = "none";
     }
-
   }
 
   // display all js-dependent elements
@@ -103,3 +102,94 @@ function jsInit() {
 }
 
 jsInit();
+
+// Theme switching functionality
+const lightThemeBtn = document.getElementById('lightTheme');
+const darkThemeBtn = document.getElementById('darkTheme');
+const customThemeBtn = document.getElementById('customTheme');
+
+function setTheme(themeName) {
+  document.body.className = themeName;
+  localStorage.setItem('theme', themeName);
+}
+
+function toggleTheme() {
+  if (localStorage.getItem('theme') === 'dark-theme') {
+    setTheme('light-theme');
+  } else {
+    setTheme('dark-theme');
+  }
+}
+
+lightThemeBtn.addEventListener('click', () => setTheme('light-theme'));
+darkThemeBtn.addEventListener('click', () => setTheme('dark-theme'));
+customThemeBtn.addEventListener('click', () => setTheme('custom-theme'));
+
+// Check for saved theme preference or use default light theme
+const savedTheme = localStorage.getItem('theme') || 'light-theme';
+setTheme(savedTheme);
+
+// Smooth scrolling
+document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+    anchor.addEventListener('click', function (e) {
+        e.preventDefault();
+
+        document.querySelector(this.getAttribute('href')).scrollIntoView({
+            behavior: 'smooth'
+        });
+    });
+});
+
+// Form validation
+document.getElementById('contactForm').addEventListener('submit', function(e) {
+  e.preventDefault();
+  
+  let isValid = true;
+  const name = document.getElementById('name');
+  const email = document.getElementById('email');
+  const message = document.getElementById('message');
+  
+  if (name.value.trim() === '') {
+    document.getElementById('nameError').textContent = 'Name is required';
+    isValid = false;
+  } else {
+    document.getElementById('nameError').textContent = '';
+  }
+  
+  if (email.value.trim() === '') {
+    document.getElementById('emailError').textContent = 'Email is required';
+    isValid = false;
+  } else if (!/\S+@\S+\.\S+/.test(email.value)) {
+    document.getElementById('emailError').textContent = 'Email is invalid';
+    isValid = false;
+  } else {
+    document.getElementById('emailError').textContent = '';
+  }
+  
+  if (message.value.trim() === '') {
+    document.getElementById('messageError').textContent = 'Message is required';
+    isValid = false;
+  } else {
+    document.getElementById('messageError').textContent = '';
+  }
+  
+  if (isValid) {
+    // Here you would typically send the form data to a server
+    console.log('Form is valid. Sending data...');
+    // You can use a service like Formspree here
+    // For example: 
+    // fetch('https://formspree.io/f/your-form-id', {
+    //   method: 'POST',
+    //   body: new FormData(e.target),
+    //   headers: {
+    //     'Accept': 'application/json'
+    //   }
+    // }).then(response => {
+    //   if (response.ok) {
+    //     // Handle success
+    //   } else {
+    //     // Handle error
+    //   }
+    // });
+  }
+});

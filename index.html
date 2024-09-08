@@ -6,38 +6,47 @@
   <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
 
 <link href='https://fonts.googleapis.com/css?family=Muli:300|Raleway:300,700' rel='stylesheet' type='text/css'><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
-<link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/font-awesome/4.6.1/css/font-awesome.min.css'><link rel="stylesheet" href="./style.css">
+<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'><link rel="stylesheet" href="./style.css">
 
 </head>
 <body>
 <!-- partial:index.partial.html -->
 <header class="header container-fluid">
   <div class="nav-toggle-wrapper">
-    <button class="nav-toggle-btn">
-					      <span class="line"></span>
-      					<span class="line"></span>
-					      <span class="line"></span>
-				    </button>
+    <button class="nav-toggle-btn" aria-label="Toggle navigation">
+      <span class="line"></span>
+      <span class="line"></span>
+      <span class="line"></span>
+    </button>
   </div>
   <nav class="header__nav">
     <ul class="nav">
-      <li class="header__nav__item"><a href="#about" data-ref="about">about</a></li>
-      <li class="header__nav__item"><a href="#portfolio" data-ref="portfolio">work</a></li>
-      <li class="header__nav__item"><a href="#contact" data-ref="contact">contact</a></li>
+      <li class="header__nav__item"><a href="#about" data-ref="about" aria-label="About section">about</a></li>
+      <li class="header__nav__item"><a href="#portfolio" data-ref="portfolio" aria-label="Portfolio section">work</a></li>
+      <li class="header__nav__item"><a href="#contact" data-ref="contact" aria-label="Contact section">contact</a></li>
     </ul>
   </nav>
   <ul class="header__social-btns">
     <li>
-      <a class="fa fa-instagram" href="https://www.instagram.com/ptwo_/?hl=en"></a>
+      <a class="fa fa-instagram" class="social-btn" href="https://www.instagram.com/ptwo_/?hl=en" aria-label="Instagram profile"></a>
     </li>
     <li>
-      <a class="fa fa-github" href="https://github.com/Preetam-Ptwo" target="_blank"></a>
+      <a class="fa fa-github" class="social-btn" href="https://github.com/Preetam-Ptwo" target="_blank" aria-label="GitHub profile"></a>
     </li>
     <li>
-      <a class="fa fa-linkedin" href="https://www.linkedin.com/in/preetam-hegde-8b53311a7/" target="_blank"></a>
+      <a class="fa fa-linkedin" class="social-btn" href="https://www.linkedin.com/in/preetam-hegde-8b53311a7/" target="_blank" aria-label="LinkedIn profile"></a>
     </li>
     <li>
-      <a class="fa fa-fire" href="https://preetam-ptwo.github.io/Portfolio/" target="_blank"></a>
+      <a class="fa fa-fire" class="social-btn" href="https://preetam-ptwo.github.io/Portfolio/" target="_blank" aria-label="Portfolio"></a>
+    </li>
+    <li>
+      <button id="lightTheme" class="theme-btn" aria-label="Light theme"><i class="fa fa-sun-o"></i></button>
+    </li>
+    <li>
+      <button id="darkTheme" class="theme-btn" aria-label="Dark theme"><i class="fa fa-moon-o"></i></button>
+    </li>
+    <li>
+      <button id="customTheme" class="theme-btn" aria-label="Custom theme"><i class="fa fa-paint-brush"></i></button>
     </li>
   </ul>
 </header>
@@ -54,6 +63,20 @@
     </div>
   </section>
 
+  <section id="skills" class="main-section">
+    <div class="wrapper">
+      <h2 class="heading">Skills</h2>
+      <ul class="skills-list">
+        <li>JavaScript</li>
+        <li>React</li>
+        <li>Node.js</li>
+        <li>HTML5</li>
+        <li>CSS3</li>
+        <li>Git</li>
+      </ul>
+    </div>
+  </section>
+
   <section id="portfolio" class="container main-section">
     <div class="filters row js-dis">
       <h4 class="filters__title"> <i class="fa fa-tags"></i> </h4>
@@ -64,163 +87,56 @@
       </ul>
     </div>
 
-    <div class="portfolio__project-wrapper row">
-
-      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4 text-center" data-cat="fcc">
-        <a href="circle/circle.html" target="_blank" title="view live">
-          <div class="portfolio__project__preview">
-            <img src="resource/Image/gamecircle.svg" alt="gamecircle">
-          </div>
-          <div class="portfolio__project__description">
-            <div class="info-wrapper">
-              <h3 class="portfolio__project__name">Click The Circle!</h3>
-              <p class="portfolio__project__category"> WebApp Game </p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="fcc">
-        <a href="Game/Game.html" target="_blank" title="view live">
-          <div class="portfolio__project__preview">
-            <img src="resource/Image/randomQuota.svg" alt="randquota">
-          </div>
-          <div class="portfolio__project__description">
-            <div class="info-wrapper">
-              <h3 class="portfolio__project__name">Random quotes</h3>
-              <p class="portfolio__project__category">#Free Api</p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-
-      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="fcc">
-        <a href="Pomodoro/timer.html" target="_blank" title="view live">
-          <div class="portfolio__project__preview">
-            <img src="resource/Image/pomoTimer.svg" alt="pomodoro">
-          </div>
-          <div class="portfolio__project__description">
-            <div class="info-wrapper">
-              <h3 class="portfolio__project__name">Pomodoro Timer</h3>
-              <p class="portfolio__project__category">#GET prodective</p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="fcc">
-        <a href="https://preetam-ptwo.github.io/Portfolio/" title="portfolio">
-          <div class="portfolio__project__preview">
-            <img src="resource/Image/portfolio.svg" alt="portfolioFace">
-          </div>
-          <div class="portfolio__project__description">
-            <div class="info-wrapper">
-              <h3 class="portfolio__project__name">Personal Portfolio</h3>
-              <p class="portfolio__project__category"> My First Portfolio</p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="personal">
-        <a href="https://sites.google.com/view/ptwo-diary" title="Diary">
-          <div class="portfolio__project__preview">
-            <img src="resource/Image/diary.svg" alt="Dear diary">
-          </div>
-          <div class="portfolio__project__description">
-            <div class="info-wrapper">
-              <h3 class="portfolio__project__name">Dear Diary</h3>
-              <p class="portfolio__project__category">Personal Scratch Pad</p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <!-- GeoLoc Finder -->
-      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="personal">
-        <a href="geoLocation/index.html" target="_blank" title="Where are you?">
-          <div class="portfolio__project__preview">
-            <img src="resource/Image/geoLocation.svg" alt="Map-Finder">
-          </div>
-          <div class="portfolio__project__description">
-            <div class="info-wrapper">
-              <h3 class="portfolio__project__name"> Get Location </h3>
-              <p class="portfolio__project__category">GeoLocation Finder</p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="personal">
-        <a href="#" title="coming soon">
-          <div class="portfolio__project__preview">
-            <img src="https://eevu.github.io/img/desktop.svg" alt="random placeholder">
-          </div>
-          <div class="portfolio__project__description">
-            <div class="info-wrapper">
-              <h3 class="portfolio__project__name"> Desktop </h3>
-              <p class="portfolio__project__category">#placeholder</p>
-            </div>
-          </div>
-        </a>
-      </div>
-
-      <div class="portfolio__project col-xs-12 col-sm-6 col-lg-4" data-cat="personal">
-        <a href="#" title="coming soon">
-          <div class="portfolio__project__preview">
-            <img src="https://eevu.github.io/img/laptop.svg" alt="random placeholder">
-          </div>
-          <div class="portfolio__project__description">
-            <div class="info-wrapper">
-              <h3 class="portfolio__project__name"> Laptop </h3>
-              <p class="portfolio__project__category">#placeholder</p>
-            </div>
-          </div>
-        </a>
-      </div>
-
+    <div id="projectContainer" class="portfolio__project-wrapper row">
+      <!-- Projects will be dynamically inserted here -->
     </div>
-
   </section>
 
 </main>
 
 <footer class="container">
-  <section id="contact" class="row main-section ">
+  <section id="contact" class="row main-section">
     <div class="col-xs-12 contact-form-wrapper">
-      <h2 class="heading"> drop me a line </h2>
-      <form class="contact-form">
+      <h2 class="heading"> Let's Connect! </h2>
+      <form class="contact-form" id="contactForm">
         <div class="contact-form-el">
-          <input type="text" id="name" class="input" required></input>
-          <label for="name"> your name </label>
+          <input type="text" id="name" class="input" required>
+          <label for="name"> Your Awesome Name </label>
+          <span class="error-message" id="nameError"></span>
         </div>
         <div class="contact-form-el">
-          <input type="email" id="email" class="input" required></input>
-          <label for="email"> your e-mail </label>
+          <input type="email" id="email" class="input" required>
+          <label for="email"> Your Digital Address </label>
+          <span class="error-message" id="emailError"></span>
         </div>
         <div class="contact-form-el">
-          <textarea rows="3 " id="message" class="input" required></textarea>
-          <label for="message"> your message </label>
+          <textarea rows="3" id="message" class="input" required></textarea>
+          <label for="message"> Your Brilliant Thoughts </label>
+          <span class="error-message" id="messageError"></span>
         </div>
         <div class="text-right">
-          <button type="submit" class="global-button"> send </button>
+          <button type="submit" class="global-button"> Launch Message <i class="fa fa-paper-plane"></i> </button>
         </div>
       </form>
     </div>
-    <!-- <div id="map" class="col-xs-12 col-md-7 "><img src="resource/Image/sword.svg"></div> -->
+    <div class="col-xs-12 col-md-5 contact-info">
+      <h3>Or reach out directly:</h3>
+      <p><i class="fa fa-envelope"></i> hegde451@gmail.com</p>
+      <p><i class="fa fa-phone"></i> 9353655008</p>
+      <p><i class="fa fa-map-marker"></i> bangalore, India</p>
+    </div>
   </section>
 
   <section id="credit" class="row">
-    <p>
-      -- With Love ❤️ By Preetam Ptwo -- 
+    <p class="animated-text">
+      Crafted with <i class="fa fa-heart pulse"></i> and <i class="fa fa-coffee"></i> by Preetam Ptwo
     </p>
-    
   </section>
 </footer>
 
 <!-- partial -->
-  <script  src="./script.js"></script>
+  <script src="./projects.js"></script>
+  <script src="./script.js"></script>
 
 </body>
 </html>
