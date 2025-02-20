@@ -204,3 +204,20 @@ document.getElementById('contactForm').addEventListener('submit', function(e) {
     // });
   }
 });
+
+// Dropdown functionality
+document.querySelector('.dropdown-btn').addEventListener('click', function() {
+  document.querySelector('.dropdown-content').classList.toggle('show');
+});
+
+// Close dropdown when clicking outside
+window.addEventListener('click', function(e) {
+  if (!e.target.matches('.dropdown-btn')) {
+    const dropdowns = document.querySelectorAll('.dropdown-content');
+    dropdowns.forEach(dropdown => {
+      if (dropdown.classList.contains('show')) {
+        dropdown.classList.remove('show');
+      }
+    });
+  }
+});

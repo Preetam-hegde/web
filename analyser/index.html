@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Sorting Visualizer</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <div class="controls">
+            <select id="algorithm">
+                <option value="bubble">Bubble Sort</option>
+                <option value="insertion">Insertion Sort</option>
+                <option value="selection">Selection Sort</option>
+                <option value="quick">Quick Sort</option>
+                <option value="merge">Merge Sort</option>
+            </select>
+            <input type="range" id="size" min="5" max="100" value="50">
+            <input type="range" id="speed" min="1" max="100" value="50">
+            <button id="generate">Generate New Array</button>
+            <button id="sort">Sort!</button>
+        </div>
+        <div class="visualization">
+            <div id="array-container"></div>
+        </div>
+    </div>
+    <script src="script.js"></script>
+
+</body>
+
+<footer id="footer" style="position:fixed; bottom:0; width:100%; text-align:center; font-size:14px; color:#000000; background:#67bb71; padding:5px;">
+    -- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo --
+</footer>
+
+</html>

@@ -1,5 +1,13 @@
 const projects = [
   {
+    name: "Sorting Alogithms",
+    category: "fcc",
+    image: "resource/Image/sort.svg",
+    link: "analyser/index.html",
+    description: "visualization of Sorting Alogithms",
+    tech: ["Sorting Alogithms","JavaScript", "HTML5", "CSS3"]
+  },
+  {
     name: "Click The Circle!",
     category: "fcc",
     image: "resource/Image/gamecircle.svg",
@@ -46,7 +54,15 @@ const projects = [
     link: "geoLocation/index.html",
     description: "GeoLocation Finder",
     tech: ["JavaScript", "HTML5", "CSS3", "Geolocation API"]
-  }
+  },
+  {
+    name: "Verilog vectors",
+    category: "fcc",
+    image: "resource/Image/vector.svg",
+    link: "vector01/index.html",
+    description: "getting knowledge for visualization",
+    tech: ["JavaScript", "HTML5", "CSS3", "vectors"]
+  },
 ]
 ;
 

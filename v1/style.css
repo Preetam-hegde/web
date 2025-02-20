@@ -1,0 +1,335 @@
+:root {
+	--primary: #2ecc71;
+	--bg: #ffffff;
+	--text: #333;
+	--card-bg: rgba(255, 255, 255, 0.1);
+	--glass: rgba(255, 255, 255, 0.2);
+}
+
+.dark-theme {
+	--primary: #00ff95;
+	--bg: #0a192f;
+	--text: #e6f1ff;
+	--card-bg: rgba(10, 25, 47, 0.7);
+	--glass: rgba(10, 25, 47, 0.2);
+}
+
+* {
+	margin: 0;
+	padding: 0;
+	box-sizing: border-box;
+	transition: all 0.3s ease;
+}
+
+body {
+	font-family: 'Poppins', sans-serif;
+	background: var(--bg);
+	color: var(--text);
+	overflow-x: hidden;
+}
+
+#particles-js {
+	position: fixed;
+	width: 100%;
+	height: 100%;
+	z-index: -1;
+}
+
+.glass-nav {
+	position: fixed;
+	top: 0;
+	width: 100%;
+	backdrop-filter: blur(10px);
+	background: var(--glass);
+	z-index: 1000;
+	padding: 1rem;
+}
+
+.nav-content {
+	max-width: 1200px;
+	margin: 0 auto;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+}
+
+.nav-links {
+	display: flex;
+	gap: 2rem;
+}
+
+.nav-links a {
+	color: var(--text);
+	text-decoration: none;
+	position: relative;
+}
+
+.nav-links a::after {
+	content: '';
+	position: absolute;
+	width: 0;
+	height: 2px;
+	bottom: -5px;
+	left: 0;
+	background: var(--primary);
+	transition: width 0.3s ease;
+}
+
+.nav-links a:hover::after {
+	width: 100%;
+}
+
+.hero {
+	height: 100vh;
+	display: flex;
+	align-items: center;
+	padding: 0 10%;
+}
+
+.hero-content {
+	opacity: 0;
+	transform: translateY(50px);
+	animation: fadeInUp 1s forwards;
+}
+
+.hero h1 {
+	font-size: 4rem;
+	margin-bottom: 1rem;
+}
+
+.hero p {
+	font-size: 1.2rem;
+	margin-bottom: 2rem;
+	max-width: 600px;
+}
+
+.projects {
+	padding: 5rem 10%;
+}
+
+.project-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+	gap: 2rem;
+	margin-top: 2rem;
+}
+
+.project-card {
+	background: var(--card-bg);
+	border-radius: 15px;
+	padding: 1.5rem;
+	transform-style: preserve-3d;
+	transition: transform 0.5s ease;
+}
+
+.project-card:hover {
+	transform: translateY(-10px) rotateX(10deg) rotateY(10deg);
+}
+
+.project-card img {
+	width: 100%;
+	border-radius: 10px;
+	margin-bottom: 1rem;
+}
+
+.theme-toggle {
+	cursor: pointer;
+	font-size: 1.5rem;
+	color: var(--text);
+}
+
+@keyframes fadeInUp {
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.btn {
+	padding: 0.8rem 4rem;
+	background: var(--primary);
+	color: var(--bg);
+	border: none;
+	border-radius: 5px;
+	cursor: pointer;
+	font-weight: 600;
+	text-decoration: none;
+	display: inline-block;
+    margin: 10px 0px;
+}
+
+.btn:hover {
+	transform: translateY(-2px);
+	box-shadow: 0 5px 15px rgba(46, 204, 113, 0.3);
+}
+
+.skills {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1rem;
+	margin-top: 1rem;
+}
+
+.skill-tag {
+	background: var(--primary);
+	color: var(--bg);
+	padding: 0.5rem 1rem;
+	border-radius: 20px;
+	font-size: 0.9rem;
+}
+
+.contact {
+	padding: 5rem 10%;
+	text-align: center;
+}
+
+.contact-form {
+	max-width: 600px;
+	margin: 0 auto;
+	display: flex;
+	flex-direction: column;
+	gap: 1rem;
+}
+
+.contact-form input,
+.contact-form textarea {
+	padding: 0.8rem;
+	border: 1px solid var(--primary);
+	border-radius: 5px;
+	background: var(--card-bg);
+	color: var(--text);
+}
+
+.contact-form textarea {
+	resize: vertical;
+}
+
+@media (max-width: 768px) {
+	.hero h1 {
+		font-size: 2.5rem;
+	}
+	.nav-links {
+		display: none;
+	}
+}
+
+footer > #credit {
+	font-size: 0.8em;
+	margin-top: 4em;
+	text-align: center;
+}
+
+/* Hamburger Menu Styles */
+.hamburger {
+    display: none; /* Initially hidden on larger screens */
+    font-size: 1.5rem;
+    color: var(--text);
+    cursor: pointer;
+}
+
+.mobile-nav {
+    display: none; /* Initially hidden */
+    position: sticky; /* Make it sticky */
+    top: 60px; /* Stick to the top of the viewport */
+    left: 0;
+    width: 100%;
+    background: var(--glass); /* Match navbar background */
+    backdrop-filter: blur(10px); /* Match navbar blur */
+    padding: 1rem;
+    flex-direction: column;
+    align-items: center;
+    gap: 1rem;
+    text-align: center;
+    z-index: 999; /* Ensure it's below the navbar but above other content */
+    border-bottom-left-radius: 10px;
+    border-bottom-right-radius: 10px;
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(-10px);
+    transition: opacity 0.3s ease, visibility 0.3s ease, transform 0.3s ease;
+}
+
+.mobile-nav.active {
+    display: flex; /* Show when active class is added */
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+}
+
+.mobile-nav a {
+    color: var(--text);
+    text-decoration: none;
+    display: block; /* Full width links in mobile nav */
+    padding: 0.7rem 1rem;
+    border-radius: 5px;
+}
+
+.mobile-nav a:hover {
+    background: var(--primary);
+    color: var(--bg);
+}
+
+
+@media (max-width: 768px) {
+    .nav-links {
+        display: none; /* Hide nav links on small screens */
+    }
+
+    .hamburger {
+        display: block; /* Show hamburger icon on small screens */
+    }
+
+    .nav-content {
+        justify-content: space-between; /* Spread out items in nav content */
+    }
+    .theme-toggle {
+        order: 1; /* Move theme toggle to the left */
+    }
+    .hamburger {
+        order: 2; /* Move hamburger to the right */
+    }
+
+    .hero {
+        padding: 0 5%; /* Adjust hero padding for smaller screens */
+        text-align: center; /* Center text in hero on smaller screens */
+    }
+    .hero h1 {
+        font-size: 2rem; /* Smaller hero heading on small screens */
+    }
+    .hero p {
+        font-size: 1rem; /* Smaller hero paragraph on small screens */
+    }
+    .projects, .contact {
+        padding: 3rem 5%; /* Adjust section padding for smaller screens */
+    }
+    .project-grid {
+        grid-template-columns: 1fr; /* Stack projects on small screens */
+    }
+}
+
+/* Project Card Hover Enhancement */
+.project-card:hover {
+    transform: translateY(-10px) rotateX(10deg) rotateY(10deg) scale(1.05); /* Added scale for slight zoom */
+    box-shadow: 0 20px 30px rgba(0, 0, 0, 0.3); /* More pronounced shadow */
+}
+
+/* Button Hover Enhancement */
+.btn:hover {
+    transform: translateY(-4px); /* Slightly more translateY */
+    box-shadow: 0 8px 20px rgba(46, 204, 113, 0.4); /* Increased shadow and slightly darker */
+}
+
+/* Staggered Animation for Project Cards (Add to existing fadeInUp animation if you want global stagger, or create a new one for project cards specifically) */
+@keyframes fadeInUp {
+	to {
+		opacity: 1;
+		transform: translateY(0);
+	}
+}
+
+.project-card {
+    opacity: 0; /* Initially hidden */
+    transform: translateY(30px); /* Slightly less initial translateY */
+    animation: fadeInUp 0.8s forwards var(--card-animation-delay, 0.2s); /* Apply animation and delay variable */
+}
+

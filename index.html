@@ -1,147 +1,90 @@
 <!DOCTYPE html>
-<html lang="en" >
+<html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>My Home</title>
-  <meta name="viewport" content="width=device-width, height=device-height, initial-scale=1">
-
-<link href='https://fonts.googleapis.com/css?family=Muli:300|Raleway:300,700' rel='stylesheet' type='text/css'><link rel='stylesheet' href='https://maxcdn.bootstrapcdn.com/bootstrap/3.3.6/css/bootstrap.min.css'>
-<link rel='stylesheet' href='https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css'><link rel="stylesheet" href="./style.css">
-
+	<meta charset="UTF-8">
+	<title>Portfolio</title>
+	<link rel="stylesheet" href="style.css">
 </head>
-<body>
-<!-- partial:index.partial.html -->
-<header class="header container-fluid">
-  <div class="nav-toggle-wrapper">
-    <button class="nav-toggle-btn" aria-label="Toggle navigation">
-      <span class="line"></span>
-      <span class="line"></span>
-      <span class="line"></span>
-    </button>
-  </div>
-  <nav class="header__nav">
-    <ul class="nav">
-      <li class="header__nav__item"><a href="#about" data-ref="about" aria-label="About section">about</a></li>
-      <li class="header__nav__item"><a href="#portfolio" data-ref="portfolio" aria-label="Portfolio section">work</a></li>
-      <li class="header__nav__item"><a href="#contact" data-ref="contact" aria-label="Contact section">contact</a></li>
-    </ul>
-  </nav>
-  <ul class="header__social-btns">
-    <li>
-      <a class="fa fa-instagram" class="social-btn" href="https://www.instagram.com/ptwo_/?hl=en" aria-label="Instagram profile"></a>
-    </li>
-    <li>
-      <a class="fa fa-github" class="social-btn" href="https://github.com/Preetam-Ptwo" target="_blank" aria-label="GitHub profile"></a>
-    </li>
-    <li>
-      <a class="fa fa-linkedin" class="social-btn" href="https://www.linkedin.com/in/preetam-hegde-8b53311a7/" target="_blank" aria-label="LinkedIn profile"></a>
-    </li>
-    <li>
-      <a class="fa fa-fire" class="social-btn" href="https://preetam-ptwo.github.io/Portfolio/" target="_blank" aria-label="Portfolio"></a>
-    </li>
-    <li>
-      <button id="lightTheme" class="theme-btn active" aria-label="Light theme"><i class="fa fa-sun-o"></i></button>
-    </li>
-    <li>
-      <button id="darkTheme" class="theme-btn" aria-label="Dark theme"><i class="fa fa-moon-o"></i></button>
-    </li>
-    <li>
-      <button id="customTheme" class="theme-btn" aria-label="Custom theme" style="display: none;"><i class="fa fa-paint-brush"></i></button>
-    </li>
-  </ul>
-</header>
+</html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Preetam's Portfolio - Modern</title>
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link rel="stylesheet" href="v1/style.css">
+</head>
+<body class="dark-theme">
+	<div id="particles-js"></div>
+	
+	<nav class="glass-nav">
+		<div class="nav-content">
+			<div class="theme-toggle">
+				<i class="fas fa-sun"></i>
+			</div>
+			<div class="nav-links">
+				<a href="#about">About</a>
+				<a href="#projects">Projects</a>
+				<a href="#contact">Contact</a>
+				<a href="./v0/index-classic.html">Classic Version</a>
+			</div>
+			<div class="hamburger">
+				<i class="fas fa-bars"></i>
+			</div>
+		</div>
+	</nav>
+	
+	<div class="mobile-nav">
+		<a href="#about">About</a>
+		<a href="#projects">Projects</a>
+		<a href="#contact">Contact</a>
+		<a href="./v0/index-classic.html">Classic Version</a>
+	</div>
 
-<main>
+	<section class="hero" id="about">
+		<div class="hero-content">
+			<h1>Hello, I'm <span style="color: var(--primary)">Preetam</span></h1>
+			<p>A software developer at Oracle, passionate about creating innovative solutions and exploring new technologies.</p>
+			<div class="skills">
+				<span class="skill-tag">JavaScript</span>
+				<span class="skill-tag">React</span>
+				<span class="skill-tag">Node.js</span>
+				<span class="skill-tag">Java</span>
+				<span class="skill-tag">Python</span>
+			</div>
+			<a href="#projects" class="btn">View My Work</a>
+		</div>
+	</section>
 
-  <section id="about" class="main-section">
-    <div class="wrapper">
-      <p class="about__intro">
-        Hello, I'm Preetem Ganesh Hegde, a software developer navigating the tech world within Oracle, honing my skills in coding and development. <br> Hailing from Karnataka, I've journeyed from the roots of my birthplace to the bustling tech landscapes.
-        While my days are filled with debugging and coding challenges, my interests extend far beyond screens and keyboards.
-      </p>
-      <a href="#portfolio" class="global-button rotated scroll"> see my work </a>
-    </div>
-  </section>
+	<section class="projects" id="projects">
+		<h2>Featured Projects</h2>
+		<div class="project-grid" id="projectContainer">
+			<!-- Projects will be dynamically inserted here -->
+		</div>
+	</section>
 
-  <section id="skills" class="main-section">
-    <div class="wrapper">
-      <h2 class="heading">Skills</h2>
-      <ul class="skills-list">
-        <li>JavaScript</li>
-        <li>React</li>
-        <li>Node.js</li>
-        <li>OJET</li>
-        <li>Java</li>
-        <li>Python</li>
-        <li>C++</li>
-        <li>API Development</li>
-        <li>SQL</li>
-        <li>Godot</li>
-        <li>Git</li>
-      </ul>
-    </div>
-  </section>
+	<section class="contact" id="contact">
+		<h2>Get in Touch</h2>
+		<p>Feel free to reach out for collaborations or just a friendly hello!</p>
+		<form class="contact-form">
+			<input type="text" placeholder="Your Name" required>
+			<input type="email" placeholder="Your Email" required>
+			<textarea placeholder="Your Message" rows="5" required></textarea>
+			<button type="submit" class="btn">Send Message</button>
+		</form>
+	</section>
 
-  <section id="portfolio" class="container main-section">
-    <div class="filters row js-dis">
-      <h4 class="filters__title"> <i class="fa fa-tags"></i> </h4>
-      <ul class="filters__list">
-        <li class="filters__label is-active"> all </li>
-        <li class="filters__label" data-cat="fcc"> fun Project </li>
-        <li class="filters__label" data-cat="personal"> personal projects </li>
-      </ul>
-    </div>
+	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+	<script src="projects.js"></script>
+	<script src="v1/script.js"></script>
 
-    <div id="projectContainer" class="portfolio__project-wrapper row">
-      <!-- Projects will be dynamically inserted here -->
-    </div>
-  </section>
-
-</main>
-
-<footer class="container">
-  <section id="contact" class="row main-section">
-    <div class="col-xs-12 contact-form-wrapper">
-      <h2 class="heading"> Let's Connect! </h2>
-      <form class="contact-form" id="contactForm">
-        <div class="contact-form-el">
-          <input type="text" id="name" class="input" required>
-          <label for="name"> Your Awesome Name </label>
-          <span class="error-message" id="nameError"></span>
-        </div>
-        <div class="contact-form-el">
-          <input type="email" id="email" class="input" required>
-          <label for="email"> Your Digital Address </label>
-          <span class="error-message" id="emailError"></span>
-        </div>
-        <div class="contact-form-el">
-          <textarea rows="3" id="message" class="input" required></textarea>
-          <label for="message"> Your Brilliant Thoughts </label>
-          <span class="error-message" id="messageError"></span>
-        </div>
-        <div class="text-right">
-          <button type="submit" class="global-button"> Launch Message <i class="fa fa-paper-plane"></i> </button>
-        </div>
-      </form>
-    </div>
-    <div class="col-xs-12 col-md-5 contact-info">
-      <h3>Or reach out directly:</h3>
-      <p><i class="fa fa-envelope"></i> hegde451@gmail.com</p>
-      <p><i class="fa fa-phone"></i> 9353655008</p>
-      <p><i class="fa fa-map-marker"></i> bangalore, India</p>
-    </div>
-  </section>
-
-  <section id="credit" class="row">
+</body>
+<footer>  
+	<section id="credit" class="row">
     <p class="animated-text">
       Crafted with <i class="fa fa-heart pulse"></i> and <i class="fa fa-coffee"></i> by Preetam Ptwo
     </p>
   </section>
 </footer>
-
-<!-- partial -->
-  <script src="./projects.js"></script>
-  <script src="./script.js"></script>
-
-</body>
 </html>

@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Saju's Verilog Vector Playground</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="bg"></div>
+    <div class="bg bg2"></div>
+    <div class="bg bg3"></div>
+    <h1>Saju's Verilog Vector Playground</h1>
+
+    <div class="controls">
+        <label for="bitCount">Number of Bits (Initial Vector Length):</label>
+        <input type="number" id="bitCount" value="8" min="1" title="Initial length for Vector A and B">
+
+        <div class="operation-slots">
+            <h3>Operations Sequence</h3>
+            <div class="operation-slot">
+                <label for="operation1">Operation 1:</label>
+                <select id="operation1" class="operation-select">
+                    <option value="none">None</option>
+                    <option value="and">AND</option>
+                    <option value="or">OR</option>
+                    <option value="not">NOT (Vector A)</option>
+                    <option value="concat">Concatenate (A & B)</option>
+                    <option value="slice">Slice (Vector A)</option>
+                    <option value="slice_b">Slice (Vector B)</option>
+                    <option value="replicate">Replicate (Vector A)</option>
+                    <option value="replicate_b">Replicate (Vector B)</option>
+                </select>
+                <div class="index-controls-1 index-controls" style="display: none;">
+                    <label for="index1" class="index-label">Start Index (Slice) / Index (Op):</label>
+                    <input type="number" id="index1" class="index-input" min="0" title="For Slice, this is Start Index">
+                </div>
+                <div class="end-index-controls-1 end-index-controls" style="display: none;">
+                    <label for="endIndex1" class="end-index-label">End Index (Slice):</label>
+                    <input type="number" id="endIndex1" class="end-index-input" min="0" title="For Slice, this is End Index">
+                </div>
+                 <div class="replicate-controls-1 replicate-controls" style="display: none;">
+                    <label for="replicateCount1" class="replicate-label">Replicate Count:</label>
+                    <input type="number" id="replicateCount1" class="replicate-input" min="1" value="2" title="Number of times to replicate Vector A">
+                </div>
+            </div>
+
+            <div class="operation-slot">
+                <label for="operation2">Operation 2:</label>
+                <select id="operation2" class="operation-select">
+                    <option value="none">None</option>
+                    <option value="and">AND</option>
+                    <option value="or">OR</option>
+                    <option value="not">NOT (Vector A)</option>
+                    <option value="concat">Concatenate (A & B)</option>
+                    <option value="slice">Slice (Vector A)</option>
+                    <option value="slice_b">Slice (Vector B)</option>
+                    <option value="replicate">Replicate (Vector A)</option>
+                    <option value="replicate_b">Replicate (Vector B)</option>
+                </select>
+                <div class="index-controls-2 index-controls" style="display: none;">
+                    <label for="index2" class="index-label">Start Index (Slice) / Index (Op):</label>
+                    <input type="number" id="index2" class="index-input" min="0" title="For Slice, this is Start Index">
+                </div>
+                <div class="end-index-controls-2 end-index-controls" style="display: none;">
+                    <label for="endIndex2" class="end-index-label">End Index (Slice):</label>
+                    <input type="number" id="endIndex2" class="end-index-input" min="0" title="For Slice, this is End Index">
+                </div>
+                 <div class="replicate-controls-2 replicate-controls" style="display: none;">
+                    <label for="replicateCount2" class="replicate-label">Replicate Count:</label>
+                    <input type="number" id="replicateCount2" class="replicate-input" min="1" value="2" title="Number of times to replicate Vector A">
+                </div>
+            </div>
+
+            <div class="operation-slot">
+                <label for="operation3">Operation 3:</label>
+                <select id="operation3" class="operation-select">
+                    <option value="none">None</option>
+                    <option value="and">AND</option>
+                    <option value="or">OR</option>
+                    <option value="not">NOT (Vector A)</option>
+                    <option value="concat">Concatenate (A & B)</option>
+                    <option value="slice">Slice (Vector A)</option>
+                    <option value="slice_b">Slice (Vector B)</option>
+                    <option value="replicate">Replicate (Vector A)</option>
+                    <option value="replicate_b">Replicate (Vector B)</option>
+                </select>
+                 <div class="index-controls-3 index-controls" style="display: none;">
+                    <label for="index3" class="index-label">Start Index (Slice) / Index (Op):</label>
+                    <input type="number" id="index3" class="index-input" min="0" title="For Slice, this is Start Index">
+                </div>
+                <div class="end-index-controls-3 end-index-controls" style="display: none;">
+                    <label for="endIndex3" class="end-index-label">End Index (Slice):</label>
+                    <input type="number" id="endIndex3" class="end-index-input" min="0" title="For Slice, this is End Index">
+                </div>
+                 <div class="replicate-controls-3 replicate-controls" style="display: none;">
+                    <label for="replicateCount3" class="replicate-label">Replicate Count:</label>
+                    <input type="number" id="replicateCount3" class="replicate-input" min="1" value="2" title="Number of times to replicate Vector A">
+                </div>
+            </div>
+        </div>
+
+
+        <button id="executeBtn">Execute Operations</button>
+        <button id="clearBtn">Clear Vectors</button>
+    </div>
+
+    <div class="vector-container">
+        <div class="vector" id="vectorA">
+            <h3>Vector A</h3>
+            <div class="bits" id="bitsA">
+                </div>
+        </div>
+
+        <div class="vector" id="vectorB">
+            <h3>Vector B</h3>
+            <div class="bits" id="bitsB">
+                </div>
+        </div>
+
+        <div class="vector" id="resultVector">
+            <h3>Result Vector (Operation 3 Result)</h3>
+            <div class="bits" id="bitsResult">
+                </div>
+        </div>
+    </div>
+
+    <div class="verilog-code-container">
+        <h3>Verilog Representation (Sequential Operations)</h3>
+        <pre id="verilogCodeDisplay">
+            // Select operations and click 'Execute Operations'
+        </pre>
+    </div>
+
+    <script src="script.js"></script>
+</div></div></div>
+</body>
+
+<footer id="footer" style="position:fixed; bottom:0; width:100%; text-align:center; font-size:14px; color:#000000; background:#a183b8; padding:5px; display:none;">
+    -- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo --
+</footer>
+
+<script>
+    window.addEventListener("scroll", function() {
+        document.getElementById("footer").style.display = window.scrollY > 50 ? "block" : "none";
+    });
+</script>
+
+
+
+</html>
