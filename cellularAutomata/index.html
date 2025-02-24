@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cellular Automata Canvas - Evolving Patterns</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="page-container">
+        <header>
+            <h1>Cellular Automata: Conway's Game of Life</h1>
+            <p class="subtitle">Witness Emergent Complexity from Simple Rules</p>
+        </header>
+
+        <main class="content-grid">
+            <section class="canvas-area">
+                <canvas id="automataCanvas"></canvas>
+            </section>
+
+            <aside class="controls-info">
+                <div class="controls-panel">
+                    <h2>Simulation Controls</h2>
+                    <div class="control-group">
+                        <button id="startStopButton" class="control-button">Start</button>
+                        <button id="clearButton" class="control-button">Clear</button>
+                    </div>
+                    <div class="control-group">
+                        <label for="speedControl">Speed:</label>
+                        <input type="range" id="speedControl" min="1" max="10" value="5">
+                    </div>
+                    <div class="control-group">
+                        <label for="colorPalette">Color Palette:</label>
+                        <select id="colorPalette">
+                            <option value="default">Default</option>
+                            <option value="neon">Neon</option>
+                            <option value="grayscale">Grayscale</option>
+                            <option value="viridis">Viridis</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="info-panel">
+                    <h2>About Conway's Game of Life</h2>
+                    <p>The Game of Life is a cellular automaton devised by mathematician John Conway in 1970.</p>
+                    <h3>Rules:</h3>
+                    <ul>
+                        <li>Any live cell with fewer than two live neighbours dies (underpopulation).</li>
+                        <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
+                        <li>Any live cell with more than three live neighbours dies (overpopulation).</li>
+                        <li>Any dead cell with exactly three live neighbours becomes a live cell (reproduction).</li>
+                    </ul>
+                    <p>Click on the canvas to toggle cells and observe patterns evolve!</p>
+                    <p id="generationCount" class="generation-display">Generation: 0</p>
+                </div>
+            </aside>
+        </main>
+
+        <footer>
+            <p>-- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo --</p>
+        </footer>
+    </div>
+    <script src="script.js"></script>
+</body>
+
+</html>

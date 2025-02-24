@@ -1,0 +1,112 @@
+/* style.css */
+body {
+    background-image: url('https://picsum.photos/1920/1080?blur=2');
+    background-size: cover;
+    background-position: center;
+    min-height: 100vh;
+    margin: 0;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    font-family: 'Georgia', serif;
+    color: #fff;
+    overflow: hidden;
+}
+
+.contain {
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 15px;
+    padding: 40px;
+    margin: 20px;
+    max-width: 800px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(5px);
+    transition: transform 0.3s ease;
+}
+
+.contain:hover {
+    transform: translateY(-5px);
+}
+
+blockquote {
+    margin: 0;
+    padding: 0;
+    position: relative;
+}
+
+#quote-container {
+    font-size: 2rem;
+    line-height: 1.4;
+    margin-bottom: 20px;
+    transition: opacity 0.5s ease;
+}
+
+#quote-container.loading {
+    opacity: 0.7;
+}
+
+.fade-in {
+    animation: fadeIn 0.8s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+}
+
+footer {
+    text-align: right;
+}
+
+#author {
+    font-size: 1.2rem;
+    font-style: italic;
+    opacity: 0.9;
+    display: block;
+    margin-top: 15px;
+}
+
+.controls {
+    margin-top: 30px;
+    text-align: center;
+}
+
+button {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 10px 20px;
+    margin: 0 10px;
+    border-radius: 25px;
+    cursor: pointer;
+    font-size: 1rem;
+    transition: all 0.3s ease;
+}
+
+button:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.05);
+}
+
+button i {
+    margin-right: 8px;
+}
+
+@media (max-width: 768px) {
+    #quote-container {
+        font-size: 1.5rem;
+    }
+    
+    #author {
+        font-size: 1rem;
+    }
+    
+    .contain {
+        padding: 25px;
+    }
+    
+    button {
+        padding: 8px 15px;
+        font-size: 0.9rem;
+    }
+}

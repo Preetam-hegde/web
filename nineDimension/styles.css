@@ -1,0 +1,264 @@
+body {
+    margin: 0;
+    overflow: hidden;
+    background-color: #1a1a1a; /* Slightly lighter dark background - Default body background */
+    font-family: 'sans-serif';
+    color: #f0f0f0;
+    display: flex;
+    justify-content: center; /* Center horizontally */
+    align-items: center;     /* Center vertically */
+    min-height: 100vh;      /* Full viewport height */
+}
+
+.grid-container {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    grid-template-rows: repeat(3, 1fr);
+    width: 100vw; /* Full viewport width */
+    height: 100vh; /* Full viewport height */
+    gap: 0;       /* No gap for full screen feel, can add back if desired */
+    padding: 0;     /* No padding */
+    background-color: transparent; /* Grid container is now transparent */
+    border-radius: 0;            /* No rounded corners */
+    box-shadow: none;            /* No shadow */
+}
+
+.grid-item {
+    border-radius: 0; /* No rounded corners for items */
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: relative;
+}
+
+/* --- Color Palettes --- */
+
+/* Palette 1: Confusing Color Palette - More jarring and less harmonious (Default) */
+:root {
+    --color-a: #1a1a2e;
+    --color-b: #16213e;
+    --color-c: #0f3460;
+    --color-d: #533483;
+    --color-e: #e94560;
+    --color-f: #7858a6;
+    --color-g: #4c3575;
+    --color-h: #371b58;
+    --color-i: #4b4453;
+}
+
+/* Palette 2: Calm Blue Palette - Soothing and Harmonious */
+.palette-calm {
+    --color-a: #e0f7fa; /* Very light cyan */
+    --color-b: #b2ebf2; /* Light cyan */
+    --color-c: #80deea; /* Cyan */
+    --color-d: #4dd0e1; /* Medium cyan */
+    --color-e: #26c6da; /* Turquoise */
+    --color-f: #00bcd4; /* Cyan-teal */
+    --color-g: #00acc1; /* Dark turquoise */
+    --color-h: #0097a7; /* Deeper turquoise */
+    --color-i: #00838f; /* Dark cyan */
+}
+
+/* Palette 3: Vibrant Sunset Palette - Energetic and Warm */
+.palette-vibrant {
+    --color-a: #ffcc80; /* Light orange-yellow */
+    --color-b: #ffb74d; /* Light orange */
+    --color-c: #ffa726; /* Orange */
+    --color-d: #ff9800; /* Deep orange */
+    --color-e: #fb8c00; /* Darker orange */
+    --color-f: #f57c00; /* Vivid orange */
+    --color-g: #ef6c00; /* Strong orange */
+    --color-h: #e65100; /* Deep orange-red */
+    --color-i: #d84315; /* Red-orange */
+}
+
+/* Palette 4: Grayscale Palette - Simple and Minimalistic */
+.palette-grayscale {
+    --color-a: #f2f2f2; /* Very light gray */
+    --color-b: #e0e0e0; /* Light gray */
+    --color-c: #bdbdbd; /* Silver */
+    --color-d: #9e9e9e; /* Gray */
+    --color-e: #757575; /* Dim gray */
+    --color-f: #616161; /* Dark dim gray */
+    --color-g: #424242; /* Very dark gray */
+    --color-h: #212121; /* Almost black */
+    --color-i: #000000; /* Black */
+}
+
+/* Apply initial colors to grid items - using variables */
+.grid-item:nth-child(1) { background-color: var(--color-a); }
+.grid-item:nth-child(2) { background-color: var(--color-b); }
+.grid-item:nth-child(3) { background-color: var(--color-c); }
+.grid-item:nth-child(4) { background-color: var(--color-d); }
+.grid-item:nth-child(5) { background-color: var(--color-e); }
+.grid-item:nth-child(6) { background-color: var(--color-f); }
+.grid-item:nth-child(7) { background-color: var(--color-g); }
+.grid-item:nth-child(8) { background-color: var(--color-h); }
+.grid-item:nth-child(9) { background-color: var(--color-i); }
+
+/* Keyframes and styles (same as before, but keeping them for completeness) */
+@keyframes float {
+    0% { transform: translateY(0); }
+    50% { transform: translateY(-10px); }
+    100% { transform: translateY(0); }
+}
+
+@keyframes burstAnimation {
+    0% { transform: scale(0); opacity: 1; }
+    100% { transform: scale(1.5); opacity: 0; }
+}
+
+.particle, .shape, .burst { position: absolute; pointer-events: none; }
+.particle { border-radius: 50%; opacity: 0.7; }
+
+/* --- Specific Animation Styles --- */
+
+.bouncy-ball {
+    position: absolute;
+    border-radius: 50%;
+}
+
+.moving-triangle {
+    position: absolute;
+    width: 0;
+    height: 0;
+    border-left: 10px solid transparent;
+    border-right: 10px solid transparent;
+    border-bottom: 20px solid red; /* Initial color, will be changed by JS */
+    transform-origin: 50% 80%; /* Rotate from bottom tip */
+}
+
+.scroll-container {
+    position: relative;
+    width: 100%;
+    height: 100%;
+    overflow: hidden; /* Clip content for scroll effect */
+}
+
+.scroll-content {
+    position: absolute; /* Positioned within container for scrolling */
+    top: 0;
+    left: 0;
+    width: 100%;
+    padding-top: 10px; /* Add some top padding */
+    padding-bottom: 10px; /* Add some bottom padding */
+    white-space: nowrap; /* Single line scrolling text */
+    font-size: 1.2em;
+}
+
+.spinning-shape {
+    position: absolute;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: 2px solid transparent; /* For rect shape */
+    box-sizing: border-box; /* Include border in width/height */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%); /* Center in grid item */
+}
+
+.circling-line {
+    position: absolute;
+    width: 40%; /* Line length */
+    height: 2px; /* Line thickness */
+    background-color: blue; /* Initial color, will be changed by JS */
+    top: 50%;
+    left: 50%;
+}
+
+.moving-word {
+    position: absolute;
+    font-weight: bold;
+    white-space: nowrap; /* Prevent line breaks */
+}
+
+.wall-piece {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform-origin: center center;
+    opacity: 1;
+}
+
+.breathing-line {
+    position: absolute;
+    background-color: red; /* Color will be set by JS */
+}
+
+.horizontal-line {
+    height: 2px; /* Fixed height for horizontal lines */
+    width: 100%; /* Initial width, will be animated */
+    left: 0;
+}
+
+.vertical-line {
+    width: 2px; /* Fixed width for vertical lines */
+    height: 100%; /* Initial height, will be animated */
+    top: 0;
+}
+
+.sun {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 40px;
+    height: 40px;
+    margin-top: -20px;
+    margin-left: -20px;
+    border-radius: 50%;
+    background-color: yellow; /* Default sun color, will be set by JS */
+    z-index: 1; /* Sun above planets */
+}
+
+.orbit {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 50%;
+    border: 1px dashed rgba(255, 255, 255, 0.3); /* Example orbit path */
+    box-sizing: border-box; /* Include border in width/height */
+    /* width/height and margins will be set by JS */
+}
+
+.planet {
+    position: absolute;
+    border-radius: 50%;
+    /* width/height, backgroundColor, top, left, margins will be set by JS */
+}
+
+/* Example container styles for both animations */
+#line-breathing-container, #solar-system-container {
+    width: 300px;
+    height: 300px;
+    border: 1px solid black;
+    position: relative; /* For absolute positioning of lines and solar system elements */
+    overflow: hidden; /* Clip content if it goes outside */
+    background-color: #333; /* Dark background for better visibility of colors */
+}
+
+.grid-color-container {
+    display: grid; /* Use CSS Grid for layout */
+    grid-template-columns: repeat(3, 1fr); /* 3 columns, equal width */
+    grid-template-rows: repeat(3, 1fr);    /* 3 rows, equal height */
+    width: 550px; /* Example container width, adjust as needed */
+    height: 350px; /* Example container height, adjust as needed */
+    border: 1px solid black; /* Example border to visualize the grid container */
+    overflow: hidden; /* Prevent content from overflowing */
+}
+
+.grid-color-cell {
+    /* No specific styling needed for layout as grid controls it */
+    /* You can add cell-specific styling like borders or padding if desired */
+    /* background-color will be set by JavaScript */
+    box-sizing: border-box; /* Include padding/border in cell size */
+    border: 1px solid rgba(0,0,0, 0.1); /* Optional cell border for visualization */
+}
+
+/* Example container to place the grid in */
+#grid-shuffle-container {
+    width: 200px;
+    height: 200px;
+    /* Add any other container styles if needed */
+}

@@ -1,14 +1,15 @@
 :root {
-    --primary-color: #2ecc71;
-    --secondary-color: #00ff95;
-    --background: #0a192f;
-    --text: #e6f1ff;
-}
-
-* {
-    margin: 0;
-    padding: 0;
-    box-sizing: border-box;
+    --primary-color: #26a69a; /* Teal 300 */
+    --secondary-color: #a5d6a7; /* Green 200 */
+    --background: #263238; /* Blue Grey 900 */
+    --text: #f0f4c3; /* Lime 100 */
+    --bar-color: #4db6ac; /* Teal 200 */
+    --bar-comparing: #ffab91; /* Deep Orange 200 */
+    --bar-sorted: #c8e6c9; /* Green 100 */
+    --bar-pivot: #ffca28; /* Amber 300 */
+    --control-bg: #37474f; /* Blue Grey 800 */
+    --info-bg: #37474f; /* Blue Grey 800 - Info Background */
+    --panel-bg: #455a64; /* Blue Grey 700 - Panel Background */
 }
 
 body {
@@ -16,46 +17,197 @@ body {
     background: var(--background);
     color: var(--text);
     min-height: 100vh;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
 }
 
 .container {
     padding: 2rem;
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    max-width: 1200px;
+    width: 95%;
+}
+
+.header {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.header h1 {
+    font-size: 2.8rem;
+    margin-bottom: 0.5rem;
+    color: var(--secondary-color);
+    text-shadow: 2px 2px 3px rgba(0,0,0,0.3); /* Added text shadow */
+}
+
+.header p {
+    font-size: 1.1rem;
+    color: var(--text);
+    opacity: 0.8;
+}
+
+.controls-container {
+    background: var(--panel-bg); /* Panel background for controls */
+    padding: 2rem; /* Increased padding for controls container */
+    border-radius: 12px; /* More rounded corners for panel */
+    margin-bottom: 2rem;
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Deeper shadow for panel */
+    border: 1px solid var(--primary-color); /* Subtle border for panel */
 }
 
 .controls {
     display: flex;
-    gap: 1rem;
-    margin-bottom: 2rem;
     flex-wrap: wrap;
-    justify-content: center;
+    justify-content: space-around; /* Distribute controls more evenly */
+    gap: 25px; /* Increased gap between controls */
+    align-items: center;
 }
 
-select, button {
-    padding: 0.5rem 1rem;
+.control-group {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    align-items: center; /* Center items in control group */
+}
+
+.control-group label {
+    color: var(--text);
+    font-weight: 600;
+    font-size: 1rem;
+    display: block;
+    text-align: center; /* Center labels */
+    margin-bottom: 5px;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.4); /* Added label shadow */
+}
+
+select, input[type="range"], button {
+    padding: 0.8rem 1.5rem; /* Further increased padding for controls */
     border: none;
-    border-radius: 5px;
+    border-radius: 8px;
     background: var(--primary-color);
-    color: var(--background);
+    color: var(--text);
     cursor: pointer;
     font-weight: 600;
+    font-size: 1rem;
+    transition: background-color 0.3s, transform 0.3s;
+    outline: none;
+    box-shadow: 2px 2px 4px rgba(0, 0, 0, 0.25); /* More pronounced button shadow */
+}
+
+select {
+    appearance: none;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    background-image: url('data:image/svg+xml;utf8,<svg fill="%23f0f4c3" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/><path d="M0 0h24v24H0z" fill="none"/></svg>');
+    background-repeat: no-repeat;
+    background-position-x: 95%; /* Adjusted arrow position */
+    background-position-y: center;
+    padding-right: 2.5rem; /* Increased padding for arrow space */
 }
 
 button:hover {
     background: var(--secondary-color);
     transform: translateY(-2px);
-    transition: all 0.3s ease;
+    box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3); /* Enhanced hover shadow */
 }
 
 input[type="range"] {
-    width: 200px;
+    width: 250px; /* Wider range input */
+    height: 14px; /* Slightly taller range input */
+    -webkit-appearance: none;
+    background: var(--primary-color);
+    border-radius: 7px;
+    cursor: pointer;
+    margin-top: 6px;
 }
 
+input[type="range"]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px; /* Larger slider thumb */
+    height: 22px; /* Larger slider thumb */
+    background: var(--secondary-color);
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5); /* More pronounced thumb shadow */
+}
+
+input[type="range"]::-moz-range-thumb {
+    width: 22px; /* Larger slider thumb */
+    height: 22px; /* Larger slider thumb */
+    background: var(--secondary-color);
+    cursor: pointer;
+    border-radius: 50%;
+    box-shadow: 0 0 4px rgba(0, 0, 0, 0.5); /* More pronounced thumb shadow */
+}
+
+.range-input {
+    display: flex;
+    flex-direction: column; /* Stack range and value */
+    align-items: center;
+    gap: 5px;
+}
+
+.range-input span {
+    font-size: 1rem;
+    color: var(--text);
+    width: auto; /* Auto width for value span */
+    text-align: center;
+    display: block;
+    font-weight: 500;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.4); /* Added value shadow */
+}
+
+
+.algorithm-info-container {
+    display: flex;
+    justify-content: space-between;
+    gap: 25px; /* Increased gap for info sections */
+    margin-bottom: 2rem;
+}
+
+
+.algorithm-definitions, .algorithm-complexity {
+    flex: 1;
+    background: var(--info-bg); /* Info background color */
+    padding: 1.8rem; /* Increased padding for info sections */
+    border-radius: 12px; /* More rounded corners for info sections */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Deeper shadow for info sections */
+    color: var(--text);
+    font-size: 1rem; /* Slightly larger font in info sections */
+    border: 1px solid var(--primary-color); /* Subtle border for info sections */
+}
+
+
+.algorithm-section h2 {
+    color: var(--secondary-color);
+    margin-bottom: 1rem; /* Increased heading margin */
+    font-size: 1.5rem; /* Larger section heading */
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.4); /* Added heading shadow */
+}
+
+.algorithm-section p {
+    line-height: 1.7; /* Increased line height for better readability */
+    opacity: 0.9;
+    text-align: justify; /* Justify text for cleaner look */
+}
+
+
 .visualization {
-    height: 70vh;
+    height: 60vh; /* Adjusted visualization height */
     display: flex;
     align-items: flex-end;
     justify-content: center;
-    padding: 1rem;
+    padding: 1.5rem; /* Increased padding for visualization */
+    border-radius: 12px; /* More rounded corners for visualization */
+    background: var(--panel-bg); /* Panel background for visualization */
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.3); /* Deeper shadow for visualization */
+    margin-bottom: 2.5rem; /* Increased bottom margin for visualization */
+    border: 2px solid var(--primary-color);
 }
 
 #array-container {
@@ -63,18 +215,44 @@ input[type="range"] {
     width: 100%;
     display: flex;
     align-items: flex-end;
-    gap: 2px;
+    gap: 3px;
+    padding: 1rem;
 }
 
 .array-bar {
-    background: var(--primary-color);
-    transition: height 0.3s ease;
+    background: var(--bar-color);
+    transition: height 0.2s ease, background-color 0.2s ease;
+    width: auto;
+    flex-grow: 1;
+    border-radius: 3px 3px 0 0; /* More rounded top corners for bars */
+    box-shadow: 1px 0 2px rgba(0,0,0,0.1); /* Subtle bar shadow */
 }
 
 .comparing {
-    background: #ff6b6b;
+    background: var(--bar-comparing);
 }
 
 .sorted {
-    background: var(--secondary-color);
+    background: var(--bar-sorted);
+}
+
+.pivot {
+    background: var(--bar-pivot);
+}
+
+
+#footer {
+    text-align: center;
+    font-size: 0.9rem;
+    color: var(--text);
+    background: var(--panel-bg); /* Panel background for footer */
+    padding: 12px; /* Increased footer padding */
+    box-shadow: 0 -3px 6px rgba(0, 0, 0, 0.2); /* Deeper footer shadow */
+    margin-top: 2.5rem;
+}
+
+#footer a {
+    color: var(--secondary-color);
+    text-decoration: none;
+    font-weight: bold;
 }

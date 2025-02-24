@@ -4,32 +4,137 @@
     <meta charset="UTF-8">
     <title>Sorting Visualizer</title>
     <link rel="stylesheet" href="style.css">
-</head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"> </head>
 <body>
     <div class="container">
-        <div class="controls">
-            <select id="algorithm">
-                <option value="bubble">Bubble Sort</option>
-                <option value="insertion">Insertion Sort</option>
-                <option value="selection">Selection Sort</option>
-                <option value="quick">Quick Sort</option>
-                <option value="merge">Merge Sort</option>
-            </select>
-            <input type="range" id="size" min="5" max="100" value="50">
-            <input type="range" id="speed" min="1" max="100" value="50">
-            <button id="generate">Generate New Array</button>
-            <button id="sort">Sort!</button>
+        <header class="header">
+            <h1>Sorting Algorithm Visualizer</h1>
+            <p>Interactive visualization to understand sorting algorithms</p>
+        </header>
+
+        <div class="controls-container">
+            <div class="controls">
+                <div class="control-group algorithm-control">
+                    <label for="algorithm">Algorithm</label>
+                    <select id="algorithm">
+                        <option value="bubble">Bubble Sort</option>
+                        <option value="insertion">Insertion Sort</option>
+                        <option value="selection">Selection Sort</option>
+                        <option value="quick">Quick Sort</option>
+                        <option value="merge">Merge Sort</option>
+                    </select>
+                </div>
+
+                <div class="control-group size-control">
+                    <label for="size">Array Size</label>
+                    <div class="range-input">
+                        <input type="range" id="size" min="5" max="100" value="50">
+                        <span id="size-value">50</span>
+                    </div>
+                </div>
+
+                <div class="control-group speed-control">
+                    <label for="speed">Speed</label>
+                    <div class="range-input">
+                        <input type="range" id="speed" min="1" max="100" value="50">
+                        <span id="speed-value">Medium</span>
+                    </div>
+                </div>
+
+                <div class="buttons">
+                    <button id="generate">New Array</button>
+                    <button id="sort">Sort!</button>
+                </div>
+            </div>
         </div>
+
+        <div class="algorithm-info-container">
+            <section id="algorithm-definition" class="algorithm-section">
+                <h2>Algorithm Definition</h2>
+                <p id="definition-text">Select an algorithm from the dropdown to view its definition.</p>
+            </section>
+
+            <section id="algorithm-complexity" class="algorithm-section">
+                <h2>Time Complexity</h2>
+                <p id="complexity-text">Time complexity will be displayed here after algorithm selection.</p>
+            </section>
+        </div>
+
+
         <div class="visualization">
             <div id="array-container"></div>
         </div>
     </div>
+
+    <footer id="footer">
+        -- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo --
+    </footer>
+
     <script src="script.js"></script>
+    <script>
+        const sizeInput = document.getElementById('size');
+        const sizeValueSpan = document.getElementById('size-value');
+        const speedInput = document.getElementById('speed');
+        const speedValueSpan = document.getElementById('speed-value');
+        const algorithmSelect = document.getElementById('algorithm');
+        const definitionText = document.getElementById('definition-text');
+        const complexityText = document.getElementById('complexity-text');
 
+        const algorithmDefinitions = {
+            bubble: {
+                definition: "Bubble Sort is a simple comparison-based algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. Elements 'bubble' to their correct position.",
+                complexity: "Worst and Average Case: O(n²), Best Case: O(n)"
+            },
+            insertion: {
+                definition: "Insertion Sort builds the final sorted array one item at a time. It is efficient for small datasets and nearly sorted data.",
+                complexity: "Worst and Average Case: O(n²), Best Case: O(n)"
+            },
+            selection: {
+                definition: "Selection Sort repeatedly finds the minimum element from the unsorted part and places it at the beginning. Simple to implement but not efficient for large lists.",
+                complexity: "Worst, Average, and Best Case: O(n²)"
+            },
+            quick: {
+                definition: "Quick Sort is a divide-and-conquer algorithm. It selects a 'pivot' and partitions the array around it, then recursively sorts subarrays. Very efficient on average.",
+                complexity: "Worst Case: O(n²), Average Case: O(n log n), Best Case: O(n log n)"
+            },
+            merge: {
+                definition: "Merge Sort is a divide-and-conquer, efficient, stable sort. It divides the array into halves, sorts them recursively, and then merges the sorted halves.",
+                complexity: "Worst, Average, and Best Case: O(n log n)"
+            }
+        };
+
+        function updateAlgorithmInfo(algorithmName) {
+            if (algorithmDefinitions[algorithmName]) {
+                definitionText.textContent = algorithmDefinitions[algorithmName].definition;
+                complexityText.textContent = algorithmDefinitions[algorithmName].complexity;
+            } else {
+                definitionText.textContent = "Select an algorithm from the dropdown to view its definition.";
+                complexityText.textContent = "Time complexity will be displayed here after algorithm selection.";
+            }
+        }
+
+        algorithmSelect.addEventListener('change', (event) => {
+            updateAlgorithmInfo(event.target.value);
+        });
+
+        sizeInput.addEventListener('input', () => {
+            sizeValueSpan.textContent = sizeInput.value;
+        });
+
+        speedInput.addEventListener('input', () => {
+            const speedValue = parseInt(speedInput.value);
+            if (speedValue <= 30) {
+                speedValueSpan.textContent = 'Fast';
+            } else if (speedValue <= 70) {
+                speedValueSpan.textContent = 'Medium';
+            } else {
+                speedValueSpan.textContent = 'Slow';
+            }
+        });
+
+        // Initialize algorithm info with Bubble Sort definition on page load
+        updateAlgorithmInfo(algorithmSelect.value);
+
+    </script>
 </body>
-
-<footer id="footer" style="position:fixed; bottom:0; width:100%; text-align:center; font-size:14px; color:#000000; background:#67bb71; padding:5px;">
-    -- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo --
-</footer>
-
 </html>

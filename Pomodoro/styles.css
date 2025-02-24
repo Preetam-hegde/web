@@ -1,0 +1,741 @@
+/* styles.css */
+/* Reset default margins and ensure full-screen coverage */
+body {
+    background: linear-gradient(to bottom, #222f3a, #3a5a40); /* Default theme background */
+    color: #e0fbfc; /* Default text color */
+    font-family: 'Roboto', sans-serif;
+    margin: 0;
+    padding: 0;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    transition: background-color 0.5s, color 0.5s; /* Smooth theme transitions */
+}
+
+/* Theme classes */
+body.theme-dark {
+    background: linear-gradient(to bottom, #1a1a1a, #222222);
+    color: #f0f0f0;
+}
+
+body.theme-light {
+    background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
+    color: #333;
+}
+
+body.theme-retro {
+    background-color: #333;
+    color: #c0d8c0;
+}
+
+
+#timer-container {
+    text-align: center;
+    z-index: 10;
+}
+
+/* Clock styles - more subtle */
+#clock {
+    width: 200px;
+    height: 200px;
+    border: 3px solid #a3b18a; /* Muted border color */
+    border-radius: 50%;
+    position: relative;
+    margin: 0 auto 20px;
+    background-color: rgba(255, 255, 255, 0.05); /* Slightly visible clock background */
+    transition: border-color 0.5s, background-color 0.5s; /* Smooth theme transitions */
+}
+
+/* Clock themes */
+body.theme-dark #clock {
+    border-color: #555;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+body.theme-light #clock {
+    border-color: #ccc;
+    background-color: rgba(200, 200, 200, 0.2);
+}
+
+body.theme-retro #clock {
+    border-color: #c0d8c0;
+    background-color: rgba(51, 51, 51, 0.3);
+}
+
+
+#hour-hand, #minute-hand, #second-hand {
+    position: absolute;
+    background: #e0fbfc; /* Light hand color */
+    transform-origin: bottom center;
+    left: 50%;
+    bottom: 50%;
+    border-radius: 4px; /* Rounded hands */
+    transition: background-color 0.5s; /* Smooth theme transitions */
+}
+
+/* Clock hands themes */
+body.theme-dark #hour-hand, body.theme-dark #minute-hand, body.theme-dark #second-hand {
+    background: #f0f0f0;
+}
+
+body.theme-light #hour-hand, body.theme-light #minute-hand, body.theme-light #second-hand {
+    background: #555;
+}
+
+body.theme-retro #hour-hand, body.theme-retro #minute-hand, body.theme-retro #second-hand {
+    background: #c0d8c0;
+}
+
+
+#hour-hand {
+    width: 6px; /* Thicker hour hand */
+    height: 40px; /* Shorter hour hand */
+    margin-left: -3px;
+}
+
+#minute-hand {
+    width: 4px;
+    height: 60px;
+    margin-left: -2px;
+}
+
+#second-hand {
+    width: 2px;
+    height: 80px;
+    background: #ffbe0b; /* Accent color for second hand */
+    margin-left: -1px;
+}
+
+/* Digital timer - updated font */
+#digital-timer {
+    font-size: 2.5em; /* Slightly larger digital timer */
+    font-family: 'DS-Digital', monospace; /* Digital font */
+    margin-bottom: 20px;
+    letter-spacing: 3px; /* Improve digital font readability */
+    text-shadow: 2px 2px 3px rgba(0,0,0,0.3); /* Text shadow for depth */
+    transition: color 0.5s; /* Smooth theme transitions */
+}
+
+/* Digital timer themes */
+body.theme-dark #digital-timer, body.theme-retro #digital-timer {
+    color: #e0fbfc;
+}
+
+body.theme-light #digital-timer {
+    color: #333;
+}
+
+
+@font-face {
+    font-family: 'DS-Digital';
+    src: url('DS-DIGI.TTF') format('truetype'); /* Make sure the font file is correctly linked or hosted */
+    font-weight: normal;
+    font-style: normal;
+}
+
+
+/* Controls buttons - new style */
+#controls button {
+    margin: 0 15px;
+    padding: 12px 25px;
+    font-size: 1em;
+    background: #0b4965; /* Darker button background */
+    color: #e0fbfc;
+    border: none;
+    border-radius: 7px; /* More rounded buttons */
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s, color 0.5s; /* Smooth transitions */
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Button shadow for depth */
+}
+
+/* Control buttons themes */
+body.theme-dark #controls button, body.theme-retro #controls button {
+    background: #333;
+    color: #e0fbfc;
+}
+
+body.theme-light #controls button {
+    background: #e0e0e0;
+    color: #333;
+}
+
+
+#controls button:hover {
+    background: #ffbe0b; /* Accent hover color */
+    color: #222f3a; /* Dark text on hover */
+    transform: scale(1.05); /* Slight scale up on hover */
+}
+
+/* Settings and info buttons - repositioned and restyled */
+#settings-btn, #info-btn {
+    position: absolute; /* Changed to absolute for better placement */
+    top: 20px; /* Adjusted top position */
+    right: 20px; /* Adjusted right position */
+    background: rgba(255, 255, 255, 0.1); /* Semi-transparent button background */
+    border: 2px solid #a3b18a; /* Border to match clock */
+    color: #e0fbfc;
+    font-size: 1.3em; /* Slightly smaller icons */
+    cursor: pointer;
+    border-radius: 50%; /* Circular buttons */
+    width: 40px; /* Fixed width and height for circular shape */
+    height: 40px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.3s, color 0.3s, border-color 0.5s; /* Smooth transitions */
+}
+
+/* Settings and info buttons themes */
+body.theme-dark #settings-btn, body.theme-dark #info-btn, body.theme-retro #settings-btn, body.theme-retro #info-btn {
+    border-color: #555;
+    color: #f0f0f0;
+}
+
+body.theme-light #settings-btn, body.theme-light #info-btn {
+    border-color: #ccc;
+    color: #555;
+}
+
+
+#settings-btn {
+    right: 70px; /* Space between settings and info buttons */
+}
+
+#info-btn {
+    right: 20px;
+}
+
+
+#settings-btn:hover, #info-btn:hover {
+    background: #ffbe0b; /* Accent hover color */
+    color: #222f3a;
+    border-color: #ffbe0b; /* Highlight border on hover */
+}
+
+
+/* Modal styles - improved appearance */.modal {
+    display: none;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8); /* Darker modal background */
+    justify-content: center;
+    align-items: center;
+    z-index: 20;
+}.modal-content {
+    background: #3a5a40; /* Modal content background to match theme */
+    color: #e0fbfc;
+    padding: 30px; /* Increased padding */
+    border-radius: 15px; /* More rounded modal */
+    width: 350px; /* Slightly wider modal */
+    position: relative;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5); /* Deeper modal shadow */
+    border: 2px solid #a3b18a; /* Border to match theme */
+    transition: background-color 0.5s, border-color 0.5s, color 0.5s; /* Smooth theme transitions */
+}
+
+/* Modal themes */
+body.theme-dark.modal-content, body.theme-retro.modal-content {
+    background: #222222;
+    border-color: #555;
+    color: #f0f0f0;
+}
+
+body.theme-light.modal-content {
+    background: #e0e0e0;
+    border-color: #ccc;
+    color: #333;
+}
+.modal-content h2 {
+    margin-top: 0;
+    margin-bottom: 20px;
+    color: #ffbe0b; /* Accent color for heading */
+    text-align: center;
+    font-weight: bold;
+    letter-spacing: 1px;
+    transition: color 0.5s; /* Smooth theme transitions */
+}
+
+/* Modal heading themes */
+body.theme-dark.modal-content h2, body.theme-retro.modal-content h2 {
+    color: #ffbe0b;
+}
+
+body.theme-light.modal-content h2 {
+    color: #e94560;
+}
+.setting-item {
+    margin-bottom: 20px; /* Increased spacing between settings */
+}.setting-item label {
+    display: block;
+    margin-bottom: 8px;
+    color: #a3b18a; /* Label color */
+    font-weight: bold;
+    transition: color 0.5s; /* Smooth theme transitions */
+}
+
+/* Setting item label themes */
+body.theme-dark.setting-item label, body.theme-retro.setting-item label {
+    color: #777;
+}
+
+body.theme-light.setting-item label {
+    color: #777;
+}
+.setting-item input,.setting-item select {
+    width: 100%;
+    padding: 10px;
+    border-radius: 7px;
+    border: 1px solid #a3b18a; /* Input border color */
+    background-color: #222f3a; /* Input background color */
+    color: #e0fbfc; /* Input text color */
+    box-sizing: border-box; /* Ensure padding is inside the width */
+    transition: border-color 0.5s, background-color 0.5s, color 0.5s; /* Smooth theme transitions */
+}
+/* Setting item input themes */
+body.theme-dark.setting-item input, body.theme-dark.setting-item select, body.theme-retro.setting-item input, body.theme-retro.setting-item select {
+    border-color: #555;
+    background-color: #333;
+    color: #f0f0f0;
+}
+
+body.theme-light.setting-item input, body.theme-light.setting-item select {
+    border-color: #ccc;
+    background-color: #f0f0f0;
+    color: #333;
+}
+.modal-content button {
+    width: 100%;
+    padding: 12px;
+    background: #0b4965;
+    color: #e0fbfc;
+    border: none;
+    border-radius: 7px;
+    cursor: pointer;
+    transition: background 0.3s, transform 0.2s, color 0.5s;
+    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+/* modal content button themes */
+body.theme-dark.modal-content button, body.theme-retro.modal-content button {
+    background: #333;
+    color: #f0f0f0;
+}
+
+body.theme-light.modal-content button {
+    background: #e0e0e0;
+    color: #333;
+}
+.modal-content button:hover {
+    background: #ffbe0b;
+    color: #222f3a;
+    transform: scale(1.02);
+}.close {
+    position: absolute;
+    top: 15px;
+    right: 15px;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #a3b18a; /* Close icon color */
+    transition: color 0.3s;
+}
+/* close themes */
+body.theme-dark.close, body.theme-retro.close {
+    color: #777;
+}
+
+body.theme-light.close {
+    color: #777;
+}
+.close:hover {
+    color: #e0fbfc; /* Lighter color on hover */
+}
+
+/* Info tooltip - restyled */.tooltip {
+    display: none;
+    position: fixed;
+    top: 70px; /* Adjusted top position */
+    right: 20px;
+    background: rgba(42, 58, 45, 0.9); /* Tooltip background to match theme */
+    color: #e0fbfc;
+    padding: 15px 20px; /* Adjusted padding */
+    border-radius: 10px; /* Rounded tooltip */
+    width: 250px; /* Slightly wider tooltip */
+    z-index: 15;
+    font-size: 0.9em;
+    box-shadow: 0 3px 10px rgba(0,0,0,0.4); /* Tooltip shadow */
+    border: 1px solid #a3b18a; /* Tooltip border */
+    transition: background-color 0.5s, border-color 0.5s, color 0.5s; /* Smooth theme transitions */
+}
+/* tooltip themes */
+body.theme-dark.tooltip, body.theme-retro.tooltip {
+    background: rgba(34, 34, 34, 0.9);
+    border-color: #555;
+    color: #f0f0f0;
+}
+
+body.theme-light.tooltip {
+    background: rgba(224, 224, 224, 0.9);
+    border-color: #ccc;
+    color: #333;
+}
+
+
+/* Break canvas - subtle dim effect */
+#break-canvas {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: none;
+    z-index: 5;
+    opacity: 0.8; /* Slightly less opaque break effect */
+}
+
+/* Notification message - updated style */
+#message {
+    position: fixed;
+    top: 30px; /* Adjusted top position */
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ffbe0b; /* Accent color for message background */
+    color: #222f3a; /* Dark text for message */
+    padding: 15px 30px; /* Adjusted padding */
+    border-radius: 10px;
+    display: none;
+    z-index: 15;
+    font-weight: bold;
+    box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Message shadow */
+    transition: background-color 0.5s, color 0.5s; /* Smooth theme transitions */
+}
+/* message themes */
+body.theme-dark #message, body.theme-retro #message {
+    background: #ffbe0b;
+    color: #222f3a;
+}
+
+body.theme-light #message {
+    background: #e94560;
+    color: #f0f0f0;
+}
+
+
+/* Responsive adjustments */
+@media (max-width: 600px) {
+    #clock {
+        width: 160px;
+        height: 160px;
+        margin-bottom: 15px;
+    }
+    #digital-timer {
+        font-size: 2em;
+        margin-bottom: 15px;
+    }
+    #controls button {
+        padding: 10px 20px;
+        font-size: 0.9em;
+        margin: 0 10px;
+    }
+    #settings-btn, #info-btn {
+        top: 15px;
+        right: 15px;
+        font-size: 1.2em;
+        width: 35px;
+        height: 35px;
+    }
+    #settings-btn {
+        right: 60px;
+    }
+  .modal-content {
+        width: 90%;
+        padding: 25px;
+    }
+  .tooltip {
+        top: 60px;
+        right: 15px;
+        width: 80%;
+        max-width: 300px;
+    }
+    #message {
+        top: 20px;
+        padding: 12px 25px;
+    }
+}
+
+/* Instruction Overlay Styles */.overlay {
+    display: flex;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.8); /* Dark background overlay */
+    justify-content: center;
+    align-items: center;
+    z-index: 30; /* Ensure it's on top of everything */
+}.instruction-content {
+    background-color: #3a5a40; /* Content background to match theme */
+    color: #e0fbfc;
+    padding: 30px;
+    border-radius: 15px;
+    width: 80%;
+    max-width: 600px;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
+    font-size: 1em;
+    line-height: 1.6;
+    position: relative; /* For close button positioning */
+    border: 2px solid #a3b18a;
+}.instruction-content h2 {
+    color: #ffbe0b;
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 20px;
+}.instruction-content h3 {
+    color: #a3b18a;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}.instruction-content ul {
+    padding-left: 20px;
+}.instruction-content li {
+    margin-bottom: 8px;
+}.instruction-checkbox {
+    margin-top: 20px;
+    text-align: center;
+}.instruction-checkbox label {
+    color: #a3b18a;
+    margin-left: 5px;
+}.instruction-close {
+    position: absolute;
+    top: 10px;
+    right: 10px;
+    font-size: 1.5em;
+    cursor: pointer;
+    color: #a3b18a;
+    transition: color 0.3s;
+}.instruction-close:hover {
+    color: #e0fbfc;
+}
+
+/* Clock Face Styles */
+#clock-face {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    display: none; /* Hidden by default, shown by JS */
+}
+
+#clock.digital-digits #clock-face {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+}
+
+#clock.digital-digits #clock-face::before {
+    content: attr(data-time);
+    font-family: 'DS-Digital', monospace;
+    font-size: 2em;
+    letter-spacing: 2px;
+    color: #e0fbfc;
+    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
+    transition: color 0.5s;
+}
+
+body.theme-dark #clock.digital-digits #clock-face::before,
+body.theme-retro #clock.digital-digits #clock-face::before {
+    color: #f0f0f0;
+}
+
+body.theme-light #clock.digital-digits #clock-face::before {
+    color: #333;
+}
+
+#clock.minute-numbers #clock-face {
+    display: block;
+}
+
+#clock.minute-numbers .minute-number {
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    text-align: center;
+    font-size: 0.9em;
+    color: #a3b18a;
+    transition: color 0.5s;
+}
+
+/* Position minute numbers at 12, 3, 6, 9 */
+#clock.minute-numbers .minute-number:nth-child(1) {
+    top: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+#clock.minute-numbers .minute-number:nth-child(2) {
+    top: 50%;
+    right: 5px;
+    transform: translateY(-50%);
+}
+#clock.minute-numbers .minute-number:nth-child(3) {
+    bottom: 5px;
+    left: 50%;
+    transform: translateX(-50%);
+}
+#clock.minute-numbers .minute-number:nth-child(4) {
+    top: 50%;
+    left: 5px;
+    transform: translateY(-50%);
+}
+
+body.theme-dark #clock.minute-numbers .minute-number,
+body.theme-retro #clock.minute-numbers .minute-number {
+    color: #777;
+}
+
+body.theme-light #clock.minute-numbers .minute-number {
+    color: #555;
+}
+
+body.theme-cosmic {
+    background: linear-gradient(to bottom, #0a0e23, #2a1b3d);
+    color: #d4a5ff;
+}
+
+body.theme-cosmic #clock {
+    border-color: #d4a5ff;
+    background-color: rgba(212, 165, 255, 0.1);
+}
+
+body.theme-cosmic #hour-hand,
+body.theme-cosmic #minute-hand,
+body.theme-cosmic #second-hand {
+    background: #d4a5ff;
+}
+
+body.theme-cosmic #controls button {
+    background: #2a1b3d;
+    color: #d4a5ff;
+}
+
+body.theme-cosmic #settings-btn,
+body.theme-cosmic #info-btn {
+    border-color: #d4a5ff;
+    color: #d4a5ff;
+}
+
+body.theme-cosmic .modal-content {
+    background: #2a1b3d;
+    border-color: #d4a5ff;
+    color: #d4a5ff;
+}
+
+body.theme-cosmic .setting-item input,
+body.theme-cosmic .setting-item select {
+    border-color: #d4a5ff;
+    background-color: #0a0e23;
+    color: #d4a5ff;
+}
+
+body.theme-neon {
+    background: linear-gradient(to bottom, #1a0033, #00ccff);
+    color: #ff00ff;
+}
+
+body.theme-neon #clock {
+    border-color: #00ffcc;
+    background-color: rgba(0, 255, 204, 0.1);
+}
+
+body.theme-neon #hour-hand,
+body.theme-neon #minute-hand,
+body.theme-neon #second-hand {
+    background: #ff00ff;
+}
+
+body.theme-neon #controls button {
+    background: #1a0033;
+    color: #00ffcc;
+}
+
+body.theme-neon #settings-btn,
+body.theme-neon #info-btn {
+    border-color: #00ffcc;
+    color: #ff00ff;
+}
+
+body.theme-neon .modal-content {
+    background: #1a0033;
+    border-color: #00ffcc;
+    color: #ff00ff;
+}
+
+body.theme-nature {
+    background: linear-gradient(to bottom, #2d4739, #5c7550);
+    color: #e8d5b9;
+}
+
+body.theme-nature #clock {
+    border-color: #c2a878;
+    background-color: rgba(194, 168, 120, 0.1);
+}
+
+body.theme-nature #hour-hand,
+body.theme-nature #minute-hand,
+body.theme-nature #second-hand {
+    background: #e8d5b9;
+}
+
+body.theme-nature #controls button {
+    background: #2d4739;
+    color: #e8d5b9;
+}
+
+body.theme-nature #settings-btn,
+body.theme-nature #info-btn {
+    border-color: #c2a878;
+    color: #e8d5b9;
+}
+
+body.theme-nature .modal-content {
+    background: #2d4739;
+    border-color: #c2a878;
+    color: #e8d5b9;
+}
+
+body.theme-cyberpunk {
+    background: linear-gradient(to bottom, #0d1b2a, #ff007f);
+    color: #00f5ff;
+}
+
+body.theme-cyberpunk #clock {
+    border-color: #ff007f;
+    background-color: rgba(255, 0, 127, 0.1);
+}
+
+body.theme-cyberpunk #hour-hand,
+body.theme-cyberpunk #minute-hand,
+body.theme-cyberpunk #second-hand {
+    background: #00f5ff;
+}
+
+body.theme-cyberpunk #controls button {
+    background: #0d1b2a;
+    color: #00f5ff;
+}
+
+body.theme-cyberpunk #settings-btn,
+body.theme-cyberpunk #info-btn {
+    border-color: #ff007f;
+    color: #00f5ff;
+}
+
+body.theme-cyberpunk .modal-content {
+    background: #0d1b2a;
+    border-color: #ff007f;
+    color: #00f5ff;
+}
