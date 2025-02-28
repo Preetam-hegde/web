@@ -1,350 +1,640 @@
-document.addEventListener('DOMContentLoaded', () => {
-    // DOM elements
-    const digitalTimer = document.getElementById('digital-timer');
-    const startPauseBtn = document.getElementById('start-pause');
-    const resetBtn = document.getElementById('reset');
-    const settingsBtn = document.getElementById('settings-btn');
-    const settingsModal = document.getElementById('settings-modal');
-    const workTimeInput = document.getElementById('work-time');
-    const breakTimeInput = document.getElementById('break-time');
-    const saveSettingsBtn = document.getElementById('save-settings');
-    const infoBtn = document.getElementById('info-btn');
-    const infoTooltip = document.getElementById('info-tooltip');
-    const breakCanvas = document.getElementById('break-canvas');
-    const messageDiv = document.getElementById('message');
-    const sound = document.getElementById('sound');
-    const hourHand = document.getElementById('hour-hand');
-    const minuteHand = document.getElementById('minute-hand');
-    const secondHand = document.getElementById('second-hand');
-    const themeSelect = document.getElementById('theme-select');
-    const clockDesignSelect = document.getElementById('clock-design-select');
-    const body = document.body;
-    const clockFace = document.getElementById('clock-face');
-    const instructionOverlay = document.getElementById('instruction-overlay');
-    const instructionCloseBtn = document.querySelector('.instruction-close');
-    const disableInstructionsCheckbox = document.getElementById('disable-instructions-checkbox');
-    const disableNotificationsCheckbox = document.getElementById('disable-notifications-checkbox');
+document.addEventListener('DOMContentLoaded', function() {
+    // Timer Elements
+    const timerDisplay = document.querySelector('.timer-display');
+    const timerMode = document.querySelector('.timer-mode');
+    const progressRing = document.querySelector('.progress-ring-circle');
+    const progressRingBackground = document.querySelector('.progress-ring-background');
+    
+    // Button Elements
+    const startBtn = document.getElementById('start-btn');
+    const pauseBtn = document.getElementById('pause-btn');
+    const resetBtn = document.getElementById('reset-btn');
+    const pomodoroBtn = document.getElementById('pomodoro-btn');
+    const shortBreakBtn = document.getElementById('short-break-btn');
+    const longBreakBtn = document.getElementById('long-break-btn');
+    
+    // Settings Elements
+    const pomodoroDuration = document.getElementById('pomodoro-duration');
+    const shortBreakDuration = document.getElementById('short-break-duration');
+    const longBreakDuration = document.getElementById('long-break-duration');
+    
+    // Task Elements
+    const taskForm = document.getElementById('task-form');
+    const taskInput = document.getElementById('task-input');
+    const taskList = document.getElementById('task-list');
+    const sessionHistory = document.getElementById('session-history');
+    
+    // Theme Elements
+    const themeButtons = document.querySelectorAll('.theme-btn');
+    
+    // Sound Elements
+    const soundSelector = document.getElementById('sound-selector');
+    const volumeSliderSound = document.getElementById('volume-slider');
+    const testSoundBtn = document.getElementById('test-sound-btn');
 
+    // Music Elements
+    const musicSelector = document.getElementById('music-selector');
+    const volumeSliderMusic = document.getElementById('volume-slider-m');
+    const playMusicBtn = document.getElementById('test-music-btn');
+    
+    // Inspiration and Break Suggestions
+    const inspirationContainer = document.getElementById('inspiration-container');
+    const inspirationText = document.getElementById('inspiration-text');
+    const inspirationAuthor = document.getElementById('inspiration-author');
+    const breakSuggestion = document.getElementById('break-suggestion');
+    
+    // Notification
+    const notification = document.getElementById('notification');
+    const notificationTitle = document.getElementById('notification-title');
+    const notificationText = document.getElementById('notification-text');
+    const notificationClose = document.getElementById('notification-close');
+    
+    // Audio Context and Nodes
+    let audioContext;
+    let soundAudioElement;
+    let musicAudioElement;
+    let soundGainNode;
+    let musicGainNode;
+    let musicPlaying = false; // Flag to track music state
+    
+    // Timer Variables
+    let timerInterval;
+    let remainingTime = 25 * 60; // Default 25 minutes in seconds
+    let totalTime = 25 * 60;
+    let isRunning = false;
+    let currentMode = 'pomodoro';
+    let completedPomodoros = 0;
+    let activeTaskId = null;
+    
+    // Calculate the progress ring circumference
+    const radius = parseFloat(progressRing.getAttribute('r'));
+    const circumference = 2 * Math.PI * radius;
+    progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
+    progressRing.style.strokeDashoffset = circumference;
+    
+    // Sound Files
+    const soundFiles = {
+        bell: 'resources/bell.mp3',
+        digital: 'resources/impact.mp3',
+        nature: 'resources/levelup.mp3'
+    };
 
-    // Timer variables
-    let workTime = 25; // minutes
-    let breakTime = 5; // minutes
-    let remainingTime = workTime * 60; // seconds
-    let phase = 'work'; // 'work' or 'break'
-    let status = 'idle'; // 'idle', 'running', 'paused'
-    let timerInterval = null;
-    let animationFrame = null;
-    let notificationEnabled = true; // Notifications are enabled by default
+    const musicFiles = {
+        lofi: 'resources/loveLoFiM.mp3',
+        nature: 'resources/natureM.mp3',
+        jazz: 'resources/jazzM.mp3',
+        medieval: 'resources/medievalM.mp3'
+    };
+    
+    // Inspirational Quotes
+    const inspirationalQuotes = [
+        { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
+        { text: "It always seems impossible until it's done.", author: "Nelson Mandela" },
+        { text: "Don't watch the clock; do what it does. Keep going.", author: "Preetam Hegde" },
+        { text: "The only way to do great work is to love what you do.", author: "Preetam Hegde" },
+        { text: "The harder I work, the luckier I get.", author: "Samuel Goldwyn" },
+        { text: "Success is not final, failure is not fatal: It is the courage to continue that counts.", author: "Winston Churchill" },
+        { text: "The future depends on what you do today.", author: "Mahatma Gandhi" },
+        { text: "Your work is going to fill a large part of your life, and the only way to be truly satisfied is to do what you believe is great work.", author: "Steve Jobs" },
+        { text: "Success is walking from failure to failure with no loss of enthusiasm.", author: "Winston Churchill" },
+        { text: "The best way to predict the future is to create it.", author: "Abraham Lincoln" }
+    ];
+    
+    // Break Time Suggestions
+    const breakSuggestions = [
+        "Stand up and stretch your arms and legs for 2 minutes.",
+        "Close your eyes and take 10 deep breaths.",
+        "Drink a glass of water to stay hydrated.",
+        "Do 10 jumping jacks to get your blood flowing.",
+        "Rest your eyes by looking at something at least 20 feet away for 20 seconds.",
+        "Massage your temples and shoulders to release tension.",
+        "Take a short walk around your room or office.",
+        "Do some neck rolls to relieve neck strain.",
+        "Stretch your wrists to prevent strain from typing.",
+        "Practice mindfulness for 1 minute by focusing on your breathing."
+    ];
+    
+    // Initialize the timer display
+    updateTimerDisplay();
+    
+    // Event Listeners
+    startBtn.addEventListener('click', startTimer);
+    pauseBtn.addEventListener('click', pauseTimer);
+    resetBtn.addEventListener('click', resetTimer);
+    pomodoroBtn.addEventListener('click', () => switchMode('pomodoro'));
+    shortBreakBtn.addEventListener('click', () => switchMode('shortBreak'));
+    longBreakBtn.addEventListener('click', () => switchMode('longBreak'));
+    
+    pomodoroDuration.addEventListener('change', updateSettings);
+    shortBreakDuration.addEventListener('change', updateSettings);
+    longBreakDuration.addEventListener('change', updateSettings);
+    
+    taskForm.addEventListener('submit', addTask);
+    
+    themeButtons.forEach(button => {
+        button.addEventListener('click', () => switchTheme(button.dataset.theme));
+    });
+    
+    soundSelector.addEventListener('change', updateSoundSettings);
+    volumeSliderSound.addEventListener('input', updateSoundSettings);
+    testSoundBtn.addEventListener('click', testSound);
+    musicSelector.addEventListener('change', updateMusicSettings);
+    volumeSliderMusic.addEventListener('input', updateMusicSettings);
+    playMusicBtn.addEventListener('click', toggleMusic);
+    
+    notificationClose.addEventListener('click', () => {
+        notification.style.display = 'none';
+    });
+    
+    // Initialize Audio Context
+    function initAudio() {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)();
 
-    // Particle array for cosmic animation
-    const particles = [];
-    const particleCount = 100;
+        // Sound Setup
+        soundAudioElement = new Audio();
+        soundGainNode = audioContext.createGain();
+        const soundSource = audioContext.createMediaElementSource(soundAudioElement);
+        soundSource.connect(soundGainNode);
+        soundGainNode.connect(audioContext.destination);
 
-    // Load saved settings or defaults
-    let currentTheme = localStorage.getItem('theme') || 'theme-default';
-    let currentClockDesign = localStorage.getItem('clockDesign') || 'analog-hands';
-    let instructionsDisabled = localStorage.getItem('instructionsDisabled') === 'true';
-    let notificationsDisabledUntil = localStorage.getItem('notificationsDisabledUntil');
+        // Music Setup
+        musicAudioElement = new Audio();
+        musicGainNode = audioContext.createGain();
+        const musicSource = audioContext.createMediaElementSource(musicAudioElement);
+        musicSource.connect(musicGainNode);
+        musicGainNode.connect(audioContext.destination);
 
-    // Apply theme and clock design on load
-    function applyTheme(themeName) {
-        body.className = themeName;
-        localStorage.setItem('theme', themeName);
-        themeSelect.value = themeName;
+        updateSoundSettings();
+        updateMusicSettings();
     }
-
-    function applyClockDesign(designName) {
-        const clock = document.getElementById('clock');
-        clock.className = ''; // Reset all classes on clock
-        clock.classList.add(designName); // Add the selected design class
-        localStorage.setItem('clockDesign', designName);
-        clockDesignSelect.value = designName;
     
-        // Toggle visibility of hands and face
-        hourHand.style.display = designName === 'analog-hands' ? 'block' : 'none';
-        minuteHand.style.display = designName === 'analog-hands' ? 'block' : 'none';
-        secondHand.style.display = designName === 'analog-hands' ? 'block' : 'none';
-        clockFace.style.display = designName === 'analog-hands' ? 'none' : 'block';
-    
-        // Handle minute-numbers design
-        if (designName === 'minute-numbers') {
-            clockFace.innerHTML = ''; // Clear existing content
-            for (let i = 1; i <= 4; i++) {
-                const minuteNumber = document.createElement('div');
-                minuteNumber.className = 'minute-number';
-                minuteNumber.textContent = (i * 15).toString();
-                clockFace.appendChild(minuteNumber);
+    // Timer Functions
+    function startTimer() {
+        if (!isRunning) {
+            if (audioContext === undefined) {
+                initAudio();
             }
-        } else if (designName === 'digital-digits') {
-            clockFace.innerHTML = ''; // Clear minute numbers
-            updateClockHands(); // Ensure digital digits update immediately
-        } else {
-            clockFace.innerHTML = ''; // Clear for analog-hands
+            
+            isRunning = true;
+            startBtn.disabled = true;
+            pauseBtn.disabled = false;
+            
+            const startTime = Date.now();
+            const initialRemainingTime = remainingTime;
+            
+            timerInterval = setInterval(() => {
+                const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
+                remainingTime = Math.max(0, initialRemainingTime - elapsedSeconds);
+                
+                updateTimerDisplay();
+                updateProgressRing();
+                
+                if (remainingTime <= 0) {
+                    completeTimer();
+                }
+            }, 100);
         }
     }
-
-
-    // Function to check if notifications are disabled for today
-    function checkNotificationsDisabled() {
-        const notificationsDisabledUntil = localStorage.getItem('notificationsDisabledUntil');
-        if (notificationsDisabledUntil) {
-            const disableUntilDate = new Date(notificationsDisabledUntil);
-            if (disableUntilDate > new Date()) {
-                disableNotificationsCheckbox.checked = true;
-                notificationEnabled = false;
-                return true;
+    
+    function pauseTimer() {
+        if (isRunning) {
+            clearInterval(timerInterval);
+            isRunning = false;
+            startBtn.disabled = false;
+            pauseBtn.disabled = true;
+        }
+    }
+    
+    function resetTimer() {
+        pauseTimer();
+        setTimerDuration();
+        updateTimerDisplay();
+        updateProgressRing();
+    }
+    
+    function completeTimer() {
+        pauseTimer();
+        playSound();
+        showNotification();
+        
+        if (currentMode === 'pomodoro') {
+            completedPomodoros++;
+            
+            // Log the completed session
+            if (activeTaskId) {
+                const activeTaskEl = document.querySelector(`[data-id="${activeTaskId}"]`);
+                if (activeTaskEl) {
+                    const taskText = activeTaskEl.querySelector('.task-text').textContent;
+                    logSession(taskText);
+                }
             } else {
-                localStorage.removeItem('notificationsDisabledUntil');
-                disableNotificationsCheckbox.checked = false;
-                notificationEnabled = true;
-                return false;
+                logSession('Unnamed session');
             }
+            
+            // Automatically switch to break after pomodoro
+            if (completedPomodoros % 4 === 0) {
+                switchMode('longBreak');
+            } else {
+                switchMode('shortBreak');
+            }
+            
+        } else {
+            // Switch back to pomodoro after break
+            switchMode('pomodoro');
         }
-        disableNotificationsCheckbox.checked = false;
-        notificationEnabled = true;
-        return false;
+        showInspiration();
     }
-
-
-    // Update digital timer display
-    function updateDigitalDisplay() {
+    
+    function updateTimerDisplay() {
         const minutes = Math.floor(remainingTime / 60);
         const seconds = remainingTime % 60;
-        digitalTimer.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
     }
-
-    // Update clock hands - synced with timer
-    function updateClockHands() {
-        const totalSeconds = phase === 'work' ? workTime * 60 : breakTime * 60;
-        const elapsedSeconds = totalSeconds - remainingTime;
-        const secondAngle = (elapsedSeconds % 60) * 6;
-        const minuteAngle = (Math.floor(elapsedSeconds / 60) % 60) * 6;
-        const hourAngle = (Math.floor(elapsedSeconds / 3600) % 12) * 30;
-        secondHand.style.transform = `rotate(${secondAngle}deg)`;
-        minuteHand.style.transform = `rotate(${minuteAngle}deg)`;
-        hourHand.style.transform = `rotate(${hourAngle}deg)`;
-
-        if (clockDesignSelect.value === 'digital-digits') {
-            const minutesDisplay = Math.floor(remainingTime / 60).toString().padStart(2, '0');
-            const secondsDisplay = (remainingTime % 60).toString().padStart(2, '0');
-            clockFace.dataset.time = `${minutesDisplay}:${secondsDisplay}`;
+    function updateProgressRing() {
+        const offset = circumference - (remainingTime / totalTime) * circumference;
+        progressRing.style.strokeDashoffset = offset;
+    }
+    
+    function setTimerDuration() {
+        switch (currentMode) {
+            case 'pomodoro':
+                remainingTime = parseInt(pomodoroDuration.value) * 60;
+                totalTime = remainingTime;
+                break;
+            case 'shortBreak':
+                remainingTime = parseInt(shortBreakDuration.value) * 60;
+                totalTime = remainingTime;
+                break;
+            case 'longBreak':
+                remainingTime = parseInt(longBreakDuration.value) * 60;
+                totalTime = remainingTime;
+                break;
+        }
+    }
+    
+    function switchMode(mode) {
+        // Update active button
+        pomodoroBtn.classList.remove('active');
+        shortBreakBtn.classList.remove('active');
+        longBreakBtn.classList.remove('active');
+        
+        currentMode = mode;
+        
+        switch (mode) {
+            case 'pomodoro':
+                pomodoroBtn.classList.add('active');
+                timerMode.textContent = 'Pomodoro';
+                break;
+            case 'shortBreak':
+                shortBreakBtn.classList.add('active');
+                timerMode.textContent = 'Short Break';
+                break;
+            case 'longBreak':
+                longBreakBtn.classList.add('active');
+                timerMode.textContent = 'Long Break';
+                break;
+        }
+        
+        resetTimer();
+    }
+    
+    function updateSettings() {
+        if (!isRunning) {
+            setTimerDuration();
+            updateTimerDisplay();
+            updateProgressRing();
+        }
+    }
+    
+    // Task Management Functions
+    function addTask(e) {
+        e.preventDefault();
+        
+        const taskText = taskInput.value.trim();
+        if (taskText === '') return;
+        
+        const taskId = Date.now().toString();
+        const taskHTML = `
+            <li class="task-item" data-id="${taskId}">
+                <input type="checkbox" class="task-checkbox">
+                <span class="task-text">${taskText}</span>
+                <div class="task-actions">
+                    <button class="task-btn focus" title="Focus on this task">
+                        <i class="fas fa-bullseye"></i>
+                    </button>
+                    <button class="task-btn delete" title="Delete task">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </li>
+        `;
+        
+        taskList.insertAdjacentHTML('beforeend', taskHTML);
+        taskInput.value = '';
+        
+        // Add event listeners to the new task
+        const newTask = taskList.querySelector(`[data-id="${taskId}"]`);
+        
+        const checkboxEl = newTask.querySelector('.task-checkbox');
+        checkboxEl.addEventListener('change', () => {
+            newTask.classList.toggle('completed');
+        });
+        
+        const focusBtn = newTask.querySelector('.task-btn.focus');
+        focusBtn.addEventListener('click', () => {
+            setActiveTask(taskId);
+        });
+        
+        const deleteBtn = newTask.querySelector('.task-btn.delete');
+        deleteBtn.addEventListener('click', () => {
+            newTask.remove();
+            if (activeTaskId === taskId) {
+                activeTaskId = null;
+            }
+        });
+    }
+    
+    function setActiveTask(taskId) {
+        // Remove active class from all tasks
+        const allTasks = taskList.querySelectorAll('.task-item');
+        allTasks.forEach(task => task.classList.remove('active'));
+        
+        // Add active class to selected task
+        const selectedTask = taskList.querySelector(`[data-id="${taskId}"]`);
+        if (selectedTask) {
+            selectedTask.classList.add('active');
+            activeTaskId = taskId;
+        }
+    }
+    
+    function logSession(taskName) {
+        const now = new Date();
+        const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        const dateString = now.toLocaleDateString();
+        
+        const sessionHTML = `
+            <li class="session-item fade-in">
+                <span class="session-task">${taskName}</span>
+                <span class="session-time">${timeString} - ${parseInt(pomodoroDuration.value)} min</span>
+            </li>
+        `;
+        
+        sessionHistory.insertAdjacentHTML('afterbegin', sessionHTML);
+    }
+    
+    // Theme Functions
+    function switchTheme(theme) {
+        document.body.setAttribute('data-theme', theme);
+        
+        // Update active theme button
+        themeButtons.forEach(btn => {
+            btn.classList.remove('active');
+            if (btn.dataset.theme === theme) {
+                btn.classList.add('active');
+            }
+        });
+        
+        // Save theme preference
+        localStorage.setItem('pomodoro-theme', theme);
+    }
+    
+    // Sound Functions
+    function updateSoundSettings() {
+        if (soundGainNode) {
+            soundGainNode.gain.value = volumeSliderSound.value / 100;
         }
     }
 
-    // Start or resume timer
-    function startTimer() {
-        if (status === 'idle' || status === 'paused') {
-            status = 'running';
-            startPauseBtn.textContent = 'Pause';
-            timerInterval = setInterval(() => {
-                if (remainingTime > 0) {
-                    remainingTime--;
-                    updateDigitalDisplay();
-                    updateClockHands();
-                } else {
-                    clearInterval(timerInterval);
-                    if (notificationEnabled) sound.play(); // Only play if enabled
-                    messageDiv.textContent = phase === 'work' ? 'Time for a break!' : 'Back to work!';
-                    messageDiv.style.display = 'block';
-                    setTimeout(() => { messageDiv.style.display = 'none'; }, 5000);
-                    if (phase === 'work') {
-                        phase = 'break';
-                        remainingTime = breakTime * 60;
-                        startBreakAnimation();
-                    } else {
-                        phase = 'work';
-                        remainingTime = workTime * 60;
-                        stopBreakAnimation();
-                    }
-                    startTimer();
+    function playSound() {
+        if (soundSelector.value === 'none') return;
+
+        if (!audioContext) {
+            initAudio();
+        }
+
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+
+        const soundFile = soundFiles[soundSelector.value];
+        if (soundFile) {
+            soundAudioElement.src = soundFile;
+            soundAudioElement.play();
+            soundAudioElement.onended = () => {
+                if(musicPlaying){
+                    musicAudioElement.play();
                 }
-            }, 1000);
+            }
         }
     }
 
-    // Pause timer
-    function pauseTimer() {
-        if (status === 'running') {
-            status = 'paused';
-            startPauseBtn.textContent = 'Resume';
-            clearInterval(timerInterval);
+    function testSound() {
+        playSound();
+    }
+
+    // Music Functions
+    function updateMusicSettings() {
+        if (musicGainNode) {
+            musicGainNode.gain.value = volumeSliderMusic.value / 100;
         }
     }
 
-    // Reset timer
-    function resetTimer() {
-        clearInterval(timerInterval);
-        stopBreakAnimation();
-        status = 'idle';
-        phase = 'work';
-        remainingTime = workTime * 60;
-        updateDigitalDisplay();
-        updateClockHands();
-        startPauseBtn.textContent = 'Start';
+    function toggleMusic() {
+        if (musicSelector.value === 'none') {
+            stopMusic();
+            return;
+        }
+
+        if (!audioContext) {
+            initAudio();
+        }
+
+        if (audioContext.state === 'suspended') {
+            audioContext.resume();
+        }
+
+        const musicFile = musicFiles[musicSelector.value];
+        if (musicFile) {
+            if (musicPlaying) {
+                stopMusic();
+            } else {
+                startMusic(musicFile);
+            }
+        }
     }
 
-    // Toggle start/pause
-    function toggleStartPause() {
-        if (status === 'running') {
-            pauseTimer();
+    function startMusic(musicFile) {
+        musicAudioElement.src = musicFile;
+        musicAudioElement.loop = true; // Loop the music
+        musicAudioElement.play();
+        musicPlaying = true;
+    }
+
+    function stopMusic() {
+        if (musicAudioElement) {
+            musicAudioElement.pause();
+            musicAudioElement.currentTime = 0;
+            musicPlaying = false;
+        }
+    }
+    
+
+    
+    // Notification Functions
+    function showNotification() {
+        if (currentMode === 'pomodoro') {
+            notificationTitle.textContent = 'Break Time!';
+            notificationText.textContent = 'Well done! Take a break to recharge.';
         } else {
-            startTimer();
+            notificationTitle.textContent = 'Time to Focus!';
+            notificationText.textContent = 'Break is over. Time to get back to work!';
         }
-    }
-
-    // Settings modal controls
-    function openSettings() {
-        workTimeInput.value = workTime;
-        breakTimeInput.value = breakTime;
-        settingsModal.style.display = 'flex';
-    }
-
-    function closeSettings() {
-        settingsModal.style.display = 'none';
-    }
-
-    function saveSettings() {
-        const newWorkTime = parseInt(workTimeInput.value);
-        const newBreakTime = parseInt(breakTimeInput.value);
-        if (newWorkTime > 0 && newBreakTime > 0) {
-            workTime = newWorkTime;
-            breakTime = newBreakTime;
-            applyTheme(themeSelect.value);
-            applyClockDesign(clockDesignSelect.value);
-            resetTimer();
-            closeSettings();
-        } else {
-            alert('Please enter positive numbers.');
-        }
-    }
-
-    // Info tooltip controls
-    infoBtn.addEventListener('click', () => {
-        infoTooltip.style.display = infoTooltip.style.display === 'block' ? 'none' : 'block';
-    });
-
-    // Instruction overlay controls
-    function closeInstructions() {
-        instructionOverlay.style.display = 'none';
-        localStorage.setItem('instructionsDisabled', 'true');
-    }
-
-    instructionCloseBtn.addEventListener('click', closeInstructions);
-
-    if (!instructionsDisabled) {
-        instructionOverlay.style.display = 'flex';
-    }
-
-
-    // Notification checkbox control
-    disableNotificationsCheckbox.addEventListener('change', function () {
-        if (this.checked) {
-            const tomorrow = new Date();
-            tomorrow.setDate(tomorrow.getDate() + 1);
-            tomorrow.setHours(0, 0, 0, 0);
-            localStorage.setItem('notificationsDisabledUntil', tomorrow.toISOString());
-            notificationEnabled = false;
-        } else {
-            localStorage.removeItem('notificationsDisabledUntil');
-            notificationEnabled = true;
-        }
-    });
-
-
-    // Cosmic particle animation (same as before, can be refined further)
-    function initParticles() {
-        const ctx = breakCanvas.getContext('2d');
-        breakCanvas.width = window.innerWidth;
-        breakCanvas.height = window.innerHeight;
-        for (let i = 0; i < particleCount; i++) {
-            particles.push({
-                x: Math.random() * breakCanvas.width,
-                y: Math.random() * breakCanvas.height,
-                radius: Math.random() * 2 + 1,
-                color: `rgba(255, 255, 255, ${Math.random() * 0.5 + 0.5})`,
-                dx: (Math.random() - 0.5) * 0.5,
-                dy: (Math.random() - 0.5) * 0.5,
-                phase: Math.random() * Math.PI * 2
+        
+        notification.style.display = 'flex';
+        
+        // Request browser notification permission
+        if (Notification.permission === 'granted') {
+            new Notification(notificationTitle.textContent, {
+                body: notificationText.textContent,
+                icon: 'resources/favicon.ico' // Replace with your favicon
             });
+        } else if (Notification.permission !== 'denied') {
+            Notification.requestPermission();
+        }
+        
+        // Auto-hide notification after 5 seconds
+        setTimeout(() => {
+            notification.style.display = 'none';
+        }, 5000);
+    }
+    
+    // Inspiration and Break Suggestions
+    function showInspiration() {
+        if (currentMode !== 'pomodoro') {
+            // Show inspiration and break suggestions during breaks
+            const randomQuote = inspirationalQuotes[Math.floor(Math.random() * inspirationalQuotes.length)];
+            inspirationText.textContent = randomQuote.text;
+            inspirationAuthor.textContent = `— ${randomQuote.author}`;
+            
+            const randomSuggestion = breakSuggestions[Math.floor(Math.random() * breakSuggestions.length)];
+            breakSuggestion.textContent = randomSuggestion;
+            
+            inspirationContainer.style.display = 'block';
+            setTimeout(function() {
+                inspirationContainer.style.display = 'none';
+            }, 60 * 1000 * 3);
+        } else {
+            // Hide during work sessions
+            inspirationContainer.style.display = 'none';
         }
     }
-
-    function updateParticles() {
-        particles.forEach(p => {
-            p.x += p.dx;
-            p.y += p.dy;
-            if (p.x < 0) p.x = breakCanvas.width;
-            if (p.x > breakCanvas.width) p.x = 0;
-            if (p.y < 0) p.y = breakCanvas.height;
-            if (p.y > breakCanvas.height) p.y = 0;
-            p.phase += 0.05;
-            p.color = `rgba(255, 255, 255, ${0.5 + 0.5 * Math.sin(p.phase)})`; // Twinkling effect
-        });
-    }
-
-    function drawParticles() {
-        const ctx = breakCanvas.getContext('2d');
-        ctx.clearRect(0, 0, breakCanvas.width, breakCanvas.height);
-        ctx.fillStyle = 'rgba(0, 0, 0, 0.5)'; // Dim background
-        ctx.fillRect(0, 0, breakCanvas.width, breakCanvas.height);
-        particles.forEach(p => {
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, p.radius, 0, Math.PI * 2);
-            ctx.fillStyle = p.color;
-            ctx.fill();
-        });
-    }
-
-    function animate() {
-        updateParticles();
-        drawParticles();
-        animationFrame = requestAnimationFrame(animate);
-    }
-
-    function startBreakAnimation() {
-        breakCanvas.style.display = 'block';
-        if (!animationFrame) animate();
-    }
-
-    function stopBreakAnimation() {
-        breakCanvas.style.display = 'none';
-        if (animationFrame) {
-            cancelAnimationFrame(animationFrame);
-            animationFrame = null;
+    
+    // Request notification permission on page load
+    function requestNotificationPermission() {
+        if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
+            Notification.requestPermission();
         }
     }
+    
+    // Load saved preferences
+    function loadSavedPreferences() {
+        // Load saved theme
+        const savedTheme = localStorage.getItem('pomodoro-theme');
+        if (savedTheme) {
+            switchTheme(savedTheme);
+        }
+        
+        // Load any other saved preferences like timer durations, sound settings, etc.
+        const savedPomodoroDuration = localStorage.getItem('pomodoro-duration');
+        if (savedPomodoroDuration) {
+            pomodoroDuration.value = savedPomodoroDuration;
+        }
+        
+        const savedShortBreakDuration = localStorage.getItem('short-break-duration');
+        if (savedShortBreakDuration) {
+            shortBreakDuration.value = savedShortBreakDuration;
+        }
+        
+        const savedLongBreakDuration = localStorage.getItem('long-break-duration');
+        if (savedLongBreakDuration) {
+            longBreakDuration.value = savedLongBreakDuration;
+        }
+        
+        updateSettings();
+    }
+    
+    // Save preferences when changed
+    function savePreferences() {
+        localStorage.setItem('pomodoro-duration', pomodoroDuration.value);
+        localStorage.setItem('short-break-duration', shortBreakDuration.value);
+        localStorage.setItem('long-break-duration', longBreakDuration.value);
+    }
+    
+    // Add event listeners for saving preferences
+    pomodoroDuration.addEventListener('change', savePreferences);
+    shortBreakDuration.addEventListener('change', savePreferences);
+    longBreakDuration.addEventListener('change', savePreferences);
+    
+    // Initialize application
+    function init() {
+        loadSavedPreferences();
+        requestNotificationPermission();
+        
+   
+        taskList.innerHTML = `
+            <li class="task-item" data-id="demo1">
+                <input type="checkbox" class="task-checkbox">
+                <span class="task-text">Study!</span>
+                <div class="task-actions">
+                    <button class="task-btn focus" title="Focus on this task">
+                        <i class="fas fa-bullseye"></i>
+                    </button>
+                    <button class="task-btn delete" title="Delete task">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </li>
+            <li class="task-item" data-id="demo2">
+                <input type="checkbox" class="task-checkbox">
+                <span class="task-text">Project</span>
+                <div class="task-actions">
+                    <button class="task-btn focus" title="Focus on this task">
+                        <i class="fas fa-bullseye"></i>
+                    </button>
+                    <button class="task-btn delete" title="Delete task">
+                        <i class="fas fa-trash-alt"></i>
+                    </button>
+                </div>
+            </li>
 
-    // Event listeners
-    startPauseBtn.addEventListener('click', toggleStartPause);
-    resetBtn.addEventListener('click', resetTimer);
-    settingsBtn.addEventListener('click', openSettings);
-    saveSettingsBtn.addEventListener('click', saveSettings);
-    document.querySelector('#settings-modal .close').addEventListener('click', closeSettings);
-
-    // Close settings modal when clicking outside
-    window.addEventListener('click', (e) => {
-        if (e.target === settingsModal) closeSettings();
-    });
-
-    // Close instruction modal when clicking outside
-    window.addEventListener('click', (e) => {
-        if (e.target === instructionOverlay) closeInstructions();
-    });
-
-
-    // Handle window resize
-    window.addEventListener('resize', () => {
-        breakCanvas.width = window.innerWidth;
-        breakCanvas.height = window.innerHeight;
-    });
-
-    // Initialization
-    updateDigitalDisplay();
-    updateClockHands();
-    initParticles();
-    applyTheme(currentTheme);
-    applyClockDesign(currentClockDesign);
-    checkNotificationsDisabled(); // Check and apply notification disable status on load
-    disableNotificationsCheckbox.checked = !notificationEnabled; // Set checkbox based on notification status
-
+        `;
+        setActiveTask("demo1")
+        // Add event listeners to example tasks
+        const demoTasks = taskList.querySelectorAll('.task-item');
+        demoTasks.forEach(task => {
+            const taskId = task.dataset.id;
+            
+            const checkboxEl = task.querySelector('.task-checkbox');
+            checkboxEl.addEventListener('change', () => {
+                task.classList.toggle('completed');
+            });
+            
+            const focusBtn = task.querySelector('.task-btn.focus');
+            focusBtn.addEventListener('click', () => {
+                setActiveTask(taskId);
+            });
+            
+            const deleteBtn = task.querySelector('.task-btn.delete');
+            deleteBtn.addEventListener('click', () => {
+                task.remove();
+                if (activeTaskId === taskId) {
+                    activeTaskId = null;
+                }
+            });
+        });
+    
+    }
+    
+    // Initialize the application
+    init();
 });

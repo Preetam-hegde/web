@@ -1,741 +1,646 @@
-/* styles.css */
-/* Reset default margins and ensure full-screen coverage */
-body {
-    background: linear-gradient(to bottom, #222f3a, #3a5a40); /* Default theme background */
-    color: #e0fbfc; /* Default text color */
-    font-family: 'Roboto', sans-serif;
+/* Base Styles */
+:root {
+    /* Default Light Theme */
+    --bg-color: #f5f5f5;
+    --text-color: #333;
+    --primary-color: #ff6347;
+    --secondary-color: #4caf50;
+    --panel-bg: #fff;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    --hover-color: #e0e0e0;
+    --input-bg: #f0f0f0;
+    --card-bg: #fff;
+}
+
+[data-theme="dark"] {
+    --bg-color: #222;
+    --text-color: #e0e0e0;
+    --primary-color: #ff6347;
+    --secondary-color: #4caf50;
+    --panel-bg: #333;
+    --shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    --hover-color: #444;
+    --input-bg: #444;
+    --card-bg: #333;
+}
+
+[data-theme="nature"] {
+    --bg-color: #e8f5e9;
+    --text-color: #2e7d32;
+    --primary-color: #66bb6a;
+    --secondary-color: #81c784;
+    --panel-bg: #f1f8e9;
+    --shadow: 0 4px 12px rgba(0, 100, 0, 0.1);
+    --hover-color: #c8e6c9;
+    --input-bg: #c8e6c9;
+    --card-bg: #b3d986;
+}
+
+[data-theme="minimalist"] {
+    --bg-color: #fafafa;
+    --text-color: #212121;
+    --primary-color: #757575;
+    --secondary-color: #9e9e9e;
+    --panel-bg: #fff;
+    --shadow: 0 2px 6px rgba(0, 0, 0, 0.05);
+    --hover-color: #f5f5f5;
+    --input-bg: #f5f5f5;
+    --card-bg: #fff;
+}
+
+[data-theme="serene"] {
+    --bg-color: #bfd4f4;     
+    --text-color: #2c3e50;    
+    --primary-color: #3498db;   
+    --secondary-color: #8fadc1; 
+    --panel-bg: #cfddf2;         
+    --shadow: 0 3px 10px rgba(0, 0, 0, 0.08); 
+    --hover-color: #00224b;      
+    --input-bg: rgb(193, 211, 235);         
+    --card-bg: #96cbd8;
+}     
+
+* {
     margin: 0;
     padding: 0;
-    height: 100vh;
+    box-sizing: border-box;
+    transition: all 0.3s ease;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-color: var(--bg-color);
+    color: var(--text-color);
+    line-height: 1.6;
     display: flex;
-    justify-content: center;
-    align-items: center;
-    overflow: hidden;
-    transition: background-color 0.5s, color 0.5s; /* Smooth theme transitions */
+    flex-direction: column;
+    min-height: 100vh;
+    height: 100%;
+    padding-top: 30px;
 }
 
-/* Theme classes */
-body.theme-dark {
-    background: linear-gradient(to bottom, #1a1a1a, #222222);
-    color: #f0f0f0;
-}
-
-body.theme-light {
-    background: linear-gradient(to bottom, #f0f0f0, #e0e0e0);
-    color: #333;
-}
-
-body.theme-retro {
-    background-color: #333;
-    color: #c0d8c0;
-}
-
-
-#timer-container {
+header {
     text-align: center;
-    z-index: 10;
+    margin-bottom: 30px;
 }
 
-/* Clock styles - more subtle */
-#clock {
-    width: 200px;
-    height: 200px;
-    border: 3px solid #a3b18a; /* Muted border color */
-    border-radius: 50%;
-    position: relative;
-    margin: 0 auto 20px;
-    background-color: rgba(255, 255, 255, 0.05); /* Slightly visible clock background */
-    transition: border-color 0.5s, background-color 0.5s; /* Smooth theme transitions */
+h1 {
+    font-size: 2.5rem;
+    margin-bottom: 10px;
+    color: var(--primary-color);
 }
 
-/* Clock themes */
-body.theme-dark #clock {
-    border-color: #555;
-    background-color: rgba(0, 0, 0, 0.1);
-}
-
-body.theme-light #clock {
-    border-color: #ccc;
-    background-color: rgba(200, 200, 200, 0.2);
-}
-
-body.theme-retro #clock {
-    border-color: #c0d8c0;
-    background-color: rgba(51, 51, 51, 0.3);
-}
-
-
-#hour-hand, #minute-hand, #second-hand {
-    position: absolute;
-    background: #e0fbfc; /* Light hand color */
-    transform-origin: bottom center;
-    left: 50%;
-    bottom: 50%;
-    border-radius: 4px; /* Rounded hands */
-    transition: background-color 0.5s; /* Smooth theme transitions */
-}
-
-/* Clock hands themes */
-body.theme-dark #hour-hand, body.theme-dark #minute-hand, body.theme-dark #second-hand {
-    background: #f0f0f0;
-}
-
-body.theme-light #hour-hand, body.theme-light #minute-hand, body.theme-light #second-hand {
-    background: #555;
-}
-
-body.theme-retro #hour-hand, body.theme-retro #minute-hand, body.theme-retro #second-hand {
-    background: #c0d8c0;
-}
-
-
-#hour-hand {
-    width: 6px; /* Thicker hour hand */
-    height: 40px; /* Shorter hour hand */
-    margin-left: -3px;
-}
-
-#minute-hand {
-    width: 4px;
-    height: 60px;
-    margin-left: -2px;
-}
-
-#second-hand {
-    width: 2px;
-    height: 80px;
-    background: #ffbe0b; /* Accent color for second hand */
-    margin-left: -1px;
-}
-
-/* Digital timer - updated font */
-#digital-timer {
-    font-size: 2.5em; /* Slightly larger digital timer */
-    font-family: 'DS-Digital', monospace; /* Digital font */
-    margin-bottom: 20px;
-    letter-spacing: 3px; /* Improve digital font readability */
-    text-shadow: 2px 2px 3px rgba(0,0,0,0.3); /* Text shadow for depth */
-    transition: color 0.5s; /* Smooth theme transitions */
-}
-
-/* Digital timer themes */
-body.theme-dark #digital-timer, body.theme-retro #digital-timer {
-    color: #e0fbfc;
-}
-
-body.theme-light #digital-timer {
-    color: #333;
-}
-
-
-@font-face {
-    font-family: 'DS-Digital';
-    src: url('DS-DIGI.TTF') format('truetype'); /* Make sure the font file is correctly linked or hosted */
-    font-weight: normal;
-    font-style: normal;
-}
-
-
-/* Controls buttons - new style */
-#controls button {
-    margin: 0 15px;
-    padding: 12px 25px;
-    font-size: 1em;
-    background: #0b4965; /* Darker button background */
-    color: #e0fbfc;
-    border: none;
-    border-radius: 7px; /* More rounded buttons */
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s, color 0.5s; /* Smooth transitions */
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2); /* Button shadow for depth */
-}
-
-/* Control buttons themes */
-body.theme-dark #controls button, body.theme-retro #controls button {
-    background: #333;
-    color: #e0fbfc;
-}
-
-body.theme-light #controls button {
-    background: #e0e0e0;
-    color: #333;
-}
-
-
-#controls button:hover {
-    background: #ffbe0b; /* Accent hover color */
-    color: #222f3a; /* Dark text on hover */
-    transform: scale(1.05); /* Slight scale up on hover */
-}
-
-/* Settings and info buttons - repositioned and restyled */
-#settings-btn, #info-btn {
-    position: absolute; /* Changed to absolute for better placement */
-    top: 20px; /* Adjusted top position */
-    right: 20px; /* Adjusted right position */
-    background: rgba(255, 255, 255, 0.1); /* Semi-transparent button background */
-    border: 2px solid #a3b18a; /* Border to match clock */
-    color: #e0fbfc;
-    font-size: 1.3em; /* Slightly smaller icons */
-    cursor: pointer;
-    border-radius: 50%; /* Circular buttons */
-    width: 40px; /* Fixed width and height for circular shape */
-    height: 40px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    transition: background 0.3s, color 0.3s, border-color 0.5s; /* Smooth transitions */
-}
-
-/* Settings and info buttons themes */
-body.theme-dark #settings-btn, body.theme-dark #info-btn, body.theme-retro #settings-btn, body.theme-retro #info-btn {
-    border-color: #555;
-    color: #f0f0f0;
-}
-
-body.theme-light #settings-btn, body.theme-light #info-btn {
-    border-color: #ccc;
-    color: #555;
-}
-
-
-#settings-btn {
-    right: 70px; /* Space between settings and info buttons */
-}
-
-#info-btn {
-    right: 20px;
-}
-
-
-#settings-btn:hover, #info-btn:hover {
-    background: #ffbe0b; /* Accent hover color */
-    color: #222f3a;
-    border-color: #ffbe0b; /* Highlight border on hover */
-}
-
-
-/* Modal styles - improved appearance */.modal {
-    display: none;
-    position: fixed;
-    top: 0;
-    left: 0;
+.app-container {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 20px;
+    max-width: 1200px;
+    margin: 0 auto;
     width: 100%;
-    height: 100%;
-    background: rgba(0, 0, 0, 0.8); /* Darker modal background */
-    justify-content: center;
-    align-items: center;
-    z-index: 20;
-}.modal-content {
-    background: #3a5a40; /* Modal content background to match theme */
-    color: #e0fbfc;
-    padding: 30px; /* Increased padding */
-    border-radius: 15px; /* More rounded modal */
-    width: 350px; /* Slightly wider modal */
-    position: relative;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5); /* Deeper modal shadow */
-    border: 2px solid #a3b18a; /* Border to match theme */
-    transition: background-color 0.5s, border-color 0.5s, color 0.5s; /* Smooth theme transitions */
 }
 
-/* Modal themes */
-body.theme-dark.modal-content, body.theme-retro.modal-content {
-    background: #222222;
-    border-color: #555;
-    color: #f0f0f0;
-}
-
-body.theme-light.modal-content {
-    background: #e0e0e0;
-    border-color: #ccc;
-    color: #333;
-}
-.modal-content h2 {
-    margin-top: 0;
-    margin-bottom: 20px;
-    color: #ffbe0b; /* Accent color for heading */
-    text-align: center;
-    font-weight: bold;
-    letter-spacing: 1px;
-    transition: color 0.5s; /* Smooth theme transitions */
-}
-
-/* Modal heading themes */
-body.theme-dark.modal-content h2, body.theme-retro.modal-content h2 {
-    color: #ffbe0b;
-}
-
-body.theme-light.modal-content h2 {
-    color: #e94560;
-}
-.setting-item {
-    margin-bottom: 20px; /* Increased spacing between settings */
-}.setting-item label {
-    display: block;
-    margin-bottom: 8px;
-    color: #a3b18a; /* Label color */
-    font-weight: bold;
-    transition: color 0.5s; /* Smooth theme transitions */
-}
-
-/* Setting item label themes */
-body.theme-dark.setting-item label, body.theme-retro.setting-item label {
-    color: #777;
-}
-
-body.theme-light.setting-item label {
-    color: #777;
-}
-.setting-item input,.setting-item select {
-    width: 100%;
-    padding: 10px;
-    border-radius: 7px;
-    border: 1px solid #a3b18a; /* Input border color */
-    background-color: #222f3a; /* Input background color */
-    color: #e0fbfc; /* Input text color */
-    box-sizing: border-box; /* Ensure padding is inside the width */
-    transition: border-color 0.5s, background-color 0.5s, color 0.5s; /* Smooth theme transitions */
-}
-/* Setting item input themes */
-body.theme-dark.setting-item input, body.theme-dark.setting-item select, body.theme-retro.setting-item input, body.theme-retro.setting-item select {
-    border-color: #555;
-    background-color: #333;
-    color: #f0f0f0;
-}
-
-body.theme-light.setting-item input, body.theme-light.setting-item select {
-    border-color: #ccc;
-    background-color: #f0f0f0;
-    color: #333;
-}
-.modal-content button {
-    width: 100%;
-    padding: 12px;
-    background: #0b4965;
-    color: #e0fbfc;
-    border: none;
-    border-radius: 7px;
-    cursor: pointer;
-    transition: background 0.3s, transform 0.2s, color 0.5s;
-    box-shadow: 0 2px 5px rgba(0,0,0,0.2);
-}
-/* modal content button themes */
-body.theme-dark.modal-content button, body.theme-retro.modal-content button {
-    background: #333;
-    color: #f0f0f0;
-}
-
-body.theme-light.modal-content button {
-    background: #e0e0e0;
-    color: #333;
-}
-.modal-content button:hover {
-    background: #ffbe0b;
-    color: #222f3a;
-    transform: scale(1.02);
-}.close {
-    position: absolute;
-    top: 15px;
-    right: 15px;
-    font-size: 1.5em;
-    cursor: pointer;
-    color: #a3b18a; /* Close icon color */
-    transition: color 0.3s;
-}
-/* close themes */
-body.theme-dark.close, body.theme-retro.close {
-    color: #777;
-}
-
-body.theme-light.close {
-    color: #777;
-}
-.close:hover {
-    color: #e0fbfc; /* Lighter color on hover */
-}
-
-/* Info tooltip - restyled */.tooltip {
-    display: none;
-    position: fixed;
-    top: 70px; /* Adjusted top position */
-    right: 20px;
-    background: rgba(42, 58, 45, 0.9); /* Tooltip background to match theme */
-    color: #e0fbfc;
-    padding: 15px 20px; /* Adjusted padding */
-    border-radius: 10px; /* Rounded tooltip */
-    width: 250px; /* Slightly wider tooltip */
-    z-index: 15;
-    font-size: 0.9em;
-    box-shadow: 0 3px 10px rgba(0,0,0,0.4); /* Tooltip shadow */
-    border: 1px solid #a3b18a; /* Tooltip border */
-    transition: background-color 0.5s, border-color 0.5s, color 0.5s; /* Smooth theme transitions */
-}
-/* tooltip themes */
-body.theme-dark.tooltip, body.theme-retro.tooltip {
-    background: rgba(34, 34, 34, 0.9);
-    border-color: #555;
-    color: #f0f0f0;
-}
-
-body.theme-light.tooltip {
-    background: rgba(224, 224, 224, 0.9);
-    border-color: #ccc;
-    color: #333;
-}
-
-
-/* Break canvas - subtle dim effect */
-#break-canvas {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    display: none;
-    z-index: 5;
-    opacity: 0.8; /* Slightly less opaque break effect */
-}
-
-/* Notification message - updated style */
-#message {
-    position: fixed;
-    top: 30px; /* Adjusted top position */
-    left: 50%;
-    transform: translateX(-50%);
-    background: #ffbe0b; /* Accent color for message background */
-    color: #222f3a; /* Dark text for message */
-    padding: 15px 30px; /* Adjusted padding */
-    border-radius: 10px;
-    display: none;
-    z-index: 15;
-    font-weight: bold;
-    box-shadow: 0 4px 10px rgba(0,0,0,0.3); /* Message shadow */
-    transition: background-color 0.5s, color 0.5s; /* Smooth theme transitions */
-}
-/* message themes */
-body.theme-dark #message, body.theme-retro #message {
-    background: #ffbe0b;
-    color: #222f3a;
-}
-
-body.theme-light #message {
-    background: #e94560;
-    color: #f0f0f0;
-}
-
-
-/* Responsive adjustments */
-@media (max-width: 600px) {
-    #clock {
-        width: 160px;
-        height: 160px;
-        margin-bottom: 15px;
-    }
-    #digital-timer {
-        font-size: 2em;
-        margin-bottom: 15px;
-    }
-    #controls button {
-        padding: 10px 20px;
-        font-size: 0.9em;
-        margin: 0 10px;
-    }
-    #settings-btn, #info-btn {
-        top: 15px;
-        right: 15px;
-        font-size: 1.2em;
-        width: 35px;
-        height: 35px;
-    }
-    #settings-btn {
-        right: 60px;
-    }
-  .modal-content {
-        width: 90%;
-        padding: 25px;
-    }
-  .tooltip {
-        top: 60px;
-        right: 15px;
-        width: 80%;
-        max-width: 300px;
-    }
-    #message {
-        top: 20px;
-        padding: 12px 25px;
+@media (min-width: 768px) {
+    .app-container {
+        grid-template-columns: 2fr 1fr;
     }
 }
 
-/* Instruction Overlay Styles */.overlay {
-    display: flex;
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background-color: rgba(0, 0, 0, 0.8); /* Dark background overlay */
-    justify-content: center;
-    align-items: center;
-    z-index: 30; /* Ensure it's on top of everything */
-}.instruction-content {
-    background-color: #3a5a40; /* Content background to match theme */
-    color: #e0fbfc;
+/* Timer Styles */
+.timer-container {
+    background-color: var(--panel-bg);
     padding: 30px;
     border-radius: 15px;
-    width: 80%;
-    max-width: 600px;
-    box-shadow: 0 5px 15px rgba(0,0,0,0.5);
-    font-size: 1em;
-    line-height: 1.6;
-    position: relative; /* For close button positioning */
-    border: 2px solid #a3b18a;
-}.instruction-content h2 {
-    color: #ffbe0b;
-    text-align: center;
-    margin-top: 0;
-    margin-bottom: 20px;
-}.instruction-content h3 {
-    color: #a3b18a;
-    margin-top: 20px;
-    margin-bottom: 10px;
-}.instruction-content ul {
-    padding-left: 20px;
-}.instruction-content li {
-    margin-bottom: 8px;
-}.instruction-checkbox {
-    margin-top: 20px;
-    text-align: center;
-}.instruction-checkbox label {
-    color: #a3b18a;
-    margin-left: 5px;
-}.instruction-close {
-    position: absolute;
-    top: 10px;
-    right: 10px;
-    font-size: 1.5em;
-    cursor: pointer;
-    color: #a3b18a;
-    transition: color 0.3s;
-}.instruction-close:hover {
-    color: #e0fbfc;
-}
-
-/* Clock Face Styles */
-#clock-face {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    border-radius: 50%;
-    display: none; /* Hidden by default, shown by JS */
-}
-
-#clock.digital-digits #clock-face {
+    box-shadow: var(--shadow);
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
+    position: relative;
+    overflow: hidden;
 }
 
-#clock.digital-digits #clock-face::before {
-    content: attr(data-time);
-    font-family: 'DS-Digital', monospace;
-    font-size: 2em;
-    letter-spacing: 2px;
-    color: #e0fbfc;
-    text-shadow: 2px 2px 3px rgba(0, 0, 0, 0.3);
-    transition: color 0.5s;
+.timer-circle {
+    position: relative;
+    width: 250px;
+    height: 250px;
+    margin-bottom: 30px;
 }
 
-body.theme-dark #clock.digital-digits #clock-face::before,
-body.theme-retro #clock.digital-digits #clock-face::before {
-    color: #f0f0f0;
+.progress-ring {
+    transform: rotate(-90deg);
+    transform-origin: center;
 }
 
-body.theme-light #clock.digital-digits #clock-face::before {
-    color: #333;
+.progress-ring-circle {
+    stroke: var(--primary-color);
+    stroke-width: 8;
+    fill: transparent;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 0.5s linear;
 }
 
-#clock.minute-numbers #clock-face {
-    display: block;
+.progress-ring-background {
+    stroke: rgba(0, 0, 0, 0.1);
+    stroke-width: 8;
+    fill: transparent;
 }
 
-#clock.minute-numbers .minute-number {
+.timer-display {
     position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 3rem;
+    font-weight: bold;
+    color: var(--text-color);
+}
+
+.timer-mode {
+    font-size: 1.2rem;
+    margin-bottom: 10px;
+    color: var(--primary-color);
+    font-weight: bold;
+}
+
+.timer-controls {
+    display: flex;
+    gap: 15px;
+    margin-bottom: 20px;
+}
+
+.btn {
+    padding: 12px 24px;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+    font-size: 1rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    transition: all 0.2s ease;
+    background-color: var(--primary-color);
+    color: white;
+}
+
+.btn:hover {
+    opacity: 0.9;
+    transform: translateY(-2px);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-secondary {
+    background-color: var(--secondary-color);
+}
+
+.btn-outline {
+    background-color: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-icon {
+    width: 50px;
+}
+
+.timer-settings {
+    margin-top: 20px;
+    width: 100%;
+    max-width: 400px;
+}
+
+.settings-group {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 15px;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+.settings-item {
+    display: flex;
+    flex-direction: column;
+    flex: 1;
+    min-width: 120px;
+}
+
+.settings-label {
+    font-size: 0.9rem;
+    margin-bottom: 5px;
+    color: var(--text-color);
+}
+
+.settings-input {
+    padding: 8px 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+/* Task Management Styles */
+.task-management {
+    background-color: var(--panel-bg);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+}
+
+.section-title {
+    font-size: 1.5rem;
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.task-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.task-input {
+    flex: 1;
+    padding: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    border-radius: 6px;
+    font-size: 1rem;
+    background-color: var(--input-bg);
+    color: var(--text-color);
+}
+
+.task-list {
+    list-style-type: none;
+    margin-bottom: 30px;
+}
+
+.task-item {
+    display: flex;
+    align-items: center;
+    padding: 12px 15px;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    margin-bottom: 10px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+    position: relative;
+    overflow: hidden;
+}
+
+.task-item.active {
+    border-left: 4px solid var(--primary-color);
+}
+
+.task-item.completed {
+    opacity: 0.7;
+}
+
+.task-checkbox {
+    margin-right: 15px;
     width: 20px;
     height: 20px;
+    cursor: pointer;
+}
+
+.task-text {
+    flex: 1;
+    font-size: 1rem;
+}
+
+.task-item.completed .task-text {
+    text-decoration: line-through;
+    color: var(--secondary-color);
+}
+
+.task-actions {
+    display: flex;
+    gap: 8px;
+}
+
+.task-btn {
+    background: none;
+    border: none;
+    cursor: pointer;
+    font-size: 1rem;
+    color: var(--text-color);
+    opacity: 0.6;
+    transition: all 0.2s ease;
+}
+
+.task-btn:hover {
+    opacity: 1;
+}
+
+.task-btn.delete:hover {
+    color: #f44336;
+}
+
+.task-btn.focus:hover {
+    color: var(--primary-color);
+}
+
+/* History and Stats */
+.history-section {
+    margin-top: 30px;
+}
+
+.session-history {
+    list-style-type: none;
+    max-height: 200px;
+    overflow-y: auto;
+    padding-right: 10px;
+}
+
+.session-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px 15px;
+    background-color: var(--card-bg);
+    border-radius: 8px;
+    margin-bottom: 8px;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+}
+
+.session-task {
+    font-weight: 500;
+    flex: 1;
+}
+
+.session-time {
+    color: var(--primary-color);
+    font-size: 0.9rem;
+}
+
+/* Inspiration and Break Suggestions */
+.inspiration-container {
+    background-color: var(--panel-bg);
+    padding: 25px;
+    border-radius: 15px;
+    box-shadow: var(--shadow);
+    margin-top: 20px;
     text-align: center;
-    font-size: 0.9em;
-    color: #a3b18a;
-    transition: color 0.5s;
+    position: relative;
+    overflow: hidden;
 }
 
-/* Position minute numbers at 12, 3, 6, 9 */
-#clock.minute-numbers .minute-number:nth-child(1) {
-    top: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-#clock.minute-numbers .minute-number:nth-child(2) {
-    top: 50%;
-    right: 5px;
-    transform: translateY(-50%);
-}
-#clock.minute-numbers .minute-number:nth-child(3) {
-    bottom: 5px;
-    left: 50%;
-    transform: translateX(-50%);
-}
-#clock.minute-numbers .minute-number:nth-child(4) {
-    top: 50%;
-    left: 5px;
-    transform: translateY(-50%);
+.inspiration-text {
+    font-size: 1.1rem;
+    font-style: italic;
+    margin-bottom: 10px;
+    line-height: 1.5;
 }
 
-body.theme-dark #clock.minute-numbers .minute-number,
-body.theme-retro #clock.minute-numbers .minute-number {
-    color: #777;
+.inspiration-author {
+    font-weight: bold;
+    color: var(--primary-color);
 }
 
-body.theme-light #clock.minute-numbers .minute-number {
-    color: #555;
+.break-suggestions {
+    margin-top: 20px;
+    padding-top: 20px;
+    border-top: 1px solid rgba(0, 0, 0, 0.1);
 }
 
-body.theme-cosmic {
-    background: linear-gradient(to bottom, #0a0e23, #2a1b3d);
-    color: #d4a5ff;
+.suggestion-item {
+    font-size: 1rem;
+    padding: 10px 0;
 }
 
-body.theme-cosmic #clock {
-    border-color: #d4a5ff;
-    background-color: rgba(212, 165, 255, 0.1);
+/* Theme Switcher */
+.theme-switcher {
+    position: absolute;
+    top: 20px;
+    right: 20px;
+    display: flex;
+    gap: 10px;
 }
 
-body.theme-cosmic #hour-hand,
-body.theme-cosmic #minute-hand,
-body.theme-cosmic #second-hand {
-    background: #d4a5ff;
+.theme-btn {
+    width: 30px;
+    height: 30px;
+    border-radius: 50%;
+    border: 2px solid transparent;
+    cursor: pointer;
+    transition: all 0.2s ease;
 }
 
-body.theme-cosmic #controls button {
-    background: #2a1b3d;
-    color: #d4a5ff;
+.theme-btn:hover {
+    transform: scale(1.1);
 }
 
-body.theme-cosmic #settings-btn,
-body.theme-cosmic #info-btn {
-    border-color: #d4a5ff;
-    color: #d4a5ff;
+.theme-btn.active {
+    border-color: var(--primary-color);
+    transform: scale(1.1);
 }
 
-body.theme-cosmic .modal-content {
-    background: #2a1b3d;
-    border-color: #d4a5ff;
-    color: #d4a5ff;
+.theme-light {
+    background-color: #f5f5f5;
 }
 
-body.theme-cosmic .setting-item input,
-body.theme-cosmic .setting-item select {
-    border-color: #d4a5ff;
-    background-color: #0a0e23;
-    color: #d4a5ff;
+.theme-dark {
+    background-color: #222;
 }
 
-body.theme-neon {
-    background: linear-gradient(to bottom, #1a0033, #00ccff);
-    color: #ff00ff;
+.theme-nature {
+    background-color: #e8f5e9;
 }
 
-body.theme-neon #clock {
-    border-color: #00ffcc;
-    background-color: rgba(0, 255, 204, 0.1);
+.theme-minimalist {
+    background-color: #9e9e9e;
 }
 
-body.theme-neon #hour-hand,
-body.theme-neon #minute-hand,
-body.theme-neon #second-hand {
-    background: #ff00ff;
+.theme-serene {
+    background-color: #bfd4f4;
 }
 
-body.theme-neon #controls button {
-    background: #1a0033;
-    color: #00ffcc;
+/* Container Styles */
+.notification-container, .music-container {
+    /* background-color: var(--container-bg, #ffffff); */
+    padding: 5px;
+    border-radius: 2px;
+    margin: 5px 0;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
 }
 
-body.theme-neon #settings-btn,
-body.theme-neon #info-btn {
-    border-color: #00ffcc;
-    color: #ff00ff;
+.notification-container h3, .music-container h3 {
+    margin: 0 0 6px 0;
+    font-size: 18px;
+    font-weight: 600;
+    color: var(--text-color, #333);
 }
 
-body.theme-neon .modal-content {
-    background: #1a0033;
-    border-color: #00ffcc;
-    color: #ff00ff;
+/* Sound Controls */
+.sound-controls, .music-controls {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 15px;
 }
 
-body.theme-nature {
-    background: linear-gradient(to bottom, #2d4739, #5c7550);
-    color: #e8d5b9;
+.sound-dropdown {
+    padding: 8px 12px;
+    border-radius: 6px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background-color: var(--input-bg);
+    color: var(--text-color);
 }
 
-body.theme-nature #clock {
-    border-color: #c2a878;
-    background-color: rgba(194, 168, 120, 0.1);
+.volume-control, .volume-control-m {
+    display: flex;
+    align-items: center;
+    gap: 8px;
 }
 
-body.theme-nature #hour-hand,
-body.theme-nature #minute-hand,
-body.theme-nature #second-hand {
-    background: #e8d5b9;
+.volume-slider {
+    width: 100px;
+    background-color: var(--input-bg);
 }
 
-body.theme-nature #controls button {
-    background: #2d4739;
-    color: #e8d5b9;
+/* Animations */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
 }
 
-body.theme-nature #settings-btn,
-body.theme-nature #info-btn {
-    border-color: #c2a878;
-    color: #e8d5b9;
+@keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
 }
 
-body.theme-nature .modal-content {
-    background: #2d4739;
-    border-color: #c2a878;
-    color: #e8d5b9;
+@keyframes slideIn {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
 }
 
-body.theme-cyberpunk {
-    background: linear-gradient(to bottom, #0d1b2a, #ff007f);
-    color: #00f5ff;
+.pulse {
+    animation: pulse 2s infinite;
 }
 
-body.theme-cyberpunk #clock {
-    border-color: #ff007f;
-    background-color: rgba(255, 0, 127, 0.1);
+.fade-in {
+    animation: fadeIn 0.5s forwards;
 }
 
-body.theme-cyberpunk #hour-hand,
-body.theme-cyberpunk #minute-hand,
-body.theme-cyberpunk #second-hand {
-    background: #00f5ff;
+.slide-in {
+    animation: slideIn 0.5s forwards;
 }
 
-body.theme-cyberpunk #controls button {
-    background: #0d1b2a;
-    color: #00f5ff;
+/* Notification */
+.notification {
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    background-color: var(--panel-bg);
+    color: var(--text-color);
+    padding: 15px 25px;
+    border-radius: 10px;
+    box-shadow: var(--shadow);
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    z-index: 1000;
+    animation: slideIn 0.3s forwards;
+    max-width: 350px;
 }
 
-body.theme-cyberpunk #settings-btn,
-body.theme-cyberpunk #info-btn {
-    border-color: #ff007f;
-    color: #00f5ff;
+.notification-icon {
+    font-size: 1.5rem;
+    color: var(--primary-color);
 }
 
-body.theme-cyberpunk .modal-content {
-    background: #0d1b2a;
-    border-color: #ff007f;
-    color: #00f5ff;
+.notification-content {
+    flex: 1;
+}
+
+.notification-title {
+    font-weight: bold;
+    margin-bottom: 5px;
+}
+
+.notification-text {
+    font-size: 0.9rem;
+}
+
+.notification-close {
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: var(--text-color);
+    opacity: 0.6;
+    font-size: 1rem;
+}
+
+.notification-close:hover {
+    opacity: 1;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 768px) {
+    .timer-circle {
+        width: 200px;
+        height: 200px;
+    }
+
+    .timer-display {
+        font-size: 2.5rem;
+    }
+
+    .settings-group {
+        flex-direction: column;
+    }
+
+    .theme-switcher {
+        position: static;
+        justify-content: center;
+        margin-bottom: 20px;
+    }
+
+    .timer-controls {
+        flex-wrap: wrap;
+        justify-content: center;
+    }
+
+    .notification {
+        left: 20px;
+        right: 20px;
+        max-width: none;
+    }
+}
+
+@media (max-width: 480px) {
+    .timer-circle {
+        width: 180px;
+        height: 180px;
+    }
+
+    .timer-display {
+        font-size: 2rem;
+    }
+
+    .timer-controls {
+        flex-direction: column;
+        width: 100%;
+    }
+
+    .btn {
+        width: 100%;
+    }
+}
+
+#footer {
+    text-align: center;
+    padding: 5px 0px;
+    background-color: var(--panel-bg); 
+    font-size: 0.9em; 
+    color: var(--text-color); 
+    margin-top: 40px;
 }
