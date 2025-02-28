@@ -37,7 +37,7 @@ Here’s a glimpse of what I’ve been building:
 | **High Life BG**      | Mesmerizing background ball physics with stunning effects.                 | Logic, JavaScript, HTML5, CSS3      | [See It](https://preetam-hegde.github.io/web/BGIllusion/index.html)           |
 | **Sorting Algorithms**| Visualize sorting algorithms to understand their logic and efficiency.     | JavaScript, HTML5, CSS3, Algorithms | [Analyze](https://preetam-hegde.github.io/web/analyser/index.html)            |
 | **Personal Portfolio**| My first online portfolio showcasing my skills and projects.               | HTML5, CSS3, JavaScript             | [Visit](https://preetam-ptwo.github.io/Portfolio/) |
-| **Pomodoro Timer**    | A productivity tool based on the Pomodoro technique.                      | JavaScript, HTML5, CSS3, Timer      | [Start](https://preetam-hegde.github.io/web/Pomodoro/timer.html)              |
+| **Pomodoro Timer**    | A productivity tool based on the Pomodoro technique.                      | JavaScript, HTML5, CSS3, Timer      | [Start](https://preetam-hegde.github.io/web/Pomodoro/index.html)              |
 | **Random Quotes**     | Fetch and display random quotes from an API for daily inspiration.         | JavaScript, API, HTML5, CSS3        | [Get Inspired](https://preetam-hegde.github.io/web/quote/Game.html)           |
 | **Verilog Vectors**   | A visual tool for learning Verilog vectors in digital design.              | JavaScript, HTML5, CSS3, Verilog    | [Learn](https://preetam-hegde.github.io/web/vector01/index.html)              |
 | **Dear Diary**        | An online scratchpad for thoughts and reflections using Google Sites.      | Google Sites                        | [View](https://sites.google.com/view/ptwo-diary) |

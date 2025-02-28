@@ -52,7 +52,7 @@ const projects = [
     name: "Pomodoro Timer",
     category: "fcc",
     image: "resource/Image/pomoTimer.svg",
-    link: "Pomodoro/timer.html",
+    link: "Pomodoro/index.html",
     description: "A web-based Pomodoro Timer to help you boost your productivity with time management techniques.",
     tech: ["JavaScript", "HTML5", "CSS3", "Productivity", "Timer"]
   },
