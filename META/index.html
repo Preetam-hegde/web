@@ -1,0 +1,197 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>META | The Game of Life</title>
+    <link rel="stylesheet" href="styles.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@300;400;700&family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+    <script type="module" src="https://unpkg.com/@splinetool/viewer@1.9.73/build/spline-viewer.js" async></script>
+</head>
+<body>
+    <div class="game-container">
+        <!-- Loading Screen -->
+        <div id="loading-screen">
+            <div class="loading-content">
+                <h1>META</h1>
+                <p class="tagline">Life is a game. Are you winning?</p>
+                <div class="loading-bar-container">
+                    <div class="loading-bar"></div>
+                </div>
+                <p class="loading-text">Initializing reality simulation...</p>
+            </div>
+        </div>
+
+        <!-- Menu Screen -->
+        <div id="menu-screen" class="hidden">
+            <div class="menu-content">
+                <h1>META</h1>
+                <p class="tagline">The game you've been playing all along</p>
+                <div class="menu-options">
+                    <button id="start-game">START SIMULATION</button>
+                    <button id="about-button">ABOUT</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- About Screen -->
+        <div id="about-screen" class="hidden">
+            <div class="about-content">
+                <h2>ABOUT META</h2>
+                <p>META is not just a game. It's a reflection of your reality.</p>
+                <p>Every choice you make here mirrors the choices you make in life.</p>
+                <p>Will you optimize? Will you cheat? Will you find the glitches?</p>
+                <p>META doesn't judge. META only reflects.</p>
+                <button id="about-back">BACK</button>
+            </div>
+        </div>
+
+        <!-- Main Game Screen -->
+        <div id="game-screen" class="hidden">
+            <div class="hud">
+                <div class="stats-container">
+                    <div class="stat">
+                        <span class="stat-name">HEALTH</span>
+                        <div class="stat-bar-container">
+                            <div id="health-bar" class="stat-bar"></div>
+                        </div>
+                        <span id="health-value" class="stat-value">100</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-name">WEALTH</span>
+                        <div class="stat-bar-container">
+                            <div id="wealth-bar" class="stat-bar"></div>
+                        </div>
+                        <span id="wealth-value" class="stat-value">50</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-name">KNOWLEDGE</span>
+                        <div class="stat-bar-container">
+                            <div id="knowledge-bar" class="stat-bar"></div>
+                        </div>
+                        <span id="knowledge-value" class="stat-value">30</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-name">RELATIONSHIPS</span>
+                        <div class="stat-bar-container">
+                            <div id="relationships-bar" class="stat-bar"></div>
+                        </div>
+                        <span id="relationships-value" class="stat-value">40</span>
+                    </div>
+                    <div class="stat">
+                        <span class="stat-name">HAPPINESS</span>
+                        <div class="stat-bar-container">
+                            <div id="happiness-bar" class="stat-bar"></div>
+                        </div>
+                        <span id="happiness-value" class="stat-value">60</span>
+                    </div>
+                </div>
+                
+                <div class="character-info">
+                    <h3 id="age-display">AGE: 18</h3>
+                    <h3 id="phase-display">PHASE: YOUTH</h3>
+                </div>
+            </div>
+
+            <div class="game-content">
+                <div class="character-container" style="position: relative;">
+                    <spline-viewer loading-anim-type="spinner-small-dark" url="https://prod.spline.design/5jfcTQssE5qvzmvV/scene.splinecode"></spline-viewer>
+                
+                    <div style="
+                        position: absolute;
+                        top: 83%;
+                        width: 100%;
+                        height: 100%;
+                        z-index: 100;
+                        pointer-events: none;
+                    ">
+                        <div style="
+                                position: absolute;
+                                width: 100%;
+                                height: 100px;
+                                background-color: #000000;
+                        "></div>
+                    </div>
+                </div>
+                
+                <div class="scenario-container">
+                    <div id="scenario-text" class="scenario-text">
+                        <p>Welcome to your life simulation. Your decisions shape your destiny.</p>
+                    </div>
+                    <div id="choices-container" class="choices-container">
+                        <!-- Choices will be dynamically added here -->
+                    </div>
+                </div>
+            </div>
+            
+            <div class="menu-button-container">
+                <button id="pause-button" class="menu-button">PAUSE</button>
+            </div>
+        </div>
+
+        <!-- Pause Menu Screen -->
+        <div id="pause-screen" class="hidden">
+            <div class="pause-content">
+                <h2>PAUSED</h2>
+                <div class="menu-options">
+                    <button id="resume-button">RESUME</button>
+                    <button id="restart-button">RESTART</button>
+                    <button id="quit-button">QUIT</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Event Screen -->
+        <div id="event-screen" class="hidden">
+            <div class="event-content">
+                <h2 id="event-title">LIFE EVENT</h2>
+                <p id="event-description"></p>
+                <div id="event-effects"></div>
+                <button id="event-continue">CONTINUE</button>
+            </div>
+        </div>
+
+        <!-- Reflection Screen -->
+        <div id="reflection-screen" class="hidden">
+            <div class="reflection-content">
+                <h2>REFLECTION POINT</h2>
+                <p id="reflection-text"></p>
+                <div class="reflection-question">
+                    <p id="reflection-question-text"></p>
+                    <textarea id="reflection-answer" placeholder="Your thoughts..."></textarea>
+                </div>
+                <button id="reflection-continue">CONTINUE</button>
+            </div>
+        </div>
+
+        <!-- End Game Screen -->
+        <div id="end-screen" class="hidden">
+            <div class="end-content">
+                <h2>LIFE COMPLETE</h2>
+                <div id="life-summary"></div>
+                <div id="stats-summary"></div>
+                <div id="final-message"></div>
+                <button id="play-again">PLAY AGAIN</button>
+                <button id="quit-to-menu">QUIT TO MENU</button>
+            </div>
+        </div>
+
+        <!-- Message Modal -->
+        <div id="message-modal" class="hidden">
+            <div class="message-content">
+                <p id="message-text"></p>
+                <button id="message-ok">OK</button>
+            </div>
+        </div>
+
+        <!-- Audio Controls -->
+        <div class="audio-controls">
+            <button id="toggle-audio" class="audio-button">🔊</button>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
