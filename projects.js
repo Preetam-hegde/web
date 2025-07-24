@@ -1,5 +1,12 @@
 const projects = [
-
+  {
+    "name": "Idle Empire Builder Game",
+    "category": "FCC Project",
+    "image": "resource/Image/dreamscape.svg",
+    "link": "dreamscape/index.html",
+    "description": "A simulation-based browser game inspired by real estate dynamics, combining reflex-based gameplay with interactive decision-making elements. Players test their speed and timing by clicking on targets while managing virtual property outcomes.",
+    "tech": ["JavaScript", "HTML5", "CSS3", "Canvas API", "Game Design"]
+  },
   {
     name: "Click The Circle!",
     category: "fcc",
@@ -65,7 +72,7 @@ const projects = [
     tech: ["JavaScript", "API", "HTML5", "CSS3", "Quotes"]
   },
   {
-    name: "Verilog vectors",
+    name: "Verilog vectors Playground",
     category: "fcc",
     image: "resource/Image/vector.svg",
     link: "vector01/index.html",
