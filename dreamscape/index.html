@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Idle Empire Builder</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <div class="container">
+        <header>
+            <div class="logo">
+                <i class="fas fa-city"></i>
+                <span>Idle Empire Builder</span>
+            </div>
+            <div class="resource-bar">
+                <div class="resource">
+                    <i class="fas fa-coins"></i>
+                    <span id="money">0</span>
+                </div>
+                <div class="resource">
+                    <i class="fas fa-user"></i>
+                    <span id="population">0</span>
+                </div>
+                <div class="resource">
+                    <i class="fas fa-star"></i>
+                    <span id="prestige">0</span>
+                </div>
+            </div>
+        </header>
+        
+        <div class="sidebar">
+            <div class="sidebar-section">
+                <h3><i class="fas fa-building"></i> Buildings</h3>
+                <div class="building-list" id="buildingList">
+                    <!-- Buildings will be added here dynamically -->
+                </div>
+            </div>
+            
+            <div class="sidebar-section">
+                <h3><i class="fas fa-chart-line"></i> Stats</h3>
+                <div id="statsContainer">
+                    <p>Income per second: <span id="incomePerSecond">0</span></p>
+                    <p>Total earned: <span id="totalEarned">0</span></p>
+                    <p>Buildings owned: <span id="buildingsOwned">0</span></p>
+                </div>
+            </div>
+        </div>
+        
+        <div class="main-area">
+            <div class="city-container">
+                <div class="building-grid" id="cityGrid">
+                    <!-- Grid buildings will be added here dynamically -->
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <div class="game-info">
+                <span>Idle Empire Builder v1.0</span>
+            </div>
+            <div class="controls">
+                <button class="control-btn" id="settingsBtn">
+                    <i class="fas fa-cog"></i> Settings
+                </button>
+                <button class="control-btn" id="helpBtn">
+                    <i class="fas fa-question-circle"></i> Help
+                </button>
+            </div>
+        </footer>
+    </div>
+    
+    <!-- Tutorial Overlay -->
+    <div class="tutorial-overlay" id="tutorialOverlay">
+        <div class="tutorial-box">
+            <h2>Welcome to Idle Empire Builder!</h2>
+            <p>Build your own city and watch it grow! Click on buildings to purchase and upgrade them. Your city will generate income even when you're away.</p>
+            <p>Let's start with a quick tutorial to get you familiar with the game.</p>
+            <button class="tutorial-btn" id="startTutorialBtn">Start Tutorial</button>
+        </div>
+    </div>
+    
+    <!-- Help Modal -->
+    <div class="modal" id="helpModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>How to Play</h3>
+                <button class="close-btn" id="closeHelpBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <h4>Game Objective</h4>
+                <p>Build and upgrade buildings to generate income and grow your city. The more buildings you have, the more money you earn automatically!</p>
+                
+                <h4>Buildings</h4>
+                <p>Each building generates income over time. Upgrade buildings to increase their income. More expensive buildings generate more income.</p>
+                
+                <h4>Prestige</h4>
+                <p>Once you've built a substantial city, you can reset your progress to earn prestige points. These points provide permanent bonuses to your income in future runs.</p>
+                
+                <h4>Automation</h4>
+                <p>Your city generates income even when you're not actively playing. Come back later to collect your earnings!</p>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn primary-btn" id="closeTutorialBtn">Got it!</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Settings Modal -->
+    <div class="modal" id="settingsModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3>Settings</h3>
+                <button class="close-btn" id="closeSettingsBtn">&times;</button>
+            </div>
+            <div class="modal-body">
+                <div class="settings-option">
+                    <label for="musicToggle">Music</label>
+                    <label class="switch">
+                        <input type="checkbox" id="musicToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="settings-option">
+                    <label for="soundToggle">Sound Effects</label>
+                    <label class="switch">
+                        <input type="checkbox" id="soundToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="settings-option">
+                    <label for="notificationsToggle">Notifications</label>
+                    <label class="switch">
+                        <input type="checkbox" id="notificationsToggle" checked>
+                        <span class="slider round"></span>
+                    </label>
+                </div>
+                <div class="settings-option">
+                    <button class="modal-btn" id="resetGameBtn">Reset Game</button>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button class="modal-btn primary-btn" id="saveSettingsBtn">Save</button>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Notification Container -->
+    <div class="notification" id="notification"></div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
