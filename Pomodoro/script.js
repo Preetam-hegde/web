@@ -1,10 +1,10 @@
-document.addEventListener('DOMContentLoaded', function() {
+document.addEventListener('DOMContentLoaded', function () {
     // Timer Elements
     const timerDisplay = document.querySelector('.timer-display');
     const timerMode = document.querySelector('.timer-mode');
     const progressRing = document.querySelector('.progress-ring-circle');
     const progressRingBackground = document.querySelector('.progress-ring-background');
-    
+
     // Button Elements
     const startBtn = document.getElementById('start-btn');
     const pauseBtn = document.getElementById('pause-btn');
@@ -12,21 +12,21 @@ document.addEventListener('DOMContentLoaded', function() {
     const pomodoroBtn = document.getElementById('pomodoro-btn');
     const shortBreakBtn = document.getElementById('short-break-btn');
     const longBreakBtn = document.getElementById('long-break-btn');
-    
+
     // Settings Elements
     const pomodoroDuration = document.getElementById('pomodoro-duration');
     const shortBreakDuration = document.getElementById('short-break-duration');
     const longBreakDuration = document.getElementById('long-break-duration');
-    
+
     // Task Elements
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
     const sessionHistory = document.getElementById('session-history');
-    
+
     // Theme Elements
     const themeButtons = document.querySelectorAll('.theme-btn');
-    
+
     // Sound Elements
     const soundSelector = document.getElementById('sound-selector');
     const volumeSliderSound = document.getElementById('volume-slider');
@@ -36,19 +36,19 @@ document.addEventListener('DOMContentLoaded', function() {
     const musicSelector = document.getElementById('music-selector');
     const volumeSliderMusic = document.getElementById('volume-slider-m');
     const playMusicBtn = document.getElementById('test-music-btn');
-    
+
     // Inspiration and Break Suggestions
     const inspirationContainer = document.getElementById('inspiration-container');
     const inspirationText = document.getElementById('inspiration-text');
     const inspirationAuthor = document.getElementById('inspiration-author');
     const breakSuggestion = document.getElementById('break-suggestion');
-    
+
     // Notification
     const notification = document.getElementById('notification');
     const notificationTitle = document.getElementById('notification-title');
     const notificationText = document.getElementById('notification-text');
     const notificationClose = document.getElementById('notification-close');
-    
+
     // Audio Context and Nodes
     let audioContext;
     let soundAudioElement;
@@ -56,7 +56,7 @@ document.addEventListener('DOMContentLoaded', function() {
     let soundGainNode;
     let musicGainNode;
     let musicPlaying = false; // Flag to track music state
-    
+
     // Timer Variables
     let timerInterval;
     let remainingTime = 25 * 60; // Default 25 minutes in seconds
@@ -65,13 +65,13 @@ document.addEventListener('DOMContentLoaded', function() {
     let currentMode = 'pomodoro';
     let completedPomodoros = 0;
     let activeTaskId = null;
-    
+
     // Calculate the progress ring circumference
     const radius = parseFloat(progressRing.getAttribute('r'));
     const circumference = 2 * Math.PI * radius;
     progressRing.style.strokeDasharray = `${circumference} ${circumference}`;
     progressRing.style.strokeDashoffset = circumference;
-    
+
     // Sound Files
     const soundFiles = {
         bell: 'resources/bell.mp3',
@@ -85,7 +85,7 @@ document.addEventListener('DOMContentLoaded', function() {
         jazz: 'resources/jazzM.mp3',
         medieval: 'resources/medievalM.mp3'
     };
-    
+
     // Inspirational Quotes
     const inspirationalQuotes = [
         { text: "The secret of getting ahead is getting started.", author: "Mark Twain" },
@@ -99,7 +99,7 @@ document.addEventListener('DOMContentLoaded', function() {
         { text: "Success is walking from failure to failure with no loss of enthusiasm.", author: "Winston Churchill" },
         { text: "The best way to predict the future is to create it.", author: "Abraham Lincoln" }
     ];
-    
+
     // Break Time Suggestions
     const breakSuggestions = [
         "Stand up and stretch your arms and legs for 2 minutes.",
@@ -113,10 +113,10 @@ document.addEventListener('DOMContentLoaded', function() {
         "Stretch your wrists to prevent strain from typing.",
         "Practice mindfulness for 1 minute by focusing on your breathing."
     ];
-    
+
     // Initialize the timer display
     updateTimerDisplay();
-    
+
     // Event Listeners
     startBtn.addEventListener('click', startTimer);
     pauseBtn.addEventListener('click', pauseTimer);
@@ -124,28 +124,28 @@ document.addEventListener('DOMContentLoaded', function() {
     pomodoroBtn.addEventListener('click', () => switchMode('pomodoro'));
     shortBreakBtn.addEventListener('click', () => switchMode('shortBreak'));
     longBreakBtn.addEventListener('click', () => switchMode('longBreak'));
-    
+
     pomodoroDuration.addEventListener('change', updateSettings);
     shortBreakDuration.addEventListener('change', updateSettings);
     longBreakDuration.addEventListener('change', updateSettings);
-    
+
     taskForm.addEventListener('submit', addTask);
-    
+
     themeButtons.forEach(button => {
         button.addEventListener('click', () => switchTheme(button.dataset.theme));
     });
-    
+
     soundSelector.addEventListener('change', updateSoundSettings);
     volumeSliderSound.addEventListener('input', updateSoundSettings);
     testSoundBtn.addEventListener('click', testSound);
     musicSelector.addEventListener('change', updateMusicSettings);
     volumeSliderMusic.addEventListener('input', updateMusicSettings);
     playMusicBtn.addEventListener('click', toggleMusic);
-    
+
     notificationClose.addEventListener('click', () => {
         notification.style.display = 'none';
     });
-    
+
     // Initialize Audio Context
     function initAudio() {
         audioContext = new (window.AudioContext || window.webkitAudioContext)();
@@ -167,35 +167,35 @@ document.addEventListener('DOMContentLoaded', function() {
         updateSoundSettings();
         updateMusicSettings();
     }
-    
+
     // Timer Functions
     function startTimer() {
         if (!isRunning) {
             if (audioContext === undefined) {
                 initAudio();
             }
-            
+
             isRunning = true;
             startBtn.disabled = true;
             pauseBtn.disabled = false;
-            
+
             const startTime = Date.now();
             const initialRemainingTime = remainingTime;
-            
+
             timerInterval = setInterval(() => {
                 const elapsedSeconds = Math.floor((Date.now() - startTime) / 1000);
                 remainingTime = Math.max(0, initialRemainingTime - elapsedSeconds);
-                
+
                 updateTimerDisplay();
                 updateProgressRing();
-                
+
                 if (remainingTime <= 0) {
                     completeTimer();
                 }
             }, 100);
         }
     }
-    
+
     function pauseTimer() {
         if (isRunning) {
             clearInterval(timerInterval);
@@ -204,22 +204,22 @@ document.addEventListener('DOMContentLoaded', function() {
             pauseBtn.disabled = true;
         }
     }
-    
+
     function resetTimer() {
         pauseTimer();
         setTimerDuration();
         updateTimerDisplay();
         updateProgressRing();
     }
-    
+
     function completeTimer() {
         pauseTimer();
         playSound();
         showNotification();
-        
+
         if (currentMode === 'pomodoro') {
             completedPomodoros++;
-            
+
             // Log the completed session
             if (activeTaskId) {
                 const activeTaskEl = document.querySelector(`[data-id="${activeTaskId}"]`);
@@ -230,31 +230,34 @@ document.addEventListener('DOMContentLoaded', function() {
             } else {
                 logSession('Unnamed session');
             }
-            
+
             // Automatically switch to break after pomodoro
             if (completedPomodoros % 4 === 0) {
                 switchMode('longBreak');
             } else {
                 switchMode('shortBreak');
             }
-            
+
         } else {
             // Switch back to pomodoro after break
             switchMode('pomodoro');
         }
         showInspiration();
     }
-    
+
     function updateTimerDisplay() {
         const minutes = Math.floor(remainingTime / 60);
         const seconds = remainingTime % 60;
-        timerDisplay.textContent = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        const timeString = `${minutes.toString().padStart(2, '0')}:${seconds.toString().padStart(2, '0')}`;
+        timerDisplay.textContent = timeString;
+        document.title = `${timeString} - Pomodoro Timer`;
     }
+
     function updateProgressRing() {
         const offset = circumference - (remainingTime / totalTime) * circumference;
         progressRing.style.strokeDashoffset = offset;
     }
-    
+
     function setTimerDuration() {
         switch (currentMode) {
             case 'pomodoro':
@@ -271,15 +274,15 @@ document.addEventListener('DOMContentLoaded', function() {
                 break;
         }
     }
-    
+
     function switchMode(mode) {
         // Update active button
         pomodoroBtn.classList.remove('active');
         shortBreakBtn.classList.remove('active');
         longBreakBtn.classList.remove('active');
-        
+
         currentMode = mode;
-        
+
         switch (mode) {
             case 'pomodoro':
                 pomodoroBtn.classList.add('active');
@@ -294,10 +297,10 @@ document.addEventListener('DOMContentLoaded', function() {
                 timerMode.textContent = 'Long Break';
                 break;
         }
-        
+
         resetTimer();
     }
-    
+
     function updateSettings() {
         if (!isRunning) {
             setTimerDuration();
@@ -305,14 +308,14 @@ document.addEventListener('DOMContentLoaded', function() {
             updateProgressRing();
         }
     }
-    
+
     // Task Management Functions
     function addTask(e) {
         e.preventDefault();
-        
+
         const taskText = taskInput.value.trim();
         if (taskText === '') return;
-        
+
         const taskId = Date.now().toString();
         const taskHTML = `
             <li class="task-item" data-id="${taskId}">
@@ -328,23 +331,23 @@ document.addEventListener('DOMContentLoaded', function() {
                 </div>
             </li>
         `;
-        
+
         taskList.insertAdjacentHTML('beforeend', taskHTML);
         taskInput.value = '';
-        
+
         // Add event listeners to the new task
         const newTask = taskList.querySelector(`[data-id="${taskId}"]`);
-        
+
         const checkboxEl = newTask.querySelector('.task-checkbox');
         checkboxEl.addEventListener('change', () => {
             newTask.classList.toggle('completed');
         });
-        
+
         const focusBtn = newTask.querySelector('.task-btn.focus');
         focusBtn.addEventListener('click', () => {
             setActiveTask(taskId);
         });
-        
+
         const deleteBtn = newTask.querySelector('.task-btn.delete');
         deleteBtn.addEventListener('click', () => {
             newTask.remove();
@@ -353,12 +356,12 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         });
     }
-    
+
     function setActiveTask(taskId) {
         // Remove active class from all tasks
         const allTasks = taskList.querySelectorAll('.task-item');
         allTasks.forEach(task => task.classList.remove('active'));
-        
+
         // Add active class to selected task
         const selectedTask = taskList.querySelector(`[data-id="${taskId}"]`);
         if (selectedTask) {
@@ -366,26 +369,26 @@ document.addEventListener('DOMContentLoaded', function() {
             activeTaskId = taskId;
         }
     }
-    
+
     function logSession(taskName) {
         const now = new Date();
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
         const dateString = now.toLocaleDateString();
-        
+
         const sessionHTML = `
             <li class="session-item fade-in">
                 <span class="session-task">${taskName}</span>
                 <span class="session-time">${timeString} - ${parseInt(pomodoroDuration.value)} min</span>
             </li>
         `;
-        
+
         sessionHistory.insertAdjacentHTML('afterbegin', sessionHTML);
     }
-    
+
     // Theme Functions
     function switchTheme(theme) {
         document.body.setAttribute('data-theme', theme);
-        
+
         // Update active theme button
         themeButtons.forEach(btn => {
             btn.classList.remove('active');
@@ -393,11 +396,11 @@ document.addEventListener('DOMContentLoaded', function() {
                 btn.classList.add('active');
             }
         });
-        
+
         // Save theme preference
         localStorage.setItem('pomodoro-theme', theme);
     }
-    
+
     // Sound Functions
     function updateSoundSettings() {
         if (soundGainNode) {
@@ -421,7 +424,7 @@ document.addEventListener('DOMContentLoaded', function() {
             soundAudioElement.src = soundFile;
             soundAudioElement.play();
             soundAudioElement.onended = () => {
-                if(musicPlaying){
+                if (musicPlaying) {
                     musicAudioElement.play();
                 }
             }
@@ -477,9 +480,7 @@ document.addEventListener('DOMContentLoaded', function() {
             musicPlaying = false;
         }
     }
-    
 
-    
     // Notification Functions
     function showNotification() {
         if (currentMode === 'pomodoro') {
@@ -489,9 +490,9 @@ document.addEventListener('DOMContentLoaded', function() {
             notificationTitle.textContent = 'Time to Focus!';
             notificationText.textContent = 'Break is over. Time to get back to work!';
         }
-        
+
         notification.style.display = 'flex';
-        
+
         // Request browser notification permission
         if (Notification.permission === 'granted') {
             new Notification(notificationTitle.textContent, {
@@ -501,13 +502,13 @@ document.addEventListener('DOMContentLoaded', function() {
         } else if (Notification.permission !== 'denied') {
             Notification.requestPermission();
         }
-        
+
         // Auto-hide notification after 5 seconds
         setTimeout(() => {
             notification.style.display = 'none';
         }, 5000);
     }
-    
+
     // Inspiration and Break Suggestions
     function showInspiration() {
         if (currentMode !== 'pomodoro') {
@@ -515,12 +516,12 @@ document.addEventListener('DOMContentLoaded', function() {
             const randomQuote = inspirationalQuotes[Math.floor(Math.random() * inspirationalQuotes.length)];
             inspirationText.textContent = randomQuote.text;
             inspirationAuthor.textContent = `— ${randomQuote.author}`;
-            
+
             const randomSuggestion = breakSuggestions[Math.floor(Math.random() * breakSuggestions.length)];
             breakSuggestion.textContent = randomSuggestion;
-            
+
             inspirationContainer.style.display = 'block';
-            setTimeout(function() {
+            setTimeout(function () {
                 inspirationContainer.style.display = 'none';
             }, 60 * 1000 * 3);
         } else {
@@ -528,14 +529,14 @@ document.addEventListener('DOMContentLoaded', function() {
             inspirationContainer.style.display = 'none';
         }
     }
-    
+
     // Request notification permission on page load
     function requestNotificationPermission() {
         if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
             Notification.requestPermission();
         }
     }
-    
+
     // Load saved preferences
     function loadSavedPreferences() {
         // Load saved theme
@@ -543,44 +544,44 @@ document.addEventListener('DOMContentLoaded', function() {
         if (savedTheme) {
             switchTheme(savedTheme);
         }
-        
+
         // Load any other saved preferences like timer durations, sound settings, etc.
         const savedPomodoroDuration = localStorage.getItem('pomodoro-duration');
         if (savedPomodoroDuration) {
             pomodoroDuration.value = savedPomodoroDuration;
         }
-        
+
         const savedShortBreakDuration = localStorage.getItem('short-break-duration');
         if (savedShortBreakDuration) {
             shortBreakDuration.value = savedShortBreakDuration;
         }
-        
+
         const savedLongBreakDuration = localStorage.getItem('long-break-duration');
         if (savedLongBreakDuration) {
             longBreakDuration.value = savedLongBreakDuration;
         }
-        
+
         updateSettings();
     }
-    
+
     // Save preferences when changed
     function savePreferences() {
         localStorage.setItem('pomodoro-duration', pomodoroDuration.value);
         localStorage.setItem('short-break-duration', shortBreakDuration.value);
         localStorage.setItem('long-break-duration', longBreakDuration.value);
     }
-    
+
     // Add event listeners for saving preferences
     pomodoroDuration.addEventListener('change', savePreferences);
     shortBreakDuration.addEventListener('change', savePreferences);
     longBreakDuration.addEventListener('change', savePreferences);
-    
+
     // Initialize application
     function init() {
         loadSavedPreferences();
         requestNotificationPermission();
-        
-   
+
+
         taskList.innerHTML = `
             <li class="task-item" data-id="demo1">
                 <input type="checkbox" class="task-checkbox">
@@ -613,17 +614,17 @@ document.addEventListener('DOMContentLoaded', function() {
         const demoTasks = taskList.querySelectorAll('.task-item');
         demoTasks.forEach(task => {
             const taskId = task.dataset.id;
-            
+
             const checkboxEl = task.querySelector('.task-checkbox');
             checkboxEl.addEventListener('change', () => {
                 task.classList.toggle('completed');
             });
-            
+
             const focusBtn = task.querySelector('.task-btn.focus');
             focusBtn.addEventListener('click', () => {
                 setActiveTask(taskId);
             });
-            
+
             const deleteBtn = task.querySelector('.task-btn.delete');
             deleteBtn.addEventListener('click', () => {
                 task.remove();
@@ -632,9 +633,9 @@ document.addEventListener('DOMContentLoaded', function() {
                 }
             });
         });
-    
+
     }
-    
+
     // Initialize the application
     init();
 });

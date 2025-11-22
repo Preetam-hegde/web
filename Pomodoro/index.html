@@ -1,13 +1,18 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pomodoro Timer</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
     <link rel="stylesheet" href="styles.css">
     <link rel="icon" type="image/x-icon" href="resources/favicon.ico">
 </head>
+
 <body>
     <header>
         <h1>Pomodoro Timer</h1>
@@ -20,15 +25,16 @@
                 <div class="theme-btn theme-light active" data-theme="light" title="Light Theme"></div>
                 <div class="theme-btn theme-dark" data-theme="dark" title="Dark Theme"></div>
                 <div class="theme-btn theme-nature" data-theme="nature" title="Nature Theme"></div>
-                <div class="theme-btn theme-serene" data-theme="serene" title="serene Theme"></div>
+                <div class="theme-btn theme-serene" data-theme="serene" title="Serene Theme"></div>
                 <div class="theme-btn theme-minimalist" data-theme="minimalist" title="Minimalist Theme"></div>
             </div>
 
             <div class="timer-mode">Pomodoro</div>
             <div class="timer-circle">
-                <svg class="progress-ring" width="250" height="250">
-                    <circle class="progress-ring-background" r="115" cx="125" cy="125" />
-                    <circle class="progress-ring-circle" r="115" cx="125" cy="125" stroke-dasharray="722" stroke-dashoffset="0" />
+                <svg class="progress-ring" viewBox="0 0 280 280">
+                    <circle class="progress-ring-background" r="130" cx="140" cy="140" />
+                    <circle class="progress-ring-circle" r="130" cx="140" cy="140" stroke-dasharray="817"
+                        stroke-dashoffset="0" />
                 </svg>
                 <div class="timer-display">25:00</div>
             </div>
@@ -59,11 +65,13 @@
                     </div>
                     <div class="settings-item">
                         <label class="settings-label" for="short-break-duration">Short Break (min)</label>
-                        <input class="settings-input" id="short-break-duration" type="number" min="1" max="30" value="5">
+                        <input class="settings-input" id="short-break-duration" type="number" min="1" max="30"
+                            value="5">
                     </div>
                     <div class="settings-item">
                         <label class="settings-label" for="long-break-duration">Long Break (min)</label>
-                        <input class="settings-input" id="long-break-duration" type="number" min="1" max="60" value="15">
+                        <input class="settings-input" id="long-break-duration" type="number" min="1" max="60"
+                            value="15">
                     </div>
                 </div>
             </div>
@@ -86,7 +94,7 @@
                     </button>
                 </div>
             </div>
-            
+
             <div class="music-container">
                 <h3>Ambient Music</h3>
                 <div class="music-controls">
@@ -151,8 +159,8 @@
 </body>
 
 <footer id="footer">
-     With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo 
+    With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20"
+        style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo
 </footer>
-
 
 </html>
