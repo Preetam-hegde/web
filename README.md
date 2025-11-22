@@ -31,7 +31,7 @@ Here’s a glimpse of what I’ve been building:
 
 | Project Name          | Description                                                                 | Tech Stack                          | Link                                      |
 |-----------------------|-----------------------------------------------------------------------------|-------------------------------------|-------------------------------------------|
-| **Click The Circle!** | A fun game to test your reflexes by clicking circles as fast as you can.   | JavaScript, HTML5, CSS3, Game       | [Play Now](https://preetam-hegde.github.io/web/circle/circle.html)            |
+| **Reflex Arena** | A comprehensive browser-based FPS aim training tool   | JavaScript, HTML5, CSS3, Game       | [Play Now](https://preetam-hegde.github.io/web/aim-trainer/index.html)            |
 | **Game of Life**      | Conway's Game of Life with interactive cellular automata.                  | Canvas, JavaScript, HTML5, CSS3     | [Explore](https://preetam-hegde.github.io/web/cellularAutomata/index.html)    |
 | **Get Location**      | Find your geographic coordinates using the Geolocation API.                | JavaScript, HTML5, CSS3, Geolocation| [Try It](https://preetam-hegde.github.io/web/geoLocation/index.html)          |
 | **High Life BG**      | Mesmerizing background ball physics with stunning effects.                 | Logic, JavaScript, HTML5, CSS3      | [See It](https://preetam-hegde.github.io/web/BGIllusion/index.html)           |

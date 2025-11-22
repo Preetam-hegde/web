@@ -1,253 +1,867 @@
 <!DOCTYPE html>
-<html xmlns='http://www.w3.org/1999/xhtml' lang='' xml:lang=''>
+<html lang="en">
+
 <head>
-	<meta charset='utf-8' />
-	<meta name='viewport' content='width=device-width, user-scalable=no' />
-	<title>CirclePop</title>
-	<style type='text/css'>
-
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>3D Aim Trainer Pro - V2</title>
+	<!-- Tailwind CSS -->
+	<script src="https://cdn.tailwindcss.com"></script>
+	<!-- Three.js -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+	<style>
 		body {
-			touch-action: none;
 			margin: 0;
-			border: 0 none;
-			padding: 0;
-			text-align: center;
-			background-color: black;
-			/* background-image: "bg.jpg"; */
+			overflow: hidden;
+			background-color: #0f172a;
+			user-select: none;
 		}
 
-		#canvas {
+		canvas {
 			display: block;
-			margin: 0;
-			color: white;
 		}
 
-		#canvas:focus {
-			outline: none;
+		/* Custom UI Elements */
+		.glass-panel {
+			background: rgba(15, 23, 42, 0.9);
+			backdrop-filter: blur(12px);
+			border: 1px solid rgba(56, 189, 248, 0.2);
+			box-shadow: 0 0 20px rgba(56, 189, 248, 0.1);
 		}
 
-		.godot {
-			font-family: 'Noto Sans', 'Droid Sans', Arial, sans-serif;
-			color: #e0e0e0;
-			background-color: #3b3943;
-			background-image: linear-gradient(to bottom, #403e48, #35333c);
-			border: 1px solid #45434e;
-			box-shadow: 0 0 1px 1px #2f2d35;
+		.neon-text {
+			text-shadow: 0 0 10px rgba(56, 189, 248, 0.8);
 		}
 
+		.btn-primary {
+			background: linear-gradient(135deg, #0ea5e9 0%, #0284c7 100%);
+			transition: all 0.2s;
+		}
 
-		/* Status display
-		 * ============== */
+		.btn-primary:hover {
+			transform: translateY(-2px);
+			box-shadow: 0 0 15px rgba(14, 165, 233, 0.5);
+		}
 
-		#status {
+		.btn-secondary {
+			background: rgba(30, 41, 59, 0.8);
+			border: 1px solid rgba(148, 163, 184, 0.2);
+			transition: all 0.2s;
+		}
+
+		.btn-secondary:hover {
+			background: rgba(51, 65, 85, 0.9);
+			border-color: rgba(56, 189, 248, 0.5);
+		}
+
+		/* Crosshair */
+		#crosshair {
 			position: absolute;
-			left: 0;
-			top: 0;
-			right: 0;
-			bottom: 0;
-			display: flex;
-			justify-content: center;
-			align-items: center;
-			/* don't consume click events - make children visible explicitly */
-			visibility: hidden;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			pointer-events: none;
+			z-index: 50;
 		}
 
-		#status-progress {
-			width: 366px;
-			height: 7px;
-			background-color: #38363A;
-			/* background-image: "bg.jpg"; */
-			border: 1px solid #444246;
-			padding: 1px;
-			box-shadow: 0 0 2px 1px #1B1C22;
-			border-radius: 2px;
-			visibility: visible;
+		/* Inner drawing of crosshair handled by JS/CSS vars */
+		.crosshair-part {
+			position: absolute;
+			background-color: var(--xh-color, #00ffcc);
+			box-shadow: 0 0 2px var(--xh-color, #00ffcc);
 		}
 
-		@media only screen and (orientation:portrait) {
-			#status-progress {
-				width: 61.8%;
+		.xh-h {
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: var(--xh-size, 10px);
+			height: var(--xh-thick, 2px);
+		}
+
+		.xh-v {
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+			width: var(--xh-thick, 2px);
+			height: var(--xh-size, 10px);
+		}
+
+		/* Hitmarker Animation */
+		@keyframes hit-anim {
+			0% {
+				transform: translate(-50%, -50%) scale(1);
+				opacity: 1;
+			}
+
+			100% {
+				transform: translate(-50%, -50%) scale(1.5);
+				opacity: 0;
 			}
 		}
 
-		#status-progress-inner {
-			height: 100%;
-			width: 0;
-			box-sizing: border-box;
-			transition: width 0.5s linear;
-			background-color: #202020;
-			/* background-image: "bg.jpg"; */
-			border: 1px solid #222223;
-			box-shadow: 0 0 1px 1px #27282E;
-			border-radius: 3px;
-		}
-
-		#status-indeterminate {
-			height: 42px;
-			visibility: visible;
-			position: relative;
-		}
-
-		#status-indeterminate > div {
-			width: 4.5px;
-			height: 0;
-			border-style: solid;
-			border-width: 9px 3px 0 3px;
-			border-color: #2b2b2b transparent transparent transparent;
-			/* background-image: "bg.jpg"; */
-			transform-origin: center 21px;
+		.hitmarker {
 			position: absolute;
+			top: 50%;
+			left: 50%;
+			width: 20px;
+			height: 20px;
+			border: 2px solid #ff3366;
+			border-radius: 50%;
+			transform: translate(-50%, -50%);
+			pointer-events: none;
+			z-index: 49;
+			animation: hit-anim 0.25s forwards;
 		}
 
-		#status-indeterminate > div:nth-child(1) { transform: rotate( 22.5deg); }
-		#status-indeterminate > div:nth-child(2) { transform: rotate( 67.5deg); }
-		#status-indeterminate > div:nth-child(3) { transform: rotate(112.5deg); }
-		#status-indeterminate > div:nth-child(4) { transform: rotate(157.5deg); }
-		#status-indeterminate > div:nth-child(5) { transform: rotate(202.5deg); }
-		#status-indeterminate > div:nth-child(6) { transform: rotate(247.5deg); }
-		#status-indeterminate > div:nth-child(7) { transform: rotate(292.5deg); }
-		#status-indeterminate > div:nth-child(8) { transform: rotate(337.5deg); }
+		/* Range Input Styling */
+		input[type=range] {
+			-webkit-appearance: none;
+			background: transparent;
+		}
 
-		#status-notice {
-			margin: 0 100px;
-			line-height: 1.3;
-			visibility: visible;
-			padding: 4px 6px;
-			visibility: visible;
+		input[type=range]::-webkit-slider-thumb {
+			-webkit-appearance: none;
+			height: 14px;
+			width: 14px;
+			border-radius: 50%;
+			background: #38bdf8;
+			cursor: pointer;
+			margin-top: -5px;
+			box-shadow: 0 0 8px #38bdf8;
+		}
+
+		input[type=range]::-webkit-slider-runnable-track {
+			width: 100%;
+			height: 4px;
+			cursor: pointer;
+			background: #334155;
+			border-radius: 2px;
+		}
+
+		select {
+			background-color: #1e293b;
+			color: white;
+			border: 1px solid #475569;
+			padding: 4px 8px;
+			border-radius: 4px;
 		}
 	</style>
-<link id='-gd-engine-icon' rel='icon' type='image/png' href='circle.icon.png' />
-<link rel='apple-touch-icon' href='circle.apple-touch-icon.png'/>
-
 </head>
-<body>
-	<canvas id='canvas'>
-		HTML5 canvas appears to be unsupported in the current browser.<br />
-		Please try updating or use a different browser.
-	</canvas>
-	<div id='status'>
-		<div id='status-progress' style='display: none;' oncontextmenu='event.preventDefault();'><div id ='status-progress-inner'></div></div>
-		<div id='status-indeterminate' style='display: none;' oncontextmenu='event.preventDefault();'>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
-			<div></div>
+
+<body class="text-white font-sans antialiased">
+
+	<!-- Crosshair -->
+	<div id="crosshair">
+		<div class="crosshair-part xh-h"></div>
+		<div class="crosshair-part xh-v"></div>
+	</div>
+	<div id="hit-layer"></div>
+
+	<!-- Main Menu -->
+	<div id="menu-screen"
+		class="absolute inset-0 flex items-center justify-center z-40 bg-slate-900 bg-opacity-95 overflow-y-auto">
+		<div
+			class="glass-panel p-8 rounded-2xl max-w-4xl w-full text-center border-t-4 border-sky-500 m-4 flex flex-col md:flex-row gap-8">
+
+			<!-- Left Column: Game Modes -->
+			<div class="flex-1 flex flex-col justify-center">
+				<h1 class="text-5xl font-black italic tracking-tighter mb-2 text-white neon-text">AIM<span
+						class="text-sky-400">LABS</span></h1>
+				<p class="text-slate-400 mb-8 tracking-widest text-xs font-semibold">BROWSER EDITION v2.0</p>
+
+				<div class="space-y-3">
+					<button onclick="game.start('gridshot')"
+						class="glass-panel w-full p-4 rounded-xl hover:bg-slate-800 transition group cursor-pointer flex items-center gap-4">
+						<div class="text-sky-400 text-2xl group-hover:scale-110 transition-transform">☷</div>
+						<div class="text-left">
+							<h3 class="font-bold text-lg">Gridshot</h3>
+							<p class="text-[10px] text-slate-400">Speed & Precision. 3 targets.</p>
+						</div>
+					</button>
+					<button onclick="game.start('tracking')"
+						class="glass-panel w-full p-4 rounded-xl hover:bg-slate-800 transition group cursor-pointer flex items-center gap-4">
+						<div class="text-sky-400 text-2xl group-hover:scale-110 transition-transform">◎</div>
+						<div class="text-left">
+							<h3 class="font-bold text-lg">Tracking</h3>
+							<p class="text-[10px] text-slate-400">Smoothness. Follow the orb.</p>
+						</div>
+					</button>
+					<button onclick="game.start('reflex')"
+						class="glass-panel w-full p-4 rounded-xl hover:bg-slate-800 transition group cursor-pointer flex items-center gap-4">
+						<div class="text-sky-400 text-2xl group-hover:scale-110 transition-transform">⚡</div>
+						<div class="text-left">
+							<h3 class="font-bold text-lg">Reflex</h3>
+							<p class="text-[10px] text-slate-400">Reaction Time. Instant spawn.</p>
+						</div>
+					</button>
+				</div>
+			</div>
+
+			<!-- Right Column: Settings -->
+			<div class="flex-1 text-left bg-slate-800/30 p-6 rounded-xl border border-slate-700">
+				<h3 class="text-sky-400 font-bold tracking-wider mb-4 border-b border-slate-700 pb-2">SETTINGS</h3>
+
+				<!-- Sensitivity -->
+				<div class="mb-5">
+					<div class="flex justify-between items-center mb-2">
+						<label class="text-xs font-bold text-slate-300">SENSITIVITY</label>
+						<select id="sens-profile" onchange="game.updateSensDisplay()" class="text-xs">
+							<option value="standard">Standard</option>
+							<option value="valorant">Valorant</option>
+						</select>
+					</div>
+					<div class="flex items-center gap-3">
+						<input type="range" id="sensitivity" min="0.05" max="5.0" step="0.01" value="1.0"
+							class="flex-1">
+						<span id="sens-val" class="font-mono text-sky-400 w-12 text-right">1.00</span>
+					</div>
+				</div>
+
+				<!-- Crosshair -->
+				<div class="mb-5 space-y-3">
+					<label class="text-xs font-bold text-slate-300 block mb-1">CROSSHAIR</label>
+
+					<div class="flex items-center gap-2">
+						<span class="text-[10px] text-slate-500 w-12">SIZE</span>
+						<input type="range" id="xh-size" min="4" max="30" value="10" class="flex-1">
+					</div>
+
+					<div class="flex items-center gap-2">
+						<span class="text-[10px] text-slate-500 w-12">THICK</span>
+						<input type="range" id="xh-thick" min="1" max="6" value="2" class="flex-1">
+					</div>
+
+					<div class="flex items-center gap-2">
+						<span class="text-[10px] text-slate-500 w-12">COLOR</span>
+						<input type="color" id="xh-color" value="#00ffcc"
+							class="bg-transparent border-none w-8 h-8 cursor-pointer">
+					</div>
+				</div>
+
+				<!-- Volume -->
+				<div>
+					<label class="text-xs font-bold text-slate-300 block mb-2">VOLUME</label>
+					<input type="range" id="volume" min="0" max="1" step="0.1" value="0.3" class="w-full">
+				</div>
+			</div>
 		</div>
-		<div id='status-notice' class='godot' style='display: none;'></div>
 	</div>
 
-	<script type='text/javascript' src='circle.js'></script>
-	<script type='text/javascript'>//<![CDATA[
+	<!-- Pause Menu (New) -->
+	<div id="pause-screen" class="absolute inset-0 flex items-center justify-center z-50 bg-black bg-opacity-80 hidden">
+		<div class="glass-panel p-8 rounded-xl text-center max-w-sm w-full">
+			<h2 class="text-3xl font-bold text-white mb-6">PAUSED</h2>
+			<div class="space-y-3">
+				<button onclick="game.resume()" class="btn-primary w-full py-3 rounded-lg font-bold">RESUME</button>
+				<button onclick="game.start(game.mode)"
+					class="btn-secondary w-full py-3 rounded-lg font-bold text-slate-300">RESTART (R)</button>
+				<button onclick="game.toMenu()" class="btn-secondary w-full py-3 rounded-lg font-bold text-red-400">QUIT
+					TO MENU</button>
+			</div>
+			<p class="mt-4 text-xs text-slate-500">Press ESC to Resume</p>
+		</div>
+	</div>
 
-		const GODOT_CONFIG = {"args":[],"canvasResizePolicy":2,"executable":"circle","experimentalVK":false,"fileSizes":{"circle.pck":14320,"circle.wasm":17860295},"focusCanvas":true,"gdnativeLibs":[]};
-		var engine = new Engine(GODOT_CONFIG);
+	<!-- HUD (In Game) -->
+	<div id="hud-screen" class="absolute inset-0 pointer-events-none hidden">
+		<!-- Top Bar -->
+		<div class="absolute top-0 left-0 right-0 p-6 flex justify-between items-start">
+			<div class="glass-panel px-6 py-2 rounded-lg flex flex-col items-center">
+				<span class="text-xs text-slate-400 uppercase tracking-wider font-bold">Time</span>
+				<span id="timer" class="text-3xl font-mono font-bold text-white">60</span>
+			</div>
 
-		(function() {
-			const INDETERMINATE_STATUS_STEP_MS = 100;
-			var statusProgress = document.getElementById('status-progress');
-			var statusProgressInner = document.getElementById('status-progress-inner');
-			var statusIndeterminate = document.getElementById('status-indeterminate');
-			var statusNotice = document.getElementById('status-notice');
+			<div class="glass-panel px-8 py-3 rounded-lg flex gap-8">
+				<div class="text-center">
+					<div class="text-xs text-slate-400 uppercase tracking-wider font-bold">Score</div>
+					<div id="score" class="text-4xl font-black text-sky-400">0</div>
+				</div>
+				<div class="text-center border-l border-slate-700 pl-8">
+					<div class="text-xs text-slate-400 uppercase tracking-wider font-bold">Accuracy</div>
+					<div id="accuracy" class="text-4xl font-black text-emerald-400">100%</div>
+				</div>
+			</div>
+		</div>
 
-			var initializing = true;
-			var statusMode = 'hidden';
+		<div class="absolute bottom-6 left-6 opacity-50 text-[10px] text-slate-400 font-mono">
+			ESC: PAUSE | R: RESTART
+		</div>
+	</div>
 
-			var animationCallbacks = [];
-			function animate(time) {
-				animationCallbacks.forEach(callback => callback(time));
-				requestAnimationFrame(animate);
+	<!-- Results Screen -->
+	<div id="results-screen"
+		class="absolute inset-0 flex items-center justify-center z-50 bg-slate-900 bg-opacity-95 hidden">
+		<div class="glass-panel p-8 rounded-2xl max-w-md w-full text-center">
+			<h2 class="text-4xl font-bold mb-6 text-white">SESSION COMPLETE</h2>
+
+			<div class="grid grid-cols-2 gap-4 mb-8">
+				<div class="bg-slate-800 p-4 rounded-lg">
+					<div class="text-sm text-slate-400">Final Score</div>
+					<div id="res-score" class="text-3xl font-bold text-sky-400">0</div>
+				</div>
+				<div class="bg-slate-800 p-4 rounded-lg">
+					<div class="text-sm text-slate-400">Accuracy</div>
+					<div id="res-acc" class="text-3xl font-bold text-emerald-400">0%</div>
+				</div>
+				<div class="bg-slate-800 p-4 rounded-lg">
+					<div class="text-sm text-slate-400">Targets Hit</div>
+					<div id="res-hits" class="text-2xl font-bold text-white">0</div>
+				</div>
+				<div class="bg-slate-800 p-4 rounded-lg">
+					<div class="text-sm text-slate-400">Avg Time</div>
+					<div id="res-time" class="text-2xl font-bold text-white">0ms</div>
+				</div>
+			</div>
+
+			<div class="flex gap-4">
+				<button onclick="game.start(game.mode)"
+					class="btn-secondary flex-1 py-3 rounded-lg font-bold text-white">RETRY</button>
+				<button onclick="game.toMenu()"
+					class="btn-primary flex-1 py-3 rounded-lg font-bold text-white">MENU</button>
+			</div>
+		</div>
+	</div>
+
+	<script>
+		// --- AUDIO MANAGER ---
+		class SoundManager {
+			constructor() {
+				this.ctx = new (window.AudioContext || window.webkitAudioContext)();
+				this.masterGain = this.ctx.createGain();
+				this.masterGain.gain.value = 0.3;
+				this.masterGain.connect(this.ctx.destination);
 			}
-			requestAnimationFrame(animate);
 
-			function setStatusMode(mode) {
-
-				if (statusMode === mode || !initializing)
-					return;
-				[statusProgress, statusIndeterminate, statusNotice].forEach(elem => {
-					elem.style.display = 'none';
-				});
-				animationCallbacks = animationCallbacks.filter(function(value) {
-					return (value != animateStatusIndeterminate);
-				});
-				switch (mode) {
-					case 'progress':
-						statusProgress.style.display = 'block';
-						break;
-					case 'indeterminate':
-						statusIndeterminate.style.display = 'block';
-						animationCallbacks.push(animateStatusIndeterminate);
-						break;
-					case 'notice':
-						statusNotice.style.display = 'block';
-						break;
-					case 'hidden':
-						break;
-					default:
-						throw new Error('Invalid status mode');
-				}
-				statusMode = mode;
+			setVolume(val) {
+				if (this.masterGain) this.masterGain.gain.value = val;
 			}
 
-			function animateStatusIndeterminate(ms) {
-				var i = Math.floor(ms / INDETERMINATE_STATUS_STEP_MS % 8);
-				if (statusIndeterminate.children[i].style.borderTopColor == '') {
-					Array.prototype.slice.call(statusIndeterminate.children).forEach(child => {
-						child.style.borderTopColor = '';
-					});
-					statusIndeterminate.children[i].style.borderTopColor = '#dfdfdf';
-				}
+			playShoot() {
+				if (this.ctx.state === 'suspended') this.ctx.resume();
+				const osc = this.ctx.createOscillator();
+				const gain = this.ctx.createGain();
+
+				osc.type = 'square';
+				osc.frequency.setValueAtTime(150, this.ctx.currentTime);
+				osc.frequency.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+
+				gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+				gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.15);
+
+				osc.connect(gain);
+				gain.connect(this.masterGain);
+				osc.start();
+				osc.stop(this.ctx.currentTime + 0.2);
 			}
 
-			function setStatusNotice(text) {
-				while (statusNotice.lastChild) {
-					statusNotice.removeChild(statusNotice.lastChild);
-				}
-				var lines = text.split('\n');
-				lines.forEach((line) => {
-					statusNotice.appendChild(document.createTextNode(line));
-					statusNotice.appendChild(document.createElement('br'));
+			playHit() {
+				const osc = this.ctx.createOscillator();
+				const gain = this.ctx.createGain();
+
+				osc.type = 'sine';
+				osc.frequency.setValueAtTime(800, this.ctx.currentTime);
+				osc.frequency.exponentialRampToValueAtTime(1200, this.ctx.currentTime + 0.1);
+
+				gain.gain.setValueAtTime(0.5, this.ctx.currentTime);
+				gain.gain.linearRampToValueAtTime(0, this.ctx.currentTime + 0.1);
+
+				osc.connect(gain);
+				gain.connect(this.masterGain);
+				osc.start();
+				osc.stop(this.ctx.currentTime + 0.15);
+			}
+
+			playTick() {
+				const osc = this.ctx.createOscillator();
+				const gain = this.ctx.createGain();
+				osc.frequency.setValueAtTime(600, this.ctx.currentTime);
+				gain.gain.setValueAtTime(0.1, this.ctx.currentTime);
+				gain.gain.exponentialRampToValueAtTime(0.01, this.ctx.currentTime + 0.05);
+				osc.connect(gain);
+				gain.connect(this.masterGain);
+				osc.start();
+				osc.stop(this.ctx.currentTime + 0.05);
+			}
+		}
+
+		// --- GAME ENGINE ---
+		class AimGame {
+			constructor() {
+				this.mode = null;
+				this.isActive = false;
+				this.isPaused = false;
+				this.score = 0;
+				this.shotsFired = 0;
+				this.shotsHit = 0;
+				this.timeLeft = 60;
+				this.sensitivity = 1.0;
+				this.sensProfile = 'standard';
+
+				this.targets = [];
+				this.raycaster = new THREE.Raycaster();
+				this.pointer = new THREE.Vector2(0, 0); // Center of screen
+
+				this.lastTime = 0;
+				this.reactionTimes = [];
+				this.targetSpawnTime = 0;
+
+				this.setupThree();
+				this.setupInput();
+				this.sound = new SoundManager();
+
+				this.updateSensDisplay();
+				this.updateCrosshair();
+
+				this.loop = this.loop.bind(this);
+				requestAnimationFrame(this.loop);
+			}
+
+			setupThree() {
+				// Scene
+				this.scene = new THREE.Scene();
+				this.scene.background = new THREE.Color(0x0f172a);
+				this.scene.fog = new THREE.FogExp2(0x0f172a, 0.02);
+
+				// Camera
+				this.camera = new THREE.PerspectiveCamera(75, window.innerWidth / window.innerHeight, 0.1, 1000);
+				this.camera.rotation.order = 'YXZ';
+
+				// Renderer
+				this.renderer = new THREE.WebGLRenderer({ antialias: true });
+				this.renderer.setSize(window.innerWidth, window.innerHeight);
+				this.renderer.shadowMap.enabled = true;
+				document.body.appendChild(this.renderer.domElement);
+
+				// Lighting
+				const ambientLight = new THREE.AmbientLight(0x404040, 2);
+				this.scene.add(ambientLight);
+
+				const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+				dirLight.position.set(5, 10, 7);
+				this.scene.add(dirLight);
+
+				// Grid Room
+				const gridHelper = new THREE.GridHelper(50, 50, 0x1e293b, 0x1e293b);
+				gridHelper.position.y = -2;
+				this.scene.add(gridHelper);
+
+				// Reuse Geometry
+				this.sphereGeo = new THREE.SphereGeometry(1, 32, 32);
+				this.sphereMat = new THREE.MeshStandardMaterial({
+					color: 0x0ea5e9,
+					emissive: 0x0ea5e9,
+					emissiveIntensity: 0.5,
+					roughness: 0.2,
+					metalness: 0.8
 				});
-			};
+			}
 
-			function displayFailureNotice(err) {
-				var msg = err.message || err;
-				console.error(msg);
-				setStatusNotice(msg);
-				setStatusMode('notice');
-				initializing = false;
-			};
+			setupInput() {
+				// Resize
+				window.addEventListener('resize', () => {
+					this.camera.aspect = window.innerWidth / window.innerHeight;
+					this.camera.updateProjectionMatrix();
+					this.renderer.setSize(window.innerWidth, window.innerHeight);
+				});
 
-			if (!Engine.isWebGLAvailable()) {
-				displayFailureNotice('WebGL not available');
-			} else {
-				setStatusMode('indeterminate');
-				engine.startGame({
-					'onProgress': function (current, total) {
-						if (total > 0) {
-							statusProgressInner.style.width = current/total * 100 + '%';
-							setStatusMode('progress');
-							if (current === total) {
-								// wait for progress bar animation
-								setTimeout(() => {
-									setStatusMode('indeterminate');
-								}, 500);
-							}
+				// --- SETTINGS LISTENERS ---
+				document.getElementById('sensitivity').addEventListener('input', (e) => {
+					this.sensitivity = parseFloat(e.target.value);
+					this.updateSensDisplay();
+				});
+				document.getElementById('sens-profile').addEventListener('change', (e) => {
+					this.sensProfile = e.target.value;
+					this.updateSensDisplay();
+				});
+				document.getElementById('xh-size').addEventListener('input', () => this.updateCrosshair());
+				document.getElementById('xh-thick').addEventListener('input', () => this.updateCrosshair());
+				document.getElementById('xh-color').addEventListener('input', () => this.updateCrosshair());
+				document.getElementById('volume').addEventListener('input', (e) => this.sound.setVolume(e.target.value));
+
+				// --- MOUSE LOOK ---
+				document.addEventListener('mousemove', (event) => {
+					if (!this.isActive || this.isPaused) return;
+
+					const movementX = event.movementX || 0;
+					const movementY = event.movementY || 0;
+
+					// Calculate Effective Sensitivity
+					// Base rad/pixel approx 0.0004 for Source-like feel
+					const baseScale = 0.0004;
+
+					// Valorant Multiplier: Val 1.0 ~= Source 3.18
+					// If profile is Standard: mult = 1
+					// If profile is Valorant: user input 1.0 should behave like Standard 3.18
+					let profileMult = 1.0;
+					if (this.sensProfile === 'valorant') profileMult = 3.18;
+
+					const effectiveSens = this.sensitivity * profileMult * baseScale;
+
+					this.camera.rotation.y -= movementX * effectiveSens;
+					this.camera.rotation.x -= movementY * effectiveSens;
+
+					// Clamp pitch
+					this.camera.rotation.x = Math.max(-Math.PI / 2, Math.min(Math.PI / 2, this.camera.rotation.x));
+				});
+
+				// --- SHOOTING ---
+				document.addEventListener('mousedown', (e) => {
+					// Click on menu buttons shouldn't trigger shot
+					if (e.target.closest('button') || e.target.closest('input') || e.target.closest('select')) return;
+
+					if (!this.isActive) return;
+
+					// Handle Pause/Focus logic
+					if (document.pointerLockElement !== document.body) {
+						if (this.isPaused) {
+							// Don't shoot, just resume?
+							this.resume();
+							return;
 						} else {
-							setStatusMode('indeterminate');
+							this.requestLock();
 						}
-					},
-				}).then(() => {
-					setStatusMode('hidden');
-					initializing = false;
-				}, displayFailureNotice);
-			}
-		})();
-	//]]></script>
-	
-</body>
-</html>
+					}
 
+					if (this.isPaused) return;
+
+					if (this.mode === 'tracking') {
+						this.isTracking = true;
+					} else {
+						this.shoot();
+					}
+				});
+
+				document.addEventListener('mouseup', () => {
+					if (this.mode === 'tracking') this.isTracking = false;
+				});
+
+				// --- KEYBOARD ---
+				document.addEventListener('keydown', (e) => {
+					if (e.code === 'Escape') {
+						if (this.isActive) {
+							this.togglePause();
+						}
+					}
+					if (e.code === 'KeyR') {
+						if (this.isActive || this.isPaused) {
+							this.start(this.mode);
+						}
+					}
+				});
+
+				// --- POINTER LOCK STATE ---
+				document.addEventListener('pointerlockchange', () => {
+					if (document.pointerLockElement !== document.body && this.isActive) {
+						// Lost focus => Pause
+						this.isPaused = true;
+						document.getElementById('pause-screen').classList.remove('hidden');
+					} else if (document.pointerLockElement === document.body && this.isActive) {
+						// Regained focus => Resume
+						this.isPaused = false;
+						document.getElementById('pause-screen').classList.add('hidden');
+					}
+				});
+			}
+
+			requestLock() {
+				if (document.pointerLockElement === document.body) return;
+				const promise = document.body.requestPointerLock();
+				if (promise) promise.catch(e => { }); // Suppress errors
+			}
+
+			togglePause() {
+				if (this.isPaused) {
+					this.resume();
+				} else {
+					this.isPaused = true;
+					document.exitPointerLock();
+					document.getElementById('pause-screen').classList.remove('hidden');
+				}
+			}
+
+			resume() {
+				if (!this.isActive) return;
+				this.isPaused = false;
+				document.getElementById('pause-screen').classList.add('hidden');
+				this.requestLock();
+			}
+
+			updateSensDisplay() {
+				const val = document.getElementById('sensitivity').value;
+				document.getElementById('sens-val').innerText = parseFloat(val).toFixed(2);
+			}
+
+			updateCrosshair() {
+				const size = document.getElementById('xh-size').value;
+				const thick = document.getElementById('xh-thick').value;
+				const color = document.getElementById('xh-color').value;
+
+				const root = document.documentElement;
+				root.style.setProperty('--xh-size', size + 'px');
+				root.style.setProperty('--xh-thick', thick + 'px');
+				root.style.setProperty('--xh-color', color);
+			}
+
+			start(mode) {
+				this.mode = mode;
+				this.score = 0;
+				this.shotsFired = 0;
+				this.shotsHit = 0;
+				this.timeLeft = 60;
+				this.reactionTimes = [];
+				this.isTracking = false;
+				this.isPaused = false;
+
+				// Reset Camera
+				this.camera.rotation.set(0, 0, 0);
+
+				// UI Switches
+				document.getElementById('menu-screen').classList.add('hidden');
+				document.getElementById('results-screen').classList.add('hidden');
+				document.getElementById('pause-screen').classList.add('hidden');
+				document.getElementById('hud-screen').classList.remove('hidden');
+
+				// Clear existing
+				this.targets.forEach(t => this.scene.remove(t.mesh));
+				this.targets = [];
+
+				// Countdown/Init
+				this.isActive = true;
+				this.requestLock();
+				this.updateHUD();
+
+				if (mode === 'gridshot') {
+					for (let i = 0; i < 3; i++) this.spawnTarget();
+				} else if (mode === 'tracking') {
+					this.spawnTarget();
+				} else if (mode === 'reflex') {
+					this.scheduleReflexSpawn();
+				}
+
+				// Start Timer
+				if (this.timerInterval) clearInterval(this.timerInterval);
+				this.timerInterval = setInterval(() => {
+					if (!this.isActive || this.isPaused) return; // Don't tick if paused
+
+					this.timeLeft--;
+					this.updateHUD();
+					if (this.timeLeft <= 0) this.endGame();
+				}, 1000);
+			}
+
+			spawnTarget() {
+				const mesh = new THREE.Mesh(this.sphereGeo, this.sphereMat.clone());
+
+				const depth = -15;
+				const spreadX = 25;
+				const spreadY = 12;
+
+				mesh.position.set(
+					(Math.random() - 0.5) * spreadX,
+					(Math.random() - 0.5) * spreadY + 4,
+					depth
+				);
+
+				// Mode specifics
+				let targetData = {
+					mesh: mesh,
+					vx: 0, vy: 0,
+					spawnTime: performance.now()
+				};
+
+				if (this.mode === 'tracking') {
+					mesh.scale.set(1.5, 1.5, 1.5);
+					mesh.material.color.setHex(0xffaa00);
+					mesh.material.emissive.setHex(0xffaa00);
+					// Velocity
+					targetData.vx = (Math.random() - 0.5) * 0.2;
+					targetData.vy = (Math.random() - 0.5) * 0.2;
+				} else if (this.mode === 'reflex') {
+					mesh.material.color.setHex(0xff3366);
+					mesh.material.emissive.setHex(0xff3366);
+				}
+
+				this.scene.add(mesh);
+				this.targets.push(targetData);
+
+				// Animation spawn
+				mesh.scale.set(0, 0, 0);
+				this.animateSpawn(mesh, this.mode === 'tracking' ? 1.5 : 1);
+			}
+
+			animateSpawn(mesh, targetScale) {
+				let scale = 0;
+				const grow = () => {
+					if (!this.isActive) return; // Still grow if paused? Maybe not.
+					if (this.isPaused) {
+						requestAnimationFrame(grow);
+						return;
+					}
+					scale += 0.2;
+					if (scale >= targetScale) scale = targetScale;
+					mesh.scale.set(scale, scale, scale);
+					if (scale < targetScale) requestAnimationFrame(grow);
+				};
+				grow();
+			}
+
+			scheduleReflexSpawn() {
+				const delay = 500 + Math.random() * 1500;
+				setTimeout(() => {
+					if (this.isActive && !this.isPaused && this.targets.length === 0) this.spawnTarget();
+					else if (this.isActive && this.targets.length === 0) this.scheduleReflexSpawn(); // Try again if paused
+				}, delay);
+			}
+
+			shoot() {
+				this.shotsFired++;
+				this.sound.playShoot();
+
+				// Raycast
+				this.raycaster.setFromCamera(this.pointer, this.camera);
+				const intersects = this.raycaster.intersectObjects(this.targets.map(t => t.mesh));
+
+				if (intersects.length > 0) {
+					const hitObject = intersects[0].object;
+					this.handleHit(hitObject);
+				}
+				this.updateHUD();
+			}
+
+			handleHit(object) {
+				this.sound.playHit();
+				this.createHitMarker();
+				this.shotsHit++;
+				this.score += 100;
+
+				// Find data
+				const index = this.targets.findIndex(t => t.mesh === object);
+				if (index > -1) {
+					const tData = this.targets[index];
+
+					// Stats
+					if (this.mode === 'reflex') {
+						const reaction = performance.now() - tData.spawnTime;
+						this.reactionTimes.push(reaction);
+					}
+
+					// Remove
+					this.scene.remove(object);
+					this.targets.splice(index, 1);
+
+					// Respawn Logic
+					if (this.mode === 'gridshot') {
+						this.spawnTarget();
+					} else if (this.mode === 'reflex') {
+						this.scheduleReflexSpawn();
+					}
+				}
+			}
+
+			createHitMarker() {
+				const marker = document.createElement('div');
+				marker.className = 'hitmarker';
+				document.getElementById('hit-layer').appendChild(marker);
+				setTimeout(() => marker.remove(), 250);
+			}
+
+			update(delta) {
+				if (!this.isActive || this.isPaused) return;
+
+				// Tracking Logic
+				if (this.mode === 'tracking') {
+					if (this.targets.length > 0) {
+						const t = this.targets[0];
+
+						// Bounce off "walls"
+						if (t.mesh.position.x > 15 || t.mesh.position.x < -15) t.vx *= -1;
+						if (t.mesh.position.y > 10 || t.mesh.position.y < -2) t.vy *= -1;
+
+						t.mesh.position.x += t.vx * delta * 60;
+						t.mesh.position.y += t.vy * delta * 60;
+
+						// Check tracking
+						if (this.isTracking) {
+							this.raycaster.setFromCamera(this.pointer, this.camera);
+							const intersects = this.raycaster.intersectObject(t.mesh);
+							if (intersects.length > 0) {
+								this.score += 1;
+								this.shotsHit++;
+								this.shotsFired++;
+
+								t.mesh.material.emissiveIntensity = 2;
+								if (this.score % 10 === 0) this.sound.playTick();
+							} else {
+								t.mesh.material.emissiveIntensity = 0.5;
+								this.shotsFired++; // Missed frame
+							}
+							this.updateHUD();
+						}
+					}
+				}
+			}
+
+			loop(time) {
+				requestAnimationFrame(this.loop);
+				const delta = (time - this.lastTime) / 1000;
+				this.lastTime = time;
+				this.update(delta);
+				this.renderer.render(this.scene, this.camera);
+			}
+
+			updateHUD() {
+				document.getElementById('score').innerText = this.score;
+				document.getElementById('timer').innerText = this.timeLeft;
+
+				let acc = 0;
+				if (this.shotsFired > 0) {
+					acc = Math.round((this.shotsHit / this.shotsFired) * 100);
+				}
+				document.getElementById('accuracy').innerText = acc + "%";
+			}
+
+			endGame() {
+				this.isActive = false;
+				document.exitPointerLock();
+				clearInterval(this.timerInterval);
+
+				document.getElementById('hud-screen').classList.add('hidden');
+				document.getElementById('results-screen').classList.remove('hidden');
+
+				document.getElementById('res-score').innerText = this.score;
+
+				let acc = 0;
+				if (this.shotsFired > 0) acc = Math.round((this.shotsHit / this.shotsFired) * 100);
+				document.getElementById('res-acc').innerText = acc + "%";
+
+				document.getElementById('res-hits').innerText = this.shotsHit;
+
+				if (this.mode === 'reflex' && this.reactionTimes.length > 0) {
+					const avg = Math.round(this.reactionTimes.reduce((a, b) => a + b, 0) / this.reactionTimes.length);
+					document.getElementById('res-time').innerText = avg + "ms";
+				} else {
+					document.getElementById('res-time').innerText = "N/A";
+				}
+			}
+
+			toMenu() {
+				this.isActive = false;
+				this.isPaused = false;
+				document.exitPointerLock();
+				document.getElementById('results-screen').classList.add('hidden');
+				document.getElementById('pause-screen').classList.add('hidden');
+				document.getElementById('hud-screen').classList.add('hidden');
+				document.getElementById('menu-screen').classList.remove('hidden');
+				this.targets.forEach(t => this.scene.remove(t.mesh));
+				this.targets = [];
+			}
+		}
+
+		// Initialize
+		const game = new AimGame();
+
+	</script>
+</body>
+
+</html>

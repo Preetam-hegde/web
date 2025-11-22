@@ -8,11 +8,11 @@ const projects = [
     "tech": ["JavaScript", "HTML5", "CSS3", "Canvas API", "Game Design"]
   },
   {
-    name: "Click The Circle!",
+    name: " Reflex Arena",
     category: "fcc",
     image: "resource/Image/gamecircle.svg",
-    link: "circle/circle.html",
-    description: "A simple and engaging web game where you test your reflexes by clicking circles as quickly as possible.",
+    link: "aim-trainer/index.html",
+    description: "A comprehensive browser-based FPS aim training tool",
     tech: ["JavaScript", "HTML5", "CSS3", "Game"]
   },
   {

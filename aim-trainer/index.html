@@ -1,0 +1,514 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Reflex Arena - Pro Aim Trainer</title>
+    <meta name="description" content="Professional browser-based aim trainer with stats tracking and customization.">
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="css/style.css">
+</head>
+
+<body>
+
+    <!-- Crosshair -->
+    <div id="crosshair">
+        <div class="crosshair-part xh-h"></div>
+        <div class="crosshair-part xh-v"></div>
+        <div class="crosshair-part xh-dot"></div>
+    </div>
+    <div id="hit-layer"></div>
+
+    <!-- Main Menu -->
+    <div id="menu-screen"
+        class="absolute inset-0 flex items-center justify-center z-40 bg-slate-900/95 backdrop-blur-sm">
+        <div class="glass-panel p-8 rounded-2xl max-w-4xl w-full m-4 relative overflow-hidden">
+
+            <!-- Decorative Background -->
+            <div class="absolute -top-20 -left-20 w-64 h-64 bg-sky-500/20 rounded-full blur-3xl pointer-events-none">
+            </div>
+            <div
+                class="absolute -bottom-20 -right-20 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl pointer-events-none">
+            </div>
+
+            <!-- Header -->
+            <div class="relative z-10 text-center mb-8">
+                <h1 class="text-6xl font-black italic tracking-tighter text-white neon-text mb-2">
+                    REFLEX<span class="text-sky-400">ARENA</span>
+                </h1>
+                <p class="text-slate-400 tracking-[0.2em] text-sm font-bold uppercase">Professional Aim Trainer</p>
+            </div>
+
+            <!-- Game Modes Grid -->
+            <div class="relative z-10 grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
+                <button onclick="game.start('gridshot')"
+                    class="mode-card glass-panel p-5 rounded-xl text-left group cursor-pointer relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <span class="text-6xl font-black">GS</span>
+                    </div>
+                    <div class="text-sky-400 text-3xl mb-2 mode-icon">☷</div>
+                    <h3 class="font-bold text-xl text-white">Gridshot</h3>
+                    <p class="text-xs text-slate-400 mt-1">Speed & Precision. 3 targets always active.</p>
+                </button>
+
+                <button onclick="game.start('tracking')"
+                    class="mode-card glass-panel p-5 rounded-xl text-left group cursor-pointer relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <span class="text-6xl font-black">TR</span>
+                    </div>
+                    <div class="text-amber-400 text-3xl mb-2 mode-icon">◎</div>
+                    <h3 class="font-bold text-xl text-white">Tracking</h3>
+                    <p class="text-xs text-slate-400 mt-1">Smoothness. Follow the moving orb.</p>
+                </button>
+
+                <button onclick="game.start('reflex')"
+                    class="mode-card glass-panel p-5 rounded-xl text-left group cursor-pointer relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <span class="text-6xl font-black">RX</span>
+                    </div>
+                    <div class="text-rose-400 text-3xl mb-2 mode-icon">⚡</div>
+                    <h3 class="font-bold text-xl text-white">Reflex</h3>
+                    <p class="text-xs text-slate-400 mt-1">Reaction Time. Instant spawn & despawn.</p>
+                </button>
+
+                <button onclick="game.start('microshot')"
+                    class="mode-card glass-panel p-5 rounded-xl text-left group cursor-pointer relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                        <span class="text-6xl font-black">MS</span>
+                    </div>
+                    <div class="text-emerald-400 text-3xl mb-2 mode-icon">⌖</div>
+                    <h3 class="font-bold text-xl text-white">Microshot</h3>
+                    <p class="text-xs text-slate-400 mt-1">Precision. Small targets, tight spread.</p>
+                </button>
+            </div>
+
+            <!-- Bottom Buttons -->
+            <div class="relative z-10 flex gap-4">
+                <button onclick="game.openSettings()"
+                    class="btn btn-secondary flex-1 py-3 rounded-lg font-bold text-white flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    SETTINGS
+                </button>
+                <button onclick="game.openStats()"
+                    class="btn btn-secondary flex-1 py-3 rounded-lg font-bold text-white flex items-center justify-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    STATS & HISTORY
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Settings Menu -->
+    <div id="settings-screen"
+        class="absolute inset-0 flex items-center justify-center z-50 bg-black/80 backdrop-blur-sm hidden">
+        <div class="glass-panel p-8 rounded-2xl max-w-4xl w-full m-4 max-h-[90vh] overflow-y-auto relative">
+            <div class="flex justify-between items-center mb-6 sticky top-0 bg-slate-900/90 backdrop-blur-sm pb-4 z-10">
+                <h2 class="text-3xl font-black text-white flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-sky-400" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M10.325 4.317c.426-1.756 2.924-1.756 3.35 0a1.724 1.724 0 002.573 1.066c1.543-.94 3.31.826 2.37 2.37a1.724 1.724 0 001.065 2.572c1.756.426 1.756 2.924 0 3.35a1.724 1.724 0 00-1.066 2.573c.94 1.543-.826 3.31-2.37 2.37a1.724 1.724 0 00-2.572 1.065c-.426 1.756-2.924 1.756-3.35 0a1.724 1.724 0 00-2.573-1.066c-1.543.94-3.31-.826-2.37-2.37a1.724 1.724 0 00-1.065-2.572c-1.756-.426-1.756-2.924 0-3.35a1.724 1.724 0 001.066-2.573c-.94-1.543.826-3.31 2.37-2.37.996.608 2.296.07 2.572-1.065z" />
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                    </svg>
+                    SETTINGS
+                </h2>
+                <button onclick="game.closeSettings()" class="btn btn-secondary px-4 py-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- Game Settings -->
+                <div class="bg-slate-900/50 p-5 rounded-lg border border-slate-700/30">
+                    <h4 class="text-sm font-bold text-amber-400 mb-4 uppercase tracking-wider flex items-center gap-2">
+                        <span class="text-xl">🎮</span> Game Settings
+                    </h4>
+
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-xs font-bold text-slate-300">FIELD OF VIEW</label>
+                                <span id="fov-val"
+                                    class="font-mono text-sky-400 text-xs bg-slate-800 px-2 py-1 rounded">75°</span>
+                            </div>
+                            <input type="range" id="fov" min="60" max="120" step="1" value="75" class="w-full">
+                        </div>
+
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-xs font-bold text-slate-300">GAME DURATION</label>
+                                <span id="duration-val"
+                                    class="font-mono text-sky-400 text-xs bg-slate-800 px-2 py-1 rounded">60s</span>
+                            </div>
+                            <input type="range" id="game-duration" min="30" max="300" step="30" value="60"
+                                class="w-full">
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-bold text-slate-300 block mb-2">TARGET SIZE</label>
+                            <select id="target-size"
+                                class="w-full text-xs bg-slate-800 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:border-sky-500">
+                                <option value="0.5">Tiny (0.5x)</option>
+                                <option value="0.75">Small (0.75x)</option>
+                                <option value="1.0" selected>Normal (1.0x)</option>
+                                <option value="1.5">Large (1.5x)</option>
+                                <option value="2.0">Huge (2.0x)</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="text-xs font-bold text-slate-300 block mb-2">DIFFICULTY</label>
+                            <select id="difficulty"
+                                class="w-full text-xs bg-slate-800 border border-slate-600 rounded px-3 py-2 focus:outline-none focus:border-sky-500">
+                                <option value="easy">Easy - Slower targets</option>
+                                <option value="normal" selected>Normal - Balanced</option>
+                                <option value="hard">Hard - Fast targets</option>
+                                <option value="extreme">Extreme - Very fast</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Mouse Settings -->
+                <div class="bg-slate-900/50 p-5 rounded-lg border border-slate-700/30">
+                    <h4
+                        class="text-sm font-bold text-emerald-400 mb-4 uppercase tracking-wider flex items-center gap-2">
+                        <span class="text-xl">🖱️</span> Mouse Settings
+                    </h4>
+
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-xs font-bold text-slate-300">SENSITIVITY</label>
+                                <select id="sens-profile"
+                                    class="text-xs bg-slate-800 border border-slate-600 rounded px-2 py-1 focus:outline-none focus:border-sky-500">
+                                    <option value="standard">Standard</option>
+                                    <option value="valorant">Valorant</option>
+                                </select>
+                            </div>
+                            <div class="flex items-center gap-3">
+                                <input type="range" id="sensitivity" min="0.05" max="5.0" step="0.01" value="1.0"
+                                    class="flex-1">
+                                <span id="sens-val"
+                                    class="font-mono text-sky-400 w-14 text-right bg-slate-800 px-2 py-1 rounded text-xs">1.00</span>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label
+                                class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-800/50 transition">
+                                <input type="checkbox" id="mouse-accel"
+                                    class="w-4 h-4 rounded bg-slate-800 border-slate-600 text-sky-500 focus:ring-sky-500">
+                                <span class="text-xs font-bold text-slate-300">MOUSE ACCELERATION</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Crosshair Settings -->
+                <div class="bg-slate-900/50 p-5 rounded-lg border border-slate-700/30">
+                    <h4 class="text-sm font-bold text-rose-400 mb-4 uppercase tracking-wider flex items-center gap-2">
+                        <span class="text-xl">⊕</span> Crosshair Settings
+                    </h4>
+
+                    <div class="space-y-4">
+                        <div>
+                            <label class="text-xs font-bold text-slate-300 block mb-2">PRESETS</label>
+                            <div class="grid grid-cols-3 gap-2">
+                                <button onclick="game.setCrosshairPreset('dot')"
+                                    class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-sky-500 rounded px-2 py-2 text-[10px] font-bold transition-all">DOT</button>
+                                <button onclick="game.setCrosshairPreset('cross')"
+                                    class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-sky-500 rounded px-2 py-2 text-[10px] font-bold transition-all">CROSS</button>
+                                <button onclick="game.setCrosshairPreset('circle')"
+                                    class="bg-slate-800 hover:bg-slate-700 border border-slate-600 hover:border-sky-500 rounded px-2 py-2 text-[10px] font-bold transition-all">CIRCLE</button>
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] text-slate-500 font-bold">SIZE</span>
+                                    <span id="xh-size-val" class="text-[10px] text-sky-400 font-mono">10</span>
+                                </div>
+                                <input type="range" id="xh-size" min="4" max="30" value="10">
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] text-slate-500 font-bold">THICKNESS</span>
+                                    <span id="xh-thick-val" class="text-[10px] text-sky-400 font-mono">2</span>
+                                </div>
+                                <input type="range" id="xh-thick" min="1" max="6" value="2">
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] text-slate-500 font-bold">GAP</span>
+                                    <span id="xh-gap-val" class="text-[10px] text-sky-400 font-mono">0</span>
+                                </div>
+                                <input type="range" id="xh-gap" min="0" max="10" value="0">
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] text-slate-500 font-bold">OUTLINE</span>
+                                    <span id="xh-outline-val" class="text-[10px] text-sky-400 font-mono">0</span>
+                                </div>
+                                <input type="range" id="xh-outline" min="0" max="3" value="0">
+                            </div>
+                        </div>
+
+                        <div class="grid grid-cols-2 gap-3">
+                            <div>
+                                <span class="text-[10px] text-slate-500 font-bold block mb-1">COLOR</span>
+                                <input type="color" id="xh-color" value="#00ffcc"
+                                    class="w-full h-10 cursor-pointer rounded border border-slate-600">
+                            </div>
+                            <div>
+                                <div class="flex justify-between items-center mb-1">
+                                    <span class="text-[10px] text-slate-500 font-bold">OPACITY</span>
+                                    <span id="xh-opacity-val" class="text-[10px] text-sky-400 font-mono">100%</span>
+                                </div>
+                                <input type="range" id="xh-opacity" min="0" max="100" value="100">
+                            </div>
+                        </div>
+
+                        <div>
+                            <label
+                                class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-800/50 transition">
+                                <input type="checkbox" id="xh-show-dot"
+                                    class="w-4 h-4 rounded bg-slate-800 border-slate-600 text-sky-500 focus:ring-sky-500">
+                                <span class="text-xs font-bold text-slate-300">SHOW CENTER DOT</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Audio Settings -->
+                <div class="bg-slate-900/50 p-5 rounded-lg border border-slate-700/30">
+                    <h4 class="text-sm font-bold text-purple-400 mb-4 uppercase tracking-wider flex items-center gap-2">
+                        <span class="text-xl">🔊</span> Audio Settings
+                    </h4>
+
+                    <div class="space-y-4">
+                        <div>
+                            <div class="flex justify-between items-center mb-2">
+                                <label class="text-xs font-bold text-slate-300">MASTER VOLUME</label>
+                                <span id="volume-val"
+                                    class="font-mono text-sky-400 text-xs bg-slate-800 px-2 py-1 rounded">30%</span>
+                            </div>
+                            <input type="range" id="volume" min="0" max="1" step="0.1" value="0.3" class="w-full">
+                        </div>
+
+                        <div>
+                            <label
+                                class="flex items-center gap-2 cursor-pointer p-2 rounded hover:bg-slate-800/50 transition">
+                                <input type="checkbox" id="sound-enabled" checked
+                                    class="w-4 h-4 rounded bg-slate-800 border-slate-600 text-sky-500 focus:ring-sky-500">
+                                <span class="text-xs font-bold text-slate-300">ENABLE SOUND EFFECTS</span>
+                            </label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Stats & History Screen -->
+    <div id="stats-screen"
+        class="absolute inset-0 flex items-center justify-center z-50 bg-black/80 backdrop-blur-sm hidden">
+        <div class="glass-panel p-8 rounded-2xl max-w-6xl w-full m-4 max-h-[90vh] overflow-y-auto relative">
+            <div class="flex justify-between items-center mb-6 sticky top-0 bg-slate-900/90 backdrop-blur-sm pb-4 z-10">
+                <h2 class="text-3xl font-black text-white flex items-center gap-3">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-sky-400" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    STATS & HISTORY
+                </h2>
+                <button onclick="game.closeStats()" class="btn btn-secondary px-4 py-2 rounded-lg">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24"
+                        stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                            d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Overall Stats -->
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-6">
+                <div class="bg-gradient-to-br from-sky-500/20 to-sky-600/20 p-4 rounded-lg border border-sky-500/30">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">Total Games</div>
+                    <div id="stat-total-games" class="text-3xl font-black text-white">0</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-emerald-500/20 to-emerald-600/20 p-4 rounded-lg border border-emerald-500/30">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">Avg Score</div>
+                    <div id="stat-avg-score" class="text-3xl font-black text-white">0</div>
+                </div>
+                <div
+                    class="bg-gradient-to-br from-amber-500/20 to-amber-600/20 p-4 rounded-lg border border-amber-500/30">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">Avg Accuracy</div>
+                    <div id="stat-avg-acc" class="text-3xl font-black text-white">0%</div>
+                </div>
+                <div class="bg-gradient-to-br from-rose-500/20 to-rose-600/20 p-4 rounded-lg border border-rose-500/30">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">Best Score</div>
+                    <div id="stat-best-score" class="text-3xl font-black text-white">0</div>
+                </div>
+            </div>
+
+            <!-- Mode Selector -->
+            <div class="flex gap-2 mb-4 flex-wrap">
+                <button onclick="game.filterHistory('all')"
+                    class="filter-btn active px-4 py-2 rounded-lg bg-slate-700 text-white font-bold text-sm">ALL</button>
+                <button onclick="game.filterHistory('gridshot')"
+                    class="filter-btn px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-bold text-sm">GRIDSHOT</button>
+                <button onclick="game.filterHistory('tracking')"
+                    class="filter-btn px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-bold text-sm">TRACKING</button>
+                <button onclick="game.filterHistory('reflex')"
+                    class="filter-btn px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-bold text-sm">REFLEX</button>
+                <button onclick="game.filterHistory('microshot')"
+                    class="filter-btn px-4 py-2 rounded-lg bg-slate-800 text-slate-300 font-bold text-sm">MICROSHOT</button>
+                <button onclick="game.clearHistory()"
+                    class="ml-auto px-4 py-2 rounded-lg bg-rose-600/20 hover:bg-rose-600/30 text-rose-400 font-bold text-sm border border-rose-500/30">CLEAR
+                    HISTORY</button>
+            </div>
+
+            <!-- History Table -->
+            <div class="bg-slate-900/50 rounded-lg border border-slate-700/30 overflow-hidden">
+                <div class="overflow-x-auto">
+                    <table class="w-full">
+                        <thead class="bg-slate-800/50 border-b border-slate-700">
+                            <tr>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase">Date</th>
+                                <th class="px-4 py-3 text-left text-xs font-bold text-slate-400 uppercase">Mode</th>
+                                <th class="px-4 py-3 text-right text-xs font-bold text-slate-400 uppercase">Score</th>
+                                <th class="px-4 py-3 text-right text-xs font-bold text-slate-400 uppercase">Accuracy
+                                </th>
+                                <th class="px-4 py-3 text-right text-xs font-bold text-slate-400 uppercase">Hits</th>
+                                <th class="px-4 py-3 text-right text-xs font-bold text-slate-400 uppercase">Combo</th>
+                                <th class="px-4 py-3 text-right text-xs font-bold text-slate-400 uppercase">Avg Time
+                                </th>
+                            </tr>
+                        </thead>
+                        <tbody id="history-table" class="divide-y divide-slate-700/50">
+                            <tr>
+                                <td colspan="7" class="px-4 py-8 text-center text-slate-500 text-sm">No games played
+                                    yet. Start playing to see your stats!</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Pause Menu -->
+    <div id="pause-screen"
+        class="absolute inset-0 flex items-center justify-center z-50 bg-black/80 backdrop-blur-sm hidden">
+        <div class="glass-panel p-8 rounded-xl text-center max-w-sm w-full border border-slate-700">
+            <h2 class="text-4xl font-black text-white mb-8 tracking-widest">PAUSED</h2>
+            <div class="space-y-4">
+                <button onclick="game.resume()"
+                    class="btn btn-primary w-full py-4 rounded-lg font-bold text-lg shadow-lg shadow-sky-500/20">RESUME</button>
+                <button onclick="game.start(game.mode)"
+                    class="btn btn-secondary w-full py-3 rounded-lg font-bold text-slate-300">RESTART (R)</button>
+                <button onclick="game.toMenu()"
+                    class="btn btn-secondary w-full py-3 rounded-lg font-bold text-rose-400 hover:text-rose-300 hover:border-rose-500">QUIT
+                    TO MENU</button>
+            </div>
+            <p class="mt-6 text-xs text-slate-500 font-mono">Press ESC to Resume</p>
+        </div>
+    </div>
+
+    <!-- HUD -->
+    <div id="hud-screen" class="absolute inset-0 pointer-events-none hidden">
+        <div class="absolute top-0 left-0 right-0 p-6 flex justify-between items-start">
+            <div class="glass-panel px-6 py-3 rounded-lg flex flex-col items-center border-t-4 border-sky-500">
+                <span class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Time Remaining</span>
+                <span id="timer" class="text-4xl font-mono font-bold text-white">60</span>
+            </div>
+
+            <div class="glass-panel px-8 py-4 rounded-lg flex gap-12 border-t-4 border-sky-500">
+                <div class="text-center hud-stat">
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Score</div>
+                    <div id="score" class="text-5xl font-black text-sky-400">0</div>
+                </div>
+                <div class="text-center hud-stat border-l border-slate-700 pl-12">
+                    <div class="text-[10px] text-slate-400 uppercase tracking-wider font-bold">Accuracy</div>
+                    <div id="accuracy" class="text-5xl font-black text-emerald-400">100%</div>
+                </div>
+            </div>
+        </div>
+
+        <div id="combo" class="combo-counter">x0</div>
+
+        <div
+            class="absolute bottom-6 left-6 opacity-50 text-[10px] text-slate-400 font-mono bg-black/50 px-3 py-1 rounded">
+            ESC: PAUSE | R: RESTART
+        </div>
+    </div>
+
+    <!-- Results Screen -->
+    <div id="results-screen"
+        class="absolute inset-0 flex items-center justify-center z-50 bg-slate-900/95 backdrop-blur-md hidden">
+        <div
+            class="glass-panel p-10 rounded-3xl max-w-2xl w-full text-center border border-slate-700 relative overflow-hidden">
+            <div class="absolute top-0 left-0 w-full h-2 bg-gradient-to-r from-sky-500 via-purple-500 to-pink-500">
+            </div>
+
+            <h2 class="text-5xl font-black mb-2 text-white italic">SESSION COMPLETE</h2>
+            <p class="text-slate-400 mb-10 uppercase tracking-widest text-sm">Great Performance</p>
+
+            <div class="grid grid-cols-5 gap-4 mb-10">
+                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">Score</div>
+                    <div id="res-score" class="text-3xl font-black text-sky-400">0</div>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">Accuracy</div>
+                    <div id="res-acc" class="text-3xl font-black text-emerald-400">0%</div>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">Hits</div>
+                    <div id="res-hits" class="text-2xl font-black text-white">0</div>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">Max Combo</div>
+                    <div id="res-combo" class="text-3xl font-black text-amber-400">0</div>
+                </div>
+                <div class="bg-slate-800/50 p-4 rounded-xl border border-slate-700">
+                    <div class="text-xs text-slate-400 uppercase font-bold mb-1">Avg Time</div>
+                    <div id="res-time" class="text-2xl font-black text-white">0ms</div>
+                </div>
+            </div>
+
+            <div class="flex gap-6">
+                <button onclick="game.start(game.mode)"
+                    class="btn btn-primary flex-1 py-4 rounded-xl font-bold text-lg shadow-lg shadow-sky-500/20">PLAY
+                    AGAIN</button>
+                <button onclick="game.toMenu()"
+                    class="btn btn-secondary flex-1 py-4 rounded-xl font-bold text-white hover:bg-slate-700">MENU</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="js/game.js"></script>
+</body>
+
+</html>
