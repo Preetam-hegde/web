@@ -1,0 +1,813 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bharatvarsha: Rise of the Janapada</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap');
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background-color: #fdf6e3;
+            /* Parchment color */
+            color: #4a3b28;
+        }
+
+        h1,
+        h2,
+        h3,
+        .title-font {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        ::-webkit-scrollbar-track {
+            background: #f1e7d0;
+        }
+
+        ::-webkit-scrollbar-thumb {
+            background: #d4a373;
+            border-radius: 4px;
+        }
+
+        ::-webkit-scrollbar-thumb:hover {
+            background: #b08968;
+        }
+
+        .mandala-bg {
+            background-image: radial-gradient(#e6ccb2 1px, transparent 1px);
+            background-size: 20px 20px;
+        }
+
+        .resource-card {
+            transition: transform 0.2s;
+        }
+
+        .resource-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .btn-primary {
+            background: linear-gradient(to right, #d97706, #b45309);
+            color: white;
+            transition: all 0.3s ease;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: linear-gradient(to right, #b45309, #78350f);
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        }
+
+        .btn-primary:disabled {
+            background: #a8a29e;
+            cursor: not-allowed;
+            opacity: 0.7;
+        }
+
+        /* Event Log Fade In */
+        @keyframes fadeIn {
+            from {
+                opacity: 0;
+                transform: translateY(10px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+
+        .log-entry {
+            animation: fadeIn 0.5s ease-out forwards;
+        }
+    </style>
+</head>
+
+<body class="h-screen w-screen flex flex-col overflow-hidden mandala-bg">
+
+    <!-- Header -->
+    <header
+        class="bg-[#5c2a0d] text-[#fef3c7] p-4 shadow-lg flex justify-between items-center z-10 border-b-4 border-[#d97706]">
+        <div class="flex items-center gap-3">
+            <div class="text-3xl text-[#d97706]"><i class="fas fa-dharmachakra"></i></div>
+            <div>
+                <h1 class="text-2xl font-bold leading-none">Bharatvarsha</h1>
+                <span class="text-xs text-[#d6d3d1] tracking-widest uppercase">Rise of the Janapada</span>
+            </div>
+        </div>
+        <div class="flex items-center gap-6">
+            <div class="text-center">
+                <div class="text-xs uppercase tracking-wider opacity-80">Era</div>
+                <div id="era-display" class="font-bold text-[#fbbf24]">Early Vedic</div>
+            </div>
+            <div class="text-center">
+                <div class="text-xs uppercase tracking-wider opacity-80">Year</div>
+                <div id="year-display" class="font-bold">1000 BCE</div>
+            </div>
+            <div class="text-center">
+                <div class="text-xs uppercase tracking-wider opacity-80">Population</div>
+                <div id="pop-display" class="font-bold">10 / 15</div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Main Game Area -->
+    <main class="flex-1 flex overflow-hidden">
+
+        <!-- Left Panel: Resources & Workers -->
+        <aside class="w-1/4 min-w-[300px] bg-[#fefce8] border-r-2 border-[#d4a373] flex flex-col shadow-xl z-10">
+
+            <!-- Resources -->
+            <div class="p-4 border-b border-[#e5e7eb]">
+                <h2 class="title-font text-xl font-bold text-[#78350f] mb-4 flex items-center gap-2">
+                    <i class="fas fa-coins"></i> Resources
+                </h2>
+                <div class="grid grid-cols-2 gap-3">
+                    <div class="resource-card bg-white p-2 rounded border border-amber-200 shadow-sm">
+                        <div class="flex justify-between items-center text-[#b45309]">
+                            <span class="text-sm font-bold"><i class="fas fa-wheat mr-1"></i> Food</span>
+                            <span id="res-food" class="font-mono font-bold">0</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">+<span id="rate-food">0</span>/sec</div>
+                    </div>
+                    <div class="resource-card bg-white p-2 rounded border border-amber-200 shadow-sm">
+                        <div class="flex justify-between items-center text-[#854d0e]">
+                            <span class="text-sm font-bold"><i class="fas fa-tree mr-1"></i> Wood</span>
+                            <span id="res-wood" class="font-mono font-bold">0</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">+<span id="rate-wood">0</span>/sec</div>
+                    </div>
+                    <div class="resource-card bg-white p-2 rounded border border-amber-200 shadow-sm">
+                        <div class="flex justify-between items-center text-[#57534e]">
+                            <span class="text-sm font-bold"><i class="fas fa-cubes mr-1"></i> Stone</span>
+                            <span id="res-stone" class="font-mono font-bold">0</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">+<span id="rate-stone">0</span>/sec</div>
+                    </div>
+                    <div class="resource-card bg-white p-2 rounded border border-amber-200 shadow-sm">
+                        <div class="flex justify-between items-center text-[#1e3a8a]">
+                            <span class="text-sm font-bold"><i class="fas fa-scroll mr-1"></i> Vidya</span>
+                            <span id="res-vidya" class="font-mono font-bold">0</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mt-1">+<span id="rate-vidya">0</span>/sec</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Workers -->
+            <div class="p-4 flex-1 overflow-y-auto">
+                <h2 class="title-font text-xl font-bold text-[#78350f] mb-4 flex items-center gap-2">
+                    <i class="fas fa-users"></i> Caste & Labor
+                </h2>
+                <div class="text-sm text-gray-600 mb-2 bg-amber-50 p-2 rounded border border-amber-100">
+                    Unemployed Villagers: <span id="pop-idle" class="font-bold text-red-600">0</span>
+                </div>
+
+                <div class="space-y-3">
+                    <!-- Farmers -->
+                    <div class="bg-white p-3 rounded border border-gray-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-[#b45309]">Farmers (Kisan)</span>
+                            <span id="count-farmer" class="font-mono bg-amber-100 px-2 rounded text-amber-800">0</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mb-2">Produces Food. Consumes nothing.</div>
+                        <div class="flex gap-2">
+                            <button onclick="window.game.assignWorker('farmer', 1)"
+                                class="flex-1 bg-amber-200 hover:bg-amber-300 text-amber-900 text-xs font-bold py-1 rounded">+</button>
+                            <button onclick="window.game.removeWorker('farmer', 1)"
+                                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold py-1 rounded">-</button>
+                        </div>
+                    </div>
+
+                    <!-- Woodcutters -->
+                    <div class="bg-white p-3 rounded border border-gray-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-[#854d0e]">Woodcutters</span>
+                            <span id="count-woodcutter"
+                                class="font-mono bg-amber-100 px-2 rounded text-amber-800">0</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mb-2">Produces Wood. Consumes Food.</div>
+                        <div class="flex gap-2">
+                            <button onclick="window.game.assignWorker('woodcutter', 1)"
+                                class="flex-1 bg-amber-200 hover:bg-amber-300 text-amber-900 text-xs font-bold py-1 rounded">+</button>
+                            <button onclick="window.game.removeWorker('woodcutter', 1)"
+                                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold py-1 rounded">-</button>
+                        </div>
+                    </div>
+
+                    <!-- Miners -->
+                    <div class="bg-white p-3 rounded border border-gray-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-[#57534e]">Miners</span>
+                            <span id="count-miner" class="font-mono bg-amber-100 px-2 rounded text-amber-800">0</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mb-2">Produces Stone. Consumes Food.</div>
+                        <div class="flex gap-2">
+                            <button onclick="window.game.assignWorker('miner', 1)"
+                                class="flex-1 bg-amber-200 hover:bg-amber-300 text-amber-900 text-xs font-bold py-1 rounded">+</button>
+                            <button onclick="window.game.removeWorker('miner', 1)"
+                                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold py-1 rounded">-</button>
+                        </div>
+                    </div>
+
+                    <!-- Scholars -->
+                    <div class="bg-white p-3 rounded border border-gray-200 shadow-sm">
+                        <div class="flex justify-between items-center mb-2">
+                            <span class="font-bold text-[#1e3a8a]">Brahmins (Scholar)</span>
+                            <span id="count-scholar" class="font-mono bg-amber-100 px-2 rounded text-amber-800">0</span>
+                        </div>
+                        <div class="text-xs text-gray-500 mb-2">Generates Vidya (Knowledge). Consumes Food.</div>
+                        <div class="flex gap-2">
+                            <button onclick="window.game.assignWorker('scholar', 1)"
+                                class="flex-1 bg-amber-200 hover:bg-amber-300 text-amber-900 text-xs font-bold py-1 rounded">+</button>
+                            <button onclick="window.game.removeWorker('scholar', 1)"
+                                class="flex-1 bg-gray-200 hover:bg-gray-300 text-gray-700 text-xs font-bold py-1 rounded">-</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Center: Buildings & Actions -->
+        <section class="flex-1 flex flex-col min-w-[400px] bg-[#fffbeb] bg-opacity-90 overflow-y-auto relative">
+            <!-- Decorative Background Image (CSS handled via classes or js) -->
+            <div class="absolute inset-0 opacity-5 pointer-events-none flex items-center justify-center">
+                <i class="fas fa-om text-[400px]"></i>
+            </div>
+
+            <div class="p-6 z-0">
+                <!-- Actions Header -->
+                <div class="mb-8">
+                    <h2
+                        class="title-font text-2xl font-bold text-[#78350f] mb-2 border-b-2 border-[#d97706] inline-block">
+                        Construction & Governance</h2>
+                    <p class="text-sm text-[#92400e] italic mt-1">"Just as a single wheel cannot turn a chariot, destiny
+                        does not work without human effort." - Arthashastra</p>
+                </div>
+
+                <!-- Buildings Grid -->
+                <h3 class="font-bold text-lg text-[#451a03] mb-4">Buildings</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4 mb-8" id="building-container">
+                    <!-- Building cards generated by JS -->
+                </div>
+
+                <!-- Special Actions / Rituals -->
+                <h3 class="font-bold text-lg text-[#451a03] mb-4">Rituals & Royal Decrees</h3>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mb-8" id="rituals-container">
+                    <!-- Rituals generated by JS -->
+                </div>
+
+                <!-- Manual Gather Buttons (Early Game) -->
+                <h3 class="font-bold text-lg text-[#451a03] mb-4">Manual Labor</h3>
+                <div class="flex gap-4">
+                    <button onclick="window.game.manualGather('food')"
+                        class="btn-primary px-4 py-3 rounded shadow flex items-center gap-2">
+                        <i class="fas fa-sickle"></i> Harvest Crops
+                    </button>
+                    <button onclick="window.game.manualGather('wood')"
+                        class="btn-primary px-4 py-3 rounded shadow flex items-center gap-2">
+                        <i class="fas fa-axe"></i> Chop Wood
+                    </button>
+                </div>
+            </div>
+        </section>
+
+        <!-- Right Panel: Events & History -->
+        <aside class="w-1/4 min-w-[300px] bg-[#fefce8] border-l-2 border-[#d4a373] flex flex-col shadow-xl z-10">
+            <div class="p-4 bg-[#78350f] text-[#fef3c7]">
+                <h2 class="title-font text-xl font-bold"><i class="fas fa-history"></i> Chronicles</h2>
+            </div>
+            <div id="event-log" class="flex-1 overflow-y-auto p-4 space-y-3 text-sm font-serif">
+                <!-- Logs go here -->
+                <div class="log-entry text-gray-500 text-xs italic border-b border-amber-200 pb-1">
+                    Year 1000 BCE: Your tribe settles near the banks of the Ganga. The land is fertile.
+                </div>
+            </div>
+
+            <!-- Context/Info Box -->
+            <div class="p-4 bg-amber-100 border-t border-amber-200 text-xs text-amber-900">
+                <h4 class="font-bold mb-1"><i class="fas fa-info-circle"></i> Current Objective</h4>
+                <p id="objective-text">Build 3 Huts to increase population capacity and assign farmers.</p>
+            </div>
+        </aside>
+
+    </main>
+
+    <!-- Notifications / Modal (Simple) -->
+    <div id="modal-overlay" class="fixed inset-0 bg-black bg-opacity-50 hidden items-center justify-center z-50">
+        <div
+            class="bg-[#fffbeb] border-2 border-[#d97706] rounded-lg p-6 max-w-md shadow-2xl transform scale-100 transition-transform">
+            <h2 id="modal-title" class="title-font text-2xl font-bold text-[#78350f] mb-2">Event Title</h2>
+            <p id="modal-body" class="text-gray-800 mb-6">Event description goes here.</p>
+            <button onclick="window.game.closeModal()"
+                class="btn-primary px-6 py-2 rounded w-full font-bold">Continue</button>
+        </div>
+    </div>
+
+    <script>
+        // --- Game Data & Configuration ---
+        const CONSTANTS = {
+            TICK_RATE: 1000, // ms
+            FOOD_PER_FARMER: 1.2,
+            WOOD_PER_CUTTER: 0.5,
+            STONE_PER_MINER: 0.3,
+            VIDYA_PER_SCHOLAR: 0.2,
+            CONSUMPTION_PER_PERSON: 0.5
+        };
+
+        class Game {
+            constructor() {
+                this.resources = {
+                    food: 50,
+                    wood: 0,
+                    stone: 0,
+                    vidya: 0
+                };
+
+                this.population = {
+                    idle: 2,
+                    farmer: 0,
+                    woodcutter: 0,
+                    miner: 0,
+                    scholar: 0,
+                    total: 2,
+                    max: 5
+                };
+
+                this.buildings = {
+                    hut: {
+                        name: "Mud Hut",
+                        count: 1,
+                        cost: { wood: 10, food: 5 },
+                        desc: "Provides shelter. +5 Max Pop.",
+                        icon: "fa-home",
+                        effect: () => { this.population.max += 5; }
+                    },
+                    farm: {
+                        name: "Irrigated Farm",
+                        count: 0,
+                        cost: { wood: 20, stone: 5 },
+                        desc: "Better agriculture. +20% Farmer output.",
+                        icon: "fa-seedling",
+                        effect: () => { CONSTANTS.FOOD_PER_FARMER *= 1.2; }
+                    },
+                    granary: {
+                        name: "Granary",
+                        count: 0,
+                        cost: { wood: 50, stone: 10 },
+                        desc: "Stores surplus grain safely.",
+                        icon: "fa-warehouse",
+                        effect: null
+                    },
+                    school: {
+                        name: "Gurukul",
+                        count: 0,
+                        cost: { wood: 100, stone: 20, food: 50 },
+                        desc: "A place of learning. Allows Scholars.",
+                        icon: "fa-book-open",
+                        effect: null // Logic handled in worker assignment
+                    },
+                    altar: {
+                        name: "Yajna Altar",
+                        count: 0,
+                        cost: { stone: 100, wood: 50, vidya: 20 },
+                        desc: "Perform rituals for blessings.",
+                        icon: "fa-fire",
+                        effect: null
+                    }
+                };
+
+                this.rituals = {
+                    puja: {
+                        name: "Daily Puja",
+                        cost: { food: 10 },
+                        desc: "Small offering. Boosts morale slightly.",
+                        cooldown: 0,
+                        action: () => this.log("The village gathers for evening prayers. Peace prevails.")
+                    },
+                    ashwamedha: {
+                        name: "Ashwamedha Yajna",
+                        cost: { food: 500, vidya: 100, gold: 50 }, // Gold not imp yet, just food/vidya
+                        desc: "Horse Sacrifice to declare sovereignty. Advance Era.",
+                        cooldown: 0,
+                        action: () => this.advanceEra()
+                    }
+                };
+
+                this.state = {
+                    year: 1000, // BCE (counts down)
+                    era: "Early Vedic", // Early Vedic -> Later Vedic -> Mahajanapada -> Empire
+                    tickCount: 0,
+                    weather: "Normal" // Normal, Monsoon, Drought
+                };
+
+                this.init();
+            }
+
+            init() {
+                this.renderBuildings();
+                this.renderRituals();
+                this.updateUI();
+
+                // Game Loop
+                setInterval(() => this.tick(), CONSTANTS.TICK_RATE);
+
+                // Random Events Loop
+                setInterval(() => this.checkRandomEvent(), 15000); // Every 15 sec check for event
+            }
+
+            tick() {
+                this.state.tickCount++;
+
+                // Year progression (1 year every 5 ticks roughly for pacing)
+                if (this.state.tickCount % 5 === 0) {
+                    this.state.year--;
+                }
+
+                // Production
+                let foodGain = (this.population.farmer * CONSTANTS.FOOD_PER_FARMER);
+
+                // Weather effects
+                if (this.state.weather === "Monsoon") foodGain *= 1.5;
+                if (this.state.weather === "Drought") foodGain *= 0.5;
+
+                const woodGain = this.population.woodcutter * CONSTANTS.WOOD_PER_CUTTER;
+                const stoneGain = this.population.miner * CONSTANTS.STONE_PER_MINER;
+                const vidyaGain = this.population.scholar * CONSTANTS.VIDYA_PER_SCHOLAR;
+
+                // Consumption
+                const foodLoss = this.population.total * CONSTANTS.CONSUMPTION_PER_PERSON;
+
+                // Apply changes
+                this.resources.food += (foodGain - foodLoss);
+                this.resources.wood += woodGain;
+                this.resources.stone += stoneGain;
+                this.resources.vidya += vidyaGain;
+
+                // Starvation Logic
+                if (this.resources.food < 0) {
+                    this.resources.food = 0;
+                    this.starvationCheck();
+                }
+
+                // Population Growth (Slowly if food > 100 and space exists)
+                if (this.resources.food > 100 && this.population.total < this.population.max && Math.random() < 0.1) {
+                    this.population.idle++;
+                    this.population.total++;
+                    this.resources.food -= 20; // Cost of new baby/migrant
+                    this.log("A wanderer joined your settlement.");
+                }
+
+                this.updateUI();
+            }
+
+            starvationCheck() {
+                if (Math.random() < 0.2) { // 20% chance per tick of death if starving
+                    if (this.population.total > 0) {
+                        // Kill random worker type
+                        const types = ['idle', 'farmer', 'woodcutter', 'miner', 'scholar'];
+                        let killed = false;
+                        for (let t of types) {
+                            if (this.population[t] > 0) {
+                                this.population[t]--;
+                                this.population.total--;
+                                this.log(`One ${t} died of starvation!`, "red");
+                                killed = true;
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+
+            manualGather(type) {
+                if (type === 'food') {
+                    this.resources.food += 1;
+                    // Simple visual feedback if event is available
+                    if (window.event) this.createFloater(window.event.clientX, window.event.clientY, "+1 Food");
+                } else if (type === 'wood') {
+                    this.resources.wood += 1;
+                    if (window.event) this.createFloater(window.event.clientX, window.event.clientY, "+1 Wood");
+                }
+                this.updateUI();
+            }
+
+            assignWorker(type, count) {
+                if (type === 'scholar' && this.buildings.school.count === 0) {
+                    alert("You must build a Gurukul (School) first!");
+                    return;
+                }
+
+                if (this.population.idle >= count) {
+                    this.population.idle -= count;
+                    this.population[type] += count;
+                }
+                this.updateUI();
+            }
+
+            removeWorker(type, count) {
+                if (this.population[type] >= count) {
+                    this.population[type] -= count;
+                    this.population.idle += count;
+                }
+                this.updateUI();
+            }
+
+            build(key) {
+                const b = this.buildings[key];
+                // Check costs
+                if (this.resources.food >= (b.cost.food || 0) &&
+                    this.resources.wood >= (b.cost.wood || 0) &&
+                    this.resources.stone >= (b.cost.stone || 0) &&
+                    this.resources.vidya >= (b.cost.vidya || 0)) {
+
+                    // Pay cost
+                    this.resources.food -= (b.cost.food || 0);
+                    this.resources.wood -= (b.cost.wood || 0);
+                    this.resources.stone -= (b.cost.stone || 0);
+                    this.resources.vidya -= (b.cost.vidya || 0);
+
+                    // Build
+                    b.count++;
+
+                    // Apply Effect
+                    if (b.effect) b.effect();
+
+                    // Increase cost for next one
+                    b.cost.wood = Math.ceil((b.cost.wood || 0) * 1.2);
+                    b.cost.stone = Math.ceil((b.cost.stone || 0) * 1.2);
+                    b.cost.food = Math.ceil((b.cost.food || 0) * 1.2);
+
+                    this.log(`Constructed ${b.name}`);
+                    this.renderBuildings(); // Re-render to update costs
+                    this.updateUI();
+                    this.checkObjective();
+                } else {
+                    alert("Not enough resources!");
+                }
+            }
+
+            performRitual(key) {
+                const r = this.rituals[key];
+                // Check Cost logic similar to build...
+                if (this.resources.food >= (r.cost.food || 0) &&
+                    this.resources.vidya >= (r.cost.vidya || 0)) {
+
+                    this.resources.food -= (r.cost.food || 0);
+                    this.resources.vidya -= (r.cost.vidya || 0);
+                    r.action();
+                    this.updateUI();
+                } else {
+                    alert("Cannot afford this ritual.");
+                }
+            }
+
+            advanceEra() {
+                if (this.state.era === "Early Vedic") {
+                    this.state.era = "Later Vedic";
+                    this.showModal("Era Advanced: Later Vedic Period", "Iron has been discovered! Agriculture expands. Caste divisions become more rigid, but administration improves. You are now a Rajan (King).");
+                    this.log("The tribe grows into a Kingdom.", "purple");
+                    this.buildings.school.cost.wood = 200; // Inflation
+                } else if (this.state.era === "Later Vedic") {
+                    this.state.era = "Mahajanapada";
+                    this.showModal("Era Advanced: Age of Mahajanapadas", "Great cities rise. Philosophy flourishes. Trade routes open to Taxila and Pataliputra.");
+                    this.log("Your kingdom is now a Great Realm.", "purple");
+                }
+            }
+
+            checkRandomEvent() {
+                const r = Math.random();
+                if (r < 0.1) {
+                    // Monsoon
+                    this.state.weather = "Monsoon";
+                    this.log("The Monsoon rains have arrived! Crops flourish.", "blue");
+                    setTimeout(() => {
+                        this.state.weather = "Normal";
+                        this.log("The rains have stopped.");
+                    }, 20000);
+                } else if (r < 0.15) {
+                    // Drought
+                    this.state.weather = "Drought";
+                    this.log("A severe drought strikes! Crops wither.", "red");
+                    setTimeout(() => {
+                        this.state.weather = "Normal";
+                        this.log("The drought has ended.");
+                    }, 15000);
+                } else if (r < 0.2) {
+                    // Wandering Sage
+                    this.resources.vidya += 10;
+                    this.log("A wandering Rishi visits, sharing ancient wisdom. (+10 Vidya)", "purple");
+                } else if (r < 0.25 && this.resources.food > 50) {
+                    // Rats
+                    const lost = Math.floor(this.resources.food * 0.1);
+                    this.resources.food -= lost;
+                    this.log(`Rats got into the granary! Lost ${lost} food.`, "orange");
+                }
+            }
+
+            checkObjective() {
+                const objText = document.getElementById('objective-text');
+                if (!objText) return;
+
+                if (this.buildings.hut.count < 3) {
+                    objText.innerText = "Build 3 Mud Huts to increase population capacity.";
+                } else if (this.population.farmer < 3) {
+                    objText.innerText = "Assign at least 3 Farmers to ensure steady food supply.";
+                } else if (this.resources.wood < 50) {
+                    objText.innerText = "Stockpile 50 Wood to build a Granary.";
+                } else if (this.buildings.granary.count < 1) {
+                    objText.innerText = "Build a Granary.";
+                } else if (this.buildings.school.count < 1) {
+                    objText.innerText = "Build a Gurukul to begin generating Vidya.";
+                } else {
+                    objText.innerText = "Expand your Kingdom! Aim for the Ashwamedha Yajna.";
+                }
+            }
+
+            // --- UI Helpers ---
+
+            updateUI() {
+                // Helper to safely set text
+                const safelySet = (id, val) => {
+                    const el = document.getElementById(id);
+                    if (el) el.innerText = val;
+                };
+
+                // Top Bar
+                safelySet('year-display', Math.floor(this.state.year) + " BCE");
+                safelySet('era-display', this.state.era);
+                safelySet('pop-display', `${this.population.total} / ${this.population.max}`);
+
+                // Resources
+                safelySet('res-food', Math.floor(this.resources.food));
+                safelySet('res-wood', Math.floor(this.resources.wood));
+                safelySet('res-stone', Math.floor(this.resources.stone));
+                safelySet('res-vidya', Math.floor(this.resources.vidya));
+
+                // Rates calculation for UI
+                let foodNet = (this.population.farmer * CONSTANTS.FOOD_PER_FARMER) - (this.population.total * CONSTANTS.CONSUMPTION_PER_PERSON);
+                if (this.state.weather === "Monsoon") foodNet += (this.population.farmer * CONSTANTS.FOOD_PER_FARMER * 0.5);
+                if (this.state.weather === "Drought") foodNet -= (this.population.farmer * CONSTANTS.FOOD_PER_FARMER * 0.5);
+
+                this.setRateColor('rate-food', foodNet);
+                this.setRateColor('rate-wood', this.population.woodcutter * CONSTANTS.WOOD_PER_CUTTER);
+                this.setRateColor('rate-stone', this.population.miner * CONSTANTS.STONE_PER_MINER);
+                this.setRateColor('rate-vidya', this.population.scholar * CONSTANTS.VIDYA_PER_SCHOLAR);
+
+                // Workers
+                safelySet('pop-idle', this.population.idle);
+                safelySet('count-farmer', this.population.farmer);
+                safelySet('count-woodcutter', this.population.woodcutter);
+                safelySet('count-miner', this.population.miner);
+                safelySet('count-scholar', this.population.scholar);
+
+                // Update Building Counts in buttons
+                for (let key in this.buildings) {
+                    const el = document.getElementById(`btn-build-${key}`);
+                    if (el) {
+                        const b = this.buildings[key];
+                        // Update cost text dynamically
+                        const costStr = Object.entries(b.cost).map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${v}`).join(', ');
+                        const costDisplay = el.querySelector('.cost-display');
+                        const countDisplay = el.querySelector('.count-display');
+
+                        if (costDisplay) costDisplay.innerText = costStr;
+                        if (countDisplay) countDisplay.innerText = b.count;
+
+                        // Disable if afford check fails (visual only)
+                        const canAfford = this.resources.food >= (b.cost.food || 0) && this.resources.wood >= (b.cost.wood || 0) && this.resources.stone >= (b.cost.stone || 0) && this.resources.vidya >= (b.cost.vidya || 0);
+                        if (!canAfford) el.classList.add('opacity-60');
+                        else el.classList.remove('opacity-60');
+                    }
+                }
+            }
+
+            setRateColor(id, val) {
+                const el = document.getElementById(id);
+                if (!el) return;
+                el.innerText = val.toFixed(1);
+                if (val > 0) el.className = "text-green-600 font-bold";
+                else if (val < 0) el.className = "text-red-600 font-bold";
+                else el.className = "text-gray-400";
+            }
+
+            renderBuildings() {
+                const container = document.getElementById('building-container');
+                if (!container) return;
+                container.innerHTML = '';
+
+                for (let [key, b] of Object.entries(this.buildings)) {
+                    const costStr = Object.entries(b.cost).map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${v}`).join(', ');
+
+                    const card = document.createElement('div');
+                    card.className = "bg-white p-4 rounded shadow-md border border-amber-200 flex flex-col justify-between h-full";
+                    card.innerHTML = `
+                        <div>
+                            <div class="flex justify-between items-start mb-2">
+                                <h4 class="font-bold text-[#78350f]"><i class="fas ${b.icon} mr-1"></i> ${b.name}</h4>
+                                <span class="bg-amber-100 text-amber-800 text-xs font-bold px-2 py-1 rounded count-display">${b.count}</span>
+                            </div>
+                            <p class="text-xs text-gray-600 mb-3 h-8">${b.desc}</p>
+                            <div class="text-xs font-mono text-[#b45309] mb-3 cost-display">${costStr}</div>
+                        </div>
+                        <button id="btn-build-${key}" onclick="window.game.build('${key}')" class="w-full bg-[#fcd34d] hover:bg-[#f59e0b] text-[#78350f] font-bold py-2 rounded text-sm transition-colors">
+                            Build
+                        </button>
+                    `;
+                    container.appendChild(card);
+                }
+            }
+
+            renderRituals() {
+                const container = document.getElementById('rituals-container');
+                if (!container) return;
+                container.innerHTML = '';
+
+                for (let [key, r] of Object.entries(this.rituals)) {
+                    const costStr = Object.entries(r.cost).map(([k, v]) => `${k.charAt(0).toUpperCase() + k.slice(1)}: ${v}`).join(', ');
+
+                    const card = document.createElement('div');
+                    card.className = "bg-[#fff7ed] p-4 rounded shadow-inner border border-orange-200";
+                    card.innerHTML = `
+                        <div class="flex justify-between items-center mb-1">
+                            <h4 class="font-bold text-[#9a3412]">${r.name}</h4>
+                        </div>
+                        <p class="text-xs text-gray-600 mb-2">${r.desc}</p>
+                        <div class="text-xs font-mono text-[#c2410c] mb-2">Cost: ${costStr}</div>
+                        <button onclick="window.game.performRitual('${key}')" class="w-full border border-[#ea580c] text-[#ea580c] hover:bg-[#ea580c] hover:text-white font-bold py-1 rounded text-xs transition-colors">
+                            Perform
+                        </button>
+                    `;
+                    container.appendChild(card);
+                }
+            }
+
+            log(msg, color = "gray") {
+                const log = document.getElementById('event-log');
+                if (!log) return;
+                const entry = document.createElement('div');
+                entry.className = `log-entry text-xs border-b border-amber-100 pb-1 mb-2 text-${color}-800`;
+                // Add Year stamp
+                entry.innerText = `[${Math.floor(this.state.year)} BC] ${msg}`;
+                log.prepend(entry);
+
+                // Keep log size manageable
+                if (log.children.length > 20) {
+                    log.lastChild.remove();
+                }
+            }
+
+            createFloater(x, y, text) {
+                const el = document.createElement('div');
+                el.innerText = text;
+                el.style.position = 'fixed';
+                el.style.left = x + 'px';
+                el.style.top = y + 'px';
+                el.style.pointerEvents = 'none';
+                el.style.color = '#d97706';
+                el.style.fontWeight = 'bold';
+                el.style.zIndex = '100';
+                el.style.transition = 'all 1s ease-out';
+                document.body.appendChild(el);
+
+                requestAnimationFrame(() => {
+                    el.style.transform = 'translateY(-50px)';
+                    el.style.opacity = '0';
+                });
+
+                setTimeout(() => el.remove(), 1000);
+            }
+
+            showModal(title, body) {
+                const elTitle = document.getElementById('modal-title');
+                const elBody = document.getElementById('modal-body');
+                const elOverlay = document.getElementById('modal-overlay');
+
+                if (elTitle) elTitle.innerText = title;
+                if (elBody) elBody.innerText = body;
+                if (elOverlay) elOverlay.classList.replace('hidden', 'flex');
+            }
+
+            closeModal() {
+                const el = document.getElementById('modal-overlay');
+                if (el) el.classList.replace('flex', 'hidden');
+            }
+        }
+
+        // Start Game when DOM is ready
+        window.addEventListener('DOMContentLoaded', () => {
+            window.game = new Game();
+        });
+
+    </script>
+</body>
+
+</html>

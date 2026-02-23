@@ -1,11 +1,27 @@
 const projects = [
   {
-    "name": "Idle Empire Builder Game",
-    "category": "FCC Project",
-    "image": "resource/Image/dreamscape.svg",
-    "link": "dreamscape/index.html",
-    "description": "A simulation-based browser game inspired by real estate dynamics, combining reflex-based gameplay with interactive decision-making elements. Players test their speed and timing by clicking on targets while managing virtual property outcomes.",
-    "tech": ["JavaScript", "HTML5", "CSS3", "Canvas API", "Game Design"]
+    name: "Bharatvarsha",
+    category: "personal",
+    image: "resource/Image/bharatvarsha.svg",
+    link: "bharatvarsha/index.html",
+    description: "This simulation places you in the role of a tribal chief in the Later Vedic period.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Logic"]
+  },
+  {
+    name: "Natural Selection Simulator",
+    category: "personal",
+    image: "resource/Image/naturalSelectionSim.svg",
+    link: "naturalSelectionSim/index.html",
+    description: "This project is an interactive evolution simulator where organisms with different traits survive, reproduce, mutate, and form new species in real time.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Physics"]
+  },
+  {
+    name: "Idle Empire Builder Game",
+    category: "FCC Project",
+    image: "resource/Image/dreamscape.svg",
+    link: "dreamscape/index.html",
+    description: "A simulation-based browser game inspired by real estate dynamics, combining reflex-based gameplay with interactive decision-making elements.",
+    tech: ["JavaScript", "HTML5", "CSS3", "Canvas API", "Game Design"]
   },
   {
     name: " Reflex Arena",
@@ -94,7 +110,7 @@ const projects = [
     link: "nineDimension/index.html",
     description: "Explore nine different dimensions with JavaScript physics simulations. Experience interactive visuals and physics-based animations.",
     tech: ["JavaScript", "HTML5", "CSS3", "Vectors", "Physics"]
-  },
+  }
 ];
 
 function generateProjectHTML(project) {

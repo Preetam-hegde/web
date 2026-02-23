@@ -1,0 +1,893 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Evolutionary Simulator v2.5</title>
+    <style>
+        :root {
+            --bg-color: #121212;
+            --panel-bg: rgba(20, 20, 20, 0.92);
+            --text-color: #e0e0e0;
+            --accent-color: #4caf50;
+            --danger-color: #ef5350;
+            --info-color: #29b6f6;
+            --border-color: #333;
+        }
+
+        body {
+            margin: 0;
+            padding: 0;
+            overflow: hidden;
+            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            user-select: none;
+        }
+
+        canvas { display: block; }
+
+        /* UI Layout */
+        #ui-layer {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .panel {
+            background: var(--panel-bg);
+            padding: 12px;
+            border-radius: 8px;
+            pointer-events: auto;
+            border: 1px solid var(--border-color);
+            backdrop-filter: blur(8px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            transition: all 0.3s ease;
+        }
+
+        /* Sidebar */
+        #sidebar {
+            position: absolute;
+            top: 10px;
+            left: 10px;
+            width: 280px;
+            max-height: calc(100vh - 20px);
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            z-index: 10;
+        }
+        
+        #sidebar::-webkit-scrollbar { width: 4px; }
+        #sidebar::-webkit-scrollbar-thumb { background: #555; border-radius: 2px; }
+
+        /* Right Side Stats */
+        #right-panel-container {
+            position: absolute;
+            top: 10px;
+            right: 10px;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            width: 240px;
+            z-index: 10;
+        }
+
+        /* Bottom Graph */
+        #graph-panel {
+            position: absolute;
+            bottom: 10px;
+            left: 300px;
+            right: 260px;
+            height: 140px;
+            display: flex;
+            flex-direction: column;
+            z-index: 5;
+        }
+
+        /* Legend Box */
+        #legend-box {
+            margin-top: 5px;
+            padding: 8px;
+            background: rgba(0,0,0,0.3);
+            border-radius: 4px;
+            font-size: 11px;
+            line-height: 1.4;
+            color: #ccc;
+            border-left: 2px solid var(--info-color);
+        }
+
+        /* Typography & Elements */
+        h2 {
+            margin: 0 0 8px 0;
+            font-size: 13px;
+            text-transform: uppercase;
+            color: #888;
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 4px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            letter-spacing: 0.5px;
+        }
+
+        .row { display: flex; gap: 5px; margin-bottom: 5px; }
+        
+        button {
+            background: #333;
+            color: white;
+            border: 1px solid #555;
+            padding: 6px 10px;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 11px;
+            flex: 1;
+            transition: all 0.2s;
+            font-weight: 500;
+        }
+        button:hover { background: #444; border-color: #666; }
+        button:active { transform: translateY(1px); }
+        
+        button.primary { background: var(--accent-color); border-color: #43a047; color: #fff; }
+        button.primary:hover { background: #43a047; }
+        button.danger { border-color: var(--danger-color); color: var(--danger-color); background: transparent; }
+        button.danger:hover { background: var(--danger-color); color: white; }
+
+        /* Collapsible Accordions */
+        .accordion-btn {
+            width: 100%;
+            text-align: left;
+            background: #2a2a2a;
+            border: none;
+            color: #ccc;
+            padding: 8px;
+            cursor: pointer;
+            font-size: 12px;
+            display: flex;
+            align-items: center;
+            border-radius: 4px;
+            margin-bottom: 2px;
+            border: 1px solid transparent;
+        }
+        .accordion-btn:hover { background: #333; }
+        .accordion-btn.active { background: #333; border-color: #444; color: var(--accent-color); }
+        .accordion-btn::after { content: '+'; margin-left: auto; font-weight: bold; }
+        .accordion-btn.active::after { content: '−'; }
+
+        .collapsible-content {
+            max-height: 0;
+            overflow: hidden;
+            transition: max-height 0.3s ease-out;
+            background: rgba(0,0,0,0.2);
+            border-radius: 0 0 4px 4px;
+            margin-bottom: 5px;
+        }
+        .collapsible-content.open { max-height: 500px; transition: max-height 0.5s ease-in; }
+        .inner-pad { padding: 10px; }
+
+        /* Controls */
+        label { display: flex; justify-content: space-between; font-size: 10px; color: #aaa; margin-bottom: 4px; text-transform: uppercase; }
+        input[type=range] {
+            width: 100%; height: 4px; background: #444; outline: none; -webkit-appearance: none; border-radius: 2px; margin-bottom: 8px;
+        }
+        input[type=range]::-webkit-slider-thumb {
+            -webkit-appearance: none; width: 12px; height: 12px; background: #bbb; border-radius: 50%; cursor: pointer;
+        }
+        select, input[type=text] {
+            width: 100%; background: #222; color: #eee; border: 1px solid #444; padding: 6px; border-radius: 4px; margin-bottom: 10px; font-size: 11px;
+        }
+
+        .stat-row { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid #2a2a2a; }
+        .stat-val { font-family: monospace; font-weight: bold; }
+
+        /* Modal */
+        #modal-overlay {
+            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0,0,0,0.8);
+            z-index: 100;
+            display: none;
+            align-items: center;
+            justify-content: center;
+        }
+        #theory-modal {
+            background: #1e1e1e; width: 600px; max-width: 90%; max-height: 85vh;
+            overflow-y: auto; border-radius: 8px; padding: 25px;
+            border: 1px solid #444; box-shadow: 0 0 30px rgba(0,0,0,0.9);
+        }
+        #theory-modal h2 { color: var(--info-color); border-color: var(--info-color); margin-bottom: 15px; }
+        #theory-modal p { font-size: 14px; line-height: 1.6; color: #ccc; margin-bottom: 15px; }
+        #theory-modal strong { color: white; }
+
+        /* Graph */
+        #graph-canvas { width: 100%; height: 100%; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; cursor: pointer; }
+
+        @media (max-width: 800px) {
+            #graph-panel { display: none; }
+            #right-panel-container { display: none; }
+            #sidebar { width: 240px; }
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="simCanvas"></canvas>
+
+    <div id="ui-layer">
+        <!-- Left Sidebar -->
+        <div id="sidebar" class="panel">
+            <h2>
+                Simulator Controls
+                <button class="info" id="btn-theory" style="flex:0; padding:2px 8px; font-size:10px; margin-left:10px;">Theory</button>
+            </h2>
+
+            <div class="row">
+                <button id="btn-pause" class="primary">Pause</button>
+                <button id="btn-reset" class="danger">Reset</button>
+            </div>
+
+            <!-- Visualization Settings -->
+            <div style="margin-bottom: 10px;">
+                <label>View Mode</label>
+                <select id="view-mode">
+                    <option value="traits">Phenotype (Traits)</option>
+                    <option value="species">Species (Lineage)</option>
+                    <option value="energy">Metabolic Energy</option>
+                </select>
+                <div id="legend-box">
+                    <!-- Dynamic Legend Content -->
+                </div>
+            </div>
+
+            <!-- Accordion: Environment -->
+            <button class="accordion-btn" data-target="sect-env">Environment Settings</button>
+            <div id="sect-env" class="collapsible-content">
+                <div class="inner-pad">
+                    <label>Food Abundance <span><span id="val-food-rate">5</span>%</span></label>
+                    <input type="range" id="food-rate" min="0" max="50" value="5">
+                    
+                    <label>Genetic Drift (Mutation) <span><span id="val-mut-rate">10</span>%</span></label>
+                    <input type="range" id="mut-rate" min="0" max="100" value="10">
+                    
+                    <label>Food Energy Value <span id="val-food-energy">25</span></label>
+                    <input type="range" id="food-energy" min="10" max="100" value="25">
+                </div>
+            </div>
+
+            <!-- Accordion: Advanced Theory -->
+            <button class="accordion-btn" data-target="sect-theory">Metabolic Costs</button>
+            <div id="sect-theory" class="collapsible-content">
+                <div class="inner-pad">
+                    <div style="font-size:10px; color:#777; margin-bottom:8px;">Higher costs = harder survival</div>
+                    <label>Cost of Speed <span id="val-cost-speed">High</span></label>
+                    <input type="range" id="cost-speed" min="0" max="50" value="30">
+                    
+                    <label>Cost of Size <span id="val-cost-size">Medium</span></label>
+                    <input type="range" id="cost-size" min="0" max="50" value="20">
+                    
+                    <label>Cost of Senses <span id="val-cost-sense">Low</span></label>
+                    <input type="range" id="cost-sense" min="0" max="50" value="5">
+                </div>
+            </div>
+
+            <!-- Accordion: Spawner -->
+            <button class="accordion-btn" data-target="sect-spawn">Custom Organism</button>
+            <div id="sect-spawn" class="collapsible-content">
+                <div class="inner-pad">
+                    <label>Species Name</label>
+                    <input type="text" id="spawn-name" placeholder="e.g. Titanus Rex" maxlength="15">
+
+                    <label>Velocity <span id="disp-spawn-speed">4</span></label>
+                    <input type="range" id="spawn-speed" min="1" max="10" value="4" step="0.5">
+                    
+                    <label>Mass <span id="disp-spawn-size">8</span></label>
+                    <input type="range" id="spawn-size" min="4" max="25" value="8" step="0.5">
+                    
+                    <label>Sense Radius <span id="disp-spawn-sense">50</span></label>
+                    <input type="range" id="spawn-sense" min="10" max="150" value="50" step="5">
+                    
+                    <button id="btn-spawn" class="primary" style="width:100%; margin-top:5px;">Inject Organism</button>
+                </div>
+            </div>
+            
+            <div style="font-size: 10px; color: #555; margin-top:10px; text-align:center;">
+                v2.5 | Click canvas to add food
+            </div>
+        </div>
+
+        <!-- Right Panel Container -->
+        <div id="right-panel-container">
+            <div class="panel">
+                <h2>Live Data</h2>
+                <div class="stat-row"><span>Population</span> <span id="stat-pop" class="stat-val">0</span></div>
+                <div class="stat-row"><span>Resources</span> <span id="stat-food" class="stat-val">0</span></div>
+                <div class="stat-row"><span>Generation</span> <span id="stat-gen" class="stat-val">0</span></div>
+                <div style="margin-top:8px; border-top:1px solid #333; padding-top:5px;">
+                    <div class="stat-row" style="color:#ff6b6b"><span>Avg Speed</span> <span id="stat-avg-speed" class="stat-val">0</span></div>
+                    <div class="stat-row" style="color:#4ecdc4"><span>Avg Size</span> <span id="stat-avg-size" class="stat-val">0</span></div>
+                    <div class="stat-row" style="color:#ffe66d"><span>Avg Sense</span> <span id="stat-avg-sense" class="stat-val">0</span></div>
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Dominant Species</h2>
+                <div id="species-list" style="font-size:11px; min-height:40px;"></div>
+            </div>
+        </div>
+
+        <!-- Graph Panel -->
+        <div id="graph-panel" class="panel">
+            <h2 style="border:none; margin-bottom:2px;">
+                <span id="graph-title">Genetic Trends</span>
+                <span style="font-size:9px; color:#555; cursor:pointer;">(Click graph to switch)</span>
+            </h2>
+            <canvas id="graph-canvas"></canvas>
+        </div>
+    </div>
+
+    <!-- Theory Modal -->
+    <div id="modal-overlay">
+        <div id="theory-modal">
+            <h2>Theory Guide: Natural Selection</h2>
+            <p><strong>1. Variation (Phenotype):</strong><br>
+            Every blob has unique traits: <em>Speed</em>, <em>Size</em>, and <em>Sense Radius</em>. In 'Traits' view, Red blobs are fast/agile, Blue are slow/efficient.</p>
+            
+            <p><strong>2. Inheritance (Genotype):</strong><br>
+            When a blob eats enough to replicate, it passes its 'Genes' to offspring with slight random mutations. This introduces variation into the gene pool.</p>
+            
+            <p><strong>3. Selection Pressure:</strong><br>
+            Energy is life. Moving fast and being big burns energy rapidly. Blobs must eat to survive. If they run out of energy, they die. This "culls" inefficient designs.</p>
+            
+            <p><strong>4. Speciation:</strong><br>
+            If an offspring is genetically distinct enough (>20% difference) from its parent, it is classified as a new species with a unique Latin name.</p>
+            
+            <div style="text-align:right; margin-top:20px;">
+                <button class="primary" id="btn-close-modal" style="width: 100px;">Close</button>
+            </div>
+        </div>
+    </div>
+
+<script>
+/**
+ * MATH & UTILS
+ */
+const Vector = {
+    add: (v1, v2) => ({ x: v1.x + v2.x, y: v1.y + v2.y }),
+    sub: (v1, v2) => ({ x: v1.x - v2.x, y: v1.y - v2.y }),
+    mult: (v, n) => ({ x: v.x * n, y: v.y * n }),
+    mag: (v) => Math.sqrt(v.x * v.x + v.y * v.y),
+    dist: (v1, v2) => Math.sqrt((v1.x - v2.x) ** 2 + (v1.y - v2.y) ** 2),
+    normalize: (v) => {
+        let m = Math.sqrt(v.x * v.x + v.y * v.y);
+        return m === 0 ? { x: 0, y: 0 } : { x: v.x / m, y: v.y / m };
+    },
+    random: () => {
+        let angle = Math.random() * Math.PI * 2;
+        return { x: Math.cos(angle), y: Math.sin(angle) };
+    },
+    limit: (v, max) => {
+        let m = Math.sqrt(v.x * v.x + v.y * v.y);
+        if (m > max) {
+            return { x: (v.x / m) * max, y: (v.y / m) * max };
+        }
+        return v;
+    }
+};
+
+// Naming System
+const ROOTS = {
+    speed: { low: ["Tardus", "Lentus", "Segnis", "Quietus"], mid: ["Medius", "Vagus", "Ambul"], high: ["Velox", "Celer", "Rapidus", "Presto"] },
+    size: { low: ["Minimus", "Parvus", "Micro", "Nan"], mid: ["Modus", "Norm", "Forma"], high: ["Magnus", "Gigas", "Titan", "Coloss"] },
+    suffix: ["blob", "zoa", "form", "us", "ex", "a"]
+};
+
+function generateSpeciesName(genes) {
+    let pArr = genes.speed < 3 ? ROOTS.speed.low : (genes.speed > 6 ? ROOTS.speed.high : ROOTS.speed.mid);
+    let prefix = pArr[Math.floor(Math.random() * pArr.length)];
+    
+    let sArr = genes.size < 6 ? ROOTS.size.low : (genes.size > 12 ? ROOTS.size.high : ROOTS.size.mid);
+    let root = sArr[Math.floor(Math.random() * sArr.length)];
+    
+    // Random suffix for variety
+    let suf = ROOTS.suffix[Math.floor(Math.random() * ROOTS.suffix.length)];
+
+    return `${prefix} ${root}${suf}`;
+}
+
+/**
+ * CONFIGURATION
+ */
+const CONFIG = {
+    initialPop: 30,
+    maxEnergy: 200,
+    reprThreshold: 120,
+    reprCost: 60,
+    
+    foodSpawnChance: 0.05,
+    mutationRate: 0.1,
+    foodEnergy: 25,
+    
+    costSpeed: 0.005, 
+    costSize: 0.003,
+    costSense: 0.0002,
+    baseMetabolism: 0.1
+};
+
+/**
+ * STATE
+ */
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
+let width, height;
+let agents = [];
+let food = [];
+let frameId;
+let lastTime = 0;
+let paused = false;
+let viewMode = 'traits'; // traits, species, energy
+let graphMode = 'genetics'; // genetics, population
+let historyStats = [];
+
+/**
+ * CLASSES
+ */
+class Agent {
+    constructor(x, y, genes, parentName) {
+        this.pos = { x, y };
+        this.vel = Vector.random();
+        this.acc = { x: 0, y: 0 };
+        
+        this.genes = genes || {
+            speed: 2 + Math.random() * 4,
+            size: 5 + Math.random() * 10,
+            sense: 30 + Math.random() * 70,
+            generation: 1
+        };
+        
+        this.speciesName = parentName || generateSpeciesName(this.genes);
+        this.speciesColor = this.getSpeciesColor();
+
+        this.energy = 80;
+        this.maxSpeed = this.genes.speed;
+        this.maxForce = 0.5;
+        this.dead = false;
+        
+        // Visuals
+        this.wobble = Math.random() * Math.PI * 2;
+    }
+
+    getSpeciesColor() {
+        let hash = 0;
+        for (let i = 0; i < this.speciesName.length; i++) {
+            hash = this.speciesName.charCodeAt(i) + ((hash << 5) - hash);
+        }
+        return `hsl(${Math.abs(hash) % 360}, 75%, 60%)`;
+    }
+
+    update(dt) {
+        if (this.dead) return;
+        this.wobble += dt * 5;
+
+        // Metabolism
+        const speedCost = (this.genes.speed ** 2) * CONFIG.costSpeed;
+        const sizeCost = (this.genes.size ** 3) * CONFIG.costSize;
+        const senseCost = this.genes.sense * CONFIG.costSense;
+        const metabolicLoss = (CONFIG.baseMetabolism + speedCost + sizeCost + senseCost) * dt;
+        
+        this.energy -= metabolicLoss;
+        if (this.energy <= 0) { this.dead = true; return; }
+
+        // Behavior
+        this.forage();
+        this.move(dt);
+        this.boundaries();
+    }
+
+    forage() {
+        let closest = null;
+        let minDist = Infinity;
+
+        for (let i = food.length - 1; i >= 0; i--) {
+            const d = Vector.dist(this.pos, food[i]);
+            if (d < this.genes.size) {
+                this.energy += CONFIG.foodEnergy;
+                if (this.energy > CONFIG.maxEnergy) this.energy = CONFIG.maxEnergy;
+                food.splice(i, 1);
+                continue;
+            }
+            if (d < this.genes.sense && d < minDist) {
+                minDist = d;
+                closest = food[i];
+            }
+        }
+
+        if (closest) this.seek(closest);
+        else this.wander();
+    }
+
+    seek(target) {
+        let desired = Vector.sub(target, this.pos);
+        desired = Vector.normalize(desired);
+        desired = Vector.mult(desired, this.maxSpeed);
+        let steer = Vector.sub(desired, this.vel);
+        steer = Vector.limit(steer, this.maxForce);
+        this.acc = Vector.add(this.acc, steer);
+    }
+
+    wander() {
+        if (Math.random() < 0.05) {
+            let r = Vector.random();
+            r = Vector.mult(r, this.maxForce);
+            this.acc = Vector.add(this.acc, r);
+        }
+    }
+
+    move(dt) {
+        this.vel = Vector.add(this.vel, this.acc);
+        this.vel = Vector.limit(this.vel, this.maxSpeed);
+        let moveStep = Vector.mult(this.vel, dt * 60);
+        this.pos = Vector.add(this.pos, moveStep);
+        this.acc = { x: 0, y: 0 };
+    }
+
+    boundaries() {
+        const m = this.genes.size;
+        if (this.pos.x < m) { this.pos.x = m; this.vel.x *= -1; }
+        if (this.pos.x > width - m) { this.pos.x = width - m; this.vel.x *= -1; }
+        if (this.pos.y < m) { this.pos.y = m; this.vel.y *= -1; }
+        if (this.pos.y > height - m) { this.pos.y = height - m; this.vel.y *= -1; }
+    }
+
+    reproduce() {
+        if (this.dead) return null;
+        if (this.energy > CONFIG.reprThreshold) {
+            this.energy -= CONFIG.reprCost;
+            const mRate = CONFIG.mutationRate;
+            
+            const newGenes = {
+                speed: Math.max(1, this.genes.speed + (Math.random() * 2 - 1) * mRate * 2),
+                size: Math.max(3, this.genes.size + (Math.random() * 2 - 1) * mRate * 2),
+                sense: Math.max(10, this.genes.sense + (Math.random() * 2 - 1) * mRate * 20),
+                generation: this.genes.generation + 1
+            };
+
+            let diff = Math.abs(newGenes.speed - this.genes.speed)/this.genes.speed +
+                       Math.abs(newGenes.size - this.genes.size)/this.genes.size;
+            
+            let childName = this.speciesName;
+            if (diff > 0.2) childName = generateSpeciesName(newGenes);
+
+            return new Agent(this.pos.x, this.pos.y, newGenes, childName);
+        }
+        return null;
+    }
+
+    draw() {
+        ctx.save();
+        ctx.translate(this.pos.x, this.pos.y);
+
+        // Determine Color
+        let fillStyle;
+        if (viewMode === 'species') {
+            fillStyle = this.speciesColor;
+        } else if (viewMode === 'energy') {
+            let e = Math.max(0, Math.min(1, this.energy / CONFIG.maxEnergy));
+            fillStyle = `rgb(${255 * (1-e)}, ${255 * e}, 0)`;
+        } else {
+            // Traits: Red=Fast, Blue=Slow
+            let speedNorm = Math.min(1, (this.genes.speed - 1) / 8);
+            let r = 40 + speedNorm * 215;
+            let b = 255 - speedNorm * 200;
+            fillStyle = `rgba(${r}, 60, ${b}, 0.9)`;
+        }
+
+        // Velocity Deformation (Squash and Stretch)
+        let speed = Vector.mag(this.vel);
+        let angle = Math.atan2(this.vel.y, this.vel.x);
+        ctx.rotate(angle);
+        
+        // Stretch based on speed
+        let stretch = 1 + (speed * 0.05); 
+        ctx.scale(stretch, 1/stretch);
+
+        // Main Body (Cell Membrane)
+        ctx.fillStyle = fillStyle;
+        ctx.beginPath();
+        ctx.arc(0, 0, this.genes.size, 0, Math.PI * 2);
+        ctx.fill();
+
+        // Internal Nucleus (Energy Indicator)
+        let nSize = this.genes.size * 0.4;
+        let eRatio = this.energy / CONFIG.maxEnergy;
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + eRatio * 0.4})`;
+        ctx.beginPath();
+        ctx.arc(nSize/2, 0, nSize * eRatio, 0, Math.PI * 2); // Offset nucleus slightly
+        ctx.fill();
+
+        ctx.restore();
+
+        // Draw Sense Radius (only if hovered or specific view)
+        if (viewMode === 'traits' && Math.random() < 0.01) {
+            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
+            ctx.beginPath();
+            ctx.arc(this.pos.x, this.pos.y, this.genes.sense, 0, Math.PI * 2);
+            ctx.stroke();
+        }
+    }
+}
+
+/**
+ * ENGINE
+ */
+function init() {
+    resize();
+    agents = [];
+    food = [];
+    historyStats = [];
+    
+    // Initial Spawn
+    for(let i=0; i<CONFIG.initialPop; i++) {
+        agents.push(new Agent(Math.random() * width, Math.random() * height));
+    }
+    for(let i=0; i<50; i++) spawnFood();
+    
+    updateLegend();
+    lastTime = performance.now();
+    requestAnimationFrame(loop);
+}
+
+function spawnFood(x, y) {
+    food.push({
+        x: x || Math.random() * (width - 20) + 10,
+        y: y || Math.random() * (height - 20) + 10
+    });
+}
+
+function loop(timestamp) {
+    if (!lastTime) lastTime = timestamp;
+    let dt = (timestamp - lastTime) / 1000;
+    lastTime = timestamp;
+    if (dt > 0.1) dt = 0.1;
+
+    if (!paused) {
+        update(dt);
+        draw();
+        updateStats();
+    }
+    frameId = requestAnimationFrame(loop);
+}
+
+function update(dt) {
+    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-color');
+    ctx.fillRect(0, 0, width, height);
+
+    if (Math.random() < CONFIG.foodSpawnChance) spawnFood();
+
+    for (let i = agents.length - 1; i >= 0; i--) {
+        let a = agents[i];
+        a.update(dt);
+        if (a.dead) agents.splice(i, 1);
+        else {
+            let child = a.reproduce();
+            if (child) agents.push(child);
+        }
+    }
+}
+
+function draw() {
+    ctx.fillStyle = '#66bb6a';
+    for (let f of food) {
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 3, 0, Math.PI * 2);
+        ctx.fill();
+    }
+    for (let a of agents) a.draw();
+}
+
+function updateStats() {
+    if (Math.random() > 0.1) return; 
+
+    let totalSpeed = 0, totalSize = 0, totalSense = 0, maxGen = 0;
+    let speciesCounts = {};
+
+    agents.forEach(a => {
+        totalSpeed += a.genes.speed;
+        totalSize += a.genes.size;
+        totalSense += a.genes.sense;
+        if (a.genes.generation > maxGen) maxGen = a.genes.generation;
+        if (!speciesCounts[a.speciesName]) speciesCounts[a.speciesName] = 0;
+        speciesCounts[a.speciesName]++;
+    });
+
+    let pop = agents.length;
+    if (pop > 0) {
+        document.getElementById('stat-pop').innerText = pop;
+        document.getElementById('stat-food').innerText = food.length;
+        document.getElementById('stat-gen').innerText = maxGen;
+        
+        let avgSpeed = totalSpeed / pop;
+        let avgSize = totalSize / pop;
+        let avgSense = totalSense / pop;
+
+        document.getElementById('stat-avg-speed').innerText = avgSpeed.toFixed(2);
+        document.getElementById('stat-avg-size').innerText = avgSize.toFixed(2);
+        document.getElementById('stat-avg-sense').innerText = avgSense.toFixed(1);
+
+        // Top Species
+        let sortedSpecies = Object.entries(speciesCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
+        let html = "";
+        sortedSpecies.forEach(([name, count]) => {
+            html += `<div style="display:flex; justify-content:space-between; margin-bottom:2px; color:#ccc;">
+                        <span>${name}</span> <span>${count}</span>
+                     </div>`;
+        });
+        document.getElementById('species-list').innerHTML = html;
+
+        // Graph History
+        if (Math.random() < 0.05) {
+            historyStats.push({ 
+                speed: avgSpeed, size: avgSize, sense: avgSense,
+                pop: pop, food: food.length 
+            });
+            if (historyStats.length > 100) historyStats.shift();
+            drawGraph();
+        }
+    } else {
+        document.getElementById('stat-pop').innerText = "EXTINCT";
+    }
+}
+
+function drawGraph() {
+    const gCanvas = document.getElementById('graph-canvas');
+    const gCtx = gCanvas.getContext('2d');
+    const w = gCanvas.width;
+    const h = gCanvas.height;
+    gCtx.clearRect(0, 0, w, h);
+    
+    if (historyStats.length < 2) return;
+
+    const drawLine = (fn, color, maxVal) => {
+        gCtx.strokeStyle = color;
+        gCtx.lineWidth = 2;
+        gCtx.beginPath();
+        historyStats.forEach((stat, i) => {
+            let x = (i / (historyStats.length - 1)) * w;
+            let val = fn(stat);
+            let y = h - (val / maxVal) * h;
+            if (i===0) gCtx.moveTo(x,y); else gCtx.lineTo(x,y);
+        });
+        gCtx.stroke();
+    };
+
+    if (graphMode === 'genetics') {
+        document.getElementById('graph-title').innerText = "Average Phenotypes";
+        drawLine(s => s.speed, '#ff6b6b', 12); // Speed (Red)
+        drawLine(s => s.size, '#4ecdc4', 25);  // Size (Cyan)
+        drawLine(s => s.sense, '#ffe66d', 150); // Sense (Yellow)
+    } else {
+        document.getElementById('graph-title').innerText = "Population vs Resources";
+        // Auto-scale pop graph
+        let maxPop = Math.max(...historyStats.map(s => s.pop)) * 1.2 || 100;
+        let maxFood = Math.max(...historyStats.map(s => s.food)) * 1.2 || 100;
+        
+        drawLine(s => s.pop, '#fff', maxPop); // White for Pop
+        drawLine(s => s.food, '#66bb6a', maxFood); // Green for Food
+    }
+}
+
+function updateLegend() {
+    const lb = document.getElementById('legend-box');
+    if (viewMode === 'traits') {
+        lb.innerHTML = `
+            <span style="color:#ff6b6b">● Redish</span> = Fast / High Metabolism<br>
+            <span style="color:#4a90e2">● Blueish</span> = Slow / Efficient<br>
+            <span style="color:#ccc">○ Circle</span> = Size (Mass)<br>
+            <span style="color:#fff; opacity:0.5">● Nucleus</span> = Energy Reserves
+        `;
+    } else if (viewMode === 'species') {
+        lb.innerHTML = `
+            Colors represent unique <br><strong>Species Lineages</strong>.<br>
+            New color = Significant genetic drift from parent.
+        `;
+    } else if (viewMode === 'energy') {
+        lb.innerHTML = `
+            <span style="color:#66bb6a">● Green</span> = Full Energy<br>
+            <span style="color:#ef5350">● Red</span> = Starving / Dying
+        `;
+    }
+}
+
+/**
+ * UI & EVENTS
+ */
+function resize() {
+    width = window.innerWidth;
+    height = window.innerHeight;
+    canvas.width = width;
+    canvas.height = height;
+    let g = document.getElementById('graph-canvas');
+    let r = g.getBoundingClientRect();
+    g.width = r.width;
+    g.height = r.height;
+}
+window.addEventListener('resize', resize);
+
+// Accordions
+document.querySelectorAll('.accordion-btn').forEach(btn => {
+    btn.addEventListener('click', () => {
+        btn.classList.toggle('active');
+        const content = document.getElementById(btn.dataset.target);
+        content.classList.toggle('open');
+    });
+});
+
+// Graph Toggle
+document.getElementById('graph-canvas').addEventListener('click', () => {
+    graphMode = (graphMode === 'genetics') ? 'population' : 'genetics';
+    drawGraph();
+});
+
+// View Mode
+document.getElementById('view-mode').addEventListener('change', (e) => {
+    viewMode = e.target.value;
+    updateLegend();
+});
+
+// Sliders
+const linkSlider = (id, scale=1) => {
+    const el = document.getElementById(id);
+    const disp = document.getElementById(`val-${id}`) || document.getElementById(`disp-${id}`);
+    el.addEventListener('input', () => {
+        let val = parseFloat(el.value);
+        if (disp) disp.innerText = val;
+        if (id === 'food-rate') CONFIG.foodSpawnChance = val/100;
+        else if (id === 'mut-rate') CONFIG.mutationRate = val/100;
+        else if (id === 'cost-speed') CONFIG.costSpeed = val*0.0005;
+        else if (id === 'cost-size') CONFIG.costSize = val*0.0002;
+        else if (id === 'cost-sense') CONFIG.costSense = val*0.00005;
+        else if (id === 'food-energy') CONFIG.foodEnergy = val;
+    });
+};
+['food-rate', 'mut-rate', 'cost-speed', 'cost-size', 'cost-sense', 'food-energy', 'spawn-speed', 'spawn-size', 'spawn-sense'].forEach(id => linkSlider(id));
+
+// Custom Spawn
+document.getElementById('btn-spawn').onclick = () => {
+    let sp = parseFloat(document.getElementById('spawn-speed').value);
+    let sz = parseFloat(document.getElementById('spawn-size').value);
+    let se = parseFloat(document.getElementById('spawn-sense').value);
+    let name = document.getElementById('spawn-name').value || "Designatus X";
+    
+    let genes = { speed: sp, size: sz, sense: se, generation: 0 };
+    let a = new Agent(Math.random()*width, Math.random()*height, genes, name);
+    a.energy = 150; 
+    agents.push(a);
+};
+
+// Controls
+document.getElementById('btn-pause').onclick = (e) => {
+    paused = !paused;
+    e.target.innerText = paused ? "Resume" : "Pause";
+    e.target.classList.toggle('primary');
+};
+document.getElementById('btn-reset').onclick = init;
+
+// Modal
+const modal = document.getElementById('modal-overlay');
+document.getElementById('btn-theory').onclick = () => modal.style.display = 'flex';
+document.getElementById('btn-close-modal').onclick = () => modal.style.display = 'none';
+modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
+
+// Canvas Interaction
+canvas.addEventListener('mousedown', (e) => {
+    for(let i=0; i<10; i++) spawnFood(e.clientX + (Math.random()*40-20), e.clientY + (Math.random()*40-20));
+});
+
+init();
+</script>
+</body>
+</html>
