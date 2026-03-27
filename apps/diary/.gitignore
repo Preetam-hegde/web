@@ -1,0 +1,5 @@
+# Global .env is managed at workspace root
+# Local IDE files
+.vscode/
+.idea/
+

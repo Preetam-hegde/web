@@ -5,18 +5,114 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Geolocation Finder</title>
     <link rel="stylesheet" href="styles.css">
+    <link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 </head>
 <body>
 
     <div class="bg"></div>
     <div class="bg bg2"></div>
     <div class="bg bg3"></div>
-    <div class="content">
+    <main class="content">
         <h1>Geolocation Finder</h1>
-        <button class="find-me" id="find-me">Show my location</button>
-        <p id="status"></p>
-        <a id="map-link" href="#" target="_blank" rel="noopener noreferrer"></a>
-    </div>
+        <p class="lead">Find your precise coordinates, nearby address, and open the spot in your favorite maps app.</p>
+
+        <div class="controls">
+            <button class="find-me" id="find-me" type="button">Detect My Location</button>
+            <p class="permission-hint" id="permission-hint"></p>
+        </div>
+
+        <p id="status" class="status" role="status" aria-live="polite"></p>
+
+        <section id="location-card" class="location-card hidden" aria-live="polite">
+            <div class="coordinate-grid">
+                <div class="coordinate">
+                    <span class="label">Latitude</span>
+                    <div class="value-row">
+                        <span id="latitude" class="value">—</span>
+                        <button class="icon-button" type="button" data-copy="latitude" aria-label="Copy latitude">Copy</button>
+                    </div>
+                </div>
+                <div class="coordinate">
+                    <span class="label">Longitude</span>
+                    <div class="value-row">
+                        <span id="longitude" class="value">—</span>
+                        <button class="icon-button" type="button" data-copy="longitude" aria-label="Copy longitude">Copy</button>
+                    </div>
+                </div>
+            </div>
+
+            <dl class="meta">
+                <div>
+                    <dt>Accuracy</dt>
+                    <dd id="accuracy">—</dd>
+                </div>
+                <div>
+                    <dt>Altitude</dt>
+                    <dd id="altitude">—</dd>
+                </div>
+                <div>
+                    <dt>Speed</dt>
+                    <dd id="speed">—</dd>
+                </div>
+                <div>
+                    <dt>Bearing</dt>
+                    <dd id="heading">—</dd>
+                </div>
+                <div>
+                    <dt>Timestamp</dt>
+                    <dd id="timestamp">—</dd>
+                </div>
+            </dl>
+
+            <p class="address" id="address">Fetching nearby address…</p>
+
+            <div class="map-links">
+                <a id="osm-link" href="#" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
+                <a id="google-link" href="#" target="_blank" rel="noopener noreferrer">Google Maps</a>
+                <a id="apple-link" href="#" target="_blank" rel="noopener noreferrer">Apple Maps</a>
+            </div>
+        </section>
+
+        <section id="map-section" class="map-section hidden" aria-label="Map preview">
+            <iframe id="map-frame" title="Location preview" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+        </section>
+
+        <section class="actions">
+            <button id="track-toggle" type="button">Start Live Tracking</button>
+            <button id="share-location" type="button">Share Location</button>
+            <button id="download-gpx" type="button">Download GPX</button>
+        </section>
+
+        <section id="sun-card" class="sun-card hidden" aria-live="polite">
+            <h2>Sun &amp; Daylight</h2>
+            <dl class="sun-grid">
+                <div>
+                    <dt>Sunrise</dt>
+                    <dd id="sunrise">—</dd>
+                </div>
+                <div>
+                    <dt>Sunset</dt>
+                    <dd id="sunset">—</dd>
+                </div>
+                <div>
+                    <dt>Golden Hour</dt>
+                    <dd id="golden-hour">—</dd>
+                </div>
+                <div>
+                    <dt>Day Length</dt>
+                    <dd id="day-length">—</dd>
+                </div>
+            </dl>
+        </section>
+
+        <section id="history-section" class="history hidden" aria-live="polite">
+            <div class="history-header">
+                <h2>Location History</h2>
+                <button id="clear-history" type="button" class="icon-button">Clear</button>
+            </div>
+            <ol id="history-list" class="history-list"></ol>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 

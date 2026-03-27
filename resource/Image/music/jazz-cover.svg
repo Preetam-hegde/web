@@ -1,0 +1,23 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Night Jazz Cover</title>
+  <desc id="desc">Warm jazz cover art with saxophone curves and neon nightlife colors.</desc>
+  <defs>
+    <linearGradient id="bg" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#f97316"/>
+      <stop offset="100%" stop-color="#3b0764"/>
+    </linearGradient>
+    <linearGradient id="sax" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="100%" stop-color="#f59e0b"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#bg)"/>
+  <circle cx="118" cy="110" r="40" fill="#fff7ed" fill-opacity="0.45"/>
+  <path d="M301 106C272 132 275 173 296 204C322 240 322 274 298 304C276 330 252 342 220 342" fill="none" stroke="url(#sax)" stroke-width="22" stroke-linecap="round"/>
+  <circle cx="214" cy="352" r="42" fill="#fb923c"/>
+  <rect x="315" y="184" width="26" height="118" rx="13" fill="#fde68a"/>
+  <rect x="350" y="184" width="26" height="118" rx="13" fill="#fde68a"/>
+  <rect x="385" y="184" width="26" height="118" rx="13" fill="#fde68a"/>
+  <text x="36" y="430" font-family="Courier New, monospace" font-size="58" fill="#ffedd5" font-weight="700">NIGHT JAZZ</text>
+  <text x="36" y="468" font-family="Courier New, monospace" font-size="24" fill="#fdba74">LATE CAFE JAZZ</text>
+</svg>

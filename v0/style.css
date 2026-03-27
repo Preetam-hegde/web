@@ -1480,9 +1480,11 @@ body::before {
 }
 
 .cover-art {
+    display: block;
     width: 132px;
     height: 132px;
     border-radius: 8px;
+    object-fit: cover;
     border: 1px solid rgba(255, 255, 255, 0.22);
     box-shadow: 0 0 18px rgba(0, 255, 153, 0.22);
     background:
@@ -1565,6 +1567,10 @@ body::before {
 }
 
 .music-album {
+    appearance: none;
+    -webkit-appearance: none;
+    display: block;
+    width: 100%;
     border: 1px solid rgba(255, 255, 255, 0.18);
     border-radius: 8px;
     background: rgba(0, 0, 0, 0.35);
@@ -1588,9 +1594,11 @@ body::before {
 }
 
 .music-album-art {
+    display: block;
     width: 100%;
     aspect-ratio: 1;
     border-radius: 6px;
+    object-fit: cover;
     border: 1px solid rgba(255, 255, 255, 0.2);
     margin-bottom: 0.45rem;
     background:
@@ -1621,11 +1629,13 @@ body::before {
 }
 
 .music-album-title {
+    display: block;
     font-size: 0.78rem;
     color: var(--kali-text);
 }
 
 .music-album-genre {
+    display: block;
     font-size: 0.68rem;
     color: rgba(255, 255, 255, 0.7);
 }

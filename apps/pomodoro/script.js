@@ -695,7 +695,7 @@ document.addEventListener('DOMContentLoaded', function () {
             if (Notification.permission === 'granted') {
                 new Notification(notificationTitle.textContent, {
                     body: notificationText.textContent,
-                    icon: 'resources/favicon.ico' // Replace with your favicon
+                    icon: '../../v1/favicon.svg' // Use shared favicon
                 });
             } else if (Notification.permission !== 'denied') {
                 Notification.requestPermission();

@@ -848,21 +848,22 @@ function setupTerminalMusicPlayer() {
   const albumGrid = document.getElementById('musicAlbumGrid');
   const titleEl = document.getElementById('musicTrackTitle');
   const genreEl = document.getElementById('musicTrackGenre');
+  const coverEl = document.getElementById('musicCurrentCover');
   const currentCard = document.getElementById('musicCurrentCard');
   const playBtn = document.getElementById('musicPlayBtn');
   const prevBtn = document.getElementById('musicPrevBtn');
   const nextBtn = document.getElementById('musicNextBtn');
   const volumeSlider = document.getElementById('musicVolumeSlider');
 
-  if (!albumGrid || !titleEl || !genreEl || !currentCard || !playBtn || !prevBtn || !nextBtn || !volumeSlider) {
+  if (!albumGrid || !titleEl || !genreEl || !coverEl || !currentCard || !playBtn || !prevBtn || !nextBtn || !volumeSlider) {
     return;
   }
 
   const playlist = [
-    { id: 'lofi', title: 'Love LoFi', genre: 'Focus Beats', src: 'resource/audio/music/loveLoFiM.mp3' },
-    { id: 'nature', title: 'Forest Pulse', genre: 'Nature Ambience', src: 'resource/audio/music/natureM.mp3' },
-    { id: 'jazz', title: 'Night Jazz', genre: 'Late Cafe Jazz', src: 'resource/audio/music/jazzM.mp3' },
-    { id: 'medieval', title: 'Castle Echo', genre: 'Medieval Ambient', src: 'resource/audio/music/medievalM.mp3' }
+    { id: 'lofi', title: 'Love LoFi', genre: 'Focus Beats', src: 'resource/audio/music/loveLoFiM.mp3', cover: 'resource/Image/music/lofi-cover.svg' },
+    { id: 'nature', title: 'Forest Pulse', genre: 'Nature Ambience', src: 'resource/audio/music/natureM.mp3', cover: 'resource/Image/music/nature-cover.svg' },
+    { id: 'jazz', title: 'Night Jazz', genre: 'Late Cafe Jazz', src: 'resource/audio/music/jazzM.mp3', cover: 'resource/Image/music/jazz-cover.svg' },
+    { id: 'medieval', title: 'Castle Echo', genre: 'Medieval Ambient', src: 'resource/audio/music/medievalM.mp3', cover: 'resource/Image/music/medieval-cover.svg' }
   ];
 
   const player = new Audio();
@@ -884,6 +885,8 @@ function setupTerminalMusicPlayer() {
     const track = playlist[state.index];
     titleEl.textContent = track.title;
     genreEl.textContent = track.genre;
+    coverEl.src = track.cover;
+    coverEl.alt = `${track.title} album cover`;
     currentCard.dataset.cover = track.id;
     updateAlbumActive();
   }
@@ -918,7 +921,7 @@ function setupTerminalMusicPlayer() {
   function renderAlbums() {
     albumGrid.innerHTML = playlist.map((track, idx) => `
       <button class="music-album" data-cover="${track.id}" data-track-index="${idx}" type="button">
-        <span class="music-album-art" aria-hidden="true"></span>
+        <img class="music-album-art" src="${track.cover}" alt="${track.title} album cover" loading="lazy">
         <strong class="music-album-title">${track.title}</strong>
         <span class="music-album-genre">${track.genre}</span>
       </button>

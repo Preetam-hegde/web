@@ -1,0 +1,27 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512" role="img" aria-labelledby="title desc">
+  <title id="title">Forest Pulse Cover</title>
+  <desc id="desc">Green nature-themed cover art with hills, trees, and a glowing sun.</desc>
+  <defs>
+    <linearGradient id="sky" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#16a34a"/>
+      <stop offset="100%" stop-color="#052e16"/>
+    </linearGradient>
+    <linearGradient id="hill" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#4ade80"/>
+      <stop offset="100%" stop-color="#14532d"/>
+    </linearGradient>
+  </defs>
+  <rect width="512" height="512" fill="url(#sky)"/>
+  <circle cx="390" cy="118" r="54" fill="#dcfce7" fill-opacity="0.88"/>
+  <path d="M0 320C74 264 147 282 215 324C280 364 337 370 512 296V512H0Z" fill="#14532d" fill-opacity="0.8"/>
+  <path d="M0 365C76 308 158 325 242 366C323 406 385 414 512 352V512H0Z" fill="url(#hill)"/>
+  <g fill="#052e16" fill-opacity="0.85">
+    <polygon points="64,360 88,306 112,360"/>
+    <polygon points="126,374 152,316 178,374"/>
+    <polygon points="202,356 228,296 254,356"/>
+    <polygon points="280,372 306,314 332,372"/>
+    <polygon points="356,364 382,304 408,364"/>
+  </g>
+  <text x="34" y="430" font-family="Courier New, monospace" font-size="52" fill="#bbf7d0" font-weight="700">FOREST PULSE</text>
+  <text x="34" y="468" font-family="Courier New, monospace" font-size="24" fill="#86efac">NATURE AMBIENCE</text>
+</svg>

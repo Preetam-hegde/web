@@ -4,112 +4,112 @@ const projects = [
     category: "personal",
     image: "resource/Image/bharatvarsha.svg",
     link: "apps/bharatvarsha/index.html",
-    description: "This simulation places you in the role of a tribal chief in the Later Vedic period.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Logic"]
+    description: "Step into the Later Vedic period as a tribal chief — manage resources, make alliances, and shape your civilization's destiny in this historical strategy simulation.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Game Design", "Simulation"]
   },
   {
     name: "Natural Selection Simulator",
     category: "personal",
     image: "resource/Image/naturalSelectionSim.svg",
     link: "apps/natural-selection-sim/index.html",
-    description: "This project is an interactive evolution simulator where organisms with different traits survive, reproduce, mutate, and form new species in real time.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Physics"]
+    description: "Watch evolution unfold in real time — organisms with randomized traits compete to survive, reproduce, mutate, and diverge into new species across generations.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Simulation", "Genetics"]
   },
   {
-    name: "Idle Empire Builder Game",
-    category: "FCC Project",
+    name: "Idle Empire Builder",
+    category: "personal",
     image: "resource/Image/dreamscape.svg",
     link: "apps/dreamscape/index.html",
-    description: "A simulation-based browser game inspired by real estate dynamics, combining reflex-based gameplay with interactive decision-making elements.",
-    tech: ["JavaScript", "HTML5", "CSS3", "Canvas API", "Game Design"]
+    description: "A real estate–inspired idle browser game where you invest, expand, and automate your way to an empire — blending reflex challenges with strategic decision-making.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Game Design"]
   },
   {
-    name: " Reflex Arena",
+    name: "Reflex Arena",
     category: "fcc",
     image: "resource/Image/gamecircle.svg",
     link: "apps/aim-trainer/index.html",
-    description: "A comprehensive browser-based FPS aim training tool",
-    tech: ["JavaScript", "HTML5", "CSS3", "Game"]
+    description: "A browser-based FPS aim trainer with configurable FOV, target size, duration, and difficulty modes — track accuracy, hit rate, and personal records over sessions.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Game Design", "Audio API"]
   },
   {
-    name: "Game of life",
+    name: "Game of Life",
     category: "fcc",
     image: "resource/Image/cellularAutomata.svg",
     link: "apps/cellular-automata/index.html",
-    description: "An interactive implementation of Conway's Game of Life, a fascinating cellular automaton.",
-    tech: ["Canvas", "JavaScript", "HTML5", "CSS3", "Cellular Automata"]
+    description: "An interactive canvas implementation of Conway's Game of Life — draw seed patterns, control simulation speed, and observe emergent complexity from simple rules.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Algorithms", "Cellular Automata"]
   },
   {
-    name: "Get Location",
-    category: "personal",
-    image: "resource/Image/geoLocation.svg",
-    link: "apps/geo-location/index.html",
-    description: "Find your current geographic coordinates and location information using the Geolocation API.",
-    tech: ["JavaScript", "HTML5", "CSS3", "Geolocation API", "Maps"]
-  },
-  {
-    name: "High Life BG",
+    name: "Nine Dimension",
     category: "fcc",
-    image: "resource/Image/BGI.svg",
-    link: "apps/bg-illusion/index.html",
-    description: "Experience mesmerizing background ball physics with visually stunning effects and illusions.",
-    tech: ["Logic", "JavaScript", "HTML5", "CSS3", "Physics"]
+    image: "resource/Image/9D.svg",
+    link: "apps/nine-dimension/index.html",
+    description: "Nine distinct physics and vector playgrounds in a single app — each panel demonstrates a different principle through interactive, real-time canvas animations.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Physics", "Vectors"]
   },
   {
-    name: "Sorting Algorithms",
+    name: "Sorting Algorithm Visualizer",
     category: "fcc",
     image: "resource/Image/sort.svg",
     link: "apps/analyser/index.html",
-    description: "Visualize various sorting algorithms in action to understand their efficiency and logic.",
-    tech: ["Sorting Algorithms", "JavaScript", "HTML5", "CSS3", "Data Structures"]
+    description: "Watch Bubble, Insertion, Selection, Quick, and Merge sorts animate step-by-step — compare time complexities live and develop intuition for algorithmic efficiency.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Algorithms", "Data Structures", "Animation"]
   },
   {
-    name: "Personal Portfolio",
+    name: "Verilog Vectors Playground",
+    category: "fcc",
+    image: "resource/Image/vector.svg",
+    link: "apps/vector-01/index.html",
+    description: "A visual learning tool that demystifies Verilog vector operations — manipulate bit-widths, indexing, and part-selects interactively to reinforce digital design concepts.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Digital Design", "Verilog"]
+  },
+  {
+    name: "GeoLocation Explorer",
     category: "personal",
-    image: "resource/Image/portfolio.svg",
-    link: "https://preetam-ptwo.github.io/Portfolio/",
-    description: "My first online portfolio to showcase my projects and skills.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Portfolio"]
+    image: "resource/Image/geoLocation.svg",
+    link: "apps/geo-location/index.html",
+    description: "Instantly retrieve your geographic coordinates, altitude, and accuracy radius via the browser Geolocation API, with map embed and shareable location links.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Geolocation API", "Maps"]
+  },
+  {
+    name: "Ball Physics Illusion",
+    category: "fcc",
+    image: "resource/Image/BGI.svg",
+    link: "apps/bg-illusion/index.html",
+    description: "A mesmerizing canvas experience where hundreds of collision-aware balls create vivid optical illusions through physics-driven motion, color blending, and layered trails.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Physics", "Animation"]
   },
   {
     name: "Pomodoro Timer",
     category: "fcc",
     image: "resource/Image/pomoTimer.svg",
     link: "apps/pomodoro/index.html",
-    description: "A web-based Pomodoro Timer to help you boost your productivity with time management techniques.",
-    tech: ["JavaScript", "HTML5", "CSS3", "Productivity", "Timer"]
+    description: "A clean, customizable Pomodoro timer with work/break cycle management, audio alerts, and session history — built to keep deep-work streaks on track.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Audio API", "Productivity"]
   },
   {
-    name: "Random quotes",
+    name: "Random Quote Generator",
     category: "fcc",
     image: "resource/Image/randomQuota.svg",
     link: "apps/quote/Game.html",
-    description: "Generate random quotes fetched from a free API. Get inspired with new quotes daily.",
-    tech: ["JavaScript", "API", "HTML5", "CSS3", "Quotes"]
+    description: "Fetch and display a new inspirational quote on demand from a public REST API — with smooth transitions and one-click sharing to social platforms.",
+    tech: ["HTML5", "CSS3", "JavaScript", "REST API", "Fetch API"]
   },
   {
-    name: "Verilog vectors Playground",
-    category: "fcc",
-    image: "resource/Image/vector.svg",
-    link: "apps/vector-01/index.html",
-    description: "A visual learning tool for Verilog vectors and their applications in digital design.",
-    tech: ["JavaScript", "HTML5", "CSS3", "Vectors", "Verilog"]
+    name: "Personal Portfolio",
+    category: "personal",
+    image: "resource/Image/portfolio.svg",
+    link: "https://preetam-ptwo.github.io/Portfolio/",
+    description: "My first deployed portfolio — a static site built from scratch to present projects, skills, and contact information with a clean responsive layout.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Responsive Design"]
   },
   {
     name: "Dear Diary",
     category: "personal",
     image: "resource/Image/diary.svg",
     link: "https://sites.google.com/view/ptwo-diary",
-    description: "A personal online scratchpad to jot down thoughts, ideas, and daily reflections using Google Sites.",
-    tech: ["Google Sites", "Personal Notes"]
-  },
-  {
-    name: "9 Dimension",
-    category: "fcc",
-    image: "resource/Image/9D.svg",
-    link: "apps/nine-dimension/index.html",
-    description: "Explore nine different dimensions with JavaScript physics simulations. Experience interactive visuals and physics-based animations.",
-    tech: ["JavaScript", "HTML5", "CSS3", "Vectors", "Physics"]
+    description: "A personal online notepad hosted on Google Sites — used to capture raw thoughts, project ideas, and daily reflections outside of any formal dev workflow.",
+    tech: ["Google Sites", "Content Writing"]
   }
 ];
 

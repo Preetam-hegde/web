@@ -4,7 +4,8 @@
     <meta charset="UTF-8">
     <title>Sorting Visualizer</title>
     <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet"> </head>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+</head>
 <body>
     <div class="container">
         <header class="header">
@@ -41,11 +42,56 @@
                     </div>
                 </div>
 
-                <div class="buttons">
-                    <button id="generate">New Array</button>
-                    <button id="sort">Sort!</button>
+                <div class="control-group dataset-control">
+                    <label for="distribution">Array Pattern</label>
+                    <select id="distribution">
+                        <option value="random">Random</option>
+                        <option value="nearly-sorted">Nearly Sorted</option>
+                        <option value="reversed">Reverse Sorted</option>
+                        <option value="few-unique">Few Unique Values</option>
+                    </select>
                 </div>
             </div>
+
+            <div class="buttons">
+                <button id="generate" class="primary-action">New Array</button>
+                <button id="sort" class="accent-action">Run Sort</button>
+                <button id="pause" class="secondary-action" disabled>Pause</button>
+                <button id="stop" class="secondary-action" disabled>Stop</button>
+            </div>
+
+            <section class="runtime-panel">
+                <div class="runtime-header">
+                    <span class="runtime-label">Status</span>
+                    <span id="run-status" class="runtime-value" data-state="idle">Idle</span>
+                </div>
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <span class="stat-label">Algorithm</span>
+                        <span class="stat-value" id="stat-algorithm">Bubble Sort</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Comparisons</span>
+                        <span class="stat-value" id="stat-comparisons">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Swaps</span>
+                        <span class="stat-value" id="stat-swaps">0</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Array Size</span>
+                        <span class="stat-value" id="stat-size">50</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Elapsed</span>
+                        <span class="stat-value" id="stat-time">00:00</span>
+                    </div>
+                    <div class="stat-card">
+                        <span class="stat-label">Step Delay</span>
+                        <span class="stat-value" id="stat-delay">0 ms</span>
+                    </div>
+                </div>
+            </section>
         </div>
 
         <div class="algorithm-info-container">
@@ -71,70 +117,5 @@
     </footer>
 
     <script src="script.js"></script>
-    <script>
-        const sizeInput = document.getElementById('size');
-        const sizeValueSpan = document.getElementById('size-value');
-        const speedInput = document.getElementById('speed');
-        const speedValueSpan = document.getElementById('speed-value');
-        const algorithmSelect = document.getElementById('algorithm');
-        const definitionText = document.getElementById('definition-text');
-        const complexityText = document.getElementById('complexity-text');
-
-        const algorithmDefinitions = {
-            bubble: {
-                definition: "Bubble Sort is a simple comparison-based algorithm that repeatedly steps through the list, compares adjacent elements and swaps them if they are in the wrong order. Elements 'bubble' to their correct position.",
-                complexity: "Worst and Average Case: O(n²), Best Case: O(n)"
-            },
-            insertion: {
-                definition: "Insertion Sort builds the final sorted array one item at a time. It is efficient for small datasets and nearly sorted data.",
-                complexity: "Worst and Average Case: O(n²), Best Case: O(n)"
-            },
-            selection: {
-                definition: "Selection Sort repeatedly finds the minimum element from the unsorted part and places it at the beginning. Simple to implement but not efficient for large lists.",
-                complexity: "Worst, Average, and Best Case: O(n²)"
-            },
-            quick: {
-                definition: "Quick Sort is a divide-and-conquer algorithm. It selects a 'pivot' and partitions the array around it, then recursively sorts subarrays. Very efficient on average.",
-                complexity: "Worst Case: O(n²), Average Case: O(n log n), Best Case: O(n log n)"
-            },
-            merge: {
-                definition: "Merge Sort is a divide-and-conquer, efficient, stable sort. It divides the array into halves, sorts them recursively, and then merges the sorted halves.",
-                complexity: "Worst, Average, and Best Case: O(n log n)"
-            }
-        };
-
-        function updateAlgorithmInfo(algorithmName) {
-            if (algorithmDefinitions[algorithmName]) {
-                definitionText.textContent = algorithmDefinitions[algorithmName].definition;
-                complexityText.textContent = algorithmDefinitions[algorithmName].complexity;
-            } else {
-                definitionText.textContent = "Select an algorithm from the dropdown to view its definition.";
-                complexityText.textContent = "Time complexity will be displayed here after algorithm selection.";
-            }
-        }
-
-        algorithmSelect.addEventListener('change', (event) => {
-            updateAlgorithmInfo(event.target.value);
-        });
-
-        sizeInput.addEventListener('input', () => {
-            sizeValueSpan.textContent = sizeInput.value;
-        });
-
-        speedInput.addEventListener('input', () => {
-            const speedValue = parseInt(speedInput.value);
-            if (speedValue <= 30) {
-                speedValueSpan.textContent = 'Fast';
-            } else if (speedValue <= 70) {
-                speedValueSpan.textContent = 'Medium';
-            } else {
-                speedValueSpan.textContent = 'Slow';
-            }
-        });
-
-        // Initialize algorithm info with Bubble Sort definition on page load
-        updateAlgorithmInfo(algorithmSelect.value);
-
-    </script>
 </body>
 </html>

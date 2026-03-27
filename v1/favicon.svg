@@ -1,0 +1,22 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="256" height="256" viewBox="0 0 64 64">
+  <defs>
+    <linearGradient id="orbGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" stop-color="#2d1b69"/>
+      <stop offset="50%" stop-color="#4130c5"/>
+      <stop offset="100%" stop-color="#25d4d0"/>
+    </linearGradient>
+    <radialGradient id="coreGlow" cx="50%" cy="45%" r="50%">
+      <stop offset="0%" stop-color="#ffffff" stop-opacity="0.95"/>
+      <stop offset="60%" stop-color="#97f5ff" stop-opacity="0.6"/>
+      <stop offset="100%" stop-color="#25d4d0" stop-opacity="0"/>
+    </radialGradient>
+  </defs>
+  <rect x="4" y="4" width="56" height="56" rx="14" fill="url(#orbGradient)"/>
+  <g fill="none" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M18 42c8 8 20 8 28 0" stroke="#7cfff4" stroke-width="4" opacity="0.7"/>
+    <path d="M20 24c4-6 12-9 20-6" stroke="#e7e0ff" stroke-width="4" opacity="0.8"/>
+    <path d="M16 33c0-9 7-17 16-17s16 8 16 17-7 17-16 17" stroke="#ffffff" stroke-width="4"/>
+  </g>
+  <circle cx="32" cy="30" r="9" fill="url(#coreGlow)" />
+  <circle cx="32" cy="30" r="5" fill="#ffffff" opacity="0.85"/>
+</svg>

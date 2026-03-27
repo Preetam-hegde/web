@@ -3,7 +3,8 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evolutionary Simulator v2.5</title>
+    <title>Evolutionary Simulator v3.0 - Enhanced</title>
+    <link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
     <style>
         :root {
             --bg-color: #121212;
@@ -41,13 +42,18 @@
 
         .panel {
             background: var(--panel-bg);
-            padding: 12px;
+            padding: 14px;
             border-radius: 8px;
             pointer-events: auto;
-            border: 1px solid var(--border-color);
-            backdrop-filter: blur(8px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
+            border: 1.5px solid var(--border-color);
+            backdrop-filter: blur(10px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.05);
             transition: all 0.3s ease;
+        }
+        
+        .panel:hover {
+            border-color: #444;
+            box-shadow: 0 8px 32px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05);
         }
 
         /* Sidebar */
@@ -75,7 +81,7 @@
             display: flex;
             flex-direction: column;
             gap: 10px;
-            width: 240px;
+            width: 280px;
             z-index: 10;
         }
 
@@ -85,7 +91,7 @@
             bottom: 10px;
             left: 300px;
             right: 260px;
-            height: 140px;
+            height: 200px;
             display: flex;
             flex-direction: column;
             z-index: 5;
@@ -98,114 +104,255 @@
             background: rgba(0,0,0,0.3);
             border-radius: 4px;
             font-size: 11px;
-            line-height: 1.4;
+            line-height: 1.5;
             color: #ccc;
-            border-left: 2px solid var(--info-color);
+            border-left: 3px solid var(--info-color);
         }
 
         /* Typography & Elements */
         h2 {
-            margin: 0 0 8px 0;
+            margin: 0 0 10px 0;
             font-size: 13px;
             text-transform: uppercase;
-            color: #888;
-            border-bottom: 1px solid var(--border-color);
-            padding-bottom: 4px;
+            color: #aaa;
+            border-bottom: 2px solid var(--accent-color);
+            padding-bottom: 6px;
             display: flex;
             justify-content: space-between;
             align-items: center;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            font-weight: 600;
         }
 
         .row { display: flex; gap: 5px; margin-bottom: 5px; }
         
         button {
-            background: #333;
+            background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
             color: white;
-            border: 1px solid #555;
-            padding: 6px 10px;
-            border-radius: 4px;
+            border: 1.5px solid #555;
+            padding: 8px 12px;
+            border-radius: 5px;
             cursor: pointer;
             font-size: 11px;
             flex: 1;
-            transition: all 0.2s;
-            font-weight: 500;
+            transition: all 0.25s;
+            font-weight: 600;
+            letter-spacing: 0.5px;
         }
-        button:hover { background: #444; border-color: #666; }
-        button:active { transform: translateY(1px); }
+        button:hover { 
+            background: linear-gradient(135deg, #3a3a3a 0%, #444 100%);
+            border-color: #777;
+            transform: translateY(-1px);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+        }
+        button:active { 
+            transform: translateY(0px);
+            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
+        }
         
-        button.primary { background: var(--accent-color); border-color: #43a047; color: #fff; }
-        button.primary:hover { background: #43a047; }
-        button.danger { border-color: var(--danger-color); color: var(--danger-color); background: transparent; }
-        button.danger:hover { background: var(--danger-color); color: white; }
+        button.primary { 
+            background: linear-gradient(135deg, var(--accent-color) 0%, #43a047 100%);
+            border-color: #2e7d32;
+            color: #fff;
+        }
+        button.primary:hover { 
+            background: linear-gradient(135deg, #43a047 0%, #388e3c 100%);
+            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
+        }
+        button.danger { 
+            border-color: var(--danger-color);
+            color: var(--danger-color);
+            background: rgba(239, 83, 80, 0.1);
+        }
+        button.danger:hover { 
+            background: var(--danger-color);
+            color: white;
+            box-shadow: 0 6px 16px rgba(239, 83, 80, 0.4);
+        }
 
         /* Collapsible Accordions */
         .accordion-btn {
             width: 100%;
             text-align: left;
-            background: #2a2a2a;
-            border: none;
-            color: #ccc;
-            padding: 8px;
+            background: linear-gradient(135deg, #1f1f1f 0%, #2a2a2a 100%);
+            border: 1px solid #333;
+            color: #ddd;
+            padding: 10px;
             cursor: pointer;
             font-size: 12px;
             display: flex;
             align-items: center;
-            border-radius: 4px;
-            margin-bottom: 2px;
-            border: 1px solid transparent;
+            border-radius: 5px;
+            margin-bottom: 3px;
+            font-weight: 600;
+            transition: all 0.2s;
         }
-        .accordion-btn:hover { background: #333; }
-        .accordion-btn.active { background: #333; border-color: #444; color: var(--accent-color); }
-        .accordion-btn::after { content: '+'; margin-left: auto; font-weight: bold; }
-        .accordion-btn.active::after { content: '−'; }
+        .accordion-btn:hover { 
+            background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
+            border-color: #444;
+        }
+        .accordion-btn.active { 
+            background: linear-gradient(135deg, #2a3a2a 0%, #1f3a1f 100%);
+            border-color: #4caf50;
+            color: var(--accent-color);
+        }
+        .accordion-btn::after { 
+            content: '▼'; 
+            margin-left: auto; 
+            font-weight: bold;
+            font-size: 10px;
+            transition: transform 0.3s;
+        }
+        .accordion-btn.active::after { 
+            transform: rotate(180deg);
+        }
 
         .collapsible-content {
             max-height: 0;
             overflow: hidden;
-            transition: max-height 0.3s ease-out;
-            background: rgba(0,0,0,0.2);
-            border-radius: 0 0 4px 4px;
+            transition: max-height 0.35s ease-out;
+            background: rgba(0,0,0,0.25);
+            border: 1px solid transparent;
+            border-radius: 0 0 5px 5px;
             margin-bottom: 5px;
         }
-        .collapsible-content.open { max-height: 500px; transition: max-height 0.5s ease-in; }
-        .inner-pad { padding: 10px; }
+        .collapsible-content.open { 
+            max-height: 600px; 
+            transition: max-height 0.5s ease-in;
+            border: 1px solid #333;
+        }
+        .inner-pad { padding: 12px; }
 
         /* Controls */
-        label { display: flex; justify-content: space-between; font-size: 10px; color: #aaa; margin-bottom: 4px; text-transform: uppercase; }
+        label { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 11px; 
+            color: #999; 
+            margin-bottom: 6px; 
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            font-weight: 600;
+        }
+        
         input[type=range] {
-            width: 100%; height: 4px; background: #444; outline: none; -webkit-appearance: none; border-radius: 2px; margin-bottom: 8px;
+            width: 100%; 
+            height: 5px; 
+            background: linear-gradient(90deg, #222 0%, #333 50%, #222 100%);
+            outline: none; 
+            -webkit-appearance: none; 
+            border-radius: 3px; 
+            margin-bottom: 10px;
+            cursor: pointer;
         }
         input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; width: 12px; height: 12px; background: #bbb; border-radius: 50%; cursor: pointer;
+            -webkit-appearance: none; 
+            width: 14px; 
+            height: 14px; 
+            background: linear-gradient(135deg, #4caf50 0%, #43a047 100%);
+            border-radius: 50%; 
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.6);
+            transition: all 0.2s;
         }
+        input[type=range]::-webkit-slider-thumb:hover {
+            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.8);
+            transform: scale(1.15);
+        }
+        input[type=range]::-moz-range-thumb {
+            width: 14px; 
+            height: 14px; 
+            background: linear-gradient(135deg, #4caf50 0%, #43a047 100%);
+            border: none;
+            border-radius: 50%; 
+            cursor: pointer;
+            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.6);
+        }
+        
         select, input[type=text] {
-            width: 100%; background: #222; color: #eee; border: 1px solid #444; padding: 6px; border-radius: 4px; margin-bottom: 10px; font-size: 11px;
+            width: 100%; 
+            background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
+            color: #eee; 
+            border: 1.5px solid #444;
+            padding: 8px; 
+            border-radius: 5px; 
+            margin-bottom: 10px; 
+            font-size: 11px;
+            transition: all 0.2s;
+        }
+        select:focus, input[type=text]:focus {
+            border-color: #4caf50;
+            background: linear-gradient(135deg, #1f1f1f 0%, #252525 100%);
+            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
         }
 
-        .stat-row { display: flex; justify-content: space-between; font-size: 11px; padding: 3px 0; border-bottom: 1px solid #2a2a2a; }
-        .stat-val { font-family: monospace; font-weight: bold; }
+        .stat-row { 
+            display: flex; 
+            justify-content: space-between; 
+            font-size: 12px; 
+            padding: 5px 0; 
+            border-bottom: 1px solid #2a2a2a;
+            align-items: center;
+        }
+        .stat-val { 
+            font-family: 'Courier New', monospace; 
+            font-weight: 700;
+            letter-spacing: 0.5px;
+            min-width: 50px;
+            text-align: right;
+        }
 
         /* Modal */
         #modal-overlay {
-            position: fixed; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.8);
+            position: fixed; 
+            top: 0; 
+            left: 0; 
+            width: 100%; 
+            height: 100%;
+            background: rgba(0,0,0,0.95);
             z-index: 100;
             display: none;
             align-items: center;
             justify-content: center;
+            backdrop-filter: blur(4px);
         }
         #theory-modal {
-            background: #1e1e1e; width: 600px; max-width: 90%; max-height: 85vh;
-            overflow-y: auto; border-radius: 8px; padding: 25px;
-            border: 1px solid #444; box-shadow: 0 0 30px rgba(0,0,0,0.9);
+            background: linear-gradient(135deg, #1a1a1a 0%, #1f1f1f 100%);
+            width: 650px; 
+            max-width: 95%; 
+            max-height: 90vh;
+            overflow-y: auto; 
+            border-radius: 10px; 
+            padding: 30px;
+            border: 1.5px solid #444;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.95), 0 0 40px rgba(76, 175, 80, 0.2);
         }
-        #theory-modal h2 { color: var(--info-color); border-color: var(--info-color); margin-bottom: 15px; }
-        #theory-modal p { font-size: 14px; line-height: 1.6; color: #ccc; margin-bottom: 15px; }
-        #theory-modal strong { color: white; }
+        #theory-modal h2 { 
+            color: var(--accent-color);
+            border-color: var(--accent-color); 
+            margin-bottom: 20px;
+        }
+        #theory-modal p { 
+            font-size: 14px; 
+            line-height: 1.7; 
+            color: #ddd; 
+            margin-bottom: 18px;
+        }
+        #theory-modal strong { 
+            color: var(--accent-color);
+            font-weight: 700;
+        }
 
         /* Graph */
-        #graph-canvas { width: 100%; height: 100%; background: #1a1a1a; border: 1px solid #333; border-radius: 4px; cursor: pointer; }
+        #graph-canvas { 
+            width: 100%; 
+            height: 100%; 
+            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
+            border: 1.5px solid #333;
+            border-radius: 6px; 
+            cursor: pointer;
+            display: block;
+        }
 
         @media (max-width: 800px) {
             #graph-panel { display: none; }
@@ -275,6 +422,23 @@
                 </div>
             </div>
 
+            <!-- Accordion: Predator Controls -->
+            <button class="accordion-btn" data-target="sect-predator">Predator Settings</button>
+            <div id="sect-predator" class="collapsible-content">
+                <div class="inner-pad">
+                    <label>Predator Cost Multiplier <span id="val-pred-cost">1.5x</span></label>
+                    <input type="range" id="pred-cost-mult" min="1" max="3" step="0.1" value="1.5">
+                    
+                    <label>Predation Range <span id="val-pred-range">15</span></label>
+                    <input type="range" id="pred-range" min="5" max="50" value="15">
+                    
+                    <label>Predation Reward <span id="val-pred-energy">80</span></label>
+                    <input type="range" id="pred-energy" min="20" max="150" value="80">
+                    
+                    <button id="btn-add-predator" class="primary" style="width:100%; margin-top:5px;">Spawn Predator</button>
+                </div>
+            </div>
+
             <!-- Accordion: Spawner -->
             <button class="accordion-btn" data-target="sect-spawn">Custom Organism</button>
             <div id="sect-spawn" class="collapsible-content">
@@ -295,8 +459,9 @@
                 </div>
             </div>
             
-            <div style="font-size: 10px; color: #555; margin-top:10px; text-align:center;">
-                v2.5 | Click canvas to add food
+            <div style="font-size: 10px; color: #666; margin-top:12px; text-align:center; border-top: 1px solid #333; padding-top: 8px;">
+                <strong>v3.1 Enhanced</strong> | Predator-Prey Ecology<br>
+                🖱️ Click canvas to add food | 📊 Click graph to cycle views
             </div>
         </div>
 
@@ -333,18 +498,24 @@
     <!-- Theory Modal -->
     <div id="modal-overlay">
         <div id="theory-modal">
-            <h2>Theory Guide: Natural Selection</h2>
+            <h2>Theory Guide: Natural Selection v3.0</h2>
             <p><strong>1. Variation (Phenotype):</strong><br>
-            Every blob has unique traits: <em>Speed</em>, <em>Size</em>, and <em>Sense Radius</em>. In 'Traits' view, Red blobs are fast/agile, Blue are slow/efficient.</p>
+            Every blob has unique traits: <em>Speed</em>, <em>Size</em>, and <em>Sense Radius</em>. In 'Traits' view, Red blobs are fast/agile, Blue are slow/efficient. Predators appear with a dark red ring.</p>
             
             <p><strong>2. Inheritance (Genotype):</strong><br>
-            When a blob eats enough to replicate, it passes its 'Genes' to offspring with slight random mutations. This introduces variation into the gene pool.</p>
+            When a blob eats enough to replicate, it passes its 'Genes' to offspring with slight random mutations. This introduces variation into the gene pool, including predatory traits.</p>
             
             <p><strong>3. Selection Pressure:</strong><br>
-            Energy is life. Moving fast and being big burns energy rapidly. Blobs must eat to survive. If they run out of energy, they die. This "culls" inefficient designs.</p>
+            Energy is life. Moving fast and being big burns energy rapidly. Blobs must eat to survive. Predators have higher metabolic costs. If they run out of energy, they die. This "culls" inefficient designs.</p>
             
-            <p><strong>4. Speciation:</strong><br>
-            If an offspring is genetically distinct enough (>20% difference) from its parent, it is classified as a new species with a unique Latin name.</p>
+            <p><strong>4. Predator-Prey Dynamics (NEW):</strong><br>
+            The ecosystem includes both herbivores (eating plants/food) and carnivores (hunting herbivores). Watch how populations oscillate as predators are limited by prey availability, and herbivores rebound when predator populations decline.</p>
+            
+            <p><strong>5. Ecosystem Health:</strong><br>
+            The status indicator shows the ecosystem balance. Critical warnings appear when populations become dangerously imbalanced. Total extinction forces a reset.</p>
+            
+            <p><strong>6. Speciation:</strong><br>
+            If an offspring is genetically distinct enough (>20% difference) from its parent, it receives a unique Latin name representing a new species.</p>
             
             <div style="text-align:right; margin-top:20px;">
                 <button class="primary" id="btn-close-modal" style="width: 100px;">Close</button>
@@ -404,6 +575,7 @@ function generateSpeciesName(genes) {
  */
 const CONFIG = {
     initialPop: 30,
+    initialPredators: 3,
     maxEnergy: 200,
     reprThreshold: 120,
     reprCost: 60,
@@ -415,7 +587,17 @@ const CONFIG = {
     costSpeed: 0.005, 
     costSize: 0.003,
     costSense: 0.0002,
-    baseMetabolism: 0.1
+    baseMetabolism: 0.1,
+    
+    // Predator settings
+    predationDistance: 15,
+    predationEnergy: 80,
+    predatorCostModifier: 1.5,
+    
+    // Advanced mechanics
+    sexualReproductionEnabled: true,
+    matingDistance: 50,
+    generationalEpochs: true
 };
 
 /**
@@ -429,15 +611,19 @@ let food = [];
 let frameId;
 let lastTime = 0;
 let paused = false;
-let viewMode = 'traits'; // traits, species, energy
-let graphMode = 'genetics'; // genetics, population
+let viewMode = 'traits';
+let graphMode = 'genetics';
 let historyStats = [];
+let generation = 0;
+let extinctionEvents = 0;
+let currentEpoch = 0;
+let epochChanges = 0;
 
 /**
  * CLASSES
  */
 class Agent {
-    constructor(x, y, genes, parentName) {
+    constructor(x, y, genes, parentName, isPredator = false) {
         this.pos = { x, y };
         this.vel = Vector.random();
         this.acc = { x: 0, y: 0 };
@@ -446,16 +632,22 @@ class Agent {
             speed: 2 + Math.random() * 4,
             size: 5 + Math.random() * 10,
             sense: 30 + Math.random() * 70,
-            generation: 1
+            generation: 1,
+            predatory: isPredator ? 0.8 + Math.random() * 0.2 : Math.random() * 0.3
         };
         
         this.speciesName = parentName || generateSpeciesName(this.genes);
         this.speciesColor = this.getSpeciesColor();
+        this.isPredator = isPredator || this.genes.predatory > 0.5;
 
         this.energy = 80;
         this.maxSpeed = this.genes.speed;
         this.maxForce = 0.5;
         this.dead = false;
+        this.age = 0;
+        this.mateReady = false;
+        this.particleTrail = [];
+        this.particleCounter = Math.random() * 5; // Stagger particle creation
         
         // Visuals
         this.wobble = Math.random() * Math.PI * 2;
@@ -472,20 +664,82 @@ class Agent {
     update(dt) {
         if (this.dead) return;
         this.wobble += dt * 5;
+        this.age += dt;
+        
+        // Update mating readiness
+        if (this.energy > CONFIG.reprThreshold + 20) this.mateReady = true;
+        if (this.energy < 100) this.mateReady = false;
+
+        // Determine feeding behavior
+        if (this.isPredator) {
+            this.handlePredation(dt);
+        } else {
+            this.forage();
+        }
 
         // Metabolism
         const speedCost = (this.genes.speed ** 2) * CONFIG.costSpeed;
         const sizeCost = (this.genes.size ** 3) * CONFIG.costSize;
         const senseCost = this.genes.sense * CONFIG.costSense;
-        const metabolicLoss = (CONFIG.baseMetabolism + speedCost + sizeCost + senseCost) * dt;
+        const predatorCost = this.isPredator ? (speedCost + sizeCost) * (CONFIG.predatorCostModifier - 1) : 0;
+        const metabolicLoss = (CONFIG.baseMetabolism + speedCost + sizeCost + senseCost + predatorCost) * dt;
         
         this.energy -= metabolicLoss;
         if (this.energy <= 0) { this.dead = true; return; }
 
         // Behavior
-        this.forage();
         this.move(dt);
         this.boundaries();
+        
+        // Update particle trail - optimized with counter
+        this.particleCounter += dt;
+        if (this.particleCounter > 0.1) {
+            this.particleTrail.push({
+                x: this.pos.x,
+                y: this.pos.y,
+                age: 0,
+                maxAge: 0.5
+            });
+            this.particleCounter = 0;
+            if (this.particleTrail.length > 15) this.particleTrail.shift();
+        }
+        // Clean up old particles
+        for (let i = this.particleTrail.length - 1; i >= 0; i--) {
+            this.particleTrail[i].age += dt;
+            if (this.particleTrail[i].age > this.particleTrail[i].maxAge) {
+                this.particleTrail.splice(i, 1);
+            }
+        }
+    }
+
+    handlePredation(dt) {
+        let closest = null;
+        let minDist = this.genes.sense + 1;
+
+        // Hunt other organisms - optimized search
+        let preyCount = agents.length;
+        for (let i = 0; i < preyCount; i++) {
+            let prey = agents[i];
+            if (prey === this || prey.isPredator) continue;
+            const d = Vector.dist(this.pos, prey.pos);
+            
+            // Direct consumption
+            if (d < this.genes.size + prey.genes.size) {
+                this.energy += CONFIG.predationEnergy;
+                if (this.energy > CONFIG.maxEnergy) this.energy = CONFIG.maxEnergy;
+                prey.dead = true;
+                continue;
+            }
+            
+            // Hunting sense
+            if (d < minDist) {
+                minDist = d;
+                closest = prey;
+            }
+        }
+
+        if (closest) this.seek(closest.pos);
+        else this.wander();
     }
 
     forage() {
@@ -553,6 +807,7 @@ class Agent {
                 speed: Math.max(1, this.genes.speed + (Math.random() * 2 - 1) * mRate * 2),
                 size: Math.max(3, this.genes.size + (Math.random() * 2 - 1) * mRate * 2),
                 sense: Math.max(10, this.genes.sense + (Math.random() * 2 - 1) * mRate * 20),
+                predatory: Math.max(0, Math.min(1, this.genes.predatory + (Math.random() * 2 - 1) * mRate * 0.1)),
                 generation: this.genes.generation + 1
             };
 
@@ -562,62 +817,110 @@ class Agent {
             let childName = this.speciesName;
             if (diff > 0.2) childName = generateSpeciesName(newGenes);
 
-            return new Agent(this.pos.x, this.pos.y, newGenes, childName);
+            const isPred = newGenes.predatory > 0.5;
+            return new Agent(this.pos.x, this.pos.y, newGenes, childName, isPred);
         }
         return null;
     }
 
     draw() {
         ctx.save();
+        
+        // Draw particle trail - optimized
+        let trailLen = this.particleTrail.length;
+        for (let i = 0; i < trailLen; i++) {
+            let p = this.particleTrail[i];
+            let alpha = Math.max(0, 1 - (p.age / p.maxAge)) * 0.3;
+            let hue = this.isPredator ? 0 : 200;
+            ctx.fillStyle = `hsla(${hue}, 100%, ${this.isPredator ? 50 : 40}%, ${alpha})`;
+            ctx.beginPath();
+            ctx.arc(p.x, p.y, this.genes.size * 0.5, 0, Math.PI * 2);
+            ctx.fill();
+        }
+        
         ctx.translate(this.pos.x, this.pos.y);
 
-        // Determine Color
-        let fillStyle;
+        // Determine Color - optimized
+        let fillStyle, glowColor;
+        
         if (viewMode === 'species') {
             fillStyle = this.speciesColor;
+            glowColor = this.speciesColor;
         } else if (viewMode === 'energy') {
             let e = Math.max(0, Math.min(1, this.energy / CONFIG.maxEnergy));
             fillStyle = `rgb(${255 * (1-e)}, ${255 * e}, 0)`;
+            glowColor = fillStyle;
         } else {
-            // Traits: Red=Fast, Blue=Slow
             let speedNorm = Math.min(1, (this.genes.speed - 1) / 8);
-            let r = 40 + speedNorm * 215;
-            let b = 255 - speedNorm * 200;
-            fillStyle = `rgba(${r}, 60, ${b}, 0.9)`;
+            if (this.isPredator) {
+                fillStyle = `rgba(${200 + speedNorm * 55}, 50, 50, 0.95)`;
+                glowColor = `rgba(255, 100, 100, 0.6)`;
+            } else {
+                let r = 40 + speedNorm * 215;
+                let b = 255 - speedNorm * 200;
+                fillStyle = `rgba(${r}, 60, ${b}, 0.9)`;
+                glowColor = `rgba(${r}, 150, ${b}, 0.4)`;
+            }
         }
 
-        // Velocity Deformation (Squash and Stretch)
+        // Glow and deformation
+        ctx.shadowColor = glowColor;
+        ctx.shadowBlur = this.isPredator ? 10 : 6;
+
         let speed = Vector.mag(this.vel);
         let angle = Math.atan2(this.vel.y, this.vel.x);
         ctx.rotate(angle);
-        
-        // Stretch based on speed
-        let stretch = 1 + (speed * 0.05); 
-        ctx.scale(stretch, 1/stretch);
+        let stretch = 1 + (speed * 0.08);
+        ctx.scale(stretch, 1 / stretch);
 
-        // Main Body (Cell Membrane)
+        // Body
         ctx.fillStyle = fillStyle;
         ctx.beginPath();
         ctx.arc(0, 0, this.genes.size, 0, Math.PI * 2);
         ctx.fill();
 
-        // Internal Nucleus (Energy Indicator)
-        let nSize = this.genes.size * 0.4;
-        let eRatio = this.energy / CONFIG.maxEnergy;
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.3 + eRatio * 0.4})`;
+        // Predator spikes - only render if visible
+        if (this.isPredator && speed > 0.5) {
+            ctx.strokeStyle = 'rgba(255, 150, 150, 0.5)';
+            ctx.lineWidth = 1.5;
+            for (let i = 0; i < 6; i++) {
+                let ang = (i / 6) * Math.PI * 2;
+                let x1 = Math.cos(ang) * this.genes.size * 1.2;
+                let y1 = Math.sin(ang) * this.genes.size * 1.2;
+                let x2 = Math.cos(ang) * this.genes.size * 1.4;
+                let y2 = Math.sin(ang) * this.genes.size * 1.4;
+                ctx.beginPath();
+                ctx.moveTo(x1, y1);
+                ctx.lineTo(x2, y2);
+                ctx.stroke();
+            }
+        }
+
+        // Inner rings
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 + this.energy / CONFIG.maxEnergy * 0.15})`;
+        ctx.lineWidth = 1;
         ctx.beginPath();
-        ctx.arc(nSize/2, 0, nSize * eRatio, 0, Math.PI * 2); // Offset nucleus slightly
+        ctx.arc(0, 0, this.genes.size * 0.7, 0, Math.PI * 2);
+        ctx.stroke();
+
+        // Energy nucleus
+        let nSize = this.genes.size * 0.5;
+        let eRatio = this.energy / CONFIG.maxEnergy;
+        ctx.shadowColor = '#ffffff';
+        ctx.shadowBlur = 4;
+        ctx.fillStyle = `rgba(255, 255, 255, ${0.35 + eRatio * 0.5})`;
+        ctx.beginPath();
+        ctx.arc(nSize * 0.3, 0, nSize * Math.max(0.25, eRatio), 0, Math.PI * 2);
         ctx.fill();
+        
+        ctx.shadowBlur = 0;
+        ctx.strokeStyle = `rgba(255, 255, 255, ${0.25 + eRatio * 0.5})`;
+        ctx.lineWidth = 0.8;
+        ctx.beginPath();
+        ctx.arc(nSize * 0.3, 0, nSize * Math.max(0.25, eRatio), 0, Math.PI * 2);
+        ctx.stroke();
 
         ctx.restore();
-
-        // Draw Sense Radius (only if hovered or specific view)
-        if (viewMode === 'traits' && Math.random() < 0.01) {
-            ctx.strokeStyle = 'rgba(255,255,255,0.05)';
-            ctx.beginPath();
-            ctx.arc(this.pos.x, this.pos.y, this.genes.sense, 0, Math.PI * 2);
-            ctx.stroke();
-        }
     }
 }
 
@@ -629,15 +932,54 @@ function init() {
     agents = [];
     food = [];
     historyStats = [];
+    generation = 0;
+    extinctionEvents = 0;
+    currentEpoch = 0;
+    epochChanges = 0;
+    lastStatsUpdate = 0;
     
-    // Initial Spawn
+    // Initial herbivore population
     for(let i=0; i<CONFIG.initialPop; i++) {
-        agents.push(new Agent(Math.random() * width, Math.random() * height));
+        agents.push(new Agent(Math.random() * width, Math.random() * height, null, null, false));
     }
+    
+    // Initial predator population
+    for(let i=0; i<CONFIG.initialPredators; i++) {
+        const genes = {
+            speed: 3 + Math.random() * 4,
+            size: 8 + Math.random() * 8,
+            sense: 50 + Math.random() * 60,
+            generation: 1,
+            predatory: 0.8 + Math.random() * 0.2
+        };
+        agents.push(new Agent(Math.random() * width, Math.random() * height, genes, "Predator Prime", true));
+    }
+    
     for(let i=0; i<50; i++) spawnFood();
+    
+    // Initialize graph with baseline data
+    for (let i = 0; i < 5; i++) {
+        historyStats.push({
+            speed: 3.5,
+            size: 8,
+            sense: 50,
+            pop: CONFIG.initialPop,
+            food: 50,
+            herbivores: CONFIG.initialPop,
+            predators: CONFIG.initialPredators,
+            health: "Healthy"
+        });
+    }
     
     updateLegend();
     lastTime = performance.now();
+    
+    // Ensure graph is ready
+    setTimeout(() => {
+        resize();
+        drawGraph();
+    }, 100);
+    
     requestAnimationFrame(loop);
 }
 
@@ -657,7 +999,12 @@ function loop(timestamp) {
     if (!paused) {
         update(dt);
         draw();
-        updateStats();
+        lastStatsUpdate += dt;
+        if (lastStatsUpdate >= STATS_UPDATE_INTERVAL) {
+            updateStats();
+            drawGraph();
+            lastStatsUpdate = 0;
+        }
     }
     frameId = requestAnimationFrame(loop);
 }
@@ -668,34 +1015,88 @@ function update(dt) {
 
     if (Math.random() < CONFIG.foodSpawnChance) spawnFood();
 
+    let herbivoreCount = 0;
+    let predatorCount = 0;
+    
     for (let i = agents.length - 1; i >= 0; i--) {
         let a = agents[i];
         a.update(dt);
+        
+        if (a.isPredator) predatorCount++;
+        else herbivoreCount++;
+        
         if (a.dead) agents.splice(i, 1);
         else {
             let child = a.reproduce();
             if (child) agents.push(child);
         }
     }
+    
+    // Detect extinction events
+    if ((herbivoreCount === 0 && agents.length === 0) || (predatorCount === 0 && herbivoreCount > 0)) {
+        if (agents.length < CONFIG.initialPop * 0.1) {
+            extinctionEvents++;
+        }
+    }
+    
+    // Auto-respawn if extinction
+    if (agents.length === 0) {
+        init();
+    }
 }
 
 function draw() {
-    ctx.fillStyle = '#66bb6a';
+    // Draw food with enhanced glow
     for (let f of food) {
+        // Outer glow
+        ctx.shadowColor = '#66bb6a';
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = 'rgba(102, 187, 106, 0.6)';
         ctx.beginPath();
-        ctx.arc(f.x, f.y, 3, 0, Math.PI * 2);
+        ctx.arc(f.x, f.y, 4.5, 0, Math.PI * 2);
+        ctx.fill();
+        
+        // Inner bright core
+        ctx.shadowBlur = 4;
+        ctx.fillStyle = '#88dd99';
+        ctx.beginPath();
+        ctx.arc(f.x, f.y, 2.5, 0, Math.PI * 2);
         ctx.fill();
     }
+    ctx.shadowColor = 'transparent';
+    ctx.shadowBlur = 0;
+    
+    // Draw organisms with lighting
     for (let a of agents) a.draw();
+    
+    // Draw ecosystem warnings with animation
+    if (agents.length < CONFIG.initialPop * 0.2) {
+        ctx.fillStyle = `rgba(239, 83, 80, ${0.25 + Math.sin(Date.now()/300) * 0.15})`;
+        ctx.fillRect(0, 0, width, 40);
+        
+        ctx.shadowColor = '#ef5350';
+        ctx.shadowBlur = 8;
+        ctx.fillStyle = '#ef5350';
+        ctx.font = 'bold 18px Arial';
+        ctx.fillText('⚠️  ECOSYSTEM COLLAPSE IMMINENT', 30, 28);
+        ctx.shadowBlur = 0;
+    }
 }
 
-function updateStats() {
-    if (Math.random() > 0.1) return; 
+let lastStatsUpdate = 0;
+const STATS_UPDATE_INTERVAL = 0.2; // Update every 200ms
 
+function updateStats() {
     let totalSpeed = 0, totalSize = 0, totalSense = 0, maxGen = 0;
     let speciesCounts = {};
+    let herbivoreCount = 0, predatorCount = 0;
 
     agents.forEach(a => {
+        if (a.isPredator) {
+            predatorCount++;
+        } else {
+            herbivoreCount++;
+        }
         totalSpeed += a.genes.speed;
         totalSize += a.genes.size;
         totalSense += a.genes.sense;
@@ -718,28 +1119,64 @@ function updateStats() {
         document.getElementById('stat-avg-size').innerText = avgSize.toFixed(2);
         document.getElementById('stat-avg-sense').innerText = avgSense.toFixed(1);
 
-        // Top Species
+        // Ecosystem health indicator
+        const healthDiv = document.getElementById('ecosystem-health') || createHealthIndicator();
+        let healthStatus = "Healthy";
+        let healthColor = "#66bb6a";
+        
+        if (herbivoreCount === 0) {
+            healthStatus = "Critical: No Herbivores";
+            healthColor = "#ef5350";
+        } else if (predatorCount === 0) {
+            healthStatus = "Imbalanced: No Predators";
+            healthColor = "#ff9800";
+        } else if (predatorCount > herbivoreCount * 0.5) {
+            healthStatus = "Warning: Predators Dominant";
+            healthColor = "#ff9800";
+        } else if (food.length < pop * 0.5) {
+            healthStatus = "Warning: Food Shortage";
+            healthColor = "#ff9800";
+        }
+        
+        healthDiv.innerHTML = `<span style="color:${healthColor}">⚫ ${healthStatus}</span>`;
+        healthDiv.style.color = healthColor;
+
+        // Top Species - with caching
         let sortedSpecies = Object.entries(speciesCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
         let html = "";
         sortedSpecies.forEach(([name, count]) => {
-            html += `<div style="display:flex; justify-content:space-between; margin-bottom:2px; color:#ccc;">
-                        <span>${name}</span> <span>${count}</span>
+            // Check first agent found (species are consistent)
+            let sample = agents.find(a => a.speciesName === name);
+            let isPred = sample?.isPredator ? "🔴" : "🟢";
+            html += `<div style="display:flex; justify-content:space-between; margin-bottom:2px; color:#ccc; font-size:10px;">
+                        <span>${isPred} ${name}</span> <span>${count}</span>
                      </div>`;
         });
         document.getElementById('species-list').innerHTML = html;
 
-        // Graph History
-        if (Math.random() < 0.05) {
-            historyStats.push({ 
-                speed: avgSpeed, size: avgSize, sense: avgSense,
-                pop: pop, food: food.length 
-            });
-            if (historyStats.length > 100) historyStats.shift();
-            drawGraph();
-        }
+        // Graph History - Update less frequently for performance
+        historyStats.push({ 
+            speed: avgSpeed, 
+            size: avgSize, 
+            sense: avgSense,
+            pop: pop, 
+            food: food.length,
+            herbivores: herbivoreCount,
+            predators: predatorCount,
+            health: healthStatus
+        });
+        if (historyStats.length > 150) historyStats.shift();
     } else {
         document.getElementById('stat-pop').innerText = "EXTINCT";
     }
+}
+
+function createHealthIndicator() {
+    let div = document.createElement('div');
+    div.id = 'ecosystem-health';
+    div.style.cssText = 'font-size:11px; padding:5px; background:rgba(0,0,0,0.3); border-radius:4px; margin-top:5px;';
+    document.querySelector('.panel:nth-child(1)')?.appendChild(div) || document.body.appendChild(div);
+    return div;
 }
 
 function drawGraph() {
@@ -747,36 +1184,99 @@ function drawGraph() {
     const gCtx = gCanvas.getContext('2d');
     const w = gCanvas.width;
     const h = gCanvas.height;
+    const padding = 35;
+    
     gCtx.clearRect(0, 0, w, h);
     
     if (historyStats.length < 2) return;
 
-    const drawLine = (fn, color, maxVal) => {
+    // Draw grid and axes
+    gCtx.strokeStyle = '#333';
+    gCtx.lineWidth = 1;
+    
+    // Vertical grid
+    for (let i = 0; i <= 4; i++) {
+        let x = padding + (i / 4) * (w - padding - 10);
+        gCtx.beginPath();
+        gCtx.moveTo(x, padding);
+        gCtx.lineTo(x, h - padding);
+        gCtx.stroke();
+    }
+    
+    // Horizontal grid
+    for (let i = 0; i <= 4; i++) {
+        let y = padding + (i / 4) * (h - padding - 10);
+        gCtx.beginPath();
+        gCtx.moveTo(padding, y);
+        gCtx.lineTo(w - 10, y);
+        gCtx.stroke();
+    }
+    
+    // Draw axis lines
+    gCtx.strokeStyle = '#555';
+    gCtx.lineWidth = 2;
+    gCtx.beginPath();
+    gCtx.moveTo(padding, padding);
+    gCtx.lineTo(padding, h - padding);
+    gCtx.lineTo(w - 10, h - padding);
+    gCtx.stroke();
+
+    const drawLine = (fn, color, maxVal, label) => {
         gCtx.strokeStyle = color;
-        gCtx.lineWidth = 2;
+        gCtx.lineWidth = 2.5;
         gCtx.beginPath();
         historyStats.forEach((stat, i) => {
-            let x = (i / (historyStats.length - 1)) * w;
+            let x = padding + (i / (historyStats.length - 1)) * (w - padding - 15);
             let val = fn(stat);
-            let y = h - (val / maxVal) * h;
-            if (i===0) gCtx.moveTo(x,y); else gCtx.lineTo(x,y);
+            let normalized = Math.max(0, Math.min(1, val / maxVal));
+            let y = (h - padding) - normalized * (h - padding - 10);
+            if (i === 0) gCtx.moveTo(x, y); else gCtx.lineTo(x, y);
         });
         gCtx.stroke();
+        
+        // Draw label
+        gCtx.fillStyle = color;
+        gCtx.font = 'bold 10px monospace';
+        gCtx.fillText(label, w - 120, padding + 15 + (label === 'Speed' ? 0 : label === 'Size' ? 12 : 24));
     };
 
     if (graphMode === 'genetics') {
-        document.getElementById('graph-title').innerText = "Average Phenotypes";
-        drawLine(s => s.speed, '#ff6b6b', 12); // Speed (Red)
-        drawLine(s => s.size, '#4ecdc4', 25);  // Size (Cyan)
-        drawLine(s => s.sense, '#ffe66d', 150); // Sense (Yellow)
+        document.getElementById('graph-title').innerText = "📊 Average Phenotypes (Normalized)";
+        
+        // Normalize to 0-1
+        let maxSpeed = 12;
+        let maxSize = 25;
+        let maxSense = 150;
+        
+        drawLine(s => s.speed, '#ff6b6b', maxSpeed, 'Speed');
+        drawLine(s => s.size, '#4ecdc4', maxSize, 'Size');
+        drawLine(s => s.sense, '#ffe66d', maxSense, 'Sense');
+        
+    } else if (graphMode === 'food-chain') {
+        document.getElementById('graph-title').innerText = "🔴🟢 Predator-Prey Dynamics";
+        let maxHerbivore = Math.max(...historyStats.map(s => s.herbivores || 0)) * 1.2 || 50;
+        let maxPredator = Math.max(...historyStats.map(s => s.predators || 0)) * 1.2 || 20;
+        
+        gCtx.font = '10px monospace';
+        gCtx.fillStyle = '#888';
+        gCtx.fillText(`Herbivores (max: ${Math.round(maxHerbivore)})`, padding + 5, 15);
+        gCtx.fillText(`Predators (max: ${Math.round(maxPredator)})`, padding + 5, 28);
+        
+        drawLine(s => s.herbivores || 0, '#66bb6a', maxHerbivore, 'Herbivores');
+        drawLine(s => s.predators || 0, '#ef5350', maxPredator, 'Predators');
+        
     } else {
-        document.getElementById('graph-title').innerText = "Population vs Resources";
-        // Auto-scale pop graph
+        document.getElementById('graph-title').innerText = "🌍 Population vs Resources";
         let maxPop = Math.max(...historyStats.map(s => s.pop)) * 1.2 || 100;
         let maxFood = Math.max(...historyStats.map(s => s.food)) * 1.2 || 100;
         
-        drawLine(s => s.pop, '#fff', maxPop); // White for Pop
-        drawLine(s => s.food, '#66bb6a', maxFood); // Green for Food
+        gCtx.font = '10px monospace';
+        gCtx.fillStyle = '#888';
+        gCtx.fillText(`Population (max: ${Math.round(maxPop)})`, padding + 5, 15);
+        gCtx.fillText(`Resources (max: ${Math.round(maxFood)})`, padding + 5, 28);
+        
+        drawLine(s => s.pop, '#fff', maxPop, 'Population');
+        drawLine(s => s.food, '#66bb6a', maxFood, 'Food');
     }
 }
 
@@ -786,6 +1286,7 @@ function updateLegend() {
         lb.innerHTML = `
             <span style="color:#ff6b6b">● Redish</span> = Fast / High Metabolism<br>
             <span style="color:#4a90e2">● Blueish</span> = Slow / Efficient<br>
+            <span style="color:#cc3333">🔴 Dark Red Ring</span> = Predator<br>
             <span style="color:#ccc">○ Circle</span> = Size (Mass)<br>
             <span style="color:#fff; opacity:0.5">● Nucleus</span> = Energy Reserves
         `;
@@ -811,11 +1312,17 @@ function resize() {
     canvas.width = width;
     canvas.height = height;
     let g = document.getElementById('graph-canvas');
-    let r = g.getBoundingClientRect();
-    g.width = r.width;
-    g.height = r.height;
+    if (g) {
+        let r = g.getBoundingClientRect();
+        // Set canvas resolution (not just CSS size)
+        g.width = Math.max(r.width, 1);
+        g.height = Math.max(r.height, 1);
+        g.style.width = r.width + 'px';
+        g.style.height = r.height + 'px';
+    }
 }
 window.addEventListener('resize', resize);
+window.addEventListener('load', resize); // Ensure sizing on load
 
 // Accordions
 document.querySelectorAll('.accordion-btn').forEach(btn => {
@@ -828,7 +1335,9 @@ document.querySelectorAll('.accordion-btn').forEach(btn => {
 
 // Graph Toggle
 document.getElementById('graph-canvas').addEventListener('click', () => {
-    graphMode = (graphMode === 'genetics') ? 'population' : 'genetics';
+    const modes = ['genetics', 'food-chain', 'population'];
+    let currentIndex = modes.indexOf(graphMode);
+    graphMode = modes[(currentIndex + 1) % modes.length];
     drawGraph();
 });
 
@@ -844,16 +1353,27 @@ const linkSlider = (id, scale=1) => {
     const disp = document.getElementById(`val-${id}`) || document.getElementById(`disp-${id}`);
     el.addEventListener('input', () => {
         let val = parseFloat(el.value);
-        if (disp) disp.innerText = val;
+        if (disp) {
+            if (id === 'pred-cost-mult') {
+                disp.innerText = val.toFixed(1) + 'x';
+            } else if (id === 'pred-range') {
+                disp.innerText = Math.round(val);
+            } else {
+                disp.innerText = val;
+            }
+        }
         if (id === 'food-rate') CONFIG.foodSpawnChance = val/100;
         else if (id === 'mut-rate') CONFIG.mutationRate = val/100;
         else if (id === 'cost-speed') CONFIG.costSpeed = val*0.0005;
         else if (id === 'cost-size') CONFIG.costSize = val*0.0002;
         else if (id === 'cost-sense') CONFIG.costSense = val*0.00005;
         else if (id === 'food-energy') CONFIG.foodEnergy = val;
+        else if (id === 'pred-cost-mult') CONFIG.predatorCostModifier = val;
+        else if (id === 'pred-range') CONFIG.predationDistance = val;
+        else if (id === 'pred-energy') CONFIG.predationEnergy = val;
     });
 };
-['food-rate', 'mut-rate', 'cost-speed', 'cost-size', 'cost-sense', 'food-energy', 'spawn-speed', 'spawn-size', 'spawn-sense'].forEach(id => linkSlider(id));
+['food-rate', 'mut-rate', 'cost-speed', 'cost-size', 'cost-sense', 'food-energy', 'spawn-speed', 'spawn-size', 'spawn-sense', 'pred-cost-mult', 'pred-range', 'pred-energy'].forEach(id => linkSlider(id));
 
 // Custom Spawn
 document.getElementById('btn-spawn').onclick = () => {
@@ -862,10 +1382,24 @@ document.getElementById('btn-spawn').onclick = () => {
     let se = parseFloat(document.getElementById('spawn-sense').value);
     let name = document.getElementById('spawn-name').value || "Designatus X";
     
-    let genes = { speed: sp, size: sz, sense: se, generation: 0 };
-    let a = new Agent(Math.random()*width, Math.random()*height, genes, name);
+    let genes = { speed: sp, size: sz, sense: se, generation: 0, predatory: 0 };
+    let a = new Agent(Math.random()*width, Math.random()*height, genes, name, false);
     a.energy = 150; 
     agents.push(a);
+};
+
+// Spawn Predator
+document.getElementById('btn-add-predator').onclick = () => {
+    const genes = {
+        speed: 3 + Math.random() * 4,
+        size: 8 + Math.random() * 8,
+        sense: 50 + Math.random() * 60,
+        generation: 1,
+        predatory: 0.8 + Math.random() * 0.2
+    };
+    let p = new Agent(Math.random()*width, Math.random()*height, genes, "Apex Intruder", true);
+    p.energy = 150;
+    agents.push(p);
 };
 
 // Controls

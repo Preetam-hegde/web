@@ -7,9 +7,15 @@
     --bar-comparing: #ffab91; /* Deep Orange 200 */
     --bar-sorted: #c8e6c9; /* Green 100 */
     --bar-pivot: #ffca28; /* Amber 300 */
+    --bar-swap: #64ffda; /* Teal A200 */
     --control-bg: #37474f; /* Blue Grey 800 */
     --info-bg: #37474f; /* Blue Grey 800 - Info Background */
     --panel-bg: #455a64; /* Blue Grey 700 - Panel Background */
+    --status-running: #64ffda;
+    --status-paused: #ffeb3b;
+    --status-done: #a5d6a7;
+    --status-idle: #90a4ae;
+    --status-stopped: #ffab91;
 }
 
 body {
@@ -115,6 +121,30 @@ button:hover {
     box-shadow: 2px 4px 6px rgba(0, 0, 0, 0.3); /* Enhanced hover shadow */
 }
 
+button:disabled {
+    cursor: not-allowed;
+    opacity: 0.6;
+    transform: none;
+    box-shadow: none;
+}
+
+.primary-action {
+    background: var(--primary-color);
+}
+
+.accent-action {
+    background: linear-gradient(135deg, #26a69a 0%, #4db6ac 100%);
+}
+
+.secondary-action {
+    background: rgba(255, 255, 255, 0.08);
+    border: 1px solid rgba(255, 255, 255, 0.15);
+}
+
+.secondary-action:not(:disabled):hover {
+    background: rgba(255, 255, 255, 0.18);
+}
+
 input[type="range"] {
     width: 250px; /* Wider range input */
     height: 14px; /* Slightly taller range input */
@@ -162,6 +192,95 @@ input[type="range"]::-moz-range-thumb {
     text-shadow: 1px 1px 2px rgba(0,0,0,0.4); /* Added value shadow */
 }
 
+.buttons {
+    margin-top: 1.5rem;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 16px;
+    justify-content: center;
+}
+
+.runtime-panel {
+    margin-top: 2rem;
+    background: var(--info-bg);
+    border-radius: 12px;
+    padding: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    box-shadow: 0 6px 12px rgba(0, 0, 0, 0.35);
+}
+
+.runtime-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 1.25rem;
+}
+
+.runtime-label {
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.runtime-value {
+    font-weight: 700;
+    font-size: 1.1rem;
+    padding: 0.35rem 0.75rem;
+    border-radius: 999px;
+    background: rgba(255, 255, 255, 0.08);
+    transition: background 0.3s ease, color 0.3s ease;
+}
+
+.runtime-value[data-state="idle"] {
+    color: var(--status-idle);
+}
+
+.runtime-value[data-state="sorting"] {
+    color: var(--status-running);
+}
+
+.runtime-value[data-state="paused"] {
+    color: var(--status-paused);
+}
+
+.runtime-value[data-state="done"] {
+    color: var(--status-done);
+}
+
+.runtime-value[data-state="stopped"] {
+    color: var(--status-stopped);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
+    gap: 16px;
+}
+
+.stat-card {
+    background: rgba(255, 255, 255, 0.04);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 10px;
+    padding: 1rem 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.02);
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.stat-value {
+    font-size: 1.4rem;
+    font-weight: 700;
+    color: var(--text);
+}
 
 .algorithm-info-container {
     display: flex;
@@ -226,6 +345,8 @@ input[type="range"]::-moz-range-thumb {
     flex-grow: 1;
     border-radius: 3px 3px 0 0; /* More rounded top corners for bars */
     box-shadow: 1px 0 2px rgba(0,0,0,0.1); /* Subtle bar shadow */
+    position: relative;
+    overflow: visible;
 }
 
 .comparing {
@@ -238,6 +359,31 @@ input[type="range"]::-moz-range-thumb {
 
 .pivot {
     background: var(--bar-pivot);
+}
+
+.swapping {
+    background: var(--bar-swap);
+}
+
+.array-bar::after {
+    content: attr(data-value);
+    position: absolute;
+    top: -28px;
+    left: 50%;
+    transform: translateX(-50%) scale(0.9);
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.85);
+    opacity: 0;
+    transition: opacity 0.2s ease, transform 0.2s ease;
+    pointer-events: none;
+    background: rgba(0, 0, 0, 0.5);
+    padding: 2px 6px;
+    border-radius: 6px;
+}
+
+.array-bar:hover::after {
+    opacity: 1;
+    transform: translateX(-50%) scale(1);
 }
 
 

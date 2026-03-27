@@ -5,23 +5,53 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" type="text/css" href="style.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 </head>
 <body>
-    <div class="contain">
-        <blockquote>
-            <div id="quote-container">Loading a thoughtful quote...</div>
-            <footer>
-                <span id="author">~ Author</span>
-            </footer>
-        </blockquote>
-        <div class="controls">
-            <button id="refresh-btn" title="Get New Quote">
-                <i class="fas fa-sync-alt"></i> New Quote
+    <div class="app-shell">
+        <header class="topbar">
+            <div class="brand">
+                <i class="fas fa-quote-left"></i>
+                <span>Orbit Quotes</span>
+            </div>
+            <div class="status-pill" id="statusPill">
+                <i class="fas fa-sparkles"></i>
+                <span id="statusText">Finding inspiration</span>
+            </div>
+        </header>
+
+        <main class="quote-stage">
+            <div class="quote-card loading" id="quoteCard">
+                <div class="quote-mark quote-mark--left">“</div>
+                <div class="quote-body">
+                    <p class="quote-text" id="quote-container">Loading a thoughtful quote...</p>
+                    <p class="quote-author" id="author">— Author</p>
+                </div>
+                <div class="quote-mark quote-mark--right">”</div>
+                <div class="quote-noise"></div>
+            </div>
+        </main>
+
+        <footer class="controls">
+            <button class="control-btn" id="refresh-btn" title="Get New Quote">
+                <span class="control-icon">
+                    <i class="fas fa-arrows-rotate"></i>
+                </span>
+                <span class="control-label">New Quote</span>
             </button>
-            <button id="copy-btn" title="Copy Quote">
-                <i class="fas fa-copy"></i> Copy
+            <button class="control-btn secondary" id="copy-btn" title="Copy Quote">
+                <span class="control-icon">
+                    <i class="fas fa-copy"></i>
+                </span>
+                <span class="control-label">Copy</span>
             </button>
-        </div>
+            <button class="control-btn tertiary" id="share-btn" title="Share">
+                <span class="control-icon">
+                    <i class="fas fa-share-alt"></i>
+                </span>
+                <span class="control-label">Share</span>
+            </button>
+        </footer>
     </div>
     <script type="text/javascript" src="script.js"></script>
 </body>
