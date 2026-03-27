@@ -3,35 +3,65 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mesmerizing Tech Chaos</title>
+    <title>Calming Interactive Starfield</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
-
-    <div class="menu-container" style="position: fixed; top: 10px; left: 10px; z-index: 1000; background: #a183b881; padding: 10px; border-radius: 5px;">
-        <label for="palette-select" style="color:#000000; font-size: 14px; margin-right: 10px;">Color Palette:</label>
-        <select id="palette-select" style="font-size: 14px;">
-            <option value="palette-confusing">Confusing</option>
-            <option value="palette-calm">Calm Blue</option>
-            <option value="palette-vibrant">Vibrant Sunset</option>
-            <option value="palette-grayscale">Grayscale</option>
-        </select>
+    <div class="menu-container">
+        <div class="control-group">
+            <label for="star-count-slider">Star Count:</label>
+            <input type="range" id="star-count-slider" min="100" max="1000" value="300" step="50">
+            <span id="star-count-value">300</span>
+        </div>
+        <div class="control-group">
+            <label for="speed-slider">Speed:</label>
+            <input type="range" id="speed-slider" min="0.1" max="2" value="0.5" step="0.1">
+            <span id="speed-value">0.5x</span>
+        </div>
+        <div class="control-group">
+            <label for="palette-select">Palette:</label>
+            <select id="palette-select">
+                <option value="deep-space">Deep Space</option>
+                <option value="aurora">Aurora</option>
+                <option value="milky-way">Milky Way</option>
+                <option value="nebula">Nebula</option>
+            </select>
+        </div>
+        <div class="control-group">
+            <label for="twinkle-slider">Twinkle Intensity:</label>
+            <input type="range" id="twinkle-slider" min="0" max="1" value="0.5" step="0.1">
+            <span id="twinkle-value">0.5</span>
+        </div>
+        <div class="control-group">
+            <label for="planet-count-slider">Planet Count:</label>
+            <input type="range" id="planet-count-slider" min="0" max="20" value="5" step="1">
+            <span id="planet-count-value">5</span>
+        </div>
+        <div class="control-group">
+            <label for="orbit-speed-slider">Orbit Speed:</label>
+            <input type="range" id="orbit-speed-slider" min="0.1" max="1" value="0.3" step="0.1">
+            <span id="orbit-speed-value">0.3x</span>
+        </div>
+        <div class="control-group">
+            <label for="planet-size-slider">Planet Size:</label>
+            <input type="range" id="planet-size-slider" min="1" max="5" value="2.5" step="0.5">
+            <span id="planet-size-value">2.5</span>
+        </div>
+        <div class="control-group">
+            <label for="shooting-stars-toggle">
+                <input type="checkbox" id="shooting-stars-toggle"> Shooting Stars
+            </label>
+        </div>
+        <div class="control-group">
+            <label for="nebula-density-slider">Nebula Density:</label>
+            <input type="range" id="nebula-density-slider" min="0" max="0.5" value="0.2" step="0.05">
+            <span id="nebula-density-value">0.2</span>
+        </div>
     </div>
-
-    <div class="grid-container">
-        <div class="grid-item" id="item1"></div>
-        <div class="grid-item" id="item2"></div>
-        <div class="grid-item" id="item3"></div>
-        <div class="grid-item" id="item4"></div>
-        <div class="grid-item" id="item5"></div>
-        <div class="grid-item" id="item6"></div>
-        <div class="grid-item" id="item7"></div>
-        <div class="grid-item" id="item8"></div>
-        <div class="grid-item" id="item9"></div>
-    </div>
+    <canvas id="starfieldCanvas"></canvas>
     <script src="script.js"></script>
+    <footer id="footer" style="position:fixed; bottom:0; width:100%; text-align:center; font-size:14px; color:#a4a4a4; background:#28271771; padding:5px;">
+        -- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo --
+    </footer>
 </body>
-<footer id="footer" style="position:fixed; bottom:0; width:100%; text-align:center; font-size:14px; color:#000000; background:#a183b881; padding:5px;">
-    -- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo --
-</footer>
 </html>

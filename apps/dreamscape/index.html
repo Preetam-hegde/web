@@ -4,59 +4,95 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Idle Empire Builder</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link
+        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
+        rel="stylesheet">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
     <div class="container">
-        <header>
+        <header class="top-hud">
             <div class="logo">
                 <i class="fas fa-city"></i>
                 <span>Idle Empire Builder</span>
             </div>
             <div class="resource-bar">
                 <div class="resource">
-                    <i class="fas fa-coins"></i>
-                    <span id="money">0</span>
+                    <span class="resource-label">Capital</span>
+                    <div class="resource-value">
+                        <i class="fas fa-coins"></i>
+                        <span id="money">0</span>
+                    </div>
                 </div>
                 <div class="resource">
-                    <i class="fas fa-user"></i>
-                    <span id="population">0</span>
+                    <span class="resource-label">Citizens</span>
+                    <div class="resource-value">
+                        <i class="fas fa-user"></i>
+                        <span id="population">0</span>
+                    </div>
                 </div>
-                <div class="resource">
-                    <i class="fas fa-star"></i>
-                    <span id="prestige">0</span>
+                <div class="resource prestige-chip">
+                    <span class="resource-label">Prestige</span>
+                    <div class="resource-value">
+                        <i class="fas fa-star"></i>
+                        <span id="prestige">0</span>
+                    </div>
                 </div>
             </div>
         </header>
-        
-        <div class="sidebar">
-            <div class="sidebar-section">
-                <h3><i class="fas fa-building"></i> Buildings</h3>
+
+        <main class="command-grid">
+            <aside class="panel build-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-building"></i> Master Plan</h3>
+                    <p class="panel-subtext">Deploy structures to expand your skyline.</p>
+                </div>
                 <div class="building-list" id="buildingList">
                     <!-- Buildings will be added here dynamically -->
                 </div>
-            </div>
-            
-            <div class="sidebar-section">
-                <h3><i class="fas fa-chart-line"></i> Stats</h3>
-                <div id="statsContainer">
-                    <p>Income per second: <span id="incomePerSecond">0</span></p>
-                    <p>Total earned: <span id="totalEarned">0</span></p>
-                    <p>Buildings owned: <span id="buildingsOwned">0</span></p>
+            </aside>
+
+            <section class="city-stage">
+                <div class="city-atmosphere">
+                    <div class="city-halo"></div>
+                    <div class="city-grid-overlay"></div>
                 </div>
-            </div>
-        </div>
-        
-        <div class="main-area">
-            <div class="city-container">
-                <div class="building-grid" id="cityGrid">
-                    <!-- Grid buildings will be added here dynamically -->
+                <div class="city-container">
+                    <div class="building-grid" id="cityGrid">
+                        <!-- Grid buildings will be added here dynamically -->
+                    </div>
                 </div>
-            </div>
-        </div>
-        
-        <footer>
+            </section>
+
+            <aside class="panel intel-panel">
+                <div class="panel-header">
+                    <h3><i class="fas fa-chart-line"></i> Empire Metrics</h3>
+                    <p class="panel-subtext">Track the pulse of your economy.</p>
+                </div>
+                <div class="metric-stack" id="statsContainer">
+                    <div class="metric-card">
+                        <span class="metric-label">Income / sec</span>
+                        <span class="metric-value" id="incomePerSecond">0</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Total earned</span>
+                        <span class="metric-value" id="totalEarned">0</span>
+                    </div>
+                    <div class="metric-card">
+                        <span class="metric-label">Holdings</span>
+                        <span class="metric-value" id="buildingsOwned">0</span>
+                    </div>
+                </div>
+                <div class="intel-footnote">
+                    Reinvest profit to unlock landmark-class structures and increase passive flow.
+                </div>
+            </aside>
+        </main>
+
+        <footer class="bottom-hud">
             <div class="game-info">
                 <span>Idle Empire Builder v1.0</span>
             </div>

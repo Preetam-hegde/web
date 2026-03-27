@@ -1464,6 +1464,172 @@ body::before {
     color: var(--kali-bg);
 }
 
+.terminal-music-player {
+    display: grid;
+    gap: 0.9rem;
+}
+
+.music-current {
+    display: grid;
+    grid-template-columns: 132px 1fr;
+    gap: 0.9rem;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 8px;
+    padding: 0.75rem;
+    background: rgba(0, 0, 0, 0.35);
+}
+
+.cover-art {
+    width: 132px;
+    height: 132px;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    box-shadow: 0 0 18px rgba(0, 255, 153, 0.22);
+    background:
+        radial-gradient(circle at 22% 24%, rgba(255, 255, 255, 0.32), transparent 36%),
+        radial-gradient(circle at 70% 76%, rgba(0, 0, 0, 0.46), transparent 45%),
+        linear-gradient(135deg, #5e35b1, #1f2937);
+}
+
+.music-current[data-cover='nature'] .cover-art {
+    background:
+        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.28), transparent 40%),
+        radial-gradient(circle at 64% 80%, rgba(20, 70, 30, 0.58), transparent 45%),
+        linear-gradient(135deg, #2e7d32, #0f172a);
+}
+
+.music-current[data-cover='jazz'] .cover-art {
+    background:
+        radial-gradient(circle at 26% 18%, rgba(255, 255, 255, 0.24), transparent 34%),
+        radial-gradient(circle at 76% 74%, rgba(44, 12, 80, 0.56), transparent 42%),
+        linear-gradient(135deg, #ff8f00, #4a148c);
+}
+
+.music-current[data-cover='medieval'] .cover-art {
+    background:
+        radial-gradient(circle at 24% 18%, rgba(255, 245, 200, 0.25), transparent 34%),
+        radial-gradient(circle at 74% 82%, rgba(56, 16, 16, 0.56), transparent 44%),
+        linear-gradient(135deg, #9a6a2f, #2b1e1e);
+}
+
+.music-meta {
+    display: grid;
+    align-content: center;
+    gap: 0.35rem;
+}
+
+.music-label {
+    font-size: 0.72rem;
+    color: var(--kali-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+}
+
+.music-meta h3 {
+    font-size: 1.35rem;
+    line-height: 1.15;
+}
+
+.music-meta p {
+    color: rgba(255, 255, 255, 0.76);
+}
+
+.music-controls {
+    display: flex;
+    gap: 0.55rem;
+    align-items: center;
+    flex-wrap: wrap;
+}
+
+.music-controls .btn {
+    min-width: 86px;
+}
+
+.music-volume {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.45rem;
+    margin-left: auto;
+    font-size: 0.76rem;
+    color: var(--kali-secondary);
+}
+
+.music-volume input {
+    width: 130px;
+}
+
+.music-albums {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(128px, 1fr));
+    gap: 0.7rem;
+}
+
+.music-album {
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    border-radius: 8px;
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--kali-text);
+    font-family: var(--terminal-font);
+    text-align: left;
+    padding: 0.5rem;
+    cursor: pointer;
+    transition: transform 0.2s ease, border-color 0.2s ease, box-shadow 0.2s ease;
+}
+
+.music-album:hover {
+    transform: translateY(-2px);
+    border-color: var(--kali-text);
+    box-shadow: 0 0 14px rgba(0, 255, 153, 0.22);
+}
+
+.music-album.active {
+    border-color: var(--kali-secondary);
+    box-shadow: 0 0 14px rgba(189, 147, 249, 0.35);
+}
+
+.music-album-art {
+    width: 100%;
+    aspect-ratio: 1;
+    border-radius: 6px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    margin-bottom: 0.45rem;
+    background:
+        radial-gradient(circle at 25% 22%, rgba(255, 255, 255, 0.28), transparent 36%),
+        radial-gradient(circle at 70% 75%, rgba(0, 0, 0, 0.5), transparent 48%),
+        linear-gradient(125deg, #5e35b1, #111827);
+}
+
+.music-album[data-cover='nature'] .music-album-art {
+    background:
+        radial-gradient(circle at 30% 20%, rgba(255, 255, 255, 0.24), transparent 38%),
+        radial-gradient(circle at 72% 78%, rgba(23, 70, 22, 0.6), transparent 48%),
+        linear-gradient(125deg, #4caf50, #072f1b);
+}
+
+.music-album[data-cover='jazz'] .music-album-art {
+    background:
+        radial-gradient(circle at 32% 22%, rgba(255, 255, 255, 0.2), transparent 34%),
+        radial-gradient(circle at 74% 78%, rgba(68, 14, 95, 0.58), transparent 46%),
+        linear-gradient(125deg, #ef6c00, #311b92);
+}
+
+.music-album[data-cover='medieval'] .music-album-art {
+    background:
+        radial-gradient(circle at 28% 18%, rgba(255, 240, 180, 0.25), transparent 34%),
+        radial-gradient(circle at 75% 82%, rgba(65, 23, 23, 0.6), transparent 44%),
+        linear-gradient(125deg, #a6793d, #3b1f1b);
+}
+
+.music-album-title {
+    font-size: 0.78rem;
+    color: var(--kali-text);
+}
+
+.music-album-genre {
+    font-size: 0.68rem;
+    color: rgba(255, 255, 255, 0.7);
+}
+
 .start-menu {
     position: fixed;
     left: 0.9rem;
@@ -1672,6 +1838,20 @@ body::before {
     .contact-line {
         flex-direction: column;
         margin-bottom: 1.5rem;
+    }
+
+    .music-current {
+        grid-template-columns: 1fr;
+    }
+
+    .cover-art {
+        width: 100%;
+        max-width: 240px;
+        justify-self: center;
+    }
+
+    .music-volume {
+        margin-left: 0;
     }
 
     .contact-label {

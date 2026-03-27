@@ -3,7 +3,8 @@ document.addEventListener('DOMContentLoaded', function () {
     const timerDisplay = document.querySelector('.timer-display');
     const timerMode = document.querySelector('.timer-mode');
     const progressRing = document.querySelector('.progress-ring-circle');
-    const progressRingBackground = document.querySelector('.progress-ring-background');
+    const timerSubcopy = document.querySelector('.timer-subcopy');
+    const focusArea = document.querySelector('.focus-area');
 
     // Button Elements
     const startBtn = document.getElementById('start-btn');
@@ -12,17 +13,26 @@ document.addEventListener('DOMContentLoaded', function () {
     const pomodoroBtn = document.getElementById('pomodoro-btn');
     const shortBreakBtn = document.getElementById('short-break-btn');
     const longBreakBtn = document.getElementById('long-break-btn');
+    const skipBtn = document.getElementById('skip-btn');
+    const settingsToggle = document.getElementById('settings-toggle');
+    const settingsClose = document.getElementById('settings-close');
 
     // Settings Elements
     const pomodoroDuration = document.getElementById('pomodoro-duration');
     const shortBreakDuration = document.getElementById('short-break-duration');
     const longBreakDuration = document.getElementById('long-break-duration');
+    const longBreakIntervalInput = document.getElementById('long-break-interval');
+    const autoStartBreakToggle = document.getElementById('auto-start-break');
+    const autoStartFocusToggle = document.getElementById('auto-start-focus');
 
     // Task Elements
     const taskForm = document.getElementById('task-form');
     const taskInput = document.getElementById('task-input');
     const taskList = document.getElementById('task-list');
     const sessionHistory = document.getElementById('session-history');
+    const dailyPomodorosEl = document.getElementById('daily-pomodoros');
+    const dailyFocusMinutesEl = document.getElementById('daily-focus-minutes');
+    const dailyTasksCompletedEl = document.getElementById('daily-tasks-completed');
 
     // Theme Elements
     const themeButtons = document.querySelectorAll('.theme-btn');
@@ -48,6 +58,13 @@ document.addEventListener('DOMContentLoaded', function () {
     const notificationTitle = document.getElementById('notification-title');
     const notificationText = document.getElementById('notification-text');
     const notificationClose = document.getElementById('notification-close');
+    const settingsPanel = document.getElementById('settings-panel');
+    const settingsOverlay = document.getElementById('settings-overlay');
+
+    const DEFAULT_POMODORO_MINUTES = 25;
+    const DEFAULT_SHORT_BREAK_MINUTES = 5;
+    const DEFAULT_LONG_BREAK_MINUTES = 15;
+    const DEFAULT_LONG_BREAK_INTERVAL = 4;
 
     // Audio Context and Nodes
     let audioContext;
@@ -59,12 +76,13 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Timer Variables
     let timerInterval;
-    let remainingTime = 25 * 60; // Default 25 minutes in seconds
-    let totalTime = 25 * 60;
+    let remainingTime = DEFAULT_POMODORO_MINUTES * 60;
+    let totalTime = DEFAULT_POMODORO_MINUTES * 60;
     let isRunning = false;
     let currentMode = 'pomodoro';
     let completedPomodoros = 0;
     let activeTaskId = null;
+    let dailyStats;
 
     // Calculate the progress ring circumference
     const radius = parseFloat(progressRing.getAttribute('r'));
@@ -74,16 +92,16 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Sound Files
     const soundFiles = {
-        bell: 'resources/bell.mp3',
-        digital: 'resources/impact.mp3',
-        nature: 'resources/levelup.mp3'
+        bell: '../../resource/audio/alerts/bell.mp3',
+        digital: '../../resource/audio/alerts/impact.mp3',
+        nature: '../../resource/audio/alerts/levelup.mp3'
     };
 
     const musicFiles = {
-        lofi: 'resources/loveLoFiM.mp3',
-        nature: 'resources/natureM.mp3',
-        jazz: 'resources/jazzM.mp3',
-        medieval: 'resources/medievalM.mp3'
+        lofi: '../../resource/audio/music/loveLoFiM.mp3',
+        nature: '../../resource/audio/music/natureM.mp3',
+        jazz: '../../resource/audio/music/jazzM.mp3',
+        medieval: '../../resource/audio/music/medievalM.mp3'
     };
 
     // Inspirational Quotes
@@ -121,13 +139,26 @@ document.addEventListener('DOMContentLoaded', function () {
     startBtn.addEventListener('click', startTimer);
     pauseBtn.addEventListener('click', pauseTimer);
     resetBtn.addEventListener('click', resetTimer);
+    skipBtn.addEventListener('click', skipSession);
     pomodoroBtn.addEventListener('click', () => switchMode('pomodoro'));
     shortBreakBtn.addEventListener('click', () => switchMode('shortBreak'));
     longBreakBtn.addEventListener('click', () => switchMode('longBreak'));
+    if (settingsToggle) {
+        settingsToggle.addEventListener('click', toggleSettingsPanel);
+    }
+    if (settingsClose) {
+        settingsClose.addEventListener('click', closeSettingsPanel);
+    }
+    if (settingsOverlay) {
+        settingsOverlay.addEventListener('click', closeSettingsPanel);
+    }
 
     pomodoroDuration.addEventListener('change', updateSettings);
     shortBreakDuration.addEventListener('change', updateSettings);
     longBreakDuration.addEventListener('change', updateSettings);
+    longBreakIntervalInput.addEventListener('change', handleLongBreakIntervalChange);
+    autoStartBreakToggle.addEventListener('change', savePreferences);
+    autoStartFocusToggle.addEventListener('change', savePreferences);
 
     taskForm.addEventListener('submit', addTask);
 
@@ -144,6 +175,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
     notificationClose.addEventListener('click', () => {
         notification.style.display = 'none';
+    });
+
+    document.addEventListener('keydown', (event) => {
+        if (event.key === 'Escape' && settingsPanel && settingsPanel.classList.contains('active')) {
+            closeSettingsPanel();
+        }
     });
 
     // Initialize Audio Context
@@ -217,6 +254,8 @@ document.addEventListener('DOMContentLoaded', function () {
         playSound();
         showNotification();
 
+        let nextMode;
+
         if (currentMode === 'pomodoro') {
             completedPomodoros++;
 
@@ -231,17 +270,21 @@ document.addEventListener('DOMContentLoaded', function () {
                 logSession('Unnamed session');
             }
 
-            // Automatically switch to break after pomodoro
-            if (completedPomodoros % 4 === 0) {
-                switchMode('longBreak');
-            } else {
-                switchMode('shortBreak');
-            }
+            const focusMinutes = getDurationFromInput(pomodoroDuration, DEFAULT_POMODORO_MINUTES);
+            incrementDailyPomodoroStats(focusMinutes);
 
+            const interval = getLongBreakInterval();
+            nextMode = (interval > 0 && completedPomodoros % interval === 0) ? 'longBreak' : 'shortBreak';
         } else {
             // Switch back to pomodoro after break
-            switchMode('pomodoro');
+            nextMode = 'pomodoro';
         }
+
+        const shouldAutoStart = nextMode === 'pomodoro'
+            ? autoStartFocusToggle.checked
+            : autoStartBreakToggle.checked;
+
+        switchMode(nextMode, { shouldAutoStart });
         showInspiration();
     }
 
@@ -258,24 +301,44 @@ document.addEventListener('DOMContentLoaded', function () {
         progressRing.style.strokeDashoffset = offset;
     }
 
+    function getDurationFromInput(inputElement, fallbackMinutes) {
+        const value = parseInt(inputElement.value, 10);
+        if (Number.isFinite(value) && value > 0) {
+            return value;
+        }
+
+        inputElement.value = fallbackMinutes;
+        return fallbackMinutes;
+    }
+
     function setTimerDuration() {
         switch (currentMode) {
             case 'pomodoro':
-                remainingTime = parseInt(pomodoroDuration.value) * 60;
+                remainingTime = getDurationFromInput(pomodoroDuration, DEFAULT_POMODORO_MINUTES) * 60;
                 totalTime = remainingTime;
                 break;
             case 'shortBreak':
-                remainingTime = parseInt(shortBreakDuration.value) * 60;
+                remainingTime = getDurationFromInput(shortBreakDuration, DEFAULT_SHORT_BREAK_MINUTES) * 60;
                 totalTime = remainingTime;
                 break;
             case 'longBreak':
-                remainingTime = parseInt(longBreakDuration.value) * 60;
+                remainingTime = getDurationFromInput(longBreakDuration, DEFAULT_LONG_BREAK_MINUTES) * 60;
                 totalTime = remainingTime;
                 break;
         }
     }
 
-    function switchMode(mode) {
+    function getLongBreakInterval() {
+        const interval = parseInt(longBreakIntervalInput.value, 10);
+        if (Number.isFinite(interval) && interval > 0) {
+            return interval;
+        }
+        return DEFAULT_LONG_BREAK_INTERVAL;
+    }
+
+    function switchMode(mode, options = {}) {
+        const { shouldAutoStart = false } = options;
+
         // Update active button
         pomodoroBtn.classList.remove('active');
         shortBreakBtn.classList.remove('active');
@@ -297,8 +360,17 @@ document.addEventListener('DOMContentLoaded', function () {
                 timerMode.textContent = 'Long Break';
                 break;
         }
+        updateModeAtmosphere(mode);
 
         resetTimer();
+
+        if (shouldAutoStart) {
+            setTimeout(() => {
+                if (!isRunning) {
+                    startTimer();
+                }
+            }, 200);
+        }
     }
 
     function updateSettings() {
@@ -306,7 +378,36 @@ document.addEventListener('DOMContentLoaded', function () {
             setTimerDuration();
             updateTimerDisplay();
             updateProgressRing();
+            updateModeAtmosphere(currentMode);
         }
+    }
+
+    function handleLongBreakIntervalChange() {
+        const sanitizedInterval = Math.max(1, parseInt(longBreakIntervalInput.value, 10) || DEFAULT_LONG_BREAK_INTERVAL);
+        longBreakIntervalInput.value = sanitizedInterval;
+        savePreferences();
+    }
+
+    function skipSession() {
+        if (isRunning) {
+            pauseTimer();
+        }
+
+        let nextMode;
+        if (currentMode === 'pomodoro') {
+            const interval = getLongBreakInterval();
+            const shouldTakeLongBreak = completedPomodoros > 0 && completedPomodoros % interval === 0;
+            nextMode = shouldTakeLongBreak ? 'longBreak' : 'shortBreak';
+        } else {
+            nextMode = 'pomodoro';
+        }
+
+        const shouldAutoStart = nextMode === 'pomodoro'
+            ? autoStartFocusToggle.checked
+            : autoStartBreakToggle.checked;
+
+        switchMode(nextMode, { shouldAutoStart });
+        showInspiration();
     }
 
     // Task Management Functions
@@ -337,10 +438,12 @@ document.addEventListener('DOMContentLoaded', function () {
 
         // Add event listeners to the new task
         const newTask = taskList.querySelector(`[data-id="${taskId}"]`);
+        newTask.dataset.counted = 'false';
 
         const checkboxEl = newTask.querySelector('.task-checkbox');
         checkboxEl.addEventListener('change', () => {
             newTask.classList.toggle('completed');
+            updateTaskCompletionStats(newTask, checkboxEl.checked);
         });
 
         const focusBtn = newTask.querySelector('.task-btn.focus');
@@ -350,10 +453,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
         const deleteBtn = newTask.querySelector('.task-btn.delete');
         deleteBtn.addEventListener('click', () => {
-            newTask.remove();
-            if (activeTaskId === taskId) {
-                activeTaskId = null;
-            }
+            handleTaskDeletion(newTask);
         });
     }
 
@@ -370,19 +470,116 @@ document.addEventListener('DOMContentLoaded', function () {
         }
     }
 
+    function updateTaskCompletionStats(taskElement, isCompleted) {
+        const alreadyCounted = taskElement.dataset.counted === 'true';
+
+        if (isCompleted && !alreadyCounted) {
+            taskElement.dataset.counted = 'true';
+            adjustDailyTaskCount(1);
+        } else if (!isCompleted && alreadyCounted) {
+            taskElement.dataset.counted = 'false';
+            adjustDailyTaskCount(-1);
+        }
+    }
+
+    function handleTaskDeletion(taskElement) {
+        if (taskElement.dataset.counted === 'true') {
+            adjustDailyTaskCount(-1);
+        }
+
+        if (activeTaskId === taskElement.dataset.id) {
+            activeTaskId = null;
+        }
+
+        taskElement.remove();
+    }
+
     function logSession(taskName) {
         const now = new Date();
         const timeString = now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
-        const dateString = now.toLocaleDateString();
+        const focusDuration = getDurationFromInput(pomodoroDuration, DEFAULT_POMODORO_MINUTES);
 
         const sessionHTML = `
             <li class="session-item fade-in">
                 <span class="session-task">${taskName}</span>
-                <span class="session-time">${timeString} - ${parseInt(pomodoroDuration.value)} min</span>
+                <span class="session-time">${timeString} - ${focusDuration} min</span>
             </li>
         `;
 
         sessionHistory.insertAdjacentHTML('afterbegin', sessionHTML);
+    }
+
+    function getLocalISODate() {
+        const now = new Date();
+        const timezoneOffsetMs = now.getTimezoneOffset() * 60000;
+        const localDate = new Date(now.getTime() - timezoneOffsetMs);
+        return localDate.toISOString().split('T')[0];
+    }
+
+    function createEmptyStats(date) {
+        return {
+            date,
+            pomodoros: 0,
+            focusMinutes: 0,
+            tasksCompleted: 0
+        };
+    }
+
+    function loadDailyStats() {
+        const today = getLocalISODate();
+        const storedStats = localStorage.getItem('pomodoro-daily-stats');
+
+        if (storedStats) {
+            try {
+                const parsedStats = JSON.parse(storedStats);
+                if (parsedStats.date === today) {
+                    return parsedStats;
+                }
+            } catch (error) {
+                console.warn('Unable to parse stored pomodoro stats', error);
+            }
+        }
+
+        return createEmptyStats(today);
+    }
+
+    function saveDailyStats() {
+        if (!dailyStats) {
+            dailyStats = createEmptyStats(getLocalISODate());
+        }
+        localStorage.setItem('pomodoro-daily-stats', JSON.stringify(dailyStats));
+    }
+
+    function updateDailyStatsDisplay() {
+        if (!dailyStats) return;
+
+        dailyPomodorosEl.textContent = dailyStats.pomodoros;
+        dailyFocusMinutesEl.textContent = dailyStats.focusMinutes;
+        dailyTasksCompletedEl.textContent = dailyStats.tasksCompleted;
+    }
+
+    function incrementDailyPomodoroStats(minutes) {
+        if (!dailyStats) {
+            dailyStats = loadDailyStats();
+        }
+
+        dailyStats.pomodoros += 1;
+        if (Number.isFinite(minutes) && minutes > 0) {
+            dailyStats.focusMinutes += minutes;
+        }
+
+        saveDailyStats();
+        updateDailyStatsDisplay();
+    }
+
+    function adjustDailyTaskCount(delta) {
+        if (!dailyStats) {
+            dailyStats = loadDailyStats();
+        }
+
+        dailyStats.tasksCompleted = Math.max(0, dailyStats.tasksCompleted + delta);
+        saveDailyStats();
+        updateDailyStatsDisplay();
     }
 
     // Theme Functions
@@ -494,13 +691,15 @@ document.addEventListener('DOMContentLoaded', function () {
         notification.style.display = 'flex';
 
         // Request browser notification permission
-        if (Notification.permission === 'granted') {
-            new Notification(notificationTitle.textContent, {
-                body: notificationText.textContent,
-                icon: 'resources/favicon.ico' // Replace with your favicon
-            });
-        } else if (Notification.permission !== 'denied') {
-            Notification.requestPermission();
+        if ('Notification' in window) {
+            if (Notification.permission === 'granted') {
+                new Notification(notificationTitle.textContent, {
+                    body: notificationText.textContent,
+                    icon: 'resources/favicon.ico' // Replace with your favicon
+                });
+            } else if (Notification.permission !== 'denied') {
+                Notification.requestPermission();
+            }
         }
 
         // Auto-hide notification after 5 seconds
@@ -511,6 +710,10 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Inspiration and Break Suggestions
     function showInspiration() {
+        if (!inspirationContainer) {
+            return;
+        }
+
         if (currentMode !== 'pomodoro') {
             // Show inspiration and break suggestions during breaks
             const randomQuote = inspirationalQuotes[Math.floor(Math.random() * inspirationalQuotes.length)];
@@ -520,7 +723,7 @@ document.addEventListener('DOMContentLoaded', function () {
             const randomSuggestion = breakSuggestions[Math.floor(Math.random() * breakSuggestions.length)];
             breakSuggestion.textContent = randomSuggestion;
 
-            inspirationContainer.style.display = 'block';
+            inspirationContainer.style.display = 'flex';
             setTimeout(function () {
                 inspirationContainer.style.display = 'none';
             }, 60 * 1000 * 3);
@@ -532,8 +735,61 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Request notification permission on page load
     function requestNotificationPermission() {
+        if (!('Notification' in window)) {
+            return;
+        }
+
         if (Notification.permission !== 'granted' && Notification.permission !== 'denied') {
             Notification.requestPermission();
+        }
+    }
+
+    function toggleSettingsPanel() {
+        if (!settingsPanel || !settingsOverlay || !settingsToggle) {
+            return;
+        }
+        if (settingsPanel.classList.contains('active')) {
+            closeSettingsPanel();
+        } else {
+            openSettingsPanel();
+        }
+    }
+
+    function openSettingsPanel() {
+        if (!settingsPanel || !settingsOverlay || !settingsToggle) {
+            return;
+        }
+        settingsPanel.classList.add('active');
+        settingsOverlay.classList.add('active');
+        settingsPanel.setAttribute('aria-hidden', 'false');
+        settingsOverlay.setAttribute('aria-hidden', 'false');
+        settingsToggle.setAttribute('aria-expanded', 'true');
+    }
+
+    function closeSettingsPanel() {
+        if (!settingsPanel || !settingsOverlay || !settingsToggle) {
+            return;
+        }
+        settingsPanel.classList.remove('active');
+        settingsOverlay.classList.remove('active');
+        settingsPanel.setAttribute('aria-hidden', 'true');
+        settingsOverlay.setAttribute('aria-hidden', 'true');
+        settingsToggle.setAttribute('aria-expanded', 'false');
+    }
+
+    function updateModeAtmosphere(mode) {
+        const copyMap = {
+            pomodoro: 'Stay in the flow',
+            shortBreak: 'Take a mindful pause',
+            longBreak: 'Reset deeply'
+        };
+
+        if (timerSubcopy) {
+            timerSubcopy.textContent = copyMap[mode] || 'Stay in the flow';
+        }
+
+        if (focusArea) {
+            focusArea.setAttribute('data-mode', mode);
         }
     }
 
@@ -561,6 +817,21 @@ document.addEventListener('DOMContentLoaded', function () {
             longBreakDuration.value = savedLongBreakDuration;
         }
 
+        const savedLongBreakInterval = localStorage.getItem('long-break-interval');
+        if (savedLongBreakInterval) {
+            longBreakIntervalInput.value = savedLongBreakInterval;
+        }
+
+        const savedAutoStartBreak = localStorage.getItem('auto-start-break');
+        if (savedAutoStartBreak !== null) {
+            autoStartBreakToggle.checked = savedAutoStartBreak === 'true';
+        }
+
+        const savedAutoStartFocus = localStorage.getItem('auto-start-focus');
+        if (savedAutoStartFocus !== null) {
+            autoStartFocusToggle.checked = savedAutoStartFocus === 'true';
+        }
+
         updateSettings();
     }
 
@@ -569,6 +840,9 @@ document.addEventListener('DOMContentLoaded', function () {
         localStorage.setItem('pomodoro-duration', pomodoroDuration.value);
         localStorage.setItem('short-break-duration', shortBreakDuration.value);
         localStorage.setItem('long-break-duration', longBreakDuration.value);
+        localStorage.setItem('long-break-interval', longBreakIntervalInput.value);
+        localStorage.setItem('auto-start-break', autoStartBreakToggle.checked);
+        localStorage.setItem('auto-start-focus', autoStartFocusToggle.checked);
     }
 
     // Add event listeners for saving preferences
@@ -578,9 +852,14 @@ document.addEventListener('DOMContentLoaded', function () {
 
     // Initialize application
     function init() {
+        updateModeAtmosphere(currentMode);
         loadSavedPreferences();
+        handleLongBreakIntervalChange();
         requestNotificationPermission();
 
+        dailyStats = loadDailyStats();
+        updateDailyStatsDisplay();
+        saveDailyStats();
 
         taskList.innerHTML = `
             <li class="task-item" data-id="demo1">
@@ -609,15 +888,17 @@ document.addEventListener('DOMContentLoaded', function () {
             </li>
 
         `;
-        setActiveTask("demo1")
+        setActiveTask("demo1");
         // Add event listeners to example tasks
         const demoTasks = taskList.querySelectorAll('.task-item');
         demoTasks.forEach(task => {
             const taskId = task.dataset.id;
+            task.dataset.counted = 'false';
 
             const checkboxEl = task.querySelector('.task-checkbox');
             checkboxEl.addEventListener('change', () => {
                 task.classList.toggle('completed');
+                updateTaskCompletionStats(task, checkboxEl.checked);
             });
 
             const focusBtn = task.querySelector('.task-btn.focus');
@@ -627,10 +908,7 @@ document.addEventListener('DOMContentLoaded', function () {
 
             const deleteBtn = task.querySelector('.task-btn.delete');
             deleteBtn.addEventListener('click', () => {
-                task.remove();
-                if (activeTaskId === taskId) {
-                    activeTaskId = null;
-                }
+                handleTaskDeletion(task);
             });
         });
 

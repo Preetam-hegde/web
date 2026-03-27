@@ -497,6 +497,37 @@ function setupThemeToggle() {
 	});
 }
 
+function setupMedievalToggle() {
+	const toggle = document.getElementById('medievalToggle');
+	const audio = document.getElementById('medievalAudio');
+	if (!toggle || !audio) return;
+
+	audio.volume = 0.5;
+
+	const setPlayingUI = (playing) => {
+		toggle.classList.toggle('is-playing', playing);
+		toggle.setAttribute('aria-pressed', playing ? 'true' : 'false');
+	};
+
+	toggle.addEventListener('click', async () => {
+		if (!audio.paused) {
+			audio.pause();
+			setPlayingUI(false);
+			localStorage.setItem('modern-medieval-music', 'off');
+			return;
+		}
+
+		try {
+			await audio.play();
+			setPlayingUI(true);
+			localStorage.setItem('modern-medieval-music', 'on');
+		} catch (error) {
+			setPlayingUI(false);
+		}
+	});
+
+}
+
 /* ── Nav hamburger + smooth scroll ────────────────────────────────── */
 
 function setupNavigation() {
@@ -613,6 +644,7 @@ function initPortfolio() {
 
 	setupEmbedModeGuards();
 	setupThemeToggle();
+	setupMedievalToggle();
 	setupNavigation();
 	setupContactForm();
 	setupParticles();

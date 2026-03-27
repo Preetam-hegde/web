@@ -3,64 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Cellular Automata Canvas - Evolving Patterns</title>
+    <title>Automata Lab - Cellular Automata Game</title>
     <link rel="stylesheet" href="styles.css">
 </head>
 <body>
     <div class="page-container">
-        <header>
-            <h1>Cellular Automata: Conway's Game of Life</h1>
-            <p class="subtitle">Witness Emergent Complexity from Simple Rules</p>
+        <header class="hero">
+            <h1>Automata Lab</h1>
+            <p class="subtitle">Experiment with Life, Build Patterns, Conquer Challenges</p>
         </header>
 
-        <main class="content-grid">
-            <section class="canvas-area">
-                <canvas id="automataCanvas"></canvas>
+        <main class="game-layout">
+            <section class="canvas-section">
+                <div class="canvas-container">
+                    <canvas id="automataCanvas"></canvas>
+                    <div id="hud" class="hud">
+                        <div class="hud-item">
+                            <span class="hud-label">Gen:</span>
+                            <span id="generationCount" class="hud-value">0</span>
+                        </div>
+                        <div class="hud-item">
+                            <span class="hud-label">Alive:</span>
+                            <span id="liveCellsCount" class="hud-value">0</span>
+                        </div>
+                        <div id="goalDisplay" class="hud-item goal-display" style="display: none;">
+                            <span class="hud-label">Goal:</span>
+                            <span id="goalText" class="hud-value">...</span>
+                        </div>
+                        <div id="scoreDisplay" class="hud-item score-display" style="display: none;">
+                            <span class="hud-label">Score:</span>
+                            <span id="scoreValue" class="hud-value">0</span>
+                        </div>
+                    </div>
+                </div>
             </section>
 
-            <aside class="controls-info">
-                <div class="controls-panel">
-                    <h2>Simulation Controls</h2>
+            <aside class="control-panel">
+                <div class="mode-tabs">
+                    <button id="sandboxTab" class="tab-button active">Sandbox</button>
+                    <button id="challengesTab" class="tab-button">Challenges</button>
+                </div>
+
+                <div id="sandboxControls" class="controls-section">
                     <div class="control-group">
-                        <button id="startStopButton" class="control-button">Start</button>
+                        <button id="playPauseButton" class="control-button primary">Play</button>
+                        <button id="stepButton" class="control-button">Step</button>
                         <button id="clearButton" class="control-button">Clear</button>
                     </div>
                     <div class="control-group">
-                        <label for="speedControl">Speed:</label>
-                        <input type="range" id="speedControl" min="1" max="10" value="5">
+                        <label for="randomFillSlider">Random Fill (%):</label>
+                        <input type="range" id="randomFillSlider" min="0" max="100" value="0" step="5">
+                        <button id="randomFillButton" class="control-button small">Apply</button>
                     </div>
                     <div class="control-group">
-                        <label for="colorPalette">Color Palette:</label>
-                        <select id="colorPalette">
+                        <label for="speedSlider">Speed:</label>
+                        <input type="range" id="speedSlider" min="1" max="20" value="5">
+                    </div>
+                    <div class="control-group">
+                        <label for="paletteSelect">Palette:</label>
+                        <select id="paletteSelect">
                             <option value="default">Default</option>
                             <option value="neon">Neon</option>
                             <option value="grayscale">Grayscale</option>
                             <option value="viridis">Viridis</option>
+                            <option value="fire">Fire</option>
+                            <option value="ocean">Ocean</option>
                         </select>
+                    </div>
+                    <div class="control-group">
+                        <label for="sizeSelect">Grid Size:</label>
+                        <select id="sizeSelect">
+                            <option value="small">Small (50x35)</option>
+                            <option value="medium" selected>Medium (70x50)</option>
+                            <option value="large">Large (100x70)</option>
+                        </select>
+                    </div>
+                    <div class="control-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="wrapCheckbox" checked>
+                            Wrap Edges
+                        </label>
                     </div>
                 </div>
 
-                <div class="info-panel">
-                    <h2>About Conway's Game of Life</h2>
-                    <p>The Game of Life is a cellular automaton devised by mathematician John Conway in 1970.</p>
-                    <h3>Rules:</h3>
-                    <ul>
-                        <li>Any live cell with fewer than two live neighbours dies (underpopulation).</li>
-                        <li>Any live cell with two or three live neighbours lives on to the next generation.</li>
-                        <li>Any live cell with more than three live neighbours dies (overpopulation).</li>
-                        <li>Any dead cell with exactly three live neighbours becomes a live cell (reproduction).</li>
-                    </ul>
-                    <p>Click on the canvas to toggle cells and observe patterns evolve!</p>
-                    <p id="generationCount" class="generation-display">Generation: 0</p>
+                <div id="challengesControls" class="controls-section" style="display: none;">
+                    <div class="challenge-selector">
+                        <label for="challengeSelect">Select Challenge:</label>
+                        <select id="challengeSelect">
+                            <option value="none">Choose a challenge...</option>
+                            <option value="glider">Glider Race</option>
+                            <option value="oscillator">Oscillator Mastery</option>
+                            <option value="spaceship">Spaceship Builder</option>
+                            <option value="population">Population Boom</option>
+                        </select>
+                    </div>
+                    <button id="loadChallengeButton" class="control-button primary">Load Challenge</button>
+                    <div id="challengeInfo" class="challenge-info" style="display: none;">
+                        <h3 id="challengeTitle">Challenge Title</h3>
+                        <p id="challengeDescription">Description...</p>
+                        <div class="challenge-stats">
+                            <div>Best Score: <span id="bestScore">0</span></div>
+                            <div>Attempts: <span id="attemptsCount">0</span></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="patterns-section">
+                    <h3>Pattern Library</h3>
+                    <div class="pattern-grid">
+                        <button class="pattern-button" data-pattern="glider">Glider</button>
+                        <button class="pattern-button" data-pattern="blinker">Blinker</button>
+                        <button class="pattern-button" data-pattern="beacon">Beacon</button>
+                        <button class="pattern-button" data-pattern="pulsar">Pulsar</button>
+                        <button class="pattern-button" data-pattern="spaceship">Lightweight Spaceship</button>
+                        <button class="pattern-button" data-pattern="gosper">Gosper Glider Gun</button>
+                    </div>
+                    <p class="pattern-tip">Tap pattern then click/tap canvas to place</p>
+                </div>
+
+                <div class="info-section">
+                    <h3>About Cellular Automata</h3>
+                    <p>Conway's Game of Life: Simple rules create complex emergent behavior.</p>
+                    <details>
+                        <summary>Rules</summary>
+                        <ul>
+                            <li>Live cell with 2-3 neighbors survives</li>
+                            <li>Live cell with <2 or >3 neighbors dies</li>
+                            <li>Dead cell with exactly 3 neighbors births</li>
+                        </ul>
+                    </details>
+                    <p class="mobile-tip">Touch and drag to draw on mobile</p>
                 </div>
             </aside>
         </main>
 
         <footer>
-            <p>-- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo --</p>
+            <p>-- Made with ❤️ by Preetam Ptwo --</p>
         </footer>
     </div>
     <script src="script.js"></script>
 </body>
-
 </html>

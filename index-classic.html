@@ -27,6 +27,10 @@
             <i class="fas fa-crosshairs"></i>
             <span>Aim Trainer</span>
         </button>
+        <button class="desktop-icon" data-open-window="window-music-player">
+            <i class="fas fa-compact-disc"></i>
+            <span>Music Player</span>
+        </button>
         <button class="desktop-icon" data-open-window="window-modern-portfolio">
             <i class="fas fa-globe"></i>
             <span>Portfolio UI</span>
@@ -378,6 +382,38 @@
         </div>
     </div>
 
+    <div class="terminal-container app-window window-hidden" id="window-music-player" data-app="music-player">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="term-btn close"></div>
+                <div class="term-btn minimize"></div>
+                <div class="term-btn maximize"></div>
+            </div>
+            <div class="terminal-title">music-player</div>
+        </div>
+        <div class="terminal-body">
+            <div class="output terminal-music-player">
+                <div class="music-current" id="musicCurrentCard" data-cover="lofi">
+                    <div class="cover-art" aria-hidden="true"></div>
+                    <div class="music-meta">
+                        <p class="music-label">Now Playing</p>
+                        <h3 id="musicTrackTitle">Love LoFi</h3>
+                        <p id="musicTrackGenre">Focus Beats</p>
+                    </div>
+                </div>
+                <div class="music-controls">
+                    <button class="btn" id="musicPrevBtn" type="button">Prev</button>
+                    <button class="btn" id="musicPlayBtn" type="button">Play</button>
+                    <button class="btn" id="musicNextBtn" type="button">Next</button>
+                    <label class="music-volume" for="musicVolumeSlider">Vol
+                        <input id="musicVolumeSlider" type="range" min="0" max="100" value="55">
+                    </label>
+                </div>
+                <div class="music-albums" id="musicAlbumGrid" aria-label="Album tracks"></div>
+            </div>
+        </div>
+    </div>
+
     <div class="terminal-container app-window window-hidden" id="window-modern-portfolio" data-app="modern-portfolio">
         <div class="terminal-header">
             <div class="terminal-buttons">
@@ -405,6 +441,7 @@
             <button class="start-item" data-open-window="window-resume">Resume</button>
             <button class="start-item" data-open-window="window-projects-folder">Projects Folder</button>
             <button class="start-item" data-open-window="window-aim-trainer">Aim Trainer</button>
+            <button class="start-item" data-open-window="window-music-player">Music Player</button>
             <button class="start-item" data-open-window="window-modern-portfolio">Modern Portfolio</button>
         </div>
     </div>
@@ -427,6 +464,7 @@
             <button class="task-app" data-open-window="window-projects-folder">Projects</button>
             <button class="task-app" data-open-window="window-project-browser">ProjectBrowser</button>
             <button class="task-app" data-open-window="window-aim-trainer">AimTrainer</button>
+            <button class="task-app" data-open-window="window-music-player">Music</button>
             <button class="task-app" data-open-window="window-modern-portfolio">PortfolioUI</button>
         </div>
         <div class="status-item">

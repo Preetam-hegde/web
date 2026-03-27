@@ -24,6 +24,10 @@
 			<div class="theme-toggle">
 				<i class="fas fa-sun"></i>
 			</div>
+			<button class="medieval-toggle" id="medievalToggle" type="button" aria-pressed="false" aria-label="Play medieval music">
+				<i class="fas fa-music"></i>
+				<span>Medieval</span>
+			</button>
 			<div class="nav-links">
 				<a href="#about">About</a>
 				<a href="#resume">Resume</a>
@@ -182,6 +186,10 @@
 			<iframe id="previewFrame" title="Project preview frame" loading="lazy"></iframe>
 		</div>
 	</div>
+
+	<audio id="medievalAudio" preload="none" loop>
+		<source src="resource/audio/music/medievalM.mp3" type="audio/mpeg">
+	</audio>
 
 	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
 	<script src="projects.js"></script>

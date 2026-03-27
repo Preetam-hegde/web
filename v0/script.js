@@ -20,6 +20,7 @@ document.addEventListener('DOMContentLoaded', function() {
   setupStatusBar();
   setupMatrixBackground();
   simulateHackerData();
+  setupTerminalMusicPlayer();
   setupDesktopEnvironment();
   setupInteractiveShell();
 });
@@ -476,13 +477,13 @@ function setupInteractiveShell() {
     case 'lsapps': {
       const appNames = window.desktopOS && typeof window.desktopOS.listApps === 'function'
         ? window.desktopOS.listApps()
-        : ['terminal', 'resume', 'projects', 'aimtrainer'];
+        : ['terminal', 'resume', 'projects', 'aimtrainer', 'music'];
       appNames.forEach(name => printLine(name, 'shell-line-muted'));
       break;
     }
     case 'openapp': {
       if (!arg) {
-        printLine('openapp: usage -> openapp <terminal|resume|projects|aimtrainer>', 'shell-line-error');
+        printLine('openapp: usage -> openapp <terminal|resume|projects|aimtrainer|music>', 'shell-line-error');
         break;
       }
       if (window.desktopOS && typeof window.desktopOS.openApp === 'function') {
@@ -843,6 +844,132 @@ function simulateHackerData() {
   document.head.appendChild(style);
 }
 
+function setupTerminalMusicPlayer() {
+  const albumGrid = document.getElementById('musicAlbumGrid');
+  const titleEl = document.getElementById('musicTrackTitle');
+  const genreEl = document.getElementById('musicTrackGenre');
+  const currentCard = document.getElementById('musicCurrentCard');
+  const playBtn = document.getElementById('musicPlayBtn');
+  const prevBtn = document.getElementById('musicPrevBtn');
+  const nextBtn = document.getElementById('musicNextBtn');
+  const volumeSlider = document.getElementById('musicVolumeSlider');
+
+  if (!albumGrid || !titleEl || !genreEl || !currentCard || !playBtn || !prevBtn || !nextBtn || !volumeSlider) {
+    return;
+  }
+
+  const playlist = [
+    { id: 'lofi', title: 'Love LoFi', genre: 'Focus Beats', src: 'resource/audio/music/loveLoFiM.mp3' },
+    { id: 'nature', title: 'Forest Pulse', genre: 'Nature Ambience', src: 'resource/audio/music/natureM.mp3' },
+    { id: 'jazz', title: 'Night Jazz', genre: 'Late Cafe Jazz', src: 'resource/audio/music/jazzM.mp3' },
+    { id: 'medieval', title: 'Castle Echo', genre: 'Medieval Ambient', src: 'resource/audio/music/medievalM.mp3' }
+  ];
+
+  const player = new Audio();
+  player.loop = true;
+  player.volume = Number(volumeSlider.value) / 100;
+
+  const state = {
+    index: 0,
+    isPlaying: false
+  };
+
+  function updateAlbumActive() {
+    albumGrid.querySelectorAll('.music-album').forEach((album, idx) => {
+      album.classList.toggle('active', idx === state.index);
+    });
+  }
+
+  function updateNowPlaying() {
+    const track = playlist[state.index];
+    titleEl.textContent = track.title;
+    genreEl.textContent = track.genre;
+    currentCard.dataset.cover = track.id;
+    updateAlbumActive();
+  }
+
+  function loadTrack(index) {
+    state.index = (index + playlist.length) % playlist.length;
+    player.src = playlist[state.index].src;
+    updateNowPlaying();
+  }
+
+  function updatePlayButton() {
+    playBtn.textContent = state.isPlaying ? 'Pause' : 'Play';
+  }
+
+  async function playCurrentTrack() {
+    try {
+      await player.play();
+      state.isPlaying = true;
+      updatePlayButton();
+    } catch (error) {
+      state.isPlaying = false;
+      updatePlayButton();
+    }
+  }
+
+  function pauseCurrentTrack() {
+    player.pause();
+    state.isPlaying = false;
+    updatePlayButton();
+  }
+
+  function renderAlbums() {
+    albumGrid.innerHTML = playlist.map((track, idx) => `
+      <button class="music-album" data-cover="${track.id}" data-track-index="${idx}" type="button">
+        <span class="music-album-art" aria-hidden="true"></span>
+        <strong class="music-album-title">${track.title}</strong>
+        <span class="music-album-genre">${track.genre}</span>
+      </button>
+    `).join('');
+  }
+
+  renderAlbums();
+  loadTrack(0);
+  updatePlayButton();
+
+  playBtn.addEventListener('click', () => {
+    if (state.isPlaying) {
+      pauseCurrentTrack();
+      return;
+    }
+    playCurrentTrack();
+  });
+
+  prevBtn.addEventListener('click', () => {
+    const shouldResume = state.isPlaying;
+    loadTrack(state.index - 1);
+    if (shouldResume) {
+      playCurrentTrack();
+    }
+  });
+
+  nextBtn.addEventListener('click', () => {
+    const shouldResume = state.isPlaying;
+    loadTrack(state.index + 1);
+    if (shouldResume) {
+      playCurrentTrack();
+    }
+  });
+
+  volumeSlider.addEventListener('input', () => {
+    player.volume = Number(volumeSlider.value) / 100;
+  });
+
+  albumGrid.addEventListener('click', event => {
+    const albumBtn = event.target.closest('.music-album');
+    if (!albumBtn) return;
+    const idx = Number(albumBtn.getAttribute('data-track-index'));
+    if (Number.isNaN(idx)) return;
+    const shouldResume = state.isPlaying;
+    loadTrack(idx);
+    if (shouldResume) {
+      playCurrentTrack();
+    }
+  });
+}
+
 function setupDesktopEnvironment() {
   const windows = Array.from(document.querySelectorAll('.app-window'));
   const openers = Array.from(document.querySelectorAll('[data-open-window]'));
@@ -863,6 +990,7 @@ function setupDesktopEnvironment() {
     projects: { windowId: 'window-projects-folder', aliases: ['projects', 'projects-folder', 'folder'], service: 'files' },
     browser: { windowId: 'window-project-browser', aliases: ['browser', 'projectbrowser', 'preview'], service: 'browser' },
     aimtrainer: { windowId: 'window-aim-trainer', aliases: ['aimtrainer', 'aim', 'game'], service: 'games' },
+    music: { windowId: 'window-music-player', aliases: ['music', 'musicplayer', 'player'], service: 'audio' },
     portfolio: { windowId: 'window-modern-portfolio', aliases: ['portfolio', 'modern', 'ui'], service: 'portfolio' }
   };
 
@@ -1312,7 +1440,7 @@ function setupDesktopEnvironment() {
       return openWindow(mappedId);
     },
     listApps() {
-      return ['terminal', 'resume', 'projects', 'browser', 'aimtrainer', 'portfolio'];
+      return ['terminal', 'resume', 'projects', 'browser', 'aimtrainer', 'music', 'portfolio'];
     },
     getProcessLines() {
       return Object.keys(processByPid).map(pid => {

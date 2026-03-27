@@ -233,6 +233,36 @@ body {
 	box-shadow: 0 0 18px rgba(168, 85, 247, 0.35);
 }
 
+.medieval-toggle {
+	height: 2.5rem;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.45rem;
+	padding: 0 0.8rem;
+	border-radius: 999px;
+	border: 1px solid rgba(168, 85, 247, 0.3);
+	background: var(--surface);
+	color: var(--text);
+	font-family: 'Space Mono', monospace;
+	font-size: 0.68rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	cursor: pointer;
+	transition: transform 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease;
+}
+
+.medieval-toggle:hover {
+	transform: translateY(-2px);
+	border-color: var(--ring);
+	box-shadow: 0 0 18px rgba(168, 85, 247, 0.35);
+}
+
+.medieval-toggle.is-playing {
+	border-color: rgba(6, 214, 160, 0.65);
+	box-shadow: 0 0 18px rgba(6, 214, 160, 0.35);
+	color: var(--accent);
+}
+
 /* ── Layout containers ──────────────────────────────────────────────── */
 .hero, .resume, .projects, .gallery-showcase, .contact {
 	max-width: 1200px;
@@ -1351,6 +1381,12 @@ footer > #credit {
 @media (max-width: 860px) {
 	.nav-links  { display: none; }
 	.hamburger  { display: grid; }
+	.medieval-toggle span { display: none; }
+	.medieval-toggle {
+		width: 2.5rem;
+		padding: 0;
+		justify-content: center;
+	}
 
 	.hero {
 		padding-top: 5.5rem;
@@ -1418,6 +1454,11 @@ footer > #credit {
 
 	.preview-actions { width: 100%; }
 	.preview-actions .btn { flex: 1; }
+
+	.medieval-toggle {
+		height: 2.35rem;
+		width: 2.35rem;
+	}
 }
 
 /* ── Reduced Motion ──────────────────────────────────────────────────── */
