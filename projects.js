@@ -3,7 +3,7 @@ const projects = [
     name: "Bharatvarsha",
     category: "personal",
     image: "resource/Image/bharatvarsha.svg",
-    link: "bharatvarsha/index.html",
+    link: "apps/bharatvarsha/index.html",
     description: "This simulation places you in the role of a tribal chief in the Later Vedic period.",
     tech: ["HTML5", "CSS3", "JavaScript", "Logic"]
   },
@@ -11,7 +11,7 @@ const projects = [
     name: "Natural Selection Simulator",
     category: "personal",
     image: "resource/Image/naturalSelectionSim.svg",
-    link: "naturalSelectionSim/index.html",
+    link: "apps/natural-selection-sim/index.html",
     description: "This project is an interactive evolution simulator where organisms with different traits survive, reproduce, mutate, and form new species in real time.",
     tech: ["HTML5", "CSS3", "JavaScript", "Physics"]
   },
@@ -19,7 +19,7 @@ const projects = [
     name: "Idle Empire Builder Game",
     category: "FCC Project",
     image: "resource/Image/dreamscape.svg",
-    link: "dreamscape/index.html",
+    link: "apps/dreamscape/index.html",
     description: "A simulation-based browser game inspired by real estate dynamics, combining reflex-based gameplay with interactive decision-making elements.",
     tech: ["JavaScript", "HTML5", "CSS3", "Canvas API", "Game Design"]
   },
@@ -27,7 +27,7 @@ const projects = [
     name: " Reflex Arena",
     category: "fcc",
     image: "resource/Image/gamecircle.svg",
-    link: "aim-trainer/index.html",
+    link: "apps/aim-trainer/index.html",
     description: "A comprehensive browser-based FPS aim training tool",
     tech: ["JavaScript", "HTML5", "CSS3", "Game"]
   },
@@ -35,7 +35,7 @@ const projects = [
     name: "Game of life",
     category: "fcc",
     image: "resource/Image/cellularAutomata.svg",
-    link: "cellularAutomata/index.html",
+    link: "apps/cellular-automata/index.html",
     description: "An interactive implementation of Conway's Game of Life, a fascinating cellular automaton.",
     tech: ["Canvas", "JavaScript", "HTML5", "CSS3", "Cellular Automata"]
   },
@@ -43,7 +43,7 @@ const projects = [
     name: "Get Location",
     category: "personal",
     image: "resource/Image/geoLocation.svg",
-    link: "geoLocation/index.html",
+    link: "apps/geo-location/index.html",
     description: "Find your current geographic coordinates and location information using the Geolocation API.",
     tech: ["JavaScript", "HTML5", "CSS3", "Geolocation API", "Maps"]
   },
@@ -51,7 +51,7 @@ const projects = [
     name: "High Life BG",
     category: "fcc",
     image: "resource/Image/BGI.svg",
-    link: "BGIllusion/index.html",
+    link: "apps/bg-illusion/index.html",
     description: "Experience mesmerizing background ball physics with visually stunning effects and illusions.",
     tech: ["Logic", "JavaScript", "HTML5", "CSS3", "Physics"]
   },
@@ -59,7 +59,7 @@ const projects = [
     name: "Sorting Algorithms",
     category: "fcc",
     image: "resource/Image/sort.svg",
-    link: "analyser/index.html",
+    link: "apps/analyser/index.html",
     description: "Visualize various sorting algorithms in action to understand their efficiency and logic.",
     tech: ["Sorting Algorithms", "JavaScript", "HTML5", "CSS3", "Data Structures"]
   },
@@ -75,7 +75,7 @@ const projects = [
     name: "Pomodoro Timer",
     category: "fcc",
     image: "resource/Image/pomoTimer.svg",
-    link: "Pomodoro/index.html",
+    link: "apps/pomodoro/index.html",
     description: "A web-based Pomodoro Timer to help you boost your productivity with time management techniques.",
     tech: ["JavaScript", "HTML5", "CSS3", "Productivity", "Timer"]
   },
@@ -83,7 +83,7 @@ const projects = [
     name: "Random quotes",
     category: "fcc",
     image: "resource/Image/randomQuota.svg",
-    link: "quote/Game.html",
+    link: "apps/quote/Game.html",
     description: "Generate random quotes fetched from a free API. Get inspired with new quotes daily.",
     tech: ["JavaScript", "API", "HTML5", "CSS3", "Quotes"]
   },
@@ -91,7 +91,7 @@ const projects = [
     name: "Verilog vectors Playground",
     category: "fcc",
     image: "resource/Image/vector.svg",
-    link: "vector01/index.html",
+    link: "apps/vector-01/index.html",
     description: "A visual learning tool for Verilog vectors and their applications in digital design.",
     tech: ["JavaScript", "HTML5", "CSS3", "Vectors", "Verilog"]
   },
@@ -107,7 +107,7 @@ const projects = [
     name: "9 Dimension",
     category: "fcc",
     image: "resource/Image/9D.svg",
-    link: "nineDimension/index.html",
+    link: "apps/nine-dimension/index.html",
     description: "Explore nine different dimensions with JavaScript physics simulations. Experience interactive visuals and physics-based animations.",
     tech: ["JavaScript", "HTML5", "CSS3", "Vectors", "Physics"]
   }

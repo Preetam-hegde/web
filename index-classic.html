@@ -9,8 +9,31 @@
 </head>
 <body>
     <div class="matrix-bg"></div>
+
+    <div class="desktop-icons" id="desktop-icons">
+        <button class="desktop-icon" data-open-window="window-terminal">
+            <i class="fas fa-terminal"></i>
+            <span>Terminal</span>
+        </button>
+        <button class="desktop-icon" data-open-window="window-resume">
+            <i class="fas fa-file-lines"></i>
+            <span>Resume</span>
+        </button>
+        <button class="desktop-icon" data-open-window="window-projects-folder">
+            <i class="fas fa-folder"></i>
+            <span>Projects</span>
+        </button>
+        <button class="desktop-icon" data-open-window="window-aim-trainer">
+            <i class="fas fa-crosshairs"></i>
+            <span>Aim Trainer</span>
+        </button>
+        <button class="desktop-icon" data-open-window="window-modern-portfolio">
+            <i class="fas fa-globe"></i>
+            <span>Portfolio UI</span>
+        </button>
+    </div>
     
-    <div class="terminal-container">
+    <div class="terminal-container app-window" id="window-terminal" data-app="terminal">
         <div class="terminal-header">
             <div class="terminal-buttons">
                 <div class="term-btn close"></div>
@@ -21,6 +44,21 @@
         </div>
 
         <div class="terminal-body">
+            <div class="cyber-hud">
+                <div class="hud-item">
+                    <span class="hud-label">USER</span>
+                    <span class="hud-value">ptwo</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">MODE</span>
+                    <span class="hud-value">INTERACTIVE_SHELL</span>
+                </div>
+                <div class="hud-item">
+                    <span class="hud-label">SECURITY</span>
+                    <span class="hud-value">AES-256</span>
+                </div>
+            </div>
+
             <div class="boot-sequence">
                 <p class="boot-text">Booting Preetams' Kali Linux 2025.1 ...</p>
                 <p class="boot-text">Loading kernel modules ...</p>
@@ -45,10 +83,10 @@
                         <div class="glitch-wrapper">
                             <h1 class="glitch" data-text="[YOUR NAME]">Preetam Hegde</h1>
                         </div>
-                        <h2 class="blink-text">Software Developer at Oracle</h2>
+                        <h2 class="blink-text" id="classicHomeTitle">Software Developer at Oracle</h2>
                         <div class="bio-container">
                             <!-- <p>// Replace with your actual bio</p> -->
-                            <p>Self-driven software engineer with 2+ years of experience at Oracle and a solid internship in real-time 
+                            <p id="classicHomeSummary">Self-driven software engineer with 2+ years of experience at Oracle and a solid internship in real-time 
                             video processing (Kafka). Proficient in designing full-stack applications with expertise in Python, Java, 
                             Oracle JET, and AI/ML. Passionate about problem-solving, product thinking, and continuous learning.
                             </p>
@@ -56,7 +94,7 @@
                         <div class="stats-container">
                             <div class="stat">
                                 <span class="stat-label">Skills:</span>
-                                <div class="skill-bar">
+                                <div class="skill-bar" id="classicHomeSkillBar">
                                     <div class="skill" data-skill="Python" data-level="95%"></div>
                                     <div class="skill" data-skill="Ts/Js" data-level="90%"></div>
                                     <div class="skill" data-skill="REACT" data-level="85%"></div>
@@ -128,6 +166,34 @@
                     </div>
                 </section>
 
+                <section id="resume" class="section">
+                    <div class="command-line">
+                        <span class="prompt">ptwo@kali:~#</span>
+                        <span class="command">cat /resume/profile.md</span>
+                    </div>
+                    <div class="output">
+                        <h2 class="section-title">Resume Snapshot</h2>
+                        <div class="contact-terminal">
+                            <div class="contact-line">
+                                <span class="contact-label">SUMMARY:</span>
+                                <span class="contact-value" id="classicResumeSummary">Loading summary...</span>
+                            </div>
+                            <div class="contact-line">
+                                <span class="contact-label">SKILLS:</span>
+                                <span class="contact-value" id="classicResumeSkills">Loading skills...</span>
+                            </div>
+                            <div class="contact-line">
+                                <span class="contact-label">EXPERIENCE:</span>
+                                <span class="contact-value" id="classicResumeExperience">Loading experience...</span>
+                            </div>
+                            <div class="contact-line">
+                                <span class="contact-label">RESUME_PDF:</span>
+                                <span class="contact-value"><a href="resource/pdf/Preetam_resume_2026.pdf" target="_blank" download>[Download PDF]</a></span>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
                 <section id="contact" class="section">
                     <div class="command-line">
                         <span class="prompt">ptwo@kali:~#</span>
@@ -147,6 +213,14 @@
                             <div class="contact-line">
                                 <span class="contact-label">LINKEDIN:</span>
                                 <span class="contact-value">[linkedin.com/in/preetam-hegde-8b53311a7]</span>
+                            </div>
+                            <div class="contact-line">
+                                <span class="contact-label">RESUME_MD:</span>
+                                <span class="contact-value"><a href="resource/RESUME.md" target="_blank">[Open Markdown Resume]</a></span>
+                            </div>
+                            <div class="contact-line">
+                                <span class="contact-label">RESUME_PDF:</span>
+                                <span class="contact-value"><a href="resource/pdf/Preetam_resume_2026.pdf" target="_blank" download>[Download PDF]</a></span>
                             </div>
                             <div class="contact-form">
                                 <div class="form-line">
@@ -168,6 +242,31 @@
                 </section>
             </div>
 
+            <div class="linux-shell" id="linux-shell">
+                <div class="shell-header">Interactive Linux Shell</div>
+                <div class="shell-quick-commands">
+                    <button class="quick-cmd" data-command="help">help</button>
+                    <button class="quick-cmd" data-command="ls">ls</button>
+                    <button class="quick-cmd" data-command="projects">projects</button>
+                    <button class="quick-cmd" data-command="resume">resume</button>
+                    <button class="quick-cmd" data-command="neofetch">neofetch</button>
+                    <button class="quick-cmd" data-command="theme matrix">theme matrix</button>
+                </div>
+                <div class="shell-output" id="shell-output" aria-live="polite"></div>
+                <div class="shell-input-line">
+                    <span class="shell-prompt" id="shell-prompt">ptwo@kali:~$</span>
+                    <input
+                        id="shell-command"
+                        class="shell-command"
+                        type="text"
+                        autocomplete="off"
+                        spellcheck="false"
+                        aria-label="Terminal command input"
+                        placeholder="Type 'help' and press Enter"
+                    >
+                </div>
+            </div>
+
             <div class="terminal-nav">
                 <div class="command-prompt">
                     <span class="prompt">ptwo@kali:~#</span>
@@ -177,6 +276,7 @@
                     <button class="nav-btn" data-target="home">./home</button>
                     <button class="nav-btn" data-target="projects">./projects</button>
                     <button class="nav-btn" data-target="experience">./experience</button>
+                    <button class="nav-btn" data-target="resume">./resume</button>
                     <button class="nav-btn" data-target="contact">./contact</button>
                 </div>
                 <div class="theme-toggler">
@@ -197,6 +297,120 @@
         </div>
     </div>
 
+    <div class="terminal-container app-window window-hidden" id="window-resume" data-app="resume">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="term-btn close"></div>
+                <div class="term-btn minimize"></div>
+                <div class="term-btn maximize"></div>
+            </div>
+            <div class="terminal-title">Resume.md</div>
+        </div>
+        <div class="terminal-body">
+            <div class="output">
+                <h2 class="section-title">Resume</h2>
+                <p id="desktopResumeSummary">Loading summary...</p>
+                <h3 class="section-subtitle">Skills</h3>
+                <div class="project-tags" id="desktopResumeSkills"></div>
+                <h3 class="section-subtitle">Highlights</h3>
+                <ul class="resume-bullet-list" id="desktopResumeHighlights"></ul>
+                <a href="resource/pdf/Preetam_resume_2026.pdf" class="btn" target="_blank" download>Download PDF</a>
+            </div>
+        </div>
+    </div>
+
+    <div class="terminal-container app-window window-hidden" id="window-projects-folder" data-app="projects-folder">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="term-btn close"></div>
+                <div class="term-btn minimize"></div>
+                <div class="term-btn maximize"></div>
+            </div>
+            <div class="terminal-title">/home/ptwo/projects</div>
+        </div>
+        <div class="terminal-body">
+            <div class="output">
+                <h2 class="section-title">Projects Folder</h2>
+                <div class="project-folder-actions">
+                    <button id="openAllProjectsWindow" class="btn" type="button">Open All in Window</button>
+                    <button id="openAllProjectsTabs" class="btn" type="button">Open All in New Tabs</button>
+                </div>
+                <div id="desktopProjectsList" class="desktop-project-list"></div>
+            </div>
+        </div>
+    </div>
+
+    <div class="terminal-container app-window window-hidden" id="window-project-browser" data-app="project-browser">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="term-btn close"></div>
+                <div class="term-btn minimize"></div>
+                <div class="term-btn maximize"></div>
+            </div>
+            <div class="terminal-title">project-browser</div>
+        </div>
+        <div class="terminal-body">
+            <div class="output app-iframe-wrapper">
+                <div class="project-browser-controls">
+                    <button id="projectPrev" class="btn" type="button">Prev</button>
+                    <span id="projectBrowserTitle" class="project-browser-title">Project Browser</span>
+                    <button id="projectNext" class="btn" type="button">Next</button>
+                    <a id="projectOpenNewPage" class="btn" href="#" target="_blank" rel="noopener noreferrer">Open Page</a>
+                </div>
+                <iframe id="projectBrowserFrame" src="" title="Project Browser" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="terminal-container app-window window-hidden" id="window-aim-trainer" data-app="aim-trainer">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="term-btn close"></div>
+                <div class="term-btn minimize"></div>
+                <div class="term-btn maximize"></div>
+            </div>
+            <div class="terminal-title">aim-trainer</div>
+        </div>
+        <div class="terminal-body">
+            <div class="output app-iframe-wrapper">
+                <iframe src="apps/aim-trainer/index.html" title="Aim Trainer" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="terminal-container app-window window-hidden" id="window-modern-portfolio" data-app="modern-portfolio">
+        <div class="terminal-header">
+            <div class="terminal-buttons">
+                <div class="term-btn close"></div>
+                <div class="term-btn minimize"></div>
+                <div class="term-btn maximize"></div>
+            </div>
+            <div class="terminal-title">modern-portfolio</div>
+        </div>
+        <div class="terminal-body">
+            <div class="output app-iframe-wrapper">
+                <div class="project-browser-controls">
+                    <button id="openModernNewWindow" class="btn" type="button">Open Modern in New Window</button>
+                </div>
+                <iframe src="index.html?desktopEmbed=1" title="Modern Portfolio" loading="lazy"></iframe>
+            </div>
+        </div>
+    </div>
+
+    <div class="start-menu window-hidden" id="startMenu">
+        <div class="start-menu-header">Applications</div>
+        <input id="startMenuSearch" class="start-search" type="text" placeholder="Search apps..." autocomplete="off">
+        <div class="start-menu-list" id="startMenuList">
+            <button class="start-item" data-open-window="window-terminal">Terminal</button>
+            <button class="start-item" data-open-window="window-resume">Resume</button>
+            <button class="start-item" data-open-window="window-projects-folder">Projects Folder</button>
+            <button class="start-item" data-open-window="window-aim-trainer">Aim Trainer</button>
+            <button class="start-item" data-open-window="window-modern-portfolio">Modern Portfolio</button>
+        </div>
+    </div>
+
+    <div class="snap-preview window-hidden" id="snapPreview"></div>
+
     <div class="floating-data">
         <div class="data-stream"></div>
         <div class="data-stream"></div>
@@ -206,6 +420,15 @@
     </div>
 
     <div class="status-bar">
+        <div class="taskbar-left">
+            <button class="task-start" id="startMenuToggle"><i class="fas fa-bars"></i> Start</button>
+            <button class="task-app" data-open-window="window-terminal">Terminal</button>
+            <button class="task-app" data-open-window="window-resume">Resume</button>
+            <button class="task-app" data-open-window="window-projects-folder">Projects</button>
+            <button class="task-app" data-open-window="window-project-browser">ProjectBrowser</button>
+            <button class="task-app" data-open-window="window-aim-trainer">AimTrainer</button>
+            <button class="task-app" data-open-window="window-modern-portfolio">PortfolioUI</button>
+        </div>
         <div class="status-item">
             <i class="fas fa-wifi"></i>
             <span class="status-text">Connected</span>
@@ -224,6 +447,8 @@
     </div>
 
     <div class="cursor"></div>
+    <script src="projects.js"></script>
+    <script src="resource/resume-common.js"></script>
     <script src="v0/script.js"></script>
 </body>
 </html>

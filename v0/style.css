@@ -6,6 +6,8 @@
     --kali-secondary: #bd93f9;
     --kali-terminal: #0d0d0d;
     --kali-terminal-header: #1a1a1a;
+    --kali-panel-glow: rgba(0, 255, 128, 0.24);
+    --kali-panel-edge: rgba(0, 255, 153, 0.28);
     --terminal-font: 'Courier New', monospace;
 }
 
@@ -23,6 +25,52 @@ body {
     position: relative;
     height: 100vh;
     width: 100vw;
+}
+
+.desktop-icons {
+    position: fixed;
+    top: 1.2rem;
+    left: 1rem;
+    z-index: 4;
+    display: grid;
+    gap: 0.7rem;
+}
+
+.desktop-icon {
+    width: 88px;
+    min-height: 72px;
+    border: 1px solid rgba(255, 255, 255, 0.18);
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--kali-text);
+    border-radius: 8px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 0.35rem;
+    cursor: pointer;
+    font-family: var(--terminal-font);
+    font-size: 0.72rem;
+    transition: transform 0.2s ease, border-color 0.2s ease;
+}
+
+.desktop-icon i {
+    font-size: 1rem;
+}
+
+.desktop-icon:hover {
+    transform: translateY(-2px);
+    border-color: var(--kali-text);
+}
+
+body::before {
+    content: "";
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    background: radial-gradient(circle at 20% 10%, rgba(0, 255, 170, 0.12), transparent 40%),
+                radial-gradient(circle at 85% 85%, rgba(189, 147, 249, 0.12), transparent 35%);
+    z-index: -1;
 }
 
 /* Matrix Background */
@@ -137,17 +185,231 @@ body {
     height: 85vh;
     max-width: 1200px;
     margin: 2rem auto;
-    background-color: var(--kali-terminal);
+    background: linear-gradient(160deg, rgba(18, 24, 22, 0.95), rgba(10, 12, 11, 0.96));
     border-radius: 8px;
-    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.8);
+    border: 1px solid var(--kali-panel-edge);
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8), 0 0 40px var(--kali-panel-glow);
     overflow: hidden;
     position: relative;
-    animation: glitch 5s infinite;
-    animation-play-state: paused;
+    animation: none;
+    backdrop-filter: blur(4px);
+}
+
+.app-window {
+    margin: 0;
+    max-width: none;
+    position: fixed;
+    top: 4.2rem;
+    left: 8rem;
+    width: min(90vw, 1100px);
+    height: min(83vh, 780px);
+    z-index: 20;
+    resize: none;
+    min-width: 420px;
+    min-height: 320px;
+}
+
+.resize-handle {
+    position: absolute;
+    z-index: 60;
+}
+
+.resize-handle.right,
+.resize-handle.left {
+    top: 10px;
+    bottom: 10px;
+    width: 8px;
+}
+
+.resize-handle.right {
+    right: -4px;
+    cursor: ew-resize;
+}
+
+.resize-handle.left {
+    left: -4px;
+    cursor: ew-resize;
+}
+
+.resize-handle.top,
+.resize-handle.bottom {
+    left: 10px;
+    right: 10px;
+    height: 8px;
+}
+
+.resize-handle.top {
+    top: -4px;
+    cursor: ns-resize;
+}
+
+.resize-handle.bottom {
+    bottom: -4px;
+    cursor: ns-resize;
+}
+
+.resize-handle.corner {
+    width: 14px;
+    height: 14px;
+}
+
+.resize-handle.bottom-right {
+    right: -5px;
+    bottom: -5px;
+    cursor: nwse-resize;
+}
+
+.resize-handle.bottom-left {
+    left: -5px;
+    bottom: -5px;
+    cursor: nesw-resize;
+}
+
+.resize-handle.top-right {
+    right: -5px;
+    top: -5px;
+    cursor: nesw-resize;
+}
+
+.resize-handle.top-left {
+    left: -5px;
+    top: -5px;
+    cursor: nwse-resize;
+}
+
+#window-terminal {
+    left: 8.5rem;
+    top: 3.8rem;
+    z-index: 30;
+}
+
+#window-resume {
+    left: 16rem;
+    top: 6rem;
+}
+
+#window-projects-folder {
+    left: 18rem;
+    top: 5.4rem;
+}
+
+#window-aim-trainer {
+    left: 20rem;
+    top: 6.6rem;
+}
+
+.window-hidden {
+    display: none;
+}
+
+.snap-preview {
+    position: fixed;
+    border: 2px dashed rgba(0, 255, 153, 0.55);
+    background: rgba(0, 255, 153, 0.08);
+    z-index: 15;
+    pointer-events: none;
+}
+
+.app-window.is-maximized {
+    top: 0 !important;
+    left: 0 !important;
+    width: 100vw !important;
+    height: calc(100vh - 38px) !important;
+    border-radius: 0;
+    resize: none;
+}
+
+.app-window .terminal-header {
+    cursor: move;
+}
+
+.section-subtitle {
+    margin-top: 1rem;
+    margin-bottom: 0.5rem;
+    color: var(--kali-secondary);
+}
+
+.resume-bullet-list {
+    padding-left: 1.2rem;
+    margin-bottom: 1.2rem;
+}
+
+.resume-bullet-list li {
+    margin-bottom: 0.45rem;
+}
+
+.desktop-project-list {
+    display: grid;
+    gap: 0.65rem;
+}
+
+.project-folder-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-bottom: 0.9rem;
+}
+
+.desktop-project-item {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.75rem;
+    padding: 0.5rem 0.7rem;
+    border: 1px solid rgba(255, 255, 255, 0.16);
+    border-radius: 6px;
+    background: rgba(0, 0, 0, 0.28);
+}
+
+.desktop-project-item a {
+    color: var(--kali-text);
+    text-decoration: none;
+    font-size: 0.86rem;
+}
+
+.desktop-project-item a:hover {
+    color: var(--kali-secondary);
+}
+
+.app-iframe-wrapper {
+    height: 100%;
+    min-height: 360px;
+}
+
+.app-iframe-wrapper iframe {
+    width: 100%;
+    height: 100%;
+    min-height: 340px;
+    border: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 6px;
+    background: #000;
+}
+
+.project-browser-controls {
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+    margin-bottom: 0.75rem;
+    flex-wrap: wrap;
+}
+
+.project-browser-title {
+    font-size: 0.82rem;
+    color: var(--kali-secondary);
+    flex: 1;
+}
+
+.terminal-container::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    background: linear-gradient(130deg, rgba(255, 255, 255, 0.06), transparent 22%, transparent 78%, rgba(0, 255, 153, 0.07));
 }
 
 .terminal-container:hover {
-    animation-play-state: running;
+    animation: none;
 }
 
 @keyframes glitch {
@@ -193,10 +455,10 @@ body {
 .terminal-header {
     display: flex;
     align-items: center;
-    background-color: var(--kali-terminal-header);
+    background: linear-gradient(90deg, rgba(20, 24, 23, 0.95), rgba(30, 31, 37, 0.95));
     padding: 0.5rem 1rem;
     position: relative;
-    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    border-bottom: 1px solid var(--kali-panel-edge);
 }
 
 .terminal-buttons {
@@ -235,9 +497,38 @@ body {
 /* Terminal Body */
 .terminal-body {
     height: calc(100% - 40px);
-    padding: 1rem;
+    padding: 1rem 1rem 1.2rem;
     overflow-y: auto;
     position: relative;
+}
+
+.cyber-hud {
+    display: grid;
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 0.7rem;
+    margin-bottom: 1.2rem;
+}
+
+.hud-item {
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    background: linear-gradient(180deg, rgba(0, 255, 153, 0.08), rgba(0, 0, 0, 0.4));
+    padding: 0.5rem 0.65rem;
+    border-radius: 6px;
+}
+
+.hud-label {
+    display: block;
+    font-size: 0.64rem;
+    letter-spacing: 0.12em;
+    color: rgba(255, 255, 255, 0.65);
+}
+
+.hud-value {
+    display: block;
+    margin-top: 0.12rem;
+    font-size: 0.8rem;
+    color: var(--kali-text);
+    text-shadow: 0 0 10px rgba(0, 255, 130, 0.35);
 }
 
 /* Boot Sequence */
@@ -354,12 +645,13 @@ body {
 
 .output {
     padding: 1rem;
-    background-color: rgba(0, 0, 0, 0.3);
+    background-color: rgba(0, 0, 0, 0.36);
     border-radius: 4px;
-    border: 1px solid rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.16);
     margin-left: 1rem;
     position: relative;
     overflow: hidden;
+    box-shadow: inset 0 0 24px rgba(0, 255, 153, 0.06);
 }
 
 .output::before {
@@ -401,15 +693,13 @@ body {
     font-weight: bold;
     position: relative;
     color: var(--kali-text);
-    text-shadow: 0.05em 0 0 rgba(255, 0, 0, 0.75),
-                -0.05em -0.025em 0 rgba(0, 255, 0, 0.75),
-                0.025em 0.05em 0 rgba(0, 0, 255, 0.75);
-    animation: glitch-loop 2s infinite;
+    text-shadow: none;
+    animation: none;
 }
 
 .glitch::before,
 .glitch::after {
-    content: attr(data-text);
+    content: none;
     position: absolute;
     top: 0;
     left: 0;
@@ -875,6 +1165,17 @@ body {
     margin-bottom: 1rem;
 }
 
+.contact-value a {
+    color: var(--kali-text);
+    text-decoration: none;
+    border-bottom: 1px dashed rgba(255, 255, 255, 0.35);
+}
+
+.contact-value a:hover {
+    color: var(--kali-secondary);
+    border-bottom-color: var(--kali-secondary);
+}
+
 .contact-label {
     flex: 0 0 100px;
     color: var(--kali-secondary);
@@ -930,6 +1231,111 @@ body {
 .submit-btn:hover {
     background-color: var(--kali-text);
     color: var(--kali-bg);
+}
+
+/* Interactive Linux Shell */
+.linux-shell {
+    margin-top: 1.5rem;
+    border: 1px solid rgba(255, 255, 255, 0.14);
+    border-radius: 6px;
+    background: linear-gradient(180deg, rgba(22, 24, 30, 0.72), rgba(0, 0, 0, 0.5));
+    overflow: hidden;
+    box-shadow: inset 0 0 0 1px rgba(0, 255, 153, 0.12), 0 8px 24px rgba(0, 0, 0, 0.35);
+}
+
+.shell-header {
+    padding: 0.6rem 0.9rem;
+    font-size: 0.85rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: linear-gradient(90deg, rgba(0, 255, 153, 0.11), rgba(255, 255, 255, 0.03));
+    color: var(--kali-secondary);
+}
+
+.shell-quick-commands {
+    display: flex;
+    gap: 0.45rem;
+    flex-wrap: wrap;
+    padding: 0.6rem 0.9rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(255, 255, 255, 0.02);
+}
+
+.quick-cmd {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--kali-text);
+    font-family: var(--terminal-font);
+    font-size: 0.75rem;
+    border-radius: 999px;
+    padding: 0.2rem 0.62rem;
+    cursor: pointer;
+    transition: all 0.22s ease;
+}
+
+.quick-cmd:hover {
+    border-color: var(--kali-text);
+    transform: translateY(-1px);
+    box-shadow: 0 0 12px rgba(0, 255, 153, 0.25);
+}
+
+.shell-output {
+    max-height: 260px;
+    overflow-y: auto;
+    padding: 0.75rem 0.9rem;
+    font-size: 0.9rem;
+    line-height: 1.55;
+}
+
+.shell-line {
+    margin-bottom: 0.3rem;
+    word-break: break-word;
+}
+
+.shell-line-muted {
+    color: rgba(255, 255, 255, 0.72);
+}
+
+.shell-line-error {
+    color: var(--kali-accent);
+}
+
+.shell-input-line {
+    display: flex;
+    align-items: center;
+    gap: 0.55rem;
+    padding: 0.75rem 0.9rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.1);
+    background: rgba(0, 0, 0, 0.28);
+}
+
+.shell-prompt {
+    color: var(--kali-accent);
+    white-space: nowrap;
+}
+
+.shell-command {
+    width: 100%;
+    background: transparent;
+    border: none;
+    outline: none;
+    color: var(--kali-text);
+    font-family: var(--terminal-font);
+    font-size: 0.95rem;
+}
+
+.shell-command::placeholder {
+    color: rgba(255, 255, 255, 0.42);
+}
+
+.shell-output::-webkit-scrollbar,
+.terminal-body::-webkit-scrollbar {
+    width: 8px;
+}
+
+.shell-output::-webkit-scrollbar-thumb,
+.terminal-body::-webkit-scrollbar-thumb {
+    background: rgba(0, 255, 153, 0.25);
+    border-radius: 8px;
 }
 
 /* Terminal Navigation */
@@ -1012,10 +1418,107 @@ body {
     width: 100%;
     background-color: var(--kali-terminal-header);
     display: flex;
-    justify-content: flex-end;
+    justify-content: space-between;
     padding: 0.5rem 1rem;
     border-top: 1px solid rgba(255, 255, 255, 0.1);
     z-index: 10;
+}
+
+.taskbar-left {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+}
+
+.task-start {
+    border: 1px solid rgba(255, 255, 255, 0.22);
+    background: rgba(0, 255, 153, 0.2);
+    color: var(--kali-text);
+    font-family: var(--terminal-font);
+    font-size: 0.74rem;
+    padding: 0.25rem 0.6rem;
+    border-radius: 4px;
+    cursor: pointer;
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+}
+
+.task-start:hover {
+    background: rgba(0, 255, 153, 0.34);
+}
+
+.task-app {
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--kali-text);
+    font-family: var(--terminal-font);
+    font-size: 0.72rem;
+    padding: 0.25rem 0.5rem;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.task-app.active {
+    background: var(--kali-text);
+    color: var(--kali-bg);
+}
+
+.start-menu {
+    position: fixed;
+    left: 0.9rem;
+    bottom: 3rem;
+    width: 280px;
+    max-height: 420px;
+    overflow: hidden;
+    z-index: 40;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    border-radius: 8px;
+    background: rgba(9, 12, 11, 0.95);
+    box-shadow: 0 16px 32px rgba(0, 0, 0, 0.45);
+}
+
+.start-menu-header {
+    padding: 0.6rem 0.75rem;
+    font-size: 0.8rem;
+    color: var(--kali-secondary);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.start-search {
+    width: calc(100% - 1rem);
+    margin: 0.6rem 0.5rem;
+    padding: 0.45rem 0.55rem;
+    border-radius: 4px;
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    background: rgba(0, 0, 0, 0.35);
+    color: var(--kali-text);
+    font-family: var(--terminal-font);
+}
+
+.start-menu-list {
+    max-height: 300px;
+    overflow-y: auto;
+    padding: 0.2rem 0.45rem 0.6rem;
+    display: grid;
+    gap: 0.35rem;
+}
+
+.start-item {
+    text-align: left;
+    border: 1px solid rgba(255, 255, 255, 0.12);
+    background: rgba(0, 0, 0, 0.3);
+    color: var(--kali-text);
+    border-radius: 4px;
+    font-family: var(--terminal-font);
+    font-size: 0.76rem;
+    padding: 0.4rem 0.55rem;
+    cursor: pointer;
+}
+
+.start-item:hover {
+    border-color: var(--kali-text);
+    background: rgba(0, 255, 153, 0.12);
 }
 
 .status-item {
@@ -1127,6 +1630,22 @@ body {
 
 /* Responsive Styles */
 @media (max-width: 768px) {
+    .desktop-icons,
+    .taskbar-left {
+        display: none;
+    }
+
+    .app-window {
+        left: 0;
+        top: 0;
+        width: 100vw !important;
+        height: calc(100vh - 38px) !important;
+        min-width: 0;
+        min-height: 0;
+        border-radius: 0;
+        resize: none;
+    }
+
     .terminal-container {
         width: 95%;
         height: 90vh;
@@ -1157,6 +1676,28 @@ body {
 
     .contact-label {
         margin-bottom: 0.3rem;
+    }
+
+    .cyber-hud {
+        grid-template-columns: 1fr;
+    }
+
+    .quick-cmd {
+        font-size: 0.72rem;
+    }
+
+    .shell-output {
+        max-height: 220px;
+    }
+
+    .shell-input-line {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 0.4rem;
+    }
+
+    .shell-command {
+        width: 100%;
     }
 }
 

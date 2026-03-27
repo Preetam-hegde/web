@@ -16,6 +16,10 @@
 
 <body class="text-center">
 
+    <script>
+        window.FINANCE_TRACKER_CONFIG = window.FINANCE_TRACKER_CONFIG || { authToken: '', spreadsheetId: '' };
+    </script>
+
     <div class="back-primary">
         <div class="container-fluid p-5 h2">
             Sweet Money
@@ -53,7 +57,7 @@
 
                             <div class="row g3 my-5">
                                 <div class="col-md-8 pt-5">
-                                    <input type="text" class="form-control" placeholder="For What Wasted!" name="expense"
+                                    <input type="text" class="form-control" placeholder="For What Wasted!" name="expense_name"
                                         id="expense_name" required>
                                     <div class="valid-feedback">I See!</div>
                                 </div>
@@ -76,14 +80,14 @@
                                 <div class="col-md-6 pt-5">
                                     <div class="input-group has-validation">
                                         <span class="input-group-text" id="inputGroupPrepend">Rs.</span>
-                                        <input type="number" class="form-control" placeholder="00" name="expense"
+                                        <input type="number" class="form-control" placeholder="00" name="expense_rs"
                                             id="expense_rs" required>
                                         <div class="invalid-feedback">How Much!!!</div>
                                     </div>
                                 </div>
 
                                 <div class="col-md-6 pt-5">
-                                    <input type="date" class="form-control" id="datePicker" required>
+                                    <input type="date" class="form-control" id="datePicker" name="date" required>
                                 </div>
 
                                 <div class="col-md-12 pt-5">
@@ -103,17 +107,17 @@
                 <div class="back-secondary">
                     <div class="container-fluid p-5 my-5">
                         <div class="col-md-12 pt-2">
-                            <iframe width="433" height="267" seamless frameborder="0" scrolling="no"
+                            <iframe width="433" height="267" seamless style="border:0; overflow:hidden;"
                                 src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQUL7bsU0ypy_6jKs-T6WHYOAr7TDmCpDBrAnydBUK97dbdsc6Z9MsuW9Hv7Su81Ehzv_P9L3IEBYQ6/pubchart?oid=929270118&amp;format=interactive"></iframe>
                         </div>
                         <div class="col-md-12 pt-2">
-                            <iframe width="443" height="273" seamless frameborder="0" scrolling="no"
+                            <iframe width="443" height="273" seamless style="border:0; overflow:hidden;"
                                 src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQUL7bsU0ypy_6jKs-T6WHYOAr7TDmCpDBrAnydBUK97dbdsc6Z9MsuW9Hv7Su81Ehzv_P9L3IEBYQ6/pubchart?oid=1805261323&amp;format=interactive"></iframe>
                         </div>
                         <div class="col-md-12 pt-2">
                             <hr>
                             <p>JAN:</p>
-                            <iframe width="600" height="371" seamless frameborder="0" scrolling="no"
+                            <iframe width="600" height="371" seamless style="border:0; overflow:hidden;"
                                 src="https://docs.google.com/spreadsheets/d/e/2PACX-1vQUL7bsU0ypy_6jKs-T6WHYOAr7TDmCpDBrAnydBUK97dbdsc6Z9MsuW9Hv7Su81Ehzv_P9L3IEBYQ6/pubchart?oid=1222965120&amp;format=interactive"></iframe>
                         </div>
                     </div>

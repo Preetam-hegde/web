@@ -17,19 +17,30 @@ function getFormData() {
 }
 
 async function makeAPICall(formData) {
-  const monthIndex = parseInt(formData['date'].slice(5, 7)) - 1;
+  const config = window.FINANCE_TRACKER_CONFIG || {};
+  const authToken = config.authToken;
+  const spreadsheetId = config.spreadsheetId;
+
+  if (!authToken || !spreadsheetId) {
+    throw new Error('Missing finance tracker API configuration. Set window.FINANCE_TRACKER_CONFIG.authToken and spreadsheetId.');
+  }
+
+  const monthIndex = parseInt(formData['date'].slice(5, 7), 10) - 1;
   const months = ["jan", "feb", "mar", "apr", "may", "jun", "jul", "aug", "sep", "oct", "nov", "dec"];
+  if (Number.isNaN(monthIndex) || monthIndex < 0 || monthIndex >= months.length) {
+    throw new Error('Invalid date selected.');
+  }
   const urlMonth = months[monthIndex];
   const url = `https://api.sheetson.com/v2/sheets/${urlMonth}`;
 
   const myHeaders = new Headers({
-    "Authorization": "Bearer h1fSj_TDMQ-lVN_WUn3RKPSubpz0ENNQoWWyBthYqryh2Qhj5xR7N28kZdA",
-    "X-Spreadsheet-Id": "1LArqac_OgzHg7E-FHep8GjsxLy0PWlPKbRS3dM5N2T8",
-    "Content-Type": "application/json",
-    "Cookie": "_cfuvid=9FeoLb_oWmPRe_eH9MedE0zO9EGKHhRjdHDNED_rMrU-1704957294765-0-604800000"
+    "Authorization": `Bearer ${authToken}`,
+    "X-Spreadsheet-Id": spreadsheetId,
+    "Content-Type": "application/json"
   });
 
   const abortController = new AbortController();
+  const timeoutId = setTimeout(() => abortController.abort(), 30000);
   const signal = abortController.signal;
 
   const requestOptions = {
@@ -48,7 +59,7 @@ async function makeAPICall(formData) {
   } catch (error) {
     throw new Error(`API request error: ${error.message}`);
   } finally {
-    abortController.abort(); // Cancel the request
+    clearTimeout(timeoutId);
   }
 }
 
