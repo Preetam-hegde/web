@@ -40,9 +40,9 @@ Here’s a glimpse of what I’ve been building:
 | **Sorting Algorithms**| Visualize sorting algorithms to understand their logic and efficiency.     | JavaScript, HTML5, CSS3, Algorithms | [Analyze](https://preetam-hegde.github.io/web/apps/analyser/index.html)            |
 | **Personal Portfolio**| My first online portfolio showcasing my skills and projects.               | HTML5, CSS3, JavaScript             | [Visit](https://preetam-ptwo.github.io/Portfolio/) |
 | **Pomodoro Timer**    | A productivity tool based on the Pomodoro technique.                      | JavaScript, HTML5, CSS3, Timer      | [Start](https://preetam-hegde.github.io/web/apps/pomodoro/index.html)              |
-| **Random Quotes**     | Fetch and display random quotes from an API for daily inspiration.         | JavaScript, API, HTML5, CSS3        | [Get Inspired](https://preetam-hegde.github.io/web/apps/quote/Game.html)           |
+| **Random Quotes**     | Fetch and display random quotes from an API for daily inspiration.         | JavaScript, API, HTML5, CSS3        | [Get Inspired](https://preetam-hegde.github.io/web/apps/quote/index.html)           |
 | **Verilog Vectors**   | A visual tool for learning Verilog vectors in digital design.              | JavaScript, HTML5, CSS3, Verilog    | [Learn](https://preetam-hegde.github.io/web/apps/vector-01/index.html)              |
-| **Dear Diary**        | An online scratchpad for thoughts and reflections using Google Sites.      | Google Sites                        | [View](https://sites.google.com/view/ptwo-diary) |
+| **Dear Diary**        | External experiment on Google Sites (not an in-repo app in this codebase). | Google Sites                        | [View](https://sites.google.com/view/ptwo-diary) |
 | **9 Dimension**       | Interactive physics simulations exploring nine dimensions.                 | JavaScript, HTML5, CSS3, Physics    | [Experience](https://preetam-hegde.github.io/web/apps/nine-dimension/index.html)    |
 
 ---

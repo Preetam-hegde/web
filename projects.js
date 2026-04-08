@@ -91,7 +91,7 @@ const projects = [
     name: "Random Quote Generator",
     category: "fcc",
     image: "resource/Image/randomQuota.svg",
-    link: "apps/quote/Game.html",
+    link: "apps/quote/index.html",
     description: "Fetch and display a new inspirational quote on demand from a public REST API — with smooth transitions and one-click sharing to social platforms.",
     tech: ["HTML5", "CSS3", "JavaScript", "REST API", "Fetch API"]
   },
@@ -108,7 +108,7 @@ const projects = [
     category: "personal",
     image: "resource/Image/diary.svg",
     link: "https://sites.google.com/view/ptwo-diary",
-    description: "A personal online notepad hosted on Google Sites — used to capture raw thoughts, project ideas, and daily reflections outside of any formal dev workflow.",
+    description: "An external Google Sites experiment for journaling and notes — not part of this repository's in-repo app set.",
     tech: ["Google Sites", "Content Writing"]
   }
 ];

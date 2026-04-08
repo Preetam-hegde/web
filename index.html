@@ -5,7 +5,43 @@
 	<title>P2 Portfolio</title>
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:wght@400;500;700;800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+	<link id="fontAwesomeCdn" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" integrity="sha384-3B6NwesSXE7YJlcLI9RpRqGf2p/EgVH8BgoKTaUrmKNDkHPStTQ3EyoYjCGXaOTS" crossorigin="anonymous">
+	<link rel="preload" href="resource/vendor/fontawesome/css/all.min.css" as="style">
+	<script>
+		(function ensureFontAwesomeFallback() {
+			const cdnStylesheet = document.getElementById('fontAwesomeCdn');
+			const localHref = 'resource/vendor/fontawesome/css/all.min.css';
+			let loadedFromCdn = false;
+
+			function loadLocalStylesheet() {
+				if (document.querySelector('link[data-fa-local="1"]')) return;
+				const localStylesheet = document.createElement('link');
+				localStylesheet.rel = 'stylesheet';
+				localStylesheet.href = localHref;
+				localStylesheet.setAttribute('data-fa-local', '1');
+				document.head.appendChild(localStylesheet);
+			}
+
+			if (!cdnStylesheet) {
+				loadLocalStylesheet();
+				return;
+			}
+
+			cdnStylesheet.addEventListener('load', function onLoad() {
+				loadedFromCdn = true;
+			});
+
+			cdnStylesheet.addEventListener('error', function onError() {
+				loadLocalStylesheet();
+			});
+
+			window.setTimeout(function onTimeout() {
+				if (!loadedFromCdn) {
+					loadLocalStylesheet();
+				}
+			}, 2500);
+		})();
+	</script>
 	<link rel="stylesheet" href="v1/style.css">
 	<link rel="icon" type="image/svg+xml" href="v1/favicon.svg">
 </head>
@@ -191,7 +227,7 @@
 		<source src="resource/audio/music/medievalM.mp3" type="audio/mpeg">
 	</audio>
 
-	<script src="https://cdn.jsdelivr.net/particles.js/2.0.0/particles.min.js"></script>
+	<script id="particlesCdnScript" src="https://cdn.jsdelivr.net/npm/particles.js@2.0.0/particles.js" integrity="sha384-AWFROZ10DoeXcNjhoQe0agryexFsipZEA17Cde6/tknpOUacvUGk27vXQ2a6ljSt" crossorigin="anonymous"></script>
 	<script src="projects.js"></script>
 	<script src="resource/resume-common.js"></script>
 	<script src="v1/script.js"></script>

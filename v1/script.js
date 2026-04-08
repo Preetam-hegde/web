@@ -587,6 +587,74 @@ function setupContactForm() {
 
 /* ── Particles ─────────────────────────────────────────────────────── */
 
+function loadExternalScript(src, id) {
+	return new Promise((resolve, reject) => {
+		const existing = id ? document.getElementById(id) : null;
+		if (existing) {
+			if (existing.getAttribute('data-loaded') === 'true') {
+				resolve();
+				return;
+			}
+			existing.addEventListener('load', () => resolve(), { once: true });
+			existing.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)), {
+				once: true
+			});
+			return;
+		}
+
+		const script = document.createElement('script');
+		script.src = src;
+		script.async = false;
+		if (id) script.id = id;
+		script.addEventListener('load', () => {
+			script.setAttribute('data-loaded', 'true');
+			resolve();
+		});
+		script.addEventListener('error', () => reject(new Error(`Failed to load ${src}`)));
+		document.head.appendChild(script);
+	});
+}
+
+function ensureParticlesLibrary() {
+	if (typeof particlesJS === 'function') {
+		return Promise.resolve();
+	}
+
+	const localParticlesSrc = 'resource/vendor/particles/particles.js';
+	const cdnScript = document.getElementById('particlesCdnScript');
+
+	return new Promise((resolve) => {
+		let settled = false;
+		const finish = () => {
+			if (settled) return;
+			settled = true;
+			resolve();
+		};
+
+		const loadLocalFallback = () => {
+			loadExternalScript(localParticlesSrc, 'particlesLocalScript')
+				.then(finish)
+				.catch(finish);
+		};
+
+		if (!cdnScript) {
+			loadLocalFallback();
+			return;
+		}
+
+		cdnScript.addEventListener('load', finish, { once: true });
+		cdnScript.addEventListener('error', loadLocalFallback, { once: true });
+
+		setTimeout(() => {
+			if (typeof particlesJS === 'function') {
+				finish();
+				return;
+			}
+			loadLocalFallback();
+		}, 2500);
+	});
+}
+
 function setupParticles() {
 	if (typeof particlesJS !== 'function') return;
 	particlesJS('particles-js', {
@@ -647,7 +715,7 @@ function initPortfolio() {
 	setupMedievalToggle();
 	setupNavigation();
 	setupContactForm();
-	setupParticles();
+	ensureParticlesLibrary().then(setupParticles);
 	setupScrollProgress();
 	setupSectionObservers();
 	upgradeHeroName();
