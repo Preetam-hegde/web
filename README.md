@@ -1,55 +1,59 @@
-# Hi 👋, I'm Preetam
+# Preetam Hegde Web Portfolio
 
-### A Passionate Web Developer Crafting Interactive Experiences
+[Live Site](https://preetam-hegde.github.io/web/) · [Modern UI](https://preetam-hegde.github.io/web/index.html) · [Classic UI](https://preetam-hegde.github.io/web/index-classic.html)
 
-Welcome to my portfolio! I’m a developer who loves building engaging, functional, and visually appealing web projects. Check out my work below and feel free to connect with me!
+This repository powers my interactive portfolio on GitHub Pages. It includes two portfolio shells and a growing collection of self-contained mini-apps in games, simulations, visualizers, and developer utilities.
 
-Project maintainers (AI + dev): see `PROJECT_PLAYBOOK.md`.
+Maintainer workflow details live in [PROJECT_PLAYBOOK.md](PROJECT_PLAYBOOK.md).
 
-[![Profile Views](https://komarev.com/ghpvc/?username=preetam-hegde&label=Profile%20views&color=0e75b6&style=flat)](https://github.com/preetam-hegde)
+## Highlights
+- Dual experience: modern interface plus terminal-inspired classic interface
+- Shared project catalog and resume content across both shells
+- Self-contained app folders under [apps](apps) for straightforward iteration
+- Static hosting friendly structure for GitHub Pages deployment
 
----
+## Featured Apps
+| App | What it is | Live |
+|---|---|---|
+| Bharatvarsha | Strategy simulation set in the Vedic era with economy, events, and progression | [Open](https://preetam-hegde.github.io/web/apps/bharatvarsha/index.html) |
+| Reflex Arena | Browser FPS aim trainer with accuracy and session metrics | [Open](https://preetam-hegde.github.io/web/apps/aim-trainer/index.html) |
+| Live Analytics Dashboard | Animated KPI dashboard with GitHub telemetry and optional Plausible data | [Open](https://preetam-hegde.github.io/web/apps/live-analytics-dashboard/index.html) |
+| Game of Life | Interactive Conway simulation with pattern experimentation | [Open](https://preetam-hegde.github.io/web/apps/cellular-automata/index.html) |
+| Nine Dimension | Physics and vector playground with multiple interactive panels | [Open](https://preetam-hegde.github.io/web/apps/nine-dimension/index.html) |
+| Sorting Visualizer | Step-by-step sorting algorithm visual learning tool | [Open](https://preetam-hegde.github.io/web/apps/analyser/index.html) |
+| GeoLocation Explorer | Coordinate and location utility powered by Geolocation API | [Open](https://preetam-hegde.github.io/web/apps/geo-location/index.html) |
+| Random Quote Generator | Quote fetch and share utility with smooth interactions | [Open](https://preetam-hegde.github.io/web/apps/quote/index.html) |
 
-## 🔭 Currently Working On
-- [My Web](https://preetam-hegde.github.io/web) - A space to showcase my latest experiments and creations.
+For the complete app list and metadata, see [projects.js](projects.js).
 
----
+## Project Layout
+- [index.html](index.html): modern portfolio shell
+- [index-classic.html](index-classic.html): terminal/classic shell
+- [projects.js](projects.js): shared app catalog for portfolio views
+- [apps](apps): individual mini-projects
+- [resource](resource): shared assets and resume content
 
-## 🛠️ Languages and Tools
-Here’s what I use to bring my ideas to life:
+## Run Locally
+1. From the repository root, start a static server:
+```bash
+python3 -m http.server 4173
+```
+2. Open [http://localhost:4173/index.html](http://localhost:4173/index.html)
 
-<p align="left">
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/html5/html5-original-wordmark.svg" alt="HTML5" width="40" height="40" />
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/css3/css3-original-wordmark.svg" alt="CSS3" width="40" height="40" />
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/javascript/javascript-original.svg" alt="JavaScript" width="40" height="40" />
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/react/react-original-wordmark.svg" alt="React" width="40" height="40" />
-  <img src="https://raw.githubusercontent.com/devicons/devicon/master/icons/bootstrap/bootstrap-plain-wordmark.svg" alt="Bootstrap" width="40" height="40" />
-</p>
+Alternative:
+```bash
+npx http-server .
+```
 
----
+## Development Notes
+- Keep app entry points at apps/<slug>/index.html
+- Prefer app-local assets unless they are truly shared
+- Keep resume path references in sync across both shells
+- Use [AGENTS.md](AGENTS.md) and [PROJECT_PLAYBOOK.md](PROJECT_PLAYBOOK.md) for contributor and automation guidance
 
-## 🌟 My Projects
-Here’s a glimpse of what I’ve been building:
+## External Experiments
+- Dear Diary is intentionally external to this repository: [ptwo-diary](https://sites.google.com/view/ptwo-diary)
 
-| Project Name          | Description                                                                 | Tech Stack                          | Link                                      |
-|-----------------------|-----------------------------------------------------------------------------|-------------------------------------|-------------------------------------------|
-| **Reflex Arena** | A comprehensive browser-based FPS aim training tool   | JavaScript, HTML5, CSS3, Game       | [Play Now](https://preetam-hegde.github.io/web/apps/aim-trainer/index.html)            |
-| **Game of Life**      | Conway's Game of Life with interactive cellular automata.                  | Canvas, JavaScript, HTML5, CSS3     | [Explore](https://preetam-hegde.github.io/web/apps/cellular-automata/index.html)    |
-| **Get Location**      | Find your geographic coordinates using the Geolocation API.                | JavaScript, HTML5, CSS3, Geolocation| [Try It](https://preetam-hegde.github.io/web/apps/geo-location/index.html)          |
-| **High Life BG**      | Mesmerizing background ball physics with stunning effects.                 | Logic, JavaScript, HTML5, CSS3      | [See It](https://preetam-hegde.github.io/web/apps/bg-illusion/index.html)           |
-| **Sorting Algorithms**| Visualize sorting algorithms to understand their logic and efficiency.     | JavaScript, HTML5, CSS3, Algorithms | [Analyze](https://preetam-hegde.github.io/web/apps/analyser/index.html)            |
-| **Personal Portfolio**| My first online portfolio showcasing my skills and projects.               | HTML5, CSS3, JavaScript             | [Visit](https://preetam-ptwo.github.io/Portfolio/) |
-| **Pomodoro Timer**    | A productivity tool based on the Pomodoro technique.                      | JavaScript, HTML5, CSS3, Timer      | [Start](https://preetam-hegde.github.io/web/apps/pomodoro/index.html)              |
-| **Random Quotes**     | Fetch and display random quotes from an API for daily inspiration.         | JavaScript, API, HTML5, CSS3        | [Get Inspired](https://preetam-hegde.github.io/web/apps/quote/index.html)           |
-| **Verilog Vectors**   | A visual tool for learning Verilog vectors in digital design.              | JavaScript, HTML5, CSS3, Verilog    | [Learn](https://preetam-hegde.github.io/web/apps/vector-01/index.html)              |
-| **Dear Diary**        | External experiment on Google Sites (not an in-repo app in this codebase). | Google Sites                        | [View](https://sites.google.com/view/ptwo-diary) |
-| **9 Dimension**       | Interactive physics simulations exploring nine dimensions.                 | JavaScript, HTML5, CSS3, Physics    | [Experience](https://preetam-hegde.github.io/web/apps/nine-dimension/index.html)    |
-
----
-
-## 📬 Connect With Me
-Feel free to reach out or explore more of my work:
-- [GitHub](https://github.com/preetam-hegde) 
-- [Linkdin](https://www.linkedin.com/in/preetam-hegde-8b53311a7/)
-
----
+## Contact
+- GitHub: [preetam-hegde](https://github.com/preetam-hegde)
+- LinkedIn: [preetam-hegde-8b53311a7](https://www.linkedin.com/in/preetam-hegde-8b53311a7/)

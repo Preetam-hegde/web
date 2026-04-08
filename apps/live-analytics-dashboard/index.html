@@ -1,0 +1,110 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Live Analytics Dashboard</title>
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="styles.css">
+	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
+</head>
+<body>
+	<div class="bg-orb orb-1" aria-hidden="true"></div>
+	<div class="bg-orb orb-2" aria-hidden="true"></div>
+	<div class="bg-grid" aria-hidden="true"></div>
+
+	<main class="dashboard">
+		<header class="hero">
+			<p class="eyebrow">Data Viz Case Study</p>
+			<h1>Live Analytics Dashboard</h1>
+			<p class="hero-copy">
+				Blend GitHub profile telemetry, optional Plausible pageview metrics, and streak analytics into one animated command center.
+			</p>
+		</header>
+
+		<section class="panel controls" aria-label="Data source controls">
+			<div class="control-group">
+				<label for="github-username">GitHub Username</label>
+				<input id="github-username" name="github-username" type="text" placeholder="octocat" autocomplete="off">
+			</div>
+			<div class="control-group checkbox-group">
+				<label for="use-proxy">Use Local Plausible Proxy</label>
+				<label class="toggle-row" for="use-proxy">
+					<input id="use-proxy" name="use-proxy" type="checkbox">
+					<span>Avoid browser CORS with /api/plausible</span>
+				</label>
+			</div>
+			<div class="control-group">
+				<label for="plausible-site">Plausible Site ID</label>
+				<input id="plausible-site" name="plausible-site" type="text" placeholder="example.com" autocomplete="off">
+			</div>
+			<div class="control-group">
+				<label for="plausible-api-key">Plausible API Key (optional)</label>
+				<input id="plausible-api-key" name="plausible-api-key" type="password" placeholder="plausible_api_token" autocomplete="off">
+			</div>
+			<div class="control-group">
+				<label for="plausible-endpoint">Plausible Endpoint</label>
+				<input id="plausible-endpoint" name="plausible-endpoint" type="url" value="https://plausible.io/api/v1/stats/aggregate" autocomplete="off">
+			</div>
+			<div class="button-row">
+				<button id="refresh-btn" type="button">Refresh Dashboard</button>
+				<button id="reset-btn" type="button" class="subtle" title="Clear saved settings">Reset</button>
+			</div>
+			<p id="status" class="status" role="status" aria-live="polite">Enter a GitHub username to begin.</p>
+		</section>
+
+		<section class="widgets" aria-label="KPI widgets">
+			<article class="widget" data-widget="repos">
+				<p class="widget-label">Public Repositories</p>
+				<p id="repo-count" class="widget-value">0</p>
+				<p class="widget-foot">From GitHub profile</p>
+			</article>
+			<article class="widget" data-widget="followers">
+				<p class="widget-label">Followers</p>
+				<p id="follower-count" class="widget-value">0</p>
+				<p class="widget-foot">From GitHub profile</p>
+			</article>
+			<article class="widget" data-widget="streak">
+				<p class="widget-label">Current Activity Streak</p>
+				<p id="streak-count" class="widget-value">0</p>
+				<p id="streak-foot" class="widget-foot">Calculated from recent public events</p>
+			</article>
+			<article class="widget" data-widget="velocity">
+				<p class="widget-label">Commit Velocity (7d / 30d)</p>
+				<p id="velocity-count" class="widget-value">0.00x</p>
+				<p id="velocity-foot" class="widget-foot">Based on PushEvent frequency</p>
+			</article>
+			<article class="widget" data-widget="pageviews">
+				<p class="widget-label">Plausible Pageviews (30d)</p>
+				<p id="pageview-count" class="widget-value">0</p>
+				<p id="plausible-foot" class="widget-foot">Configure site ID + API key</p>
+			</article>
+		</section>
+
+		<section class="panel charts" aria-label="Charts">
+			<div class="chart-card">
+				<div class="chart-head">
+					<h2>GitHub Activity Timeline</h2>
+					<p>Push events per day in the latest sample.</p>
+				</div>
+				<div id="activity-bars" class="bar-chart" role="img" aria-label="Daily activity bars"></div>
+			</div>
+			<div class="chart-card">
+				<div class="chart-head">
+					<h2>Data Source Health</h2>
+					<p>Quick read on API fetch state.</p>
+				</div>
+				<ul id="health-list" class="health-list">
+					<li><span>GitHub profile</span><strong>idle</strong></li>
+					<li><span>GitHub events</span><strong>idle</strong></li>
+					<li><span>Plausible aggregate</span><strong>idle</strong></li>
+				</ul>
+			</div>
+		</section>
+	</main>
+
+	<script src="script.js"></script>
+</body>
+</html>

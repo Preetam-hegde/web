@@ -1,0 +1,21 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 240 240" role="img" aria-label="Lotus emblem">
+  <defs>
+    <radialGradient id="petal" cx="50%" cy="40%" r="60%">
+      <stop offset="0%" stop-color="#fed7aa"/>
+      <stop offset="100%" stop-color="#c2410c"/>
+    </radialGradient>
+  </defs>
+  <circle cx="120" cy="120" r="110" fill="#fff7ed" stroke="#9a3412" stroke-width="8"/>
+  <g transform="translate(120 120)">
+    <ellipse rx="24" ry="60" fill="url(#petal)" transform="rotate(0) translate(0 -30)"/>
+    <ellipse rx="24" ry="60" fill="url(#petal)" transform="rotate(45) translate(0 -30)"/>
+    <ellipse rx="24" ry="60" fill="url(#petal)" transform="rotate(90) translate(0 -30)"/>
+    <ellipse rx="24" ry="60" fill="url(#petal)" transform="rotate(135) translate(0 -30)"/>
+    <ellipse rx="24" ry="60" fill="url(#petal)" transform="rotate(180) translate(0 -30)"/>
+    <ellipse rx="24" ry="60" fill="url(#petal)" transform="rotate(225) translate(0 -30)"/>
+    <ellipse rx="24" ry="60" fill="url(#petal)" transform="rotate(270) translate(0 -30)"/>
+    <ellipse rx="24" ry="60" fill="url(#petal)" transform="rotate(315) translate(0 -30)"/>
+    <circle r="30" fill="#7c2d12"/>
+    <circle r="14" fill="#fed7aa"/>
+  </g>
+</svg>

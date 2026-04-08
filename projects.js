@@ -64,6 +64,14 @@ const projects = [
     tech: ["HTML5", "CSS3", "JavaScript", "Digital Design", "Verilog"]
   },
   {
+    name: "Live Analytics Dashboard",
+    category: "personal",
+    image: "resource/Image/sort.svg",
+    link: "apps/live-analytics-dashboard/index.html",
+    description: "A live data dashboard case study that fuses GitHub profile telemetry, optional Plausible pageview analytics, and activity streak insights into animated KPI widgets.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Data Visualization", "GitHub API", "Plausible API"]
+  },
+  {
     name: "GeoLocation Explorer",
     category: "personal",
     image: "resource/Image/geoLocation.svg",

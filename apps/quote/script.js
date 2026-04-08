@@ -153,18 +153,49 @@ function getQuoteText() {
   return `"${quoteContainer.textContent}" ${authorElement.textContent}`;
 }
 
-function copyQuote() {
-  navigator.clipboard.writeText(getQuoteText()).then(() => {
-    copyBtn.classList.add('success');
-    copyBtn.querySelector('.control-icon').innerHTML = '<i class="fas fa-check"></i>';
-    copyBtn.querySelector('.control-label').textContent = 'Copied';
+function fallbackCopy(text) {
+  const input = document.createElement('textarea');
+  input.value = text;
+  input.setAttribute('readonly', '');
+  input.style.position = 'absolute';
+  input.style.left = '-9999px';
+  document.body.appendChild(input);
+  const selection = document.getSelection();
+  const selected = selection && selection.rangeCount > 0 ? selection.getRangeAt(0) : null;
+  input.select();
+  const ok = document.execCommand('copy');
+  document.body.removeChild(input);
+  if (selected && selection) {
+    selection.removeAllRanges();
+    selection.addRange(selected);
+  }
+  return ok ? Promise.resolve() : Promise.reject(new Error('document.execCommand copy failed'));
+}
 
-    setTimeout(() => {
-      copyBtn.classList.remove('success');
-      copyBtn.querySelector('.control-icon').innerHTML = '<i class="fas fa-copy"></i>';
-      copyBtn.querySelector('.control-label').textContent = 'Copy';
-    }, 2000);
-  });
+function writeToClipboard(text) {
+  if (navigator.clipboard && window.isSecureContext) {
+    return navigator.clipboard.writeText(text);
+  }
+  return fallbackCopy(text);
+}
+
+function copyQuote() {
+  writeToClipboard(getQuoteText())
+    .then(() => {
+      copyBtn.classList.add('success');
+      copyBtn.querySelector('.control-icon').innerHTML = '<i class="fas fa-check"></i>';
+      copyBtn.querySelector('.control-label').textContent = 'Copied';
+      setStatus({ text: 'Quote copied', state: 'success' });
+      setTimeout(() => {
+        copyBtn.classList.remove('success');
+        copyBtn.querySelector('.control-icon').innerHTML = '<i class="fas fa-copy"></i>';
+        copyBtn.querySelector('.control-label').textContent = 'Copy';
+      }, 2000);
+    })
+    .catch((error) => {
+      console.error('Copy failed:', error);
+      setStatus({ text: 'Clipboard unavailable', state: 'error' });
+    });
 }
 
 async function shareQuote() {
@@ -177,24 +208,30 @@ async function shareQuote() {
     try {
       await navigator.share(shareData);
       setStatus({ text: 'Shared with a friend', state: 'success' });
+      return;
     } catch (error) {
       if (error && error.name !== 'AbortError') {
         setStatus({ text: 'Unable to share', state: 'error' });
       }
     }
-  } else {
-    await navigator.clipboard.writeText(shareData.text);
-    shareBtn.classList.add('success');
-    shareBtn.querySelector('.control-icon').innerHTML = '<i class="fas fa-link"></i>';
-    shareBtn.querySelector('.control-label').textContent = 'Copied';
-    setStatus({ text: 'Link copied for sharing', state: 'success' });
-
-    setTimeout(() => {
-      shareBtn.classList.remove('success');
-      shareBtn.querySelector('.control-icon').innerHTML = '<i class="fas fa-share-alt"></i>';
-      shareBtn.querySelector('.control-label').textContent = 'Share';
-    }, 2000);
   }
+
+  writeToClipboard(shareData.text)
+    .then(() => {
+      shareBtn.classList.add('success');
+      shareBtn.querySelector('.control-icon').innerHTML = '<i class="fas fa-link"></i>';
+      shareBtn.querySelector('.control-label').textContent = 'Copied';
+      setStatus({ text: 'Link copied for sharing', state: 'success' });
+      setTimeout(() => {
+        shareBtn.classList.remove('success');
+        shareBtn.querySelector('.control-icon').innerHTML = '<i class="fas fa-share-alt"></i>';
+        shareBtn.querySelector('.control-label').textContent = 'Share';
+      }, 2000);
+    })
+    .catch((error) => {
+      console.error('Share fallback failed:', error);
+      setStatus({ text: 'Clipboard unavailable', state: 'error' });
+    });
 }
 
 refreshBtn.addEventListener('click', fetchQuote);

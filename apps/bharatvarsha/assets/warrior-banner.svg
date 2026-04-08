@@ -1,0 +1,20 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 220" role="img" aria-label="Warrior banner">
+  <defs>
+    <linearGradient id="cloth" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0%" stop-color="#7f1d1d"/>
+      <stop offset="100%" stop-color="#b45309"/>
+    </linearGradient>
+    <linearGradient id="rim" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0%" stop-color="#f5d490"/>
+      <stop offset="100%" stop-color="#c98a2d"/>
+    </linearGradient>
+  </defs>
+  <rect x="8" y="8" width="484" height="204" rx="26" fill="url(#cloth)" stroke="url(#rim)" stroke-width="12"/>
+  <path d="M45 55 H455" stroke="#f6e5b8" stroke-width="2" opacity="0.5"/>
+  <path d="M45 170 H455" stroke="#f6e5b8" stroke-width="2" opacity="0.5"/>
+  <g fill="#f6e5b8">
+    <path d="M250 44 L271 92 L323 92 L281 123 L298 173 L250 143 L202 173 L219 123 L177 92 L229 92 Z"/>
+    <circle cx="250" cy="113" r="18" fill="#7f1d1d"/>
+  </g>
+  <text x="250" y="198" text-anchor="middle" fill="#fff7e3" font-size="30" font-family="serif" font-weight="700">ROYAL COMMAND</text>
+</svg>
