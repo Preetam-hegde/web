@@ -1,4 +1,25 @@
 const projects = [
+  // ── Featured (pinned to top) ────────────────────────────────────────────
+  {
+    name: "Inkwell Editorial",
+    category: "personal",
+    featured: true,
+    image: "resource/Image/inkwell.svg",
+    link: "https://inkwell.preetamhegde.in",
+    description: "A full-stack editorial blog platform with AI-assisted writing, Supabase backend, full-text search, author profiles, bookmarks, and an admin analytics dashboard.",
+    tech: ["React", "TypeScript", "Supabase", "TanStack Query", "AI / OpenRouter", "Tailwind CSS"]
+  },
+  {
+    name: "System Design Prototype",
+    category: "personal",
+    featured: true,
+    image: "resource/Image/sysdesign.svg",
+    link: "https://sysdesign.preetamhegde.in",
+    description: "An interactive system design whiteboard for sketching distributed architectures — nodes, connections, annotations, and exportable diagrams for engineering discussions.",
+    tech: ["React", "TypeScript", "Canvas API", "System Design"]
+  },
+
+  // ── Personal ────────────────────────────────────────────────────────────
   {
     name: "Bharatvarsha",
     category: "personal",
@@ -23,6 +44,24 @@ const projects = [
     description: "A real estate–inspired idle browser game where you invest, expand, and automate your way to an empire — blending reflex challenges with strategic decision-making.",
     tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Game Design"]
   },
+  {
+    name: "Live Analytics Dashboard",
+    category: "personal",
+    image: "resource/Image/analytics.svg",
+    link: "apps/live-analytics-dashboard/index.html",
+    description: "A live data dashboard case study that fuses GitHub profile telemetry, optional Plausible pageview analytics, and activity streak insights into animated KPI widgets.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Data Visualization", "GitHub API", "Plausible API"]
+  },
+  {
+    name: "GeoLocation Explorer",
+    category: "personal",
+    image: "resource/Image/geoLocation.svg",
+    link: "apps/geo-location/index.html",
+    description: "Instantly retrieve your geographic coordinates, altitude, and accuracy radius via the browser Geolocation API, with map embed and shareable location links.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Geolocation API", "Maps"]
+  },
+
+  // ── For-fun / FCC ────────────────────────────────────────────────────────
   {
     name: "Reflex Arena",
     category: "fcc",
@@ -64,22 +103,6 @@ const projects = [
     tech: ["HTML5", "CSS3", "JavaScript", "Digital Design", "Verilog"]
   },
   {
-    name: "Live Analytics Dashboard",
-    category: "personal",
-    image: "resource/Image/sort.svg",
-    link: "apps/live-analytics-dashboard/index.html",
-    description: "A live data dashboard case study that fuses GitHub profile telemetry, optional Plausible pageview analytics, and activity streak insights into animated KPI widgets.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Data Visualization", "GitHub API", "Plausible API"]
-  },
-  {
-    name: "GeoLocation Explorer",
-    category: "personal",
-    image: "resource/Image/geoLocation.svg",
-    link: "apps/geo-location/index.html",
-    description: "Instantly retrieve your geographic coordinates, altitude, and accuracy radius via the browser Geolocation API, with map embed and shareable location links.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Geolocation API", "Maps"]
-  },
-  {
     name: "Ball Physics Illusion",
     category: "fcc",
     image: "resource/Image/BGI.svg",
@@ -104,14 +127,6 @@ const projects = [
     tech: ["HTML5", "CSS3", "JavaScript", "REST API", "Fetch API"]
   },
   {
-    name: "Personal Portfolio",
-    category: "personal",
-    image: "resource/Image/portfolio.svg",
-    link: "https://preetam-ptwo.github.io/Portfolio/",
-    description: "My first deployed portfolio — a static site built from scratch to present projects, skills, and contact information with a clean responsive layout.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Responsive Design"]
-  },
-  {
     name: "Dear Diary",
     category: "personal",
     image: "resource/Image/diary.svg",
@@ -121,27 +136,60 @@ const projects = [
   }
 ];
 
-function generateProjectHTML(project) {
-  return `
-    <div class="portfolio__project col-xs-12 col-sm-6 col-lg-3 text-center" data-cat="${project.category}" data-tech="${project.tech.join(',')}">
-      <a href="${project.link}" target="_blank" title="view live">
-        <div class="portfolio__project__preview">
-          <img src="${project.image}" alt="${project.name}">
-        </div>
-        <div class="portfolio__project__description">
-          <div class="info-wrapper">
-            <h3 class="portfolio__project__name">${project.name}</h3>
-            <p class="portfolio__project__category">${project.description}</p>
-          </div>
-        </div>
-      </a>
-    </div>
-  `;
+/* ── Post-render image + featured badge enhancement ────────────────────────
+   Watches the project container and injects a .card-img-area into every
+   .project-card after script.js's renderModernProjects() populates the grid.
+   Uses a MutationObserver so it also fires on search/filter re-renders.
+────────────────────────────────────────────────────────────────────────── */
+function setupCardEnhancement() {
+  const container = document.getElementById('projectContainer');
+  if (!container) return;
+
+  const imageMap   = Object.fromEntries(projects.map(p => [p.name, p.image]));
+  const featuredSet = new Set(projects.filter(p => p.featured).map(p => p.name));
+
+  function enhanceCard(card) {
+    if (card.dataset.enhanced) return;
+    card.dataset.enhanced = '1';
+
+    const nameEl = card.querySelector('h3');
+    const name   = nameEl?.textContent?.trim() ?? '';
+    const src    = imageMap[name];
+
+    const area = document.createElement('div');
+    area.className = 'card-img-area';
+
+    if (src) {
+      const img = document.createElement('img');
+      img.src     = src;
+      img.alt     = '';
+      img.className = 'card-proj-img';
+      img.loading  = 'lazy';
+      area.appendChild(img);
+    }
+
+    if (featuredSet.has(name)) {
+      card.classList.add('is-featured');
+      const badge = document.createElement('span');
+      badge.className   = 'card-feat-badge';
+      badge.textContent = 'Featured';
+      area.appendChild(badge);
+    }
+
+    card.insertBefore(area, card.firstChild);
+  }
+
+  const observer = new MutationObserver(() => {
+    container.querySelectorAll('.project-card:not([data-enhanced])').forEach(enhanceCard);
+    // Disconnect once all rendered cards are enhanced (no unenhanced cards remain)
+    if (!container.querySelector('.project-card:not([data-enhanced])')) {
+      observer.disconnect();
+    }
+  });
+  observer.observe(container, { childList: true });
+
+  // Catch any cards already present (e.g. if DOMContentLoaded fires late)
+  container.querySelectorAll('.project-card:not([data-enhanced])').forEach(enhanceCard);
 }
 
-function renderProjects() {
-  const projectContainer = document.getElementById('projectContainer');
-  projectContainer.innerHTML = projects.map(generateProjectHTML).join('');
-}
-
-document.addEventListener('DOMContentLoaded', renderProjects);
+document.addEventListener('DOMContentLoaded', setupCardEnhancement);
