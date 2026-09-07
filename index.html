@@ -35,28 +35,8 @@
 		<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,500;12..96,700;12..96,800&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
 	</noscript>
 
-	<!-- Font Awesome — CDN with local fallback -->
-	<link id="fontAwesomeCdn" rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" integrity="sha384-3B6NwesSXE7YJlcLI9RpRqGf2p/EgVH8BgoKTaUrmKNDkHPStTQ3EyoYjCGXaOTS" crossorigin="anonymous">
-	<link rel="preload" href="resource/vendor/fontawesome/css/all.min.css" as="style">
-	<script>
-		(function ensureFontAwesomeFallback() {
-			const cdnStylesheet = document.getElementById('fontAwesomeCdn');
-			const localHref = 'resource/vendor/fontawesome/css/all.min.css';
-			let loadedFromCdn = false;
-			function loadLocalStylesheet() {
-				if (document.querySelector('link[data-fa-local="1"]')) return;
-				const localStylesheet = document.createElement('link');
-				localStylesheet.rel = 'stylesheet';
-				localStylesheet.href = localHref;
-				localStylesheet.setAttribute('data-fa-local', '1');
-				document.head.appendChild(localStylesheet);
-			}
-			if (!cdnStylesheet) { loadLocalStylesheet(); return; }
-			cdnStylesheet.addEventListener('load', function() { loadedFromCdn = true; });
-			cdnStylesheet.addEventListener('error', loadLocalStylesheet);
-			window.setTimeout(function() { if (!loadedFromCdn) loadLocalStylesheet(); }, 2500);
-		})();
-	</script>
+	<!-- Font Awesome -->
+	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@fortawesome/fontawesome-free@6.0.0/css/all.min.css" integrity="sha384-3B6NwesSXE7YJlcLI9RpRqGf2p/EgVH8BgoKTaUrmKNDkHPStTQ3EyoYjCGXaOTS" crossorigin="anonymous">
 
 	<!-- JSON-LD structured data -->
 	<script type="application/ld+json">
