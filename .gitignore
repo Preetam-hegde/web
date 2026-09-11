@@ -15,3 +15,5 @@ Thumbs.db
 # Dependencies
 node_modules/
 
+# Local visual brainstorming screens
+.superpowers/
