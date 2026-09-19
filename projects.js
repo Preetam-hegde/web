@@ -53,6 +53,14 @@ const projects = [
     tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "SVG Charts", "Game Design"]
   },
   {
+    name: "Synapse",
+    category: "personal",
+    icon: "brain",
+    link: "apps/synapse/index.html",
+    description: "High-speed working memory and cognitive matrix — train visual memory, mental processing speed, and rapid pattern recall across Chimp Matrix, Stroop Duel, Spatial Span, and Change Blindness modes.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Web Audio API", "SVG Charts", "Cognitive Benchmarks"]
+  },
+  {
     name: "DevPulse: Live Telemetry Matrix",
     category: "personal",
     icon: "activity",
@@ -164,6 +172,7 @@ const projectIcons = {
   'timer': '<line x1="10" x2="14" y1="2" y2="2"/> <line x1="12" x2="15" y1="14" y2="11"/> <circle cx="12" cy="14" r="8"/>',
   'quote': '<path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/> <path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/>',
   'notebook-pen': '<path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/> <path d="M2 6h4"/> <path d="M2 10h4"/> <path d="M2 14h4"/> <path d="M2 18h4"/> <path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/>',
+  'brain': '<path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/> <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/> <path d="M12 5v13"/> <path d="M12 13a4.5 4.5 0 0 1-3-4"/> <path d="M12 13a4.5 4.5 0 0 0 3-4"/>',
 };
 
 function projectIcon(name) {

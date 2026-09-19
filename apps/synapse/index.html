@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Synapse — Cognitive Matrix & Working Memory</title>
+	<meta name="description" content="High-speed working memory and cognitive latency matrix. Train visual working memory, mental processing speed, and rapid pattern recall under extreme time pressure.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="styles.css">
+	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
+</head>
+<body data-screen="menu">
+	<canvas id="fx" aria-hidden="true"></canvas>
+	<div id="vig" aria-hidden="true"></div>
+	<div id="toast" aria-hidden="true"></div>
+
+	<div id="app">
+		<header class="topbar">
+			<button class="brand" type="button" data-go="menu">synapse</button>
+			<nav aria-label="Primary">
+				<button type="button" data-go="menu">Play</button>
+				<button type="button" data-go="stats">Stats</button>
+				<button type="button" id="toggleAudio" title="Toggle audio synthesizer" aria-label="Toggle audio">
+					<svg id="audioIcon" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+						<path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+						<path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+					</svg>
+				</button>
+				<a href="../../index.html">Portfolio ↗</a>
+			</nav>
+		</header>
+
+		<main>
+			<!-- ── Menu Screen ──────────────────────────────────────── -->
+			<section class="screen" id="menu">
+				<h1 class="logo" aria-label="Synapse">
+					<span style="--i:0">S</span><span style="--i:1">Y</span><span style="--i:2">N</span><span style="--i:3">A</span><span style="--i:4">P</span><span style="--i:5">S</span><span style="--i:6">E</span>
+				</h1>
+				<p class="tag">High-speed working memory & cognitive latency matrix.</p>
+
+				<div class="modes" id="modes">
+					<button class="card" type="button" data-mode="chimp">
+						<svg viewBox="0 0 24 24"><rect x="3" y="3" width="7" height="7" rx="1.5"/><rect x="14" y="3" width="7" height="7" rx="1.5"/><rect x="3" y="14" width="7" height="7" rx="1.5"/><rect x="14" y="14" width="7" height="7" rx="1.5"/><path d="M10 6.5h4M6.5 10v4M14 17.5h3.5"/></svg>
+						<kbd>1</kbd>
+						<h3>Chimp Matrix</h3>
+						<p>5–15 numbers flash for 400ms then mask. Recall ascending order.</p>
+						<div class="best">best span: <b id="best-chimp">0</b> items</div>
+					</button>
+
+					<button class="card" type="button" data-mode="stroop">
+						<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="m4.93 4.93 14.14 14.14"/><path d="M12 3v3m0 12v3M3 12h3m12 0h3"/></svg>
+						<kbd>2</kbd>
+						<h3>Stroop Duel</h3>
+						<p>Color vs. semantic word conflict. Sub-500ms rapid fire decisions.</p>
+						<div class="best">best: <b id="best-stroop">0</b> CPS</div>
+					</button>
+
+					<button class="card" type="button" data-mode="spatial">
+						<svg viewBox="0 0 24 24"><path d="m12 3 8 4.5v9L12 21l-8-4.5v-9L12 3z"/><path d="m12 12 8-4.5M12 12v9M12 12 4 7.5"/></svg>
+						<kbd>3</kbd>
+						<h3>Spatial Span</h3>
+						<p>Expanding isometric sequence. Reproduce forward or reversed.</p>
+						<div class="best">best span: <b id="best-spatial">0</b> nodes</div>
+					</button>
+
+					<button class="card" type="button" data-mode="blindness">
+						<svg viewBox="0 0 24 24"><path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/><circle cx="12" cy="12" r="3"/><line x1="2" y1="2" x2="22" y2="22"/></svg>
+						<kbd>4</kbd>
+						<h3>Change Blindness</h3>
+						<p>Two-frame flicker with mask. Spot the altered micro-element.</p>
+						<div class="best">best: <b id="best-blindness">0</b> CPS</div>
+					</button>
+				</div>
+
+				<div class="len" role="group" aria-label="Difficulty level">
+					<span>Difficulty</span>
+					<button type="button" data-diff="standard">Standard</button>
+					<button type="button" data-diff="overclocked">Overclocked</button>
+					<button type="button" data-diff="extreme">Extreme</button>
+				</div>
+
+				<div class="len" role="group" aria-label="Span direction" id="spatialConfigRow">
+					<span>Span Order</span>
+					<button type="button" data-span-dir="forward">Forward</button>
+					<button type="button" data-span-dir="reversed">Reversed</button>
+				</div>
+
+				<p class="hint">Press <kbd>1</kbd>–<kbd>4</kbd> to launch · <kbd>R</kbd> restarts · <kbd>ESC</kbd> exits to menu</p>
+			</section>
+
+			<!-- ── Play Screen ──────────────────────────────────────── -->
+			<section class="screen" id="play">
+				<div class="hud">
+					<div><b id="hTime">0.0s</b><small>timer</small></div>
+					<div><b id="hCps">0</b><small>CPS index</small></div>
+					<div><b id="hSpan">5</b><small id="hSpanLabel">span</small></div>
+					<div><b id="hStreak">0</b><small>streak</small></div>
+					<div><b id="hAcc">100%</b><small>acc</small></div>
+				</div>
+
+				<!-- Game Containers -->
+				<div class="game-arena" id="gameArena">
+					<!-- Chimp Matrix Arena -->
+					<div class="arena-view" id="arenaChimp" hidden>
+						<div class="chimp-status" id="chimpStatus">MEMORIZE THE NUMBERS</div>
+						<div class="chimp-grid" id="chimpGrid"></div>
+					</div>
+
+					<!-- Stroop Duel Arena -->
+					<div class="arena-view" id="arenaStroop" hidden>
+						<div class="stroop-timer-bar-wrap">
+							<div class="stroop-timer-bar" id="stroopTimerBar"></div>
+						</div>
+						<div class="stroop-instruction">CHOOSE INK COLOR (IGNORE WORD)</div>
+						<div class="stroop-word" id="stroopWord">RED</div>
+						<div class="stroop-options" id="stroopOptions">
+							<button type="button" class="stroop-btn" data-color="red" style="--c:#ff4d6d">
+								<span class="btn-key">A</span>
+								<span class="btn-name">RED</span>
+							</button>
+							<button type="button" class="stroop-btn" data-color="cyan" style="--c:#00f0ff">
+								<span class="btn-key">S</span>
+								<span class="btn-name">CYAN</span>
+							</button>
+							<button type="button" class="stroop-btn" data-color="yellow" style="--c:#ffe600">
+								<span class="btn-key">D</span>
+								<span class="btn-name">YELLOW</span>
+							</button>
+							<button type="button" class="stroop-btn" data-color="purple" style="--c:#c060ff">
+								<span class="btn-key">F</span>
+								<span class="btn-name">PURPLE</span>
+							</button>
+						</div>
+					</div>
+
+					<!-- Spatial Span Arena -->
+					<div class="arena-view" id="arenaSpatial" hidden>
+						<div class="spatial-status" id="spatialStatus">WATCH NEURAL SEQUENCE</div>
+						<div class="spatial-stage">
+							<div class="spatial-grid" id="spatialGrid"></div>
+						</div>
+					</div>
+
+					<!-- Change Blindness Arena -->
+					<div class="arena-view" id="arenaBlindness" hidden>
+						<div class="blindness-status" id="blindnessStatus">SPOT THE ALTERED NODE</div>
+						<div class="blindness-grid" id="blindnessGrid"></div>
+					</div>
+				</div>
+
+				<p class="hint" id="playHint">Visual working memory active</p>
+			</section>
+
+			<!-- ── Results Screen ───────────────────────────────────── -->
+			<section class="screen" id="results" aria-live="polite">
+				<p class="eyebrow" id="rMode">CHIMP MATRIX · STANDARD</p>
+				<div class="big">
+					<b id="rScore">0</b>
+					<span id="rUnit">CPS</span>
+					<em id="rPb" hidden>new best</em>
+				</div>
+
+				<div class="kpis" id="rKpis">
+					<div><b id="rKpiSpan">0</b><small>max span</small></div>
+					<div><b id="rKpiLatency">0ms</b><small>mean latency</small></div>
+					<div><b id="rKpiStreak">0</b><small>peak streak</small></div>
+					<div><b id="rKpiAcc">100%</b><small>accuracy</small></div>
+				</div>
+
+				<div class="panel" id="rChartPanel">
+					<h3>Reaction Latency Curve</h3>
+					<div class="chart-container" id="rChart"></div>
+				</div>
+
+				<div class="actions">
+					<button type="button" class="primary" id="btnAgain">Again <kbd>enter</kbd></button>
+					<button type="button" id="btnMenu">Menu <kbd>esc</kbd></button>
+				</div>
+			</section>
+
+			<!-- ── Stats Screen ─────────────────────────────────────── -->
+			<section class="screen" id="stats">
+				<h2>Cognitive Telemetry & Span History</h2>
+				<div class="kpis" id="sKpis">
+					<div><b id="sHighCps">0</b><small>peak CPS</small></div>
+					<div><b id="sMaxSpan">0</b><small>max span retained</small></div>
+					<div><b id="sAvgLatency">0ms</b><small>avg reaction time</small></div>
+					<div><b id="sTotalRuns">0</b><small>sessions completed</small></div>
+				</div>
+
+				<div class="cols">
+					<div class="panel">
+						<h3>Visual Memory Span (Last 30 Runs)</h3>
+						<div class="chart-container" id="sSpanChart"></div>
+					</div>
+					<div class="panel">
+						<h3>Personal Records by Mode</h3>
+						<ul class="bests" id="sBestList"></ul>
+					</div>
+				</div>
+
+				<div class="panel">
+					<h3>Reaction Latency Over Runs (ms)</h3>
+					<div class="chart-container" id="sLatencyChart"></div>
+				</div>
+
+				<div class="panel">
+					<h3>Recent Cognitive Runs</h3>
+					<div class="table-wrap">
+						<table id="sRunsTable">
+							<thead>
+								<tr>
+									<th>Mode</th>
+									<th>Difficulty</th>
+									<th>Score</th>
+									<th>Span</th>
+									<th>Latency</th>
+									<th>Accuracy</th>
+									<th>Date</th>
+								</tr>
+							</thead>
+							<tbody id="sRunsBody"></tbody>
+						</table>
+					</div>
+				</div>
+
+				<button type="button" class="ghost" id="btnResetStats">Reset Telemetry</button>
+			</section>
+		</main>
+	</div>
+
+	<script src="script.js"></script>
+</body>
+</html>
