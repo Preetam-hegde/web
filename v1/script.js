@@ -1,8 +1,7 @@
 'use strict';
 
-const loomProjects = typeof projects === 'undefined' ? [] : projects.slice(0, 6);
-let activeProjectIndex = -1;
-let projectChangeTimer;
+const loomProjects = typeof projects === 'undefined' ? [] : projects;
+const loomCategories = { personal: 'Independent build', fcc: 'Interactive study' };
 
 document.addEventListener('DOMContentLoaded', () => {
 	document.documentElement.classList.add('js');
@@ -10,8 +9,98 @@ document.addEventListener('DOMContentLoaded', () => {
 	setupLoomNavigation();
 	setupLoomMotion();
 	setupRain();
+	setupHero();
 	document.getElementById('loom-year').textContent = new Date().getFullYear();
 });
+
+function setupHero() {
+	const hero = document.getElementById('about');
+	if (!hero) return;
+	const scene = hero.querySelector('.loom-hero-scene');
+	const flash = hero.querySelector('.loom-flash');
+	const title = document.getElementById('hero-title');
+	const motion = allowsMotion();
+	const fineHover = window.matchMedia('(hover: hover) and (pointer: fine)').matches;
+
+	title.setAttribute('aria-label', title.innerText.replace(/\s+/g, ' ').trim());
+	let letter = 0;
+	const splitLetters = (node) => [...node.childNodes].forEach((child) => {
+		if (child.nodeType === Node.TEXT_NODE) {
+			child.replaceWith(...[...child.textContent].map((char) => {
+				const span = document.createElement('span');
+				span.className = 'loom-letter';
+				span.setAttribute('aria-hidden', 'true');
+				span.style.setProperty('--i', letter++);
+				span.textContent = char;
+				return span;
+			}));
+		} else if (child.nodeName !== 'BR') splitLetters(child);
+	});
+	splitLetters(title);
+
+	// Size the scene like object-fit: cover (image is 1672x941) so glow layers stay pinned to the painting.
+	const fitScene = () => {
+		const width = hero.clientWidth;
+		const height = hero.clientHeight;
+		const scale = Math.max(width / 1672, height / 941) * 1.05;
+		const focusX = width < 621 ? .59 : .5;
+		Object.assign(scene.style, { width: `${1672 * scale}px`, height: `${941 * scale}px`, left: `${(width - 1672 * scale) * focusX}px`, top: `${(height - 941 * scale) / 2}px` });
+	};
+	fitScene();
+	new ResizeObserver(fitScene).observe(hero);
+
+	hero.querySelectorAll('[data-stat]').forEach((item) => {
+		const stat = item.dataset.stat;
+		const total = stat === 'all' ? loomProjects.length : stat === 'featured' ? loomProjects.filter((project) => project.featured).length : loomProjects.filter((project) => project.category === 'fcc').length;
+		if (!total || !motion) { if (total) item.textContent = total; return; }
+		item.textContent = '0';
+		const start = performance.now() + 900;
+		const tick = (now) => {
+			const progress = Math.min(1, Math.max(0, (now - start) / 1400));
+			item.textContent = Math.round(total * (1 - (1 - progress) ** 3));
+			if (progress < 1) requestAnimationFrame(tick);
+		};
+		requestAnimationFrame(tick);
+	});
+
+	if (!motion) return;
+	const strike = () => {
+		flash.classList.remove('is-striking');
+		void flash.offsetWidth;
+		flash.classList.add('is-striking');
+		window.setTimeout(strike, 7000 + Math.random() * 9000);
+	};
+	window.setTimeout(strike, 3500);
+
+	if (!fineHover) return;
+	let targetX = 0, targetY = 0, currentX = 0, currentY = 0, running = false;
+	const glide = () => {
+		currentX += (targetX - currentX) * .08;
+		currentY += (targetY - currentY) * .08;
+		scene.style.transform = `translate3d(${currentX.toFixed(2)}px, ${currentY.toFixed(2)}px, 0)`;
+		running = Math.abs(targetX - currentX) > .05 || Math.abs(targetY - currentY) > .05;
+		if (running) requestAnimationFrame(glide);
+	};
+	hero.addEventListener('pointermove', (event) => {
+		const rect = hero.getBoundingClientRect();
+		targetX = -((event.clientX - rect.left) / rect.width - .5) * 30;
+		targetY = -((event.clientY - rect.top) / rect.height - .5) * 18;
+		hero.style.setProperty('--lx', `${event.clientX - rect.left}px`);
+		hero.style.setProperty('--ly', `${event.clientY - rect.top}px`);
+		hero.classList.add('is-lit');
+		if (!running) { running = true; requestAnimationFrame(glide); }
+	}, { passive: true });
+	hero.addEventListener('pointerleave', () => { hero.classList.remove('is-lit'); targetX = 0; targetY = 0; if (!running) { running = true; requestAnimationFrame(glide); } });
+
+	hero.querySelectorAll('.loom-button').forEach((button) => {
+		button.addEventListener('pointermove', (event) => {
+			const rect = button.getBoundingClientRect();
+			button.style.setProperty('--tx', `${(event.clientX - rect.left - rect.width / 2) * .22}px`);
+			button.style.setProperty('--ty', `${(event.clientY - rect.top - rect.height / 2) * .32}px`);
+		});
+		button.addEventListener('pointerleave', () => { button.style.removeProperty('--tx'); button.style.removeProperty('--ty'); });
+	});
+}
 
 function setupRain() {
 	const canvas = document.querySelector('.loom-rain-canvas');
@@ -104,52 +193,61 @@ function setupRain() {
 }
 
 function renderLoomProjects() {
-	const rail = document.getElementById('loom-project-rail');
-	if (!rail) return;
-	const fragment = document.createDocumentFragment();
-	loomProjects.forEach((project, index) => {
+	const grid = document.getElementById('loom-grid');
+	const filters = document.getElementById('loom-filters');
+	if (!grid || !filters) return;
+	grid.replaceChildren(...loomProjects.map(createProjectCard));
+	const options = [['all', 'All'], ['personal', 'Independent builds'], ['fcc', 'Interactive studies']];
+	filters.replaceChildren(...options.map(([value, label]) => {
+		const count = value === 'all' ? loomProjects.length : loomProjects.filter((project) => project.category === value).length;
 		const button = document.createElement('button');
 		button.type = 'button';
-		button.className = 'loom-project-tab';
-		button.setAttribute('aria-pressed', 'false');
-		button.setAttribute('aria-label', `Show ${project.name}`);
-		const number = document.createElement('span');
-		number.className = 'loom-project-tab-number';
-		number.textContent = String(index + 1).padStart(2, '0');
-		const name = document.createElement('span');
-		name.textContent = project.name;
-		button.append(number, name);
-		button.addEventListener('click', () => setActiveProject(index, true));
-		fragment.appendChild(button);
-	});
-	rail.replaceChildren(fragment);
-	setActiveProject(0, false);
+		button.className = 'loom-filter';
+		button.dataset.filter = value;
+		button.setAttribute('aria-pressed', String(value === 'all'));
+		button.innerHTML = `${label} <span>${String(count).padStart(2, '0')}</span>`;
+		button.addEventListener('click', () => {
+			filters.querySelectorAll('.loom-filter').forEach((item) => item.setAttribute('aria-pressed', String(item === button)));
+			grid.querySelectorAll('.loom-card').forEach((card) => { card.hidden = value !== 'all' && card.dataset.category !== value; });
+		});
+		return button;
+	}));
 }
 
-function setActiveProject(index, animate) {
-	if (!loomProjects[index] || index === activeProjectIndex) return;
-	const project = loomProjects[index];
-	const image = document.getElementById('loom-project-image');
-	const copy = document.getElementById('loom-project-copy');
-	if (!image || !copy) return;
-	activeProjectIndex = index;
-	document.querySelectorAll('.loom-project-tab').forEach((button, buttonIndex) => button.setAttribute('aria-pressed', String(buttonIndex === index)));
-	window.clearTimeout(projectChangeTimer);
-	if (animate && allowsMotion()) { image.classList.add('is-changing'); copy.classList.add('is-changing'); }
-	projectChangeTimer = window.setTimeout(() => {
-		image.src = project.image;
-		image.alt = `Visual mark for ${project.name}`;
-		document.getElementById('loom-project-index').textContent = `${String(index + 1).padStart(2, '0')} / ${String(loomProjects.length).padStart(2, '0')}`;
-		document.getElementById('loom-project-category').textContent = project.category === 'fcc' ? 'Interactive study' : 'Independent build';
-		document.getElementById('loom-project-title').textContent = project.name;
-		document.getElementById('loom-project-description').textContent = project.description;
-		document.getElementById('loom-project-tech').replaceChildren(...project.tech.slice(0, 4).map((label) => { const item = document.createElement('li'); item.textContent = label; return item; }));
-		const link = document.getElementById('loom-project-link');
-		link.href = project.link;
-		link.target = /^https?:\/\//.test(project.link) ? '_blank' : '';
-		link.rel = /^https?:\/\//.test(project.link) ? 'noopener noreferrer' : '';
-		if (animate && allowsMotion()) window.requestAnimationFrame(() => { image.classList.remove('is-changing'); copy.classList.remove('is-changing'); });
-	}, animate && allowsMotion() ? 140 : 0);
+function createProjectCard(project, index) {
+	const external = /^https?:\/\//.test(project.link);
+	const card = document.createElement('a');
+	card.className = 'loom-card';
+	card.href = project.link;
+	card.dataset.category = project.category;
+	if (project.featured) card.classList.add('is-featured');
+	if (external) { card.target = '_blank'; card.rel = 'noopener noreferrer'; }
+	const visual = document.createElement('div');
+	visual.className = 'loom-card-visual';
+	visual.innerHTML = projectIcon(project.icon);
+	const number = document.createElement('span');
+	number.className = 'loom-card-number';
+	number.textContent = String(index + 1).padStart(2, '0');
+	visual.append(number);
+	const body = document.createElement('div');
+	body.className = 'loom-card-body';
+	const category = document.createElement('p');
+	category.className = 'loom-project-category';
+	category.textContent = (project.featured ? 'Featured · ' : '') + (loomCategories[project.category] || 'Project');
+	const title = document.createElement('h3');
+	title.textContent = project.name;
+	const description = document.createElement('p');
+	description.className = 'loom-card-description';
+	description.textContent = project.description;
+	const tech = document.createElement('ul');
+	tech.className = 'loom-project-tech';
+	tech.append(...project.tech.slice(0, 4).map((label) => { const item = document.createElement('li'); item.textContent = label; return item; }));
+	const cta = document.createElement('span');
+	cta.className = 'loom-card-cta';
+	cta.innerHTML = `${external ? 'Visit live' : 'Open project'} <span aria-hidden="true">↗</span>`;
+	body.append(category, title, description, tech, cta);
+	card.append(visual, body);
+	return card;
 }
 
 function allowsMotion() { return !window.matchMedia('(prefers-reduced-motion: reduce)').matches; }
@@ -172,30 +270,25 @@ function setupLoomNavigation() {
 
 function setupLoomMotion() {
 	const hero = document.getElementById('about');
-	const heroImage = document.querySelector('.loom-hero-image');
-	const work = document.getElementById('projects');
+	const heroMedia = document.querySelector('.loom-hero-media');
 	const capabilityList = document.querySelector('.loom-capability-list');
+	const experienceBody = document.querySelector('.loom-experience-body');
 	const workshopImage = document.querySelector('.loom-workshop-image');
 	const contact = document.getElementById('contact');
 	const contactContent = document.querySelector('.loom-contact-content');
 	prepareSigils();
 	window.requestAnimationFrame(() => hero?.classList.add('is-visible'));
-	if (!allowsMotion() || !('IntersectionObserver' in window)) { [capabilityList, workshopImage, contactContent, contact].filter(Boolean).forEach((item) => item.classList.add('is-visible')); drawSigil(contact); return; }
+	if (!allowsMotion() || !('IntersectionObserver' in window)) { [capabilityList, experienceBody, workshopImage, contactContent, contact].filter(Boolean).forEach((item) => item.classList.add('is-visible')); drawSigil(contact); return; }
 	const revealObserver = new IntersectionObserver((entries) => entries.forEach((entry) => { if (!entry.isIntersecting) return; entry.target.classList.add('is-visible'); if (entry.target === contact) drawSigil(contact); revealObserver.unobserve(entry.target); }), { rootMargin: '0px 0px -12% 0px', threshold: 0.15 });
-	[capabilityList, workshopImage, contactContent, contact].filter(Boolean).forEach((item) => revealObserver.observe(item));
+	[capabilityList, experienceBody, workshopImage, contactContent, contact].filter(Boolean).forEach((item) => revealObserver.observe(item));
 	let frame;
-	const desktop = window.matchMedia('(min-width: 621px)');
 	const update = () => {
 		frame = undefined;
-		if (hero && heroImage) { const progress = Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / Math.max(hero.offsetHeight, 1))); heroImage.style.transform = `translate3d(0, ${progress * 11}%, 0)`; }
-		if (work && desktop.matches && loomProjects.length) { const rect = work.getBoundingClientRect(); const travel = Math.max(work.offsetHeight - window.innerHeight, 1); const progress = Math.min(.9999, Math.max(0, -rect.top / travel)); setActiveProject(Math.min(loomProjects.length - 1, Math.floor(progress * loomProjects.length)), true); }
+		if (hero && heroMedia) { const progress = Math.min(1, Math.max(0, -hero.getBoundingClientRect().top / Math.max(hero.offsetHeight, 1))); heroMedia.style.transform = `translate3d(0, ${progress * 11}%, 0)`; }
 	};
 	const requestUpdate = () => { if (!frame) frame = window.requestAnimationFrame(update); };
-	const resize = () => { if (work) work.style.minHeight = desktop.matches ? `${window.innerHeight + Math.max(loomProjects.length, 1) * 480}px` : ''; requestUpdate(); };
-	resize();
+	requestUpdate();
 	window.addEventListener('scroll', requestUpdate, { passive: true });
-	window.addEventListener('resize', resize, { passive: true });
-	desktop.addEventListener('change', resize);
 }
 
 function prepareSigils() {

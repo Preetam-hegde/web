@@ -35,14 +35,14 @@ Examples:
 1. Create a new app folder in `apps/`.
 2. Add entry point file at `apps/<project-slug>/index.html`.
 3. Add assets inside that app folder (prefer relative paths).
-4. Add preview image under `resource/Image/`.
+4. Pick a Lucide icon name (https://lucide.dev/icons); if it isn't in `projectIcons` at the bottom of `projects.js`, paste its inner SVG markup there.
 5. Add a new object to `projects.js` in the `projects` array.
 
 Required fields in each `projects.js` item:
 
 - `name`
 - `category`
-- `image` (usually `resource/Image/<file>.svg` or `.png`)
+- `icon` (a key of `projectIcons` in `projects.js`; colored by each UI's CSS, never hardcode colors)
 - `link` (usually `apps/<project-slug>/index.html`)
 - `description`
 - `tech` (array)

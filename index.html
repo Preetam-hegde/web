@@ -3,15 +3,24 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<meta name="description" content="Preetam Hegde — developer portfolio. Systems, interfaces, simulations, and visual experiments.">
+	<meta name="description" content="Preetam Hegde — backend software engineer in Bengaluru. Metadata-driven systems, AI-assisted tooling, interfaces, and simulations.">
 	<meta name="author" content="Preetam Hegde">
 	<meta name="theme-color" content="#100c0b">
+	<meta property="og:type" content="website">
+	<meta property="og:title" content="Preetam Hegde — Systems in Thread">
+	<meta property="og:description" content="Backend software engineer in Bengaluru. Metadata-driven systems, AI-assisted tooling, interfaces, and simulations.">
+	<meta property="og:image" content="https://preetamhegde.in/resource/Image/loom/loom-hero-v3.jpg">
+	<meta property="og:url" content="https://preetamhegde.in/">
+	<meta name="twitter:card" content="summary_large_image">
 	<title>Preetam Hegde — Systems in Thread</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Fraunces:opsz,wght@9..144,500;600;700;800&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Fraunces:opsz,wght@9..144,500;600;700;800&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+	<noscript><link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Fraunces:opsz,wght@9..144,500;600;700;800&display=swap" rel="stylesheet"></noscript>
+	<link rel="preload" as="image" href="resource/Image/loom/loom-hero-v3.jpg" fetchpriority="high">
 	<link rel="stylesheet" href="v1/style.css">
 	<link rel="icon" type="image/svg+xml" href="v1/favicon.svg">
+	<script type="application/ld+json">{"@context":"https://schema.org","@type":"Person","name":"Preetam Hegde","url":"https://preetamhegde.in/","jobTitle":"Backend Software Engineer","worksFor":{"@type":"Organization","name":"Oracle"},"alumniOf":"BMS College of Engineering","address":{"@type":"PostalAddress","addressLocality":"Bengaluru","addressCountry":"IN"},"sameAs":["https://github.com/preetam-hegde","https://www.linkedin.com/in/preetam-hegde-8b53311a7/"]}</script>
 </head>
 <body class="loom-page">
 	<a class="skip-link" href="#projects">Skip to selected work</a>
@@ -19,6 +28,8 @@
 		<a class="loom-mark" href="#about" aria-label="Preetam Hegde, back to beginning"><span class="loom-mark-sigil" aria-hidden="true"></span><span>PH / 01</span></a>
 		<nav class="loom-nav" aria-label="Primary navigation">
 			<a href="#about" data-nav-link>Beginning</a>
+			<a href="#resume" data-nav-link class="loom-nav-optional">Craft</a>
+			<a href="#experience" data-nav-link>Experience</a>
 			<a href="#projects" data-nav-link>Selected work</a>
 			<a href="#contact" data-nav-link>Contact</a>
 			<a href="./index-classic.html" target="_blank" rel="noopener noreferrer">Classic</a>
@@ -27,14 +38,27 @@
 
 	<main>
 		<section class="loom-hero" id="about" aria-labelledby="hero-title">
-			<img class="loom-hero-image" src="resource/Image/loom/loom-hero-v3.png" alt="" aria-hidden="true">
+			<div class="loom-hero-media" aria-hidden="true">
+				<div class="loom-hero-scene"><div class="loom-hero-drift">
+					<img class="loom-scene-image" src="resource/Image/loom/loom-hero-v3.jpg" alt="" fetchpriority="high">
+					<i class="loom-fog loom-fog-a"></i><i class="loom-fog loom-fog-b"></i>
+					<i class="loom-glow loom-glow-temple" style="--x:62.8%;--y:48%;--s:22%"></i>
+					<i class="loom-glow loom-glow-halo" style="--x:81.2%;--y:17.4%;--s:30%"></i>
+					<svg class="loom-halo-ring" style="--x:81.2%;--y:17.4%" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47"></circle><circle cx="50" cy="50" r="41"></circle></svg>
+					<i class="loom-glow loom-glow-lamp" style="--x:98.1%;--y:45.2%;--s:7%"></i>
+					<i class="loom-glow loom-glow-lamp" style="--x:97.8%;--y:78.8%;--s:6%;--t:2.3s"></i>
+				</div></div>
+			</div>
 			<div class="loom-hero-wash" aria-hidden="true"></div>
+			<div class="loom-hero-light" aria-hidden="true"></div>
+			<div class="loom-flash" aria-hidden="true"></div>
 			<div class="loom-rain" aria-hidden="true"><canvas class="loom-rain-canvas"></canvas></div>
 			<div class="loom-hero-content">
 				<p class="loom-kicker">An atelier for digital systems · 2026</p>
 				<h1 id="hero-title">Preetam<br><em>Hegde.</em></h1>
 				<p class="loom-intro">I make tools, interfaces, simulations, and visual systems that turn complex logic into something people can feel.</p>
 				<div class="loom-actions"><a class="loom-button loom-button-primary" href="#projects">Trace the work <span aria-hidden="true">↘</span></a><a class="loom-button loom-button-quiet" href="resource/pdf/Preetam_resume_2026.pdf" target="_blank" rel="noopener noreferrer">Read the résumé <span aria-hidden="true">↗</span></a></div>
+				<dl class="loom-stats"><div><dt>Projects in the archive</dt><dd data-stat="all">16</dd></div><div><dt>Live products</dt><dd data-stat="featured">2</dd></div><div><dt>Interactive studies</dt><dd data-stat="fcc">8</dd></div></dl>
 			</div>
 			<div class="loom-hero-note" aria-hidden="true"><span>01 / monsoon study</span><span>scroll to unspool</span></div>
 		</section>
@@ -49,12 +73,62 @@
 				<article class="loom-capability"><span class="loom-capability-number">III</span><div><h3>Data &amp; platform work</h3><p>Metadata-heavy dashboards and enterprise workflows shaped around real investigation.</p></div></article>
 				<article class="loom-capability"><span class="loom-capability-number">IV</span><div><h3>Play as research</h3><p>Simulations and canvas experiments used to explore emergence, learning, motion, and feedback.</p></div></article>
 			</div>
-			<figure class="loom-workshop-image"><img src="resource/Image/loom/loom-portrait-v1.png" alt="Illustrated portrait of Preetam Hegde in a dark hoodie and sunglasses."><figcaption>A clear point of view, rendered in code.</figcaption></figure>
+			<figure class="loom-workshop-image"><img src="resource/Image/loom/loom-portrait-v1.jpg" alt="Illustrated portrait of Preetam Hegde in a dark hoodie and sunglasses."><figcaption>A clear point of view, rendered in code.</figcaption></figure>
 		</section>
 
-		<section class="loom-work" id="projects" aria-labelledby="work-title"><div class="loom-work-stage"><div class="loom-section-label"><span>03</span><span>Selected work / six studies</span></div><div class="loom-work-heading"><p class="loom-eyebrow">Projects selected from the archive</p><h2 id="work-title">Pull a thread.<br><em>Find the system.</em></h2></div><div class="loom-work-layout"><div class="loom-project-rail-wrap"><div class="loom-project-rail" id="loom-project-rail" aria-label="Selected projects"></div></div><article class="loom-project-detail" aria-live="polite"><div class="loom-project-visual"><img class="loom-project-frame" src="resource/Image/loom/loom-project-frame-v2.png" alt="" aria-hidden="true"><div class="loom-project-image-wrap"><img id="loom-project-image" src="" alt=""></div><span class="loom-project-index" id="loom-project-index">01 / 06</span></div><div class="loom-project-copy" id="loom-project-copy"><p class="loom-project-category" id="loom-project-category"></p><h3 id="loom-project-title"></h3><p class="loom-project-description" id="loom-project-description"></p><ul class="loom-project-tech" id="loom-project-tech" aria-label="Project technologies"></ul><a class="loom-project-link" id="loom-project-link" href="#">Visit the project <span aria-hidden="true">↗</span></a></div></article></div><p class="loom-work-hint" aria-hidden="true">Scroll through the archive</p></div></section>
+		<section class="loom-experience" id="experience" aria-labelledby="experience-title">
+			<div class="loom-experience-stage">
+				<div class="loom-section-label"><span>03</span><span>Experience / where it ran</span></div>
+				<div class="loom-experience-head"><p class="loom-eyebrow">3+ years building enterprise backend systems at Oracle</p><h2 id="experience-title">Built inside <em>real constraints.</em></h2></div>
+				<div class="loom-experience-body">
+					<ol class="loom-timeline">
+						<li class="loom-job">
+							<p class="loom-job-date">Aug 2023 — Present</p>
+							<h3>Data System Engineer</h3><p class="loom-job-org">Oracle · Bengaluru</p>
+							<ul>
+								<li>Designed a metadata-driven target-menu framework on dynamic APIs, replacing static configuration with an extensible navigation and routing layer for enterprise dashboards.</li>
+								<li>Built a SQL optimization layer (named queries, dynamic fragments) and extended the visualization engine for concurrent metrics, cutting dashboard load and refresh latency.</li>
+								<li>Architected an AI dashboard generator with LangGraph, GPT-4, and RAG that turns natural-language prompts into executable, SQL-driven widgets.</li>
+								<li>Automated builds and deployment to Oracle Enterprise Manager, including hot-swap library updates, and cut front-end compilation time by 40%.</li>
+							</ul>
+						</li>
+						<li class="loom-job">
+							<p class="loom-job-date">Aug 2021 — Nov 2021</p>
+							<h3>Software Developer Intern</h3><p class="loom-job-org">Taproots.ai · Bengaluru</p>
+							<ul>
+								<li>Built real-time computer-vision pipelines (Python, OpenCV, TensorFlow) for ball tracking and event detection in live tennis and cricket.</li>
+								<li>Designed a low-latency Kafka and FFmpeg streaming and inference architecture for high-frequency ingestion across distributed nodes.</li>
+							</ul>
+						</li>
+					</ol>
+					<aside class="loom-skills" aria-label="Skills, education and recognition">
+						<h3 class="loom-eyebrow">Toolkit</h3>
+						<dl class="loom-skill-groups">
+							<div><dt>Languages</dt><dd>Java · Python · Golang · SQL · JavaScript · C++ · Dart</dd></div>
+							<div><dt>Backend &amp; APIs</dt><dd>REST · Microservices · Metadata-driven architecture · Oracle JET · Node.js</dd></div>
+							<div><dt>Data &amp; AI</dt><dd>LangGraph · RAG · GPT-4 · Vector embeddings · TensorFlow · OpenCV</dd></div>
+							<div><dt>Cloud &amp; tooling</dt><dd>OCI · Docker · Jenkins · Kafka · Gradle · Webpack · Linux</dd></div>
+						</dl>
+						<h3 class="loom-eyebrow">Education</h3>
+						<p class="loom-skill-note">BMS College of Engineering<br>B.E. Information Science, 2019 – 2023 · GPA 8.7</p>
+						<h3 class="loom-eyebrow">Recognition</h3>
+						<p class="loom-skill-note">3rd place, GE HealthCare HACK-E-LTH 2022 — an end-to-end IoT system for patient data.<br>Senior core member, CodeIO — taught DSA to 200+ students.</p>
+					</aside>
+				</div>
+			</div>
+		</section>
 
-		<section class="loom-contact" id="contact" aria-labelledby="contact-title"><img class="loom-contact-image" src="resource/Image/loom/loom-contact-v3.png" alt="" aria-hidden="true"><div class="loom-contact-wash" aria-hidden="true"></div><div class="loom-contact-content"><div class="loom-section-label"><span>04</span><span>Make contact</span></div><p class="loom-eyebrow">A good brief is a good beginning.</p><h2 id="contact-title">Let’s make a system<br>worth <em>returning to.</em></h2><p class="loom-contact-copy">If you’re working on a product, a platform, or an idea that needs both engineering care and a clear point of view, I’d like to hear about it.</p><div class="loom-contact-links"><a href="mailto:preetam@preetamhegde.in">preetam@preetamhegde.in <span aria-hidden="true">↗</span></a><a href="https://github.com/preetam-ptwo" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="https://linkedin.com/in/preetam-ptwo" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></div></div><svg class="loom-sigil loom-contact-seal" viewBox="0 0 240 240" aria-hidden="true"><path class="loom-sigil-path" d="M120 16 214 70v100l-94 54-94-54V70l94-54Z"></path><path class="loom-sigil-path" d="m65 86 55 34 55-34M65 154l55-34 55 34M120 50v140"></path></svg></section>
+		<section class="loom-work" id="projects" aria-labelledby="work-title">
+			<div class="loom-work-stage">
+				<div class="loom-section-label"><span>04</span><span>Selected work / the archive</span></div>
+				<div class="loom-work-heading"><p class="loom-eyebrow">Projects selected from the archive</p><h2 id="work-title">Pull a thread.<br><em>Find the system.</em></h2></div>
+				<div class="loom-filters" id="loom-filters" role="group" aria-label="Filter projects"></div>
+				<div class="loom-grid" id="loom-grid"></div>
+				<noscript><p class="loom-noscript">Projects need JavaScript — or browse the <a href="./index-classic.html">classic version</a>.</p></noscript>
+			</div>
+		</section>
+
+		<section class="loom-contact" id="contact" aria-labelledby="contact-title"><img class="loom-contact-image" src="resource/Image/loom/loom-contact-v3.jpg" alt="" aria-hidden="true"><div class="loom-contact-wash" aria-hidden="true"></div><div class="loom-contact-content"><div class="loom-section-label"><span>05</span><span>Make contact</span></div><p class="loom-eyebrow">A good brief is a good beginning.</p><h2 id="contact-title">Let’s make a system<br>worth <em>returning to.</em></h2><p class="loom-contact-copy">If you’re working on a product, a platform, or an idea that needs both engineering care and a clear point of view, I’d like to hear about it. Based in Bengaluru, India.</p><div class="loom-contact-links"><a href="mailto:preetam@preetamhegde.in">preetam@preetamhegde.in <span aria-hidden="true">↗</span></a><a href="https://github.com/preetam-hegde" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="https://www.linkedin.com/in/preetam-hegde-8b53311a7" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></div></div><svg class="loom-sigil loom-contact-seal" viewBox="0 0 240 240" aria-hidden="true"><path class="loom-sigil-path" d="M120 16 214 70v100l-94 54-94-54V70l94-54Z"></path><path class="loom-sigil-path" d="m65 86 55 34 55-34M65 154l55-34 55 34M120 50v140"></path></svg></section>
 	</main>
 	<footer class="loom-footer"><p>Made with intent, code, and a little monsoon static.</p><p>© <span id="loom-year"></span> Preetam Hegde</p></footer>
 

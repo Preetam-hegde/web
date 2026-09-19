@@ -8,9 +8,9 @@ document.addEventListener('DOMContentLoaded', function() {
       simulateTyping("sudo start portfolio.sh", document.querySelector('.typed-text'), () => {
           setTimeout(() => {
               document.querySelector('.terminal-content').style.opacity = '1';
-          }, 500);
+          }, 200);
       });
-  }, 4000);
+  }, 1000);
 
   // Set up interactive elements
   setupNavigation();
@@ -35,7 +35,7 @@ function simulateTyping(text, element, callback) {
           clearInterval(typingInterval);
           if (callback) callback();
       }
-  }, 100);
+  }, 40);
 }
 
 // Setup navigation between sections
@@ -88,10 +88,10 @@ function animateSection(section) {
       el.style.transform = 'translateY(20px)';
       
       setTimeout(() => {
-          el.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+          el.style.transition = 'opacity 0.3s ease, transform 0.3s ease';
           el.style.opacity = '1';
           el.style.transform = 'translateY(0)';
-      }, 100 * index);
+      }, Math.min(index * 40, 400));
   });
 }
 
@@ -651,7 +651,7 @@ function setupInteractiveShell() {
   printLine('Welcome to Portfolio Linux Shell v2.0');
   printLine("Type 'help' to explore commands.", 'shell-line-muted');
   updatePrompt();
-  shellInput.focus();
+  shellInput.focus({ preventScroll: true });
 
   shellRuntime = {
     syncPathFromSection
@@ -667,9 +667,8 @@ function setupCustomCursor() {
       cursor.style.display = 'block';
       
       document.addEventListener('mousemove', e => {
-          cursor.style.left = e.clientX + 'px';
-          cursor.style.top = e.clientY + 'px';
-      });
+          cursor.style.translate = `${e.clientX}px ${e.clientY}px`;
+      }, { passive: true });
       
       // Scale effect on clickable elements
       const clickables = document.querySelectorAll('button, a, input, textarea');
@@ -726,67 +725,50 @@ function setupStatusBar() {
 // Setup matrix background effect
 function setupMatrixBackground() {
   const matrixBg = document.querySelector('.matrix-bg');
-  
-  // Create canvas
   const canvas = document.createElement('canvas');
-  canvas.width = window.innerWidth;
-  canvas.height = window.innerHeight;
-  canvas.style.position = 'absolute';
-  canvas.style.top = '0';
-  canvas.style.left = '0';
-  canvas.style.zIndex = '-1';
+  canvas.style.cssText = 'position:absolute;top:0;left:0;z-index:-1';
   matrixBg.appendChild(canvas);
-  
   const ctx = canvas.getContext('2d');
-  
-  // Matrix characters
+
   const chars = 'アァカサタナハマヤャラワガザダバパイィキシチニヒミリヰギジヂビピウゥクスツヌフムユュルグズブヅプエェケセテネヘメレヱゲゼデベペオォコソトノホモヨョロヲゴゾドボポヴッン0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ';
-  
-  // Columns and drops setup
   const fontSize = 14;
-  const columns = Math.floor(canvas.width / fontSize);
-  const drops = [];
-  
-  for (let i = 0; i < columns; i++) {
-      drops[i] = Math.floor(Math.random() * -canvas.height / fontSize);
+  const frameMs = 66; // ~15fps; the layer sits at 15% opacity
+  let drops = [];
+  let last = 0;
+
+  function resize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
+      drops = Array.from({ length: Math.floor(canvas.width / fontSize) },
+          () => Math.floor(Math.random() * -canvas.height / fontSize));
   }
-  
-  // Draw the matrix effect
-  function drawMatrix() {
+
+  function drawMatrix(now) {
+      requestAnimationFrame(drawMatrix);
+      if (document.hidden || now - last < frameMs) return;
+      last = now;
+
       ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      
-      ctx.fillStyle = 'var(--kali-text)';
+      // canvas can't resolve CSS vars, so read the themed color each frame
+      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--kali-text');
       ctx.font = `${fontSize}px monospace`;
-      
+
       for (let i = 0; i < drops.length; i++) {
-          const text = chars[Math.floor(Math.random() * chars.length)];
-          ctx.fillText(text, i * fontSize, drops[i] * fontSize);
-          
-          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) {
-              drops[i] = 0;
-          }
-          
+          ctx.fillText(chars[Math.floor(Math.random() * chars.length)], i * fontSize, drops[i] * fontSize);
+          if (drops[i] * fontSize > canvas.height && Math.random() > 0.975) drops[i] = 0;
           drops[i]++;
       }
   }
-  
-  // Update canvas size on window resize
+
+  let resizeTimer;
   window.addEventListener('resize', () => {
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-      setupMatrix();
+      clearTimeout(resizeTimer);
+      resizeTimer = setTimeout(resize, 150);
   });
-  
-  // Animation loop
-  let matrixInterval;
-  
-  function setupMatrix() {
-      clearInterval(matrixInterval);
-      matrixInterval = setInterval(drawMatrix, 50);
-  }
-  
-  setupMatrix();
+
+  resize();
+  requestAnimationFrame(drawMatrix);
 }
 
 // Simulate hacker data streams
@@ -867,6 +849,7 @@ function setupTerminalMusicPlayer() {
   ];
 
   const player = new Audio();
+  player.preload = 'none';
   player.loop = true;
   player.volume = Number(volumeSlider.value) / 100;
 
@@ -1102,6 +1085,11 @@ function setupDesktopEnvironment() {
     const windowEl = document.getElementById(windowId);
     if (!windowEl) return false;
     windowEl.classList.remove('window-hidden');
+    // embedded apps load on first open, not at page load
+    windowEl.querySelectorAll('iframe[data-src]').forEach(frame => {
+      frame.src = frame.dataset.src;
+      frame.removeAttribute('data-src');
+    });
     bringToFront(windowEl);
     return true;
   }
@@ -1597,7 +1585,7 @@ function populateProjects() {
       </div>
       <div class="project-body">
         <div class="project-image">
-          <img src="${project.image}" alt="${project.name}">
+          ${projectIcon(project.icon)}
         </div>
         <p>${project.description}</p>
       </div>
