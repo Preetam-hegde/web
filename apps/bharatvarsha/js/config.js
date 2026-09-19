@@ -8,6 +8,16 @@ export const GAME_CONSTANTS = {
 	CONSUMPTION_PER_PERSON: 0.5
 };
 
+export const ERAS = ['Early Vedic', 'Later Vedic', 'Mahajanapada'];
+
+// { food: -40, morale: 3 } -> "−40 Food · +3 Morale"
+export function bundleText(bundle) {
+	return Object.entries(bundle)
+		.filter(([, amount]) => amount)
+		.map(([key, amount]) => `${amount > 0 ? '+' : '−'}${Math.abs(amount)} ${key[0].toUpperCase()}${key.slice(1)}`)
+		.join(' · ');
+}
+
 export const WORKER_TYPES = [
 	{ key: 'farmer', name: 'Farmers (Kisan)', icon: 'fa-wheat-awn', desc: 'Produces food each tick.' },
 	{ key: 'woodcutter', name: 'Woodcutters', icon: 'fa-tree', desc: 'Produces wood, consumes food.' },
@@ -64,7 +74,7 @@ export function createInitialState() {
 				name: 'Granary',
 				count: 0,
 				cost: { wood: 50, stone: 10 },
-				desc: 'Storage and pest control for food reserves.',
+				desc: 'Sealed storage. Each granary halves losses from pest raids.',
 				icon: 'fa-warehouse',
 				effect: 'granary'
 			},
@@ -80,7 +90,7 @@ export function createInitialState() {
 				name: 'Yajna Altar',
 				count: 0,
 				cost: { stone: 100, wood: 50, vidya: 20 },
-				desc: 'Supports high-level rituals and prestige.',
+				desc: 'Sacred fire. Unlocks Agnihotra and the Ashwamedha Yajna.',
 				icon: 'fa-fire',
 				effect: 'altar'
 			}
@@ -90,13 +100,25 @@ export function createInitialState() {
 				name: 'Daily Puja',
 				cost: { food: 10 },
 				desc: 'Restore social spirit. +5 morale.',
-				action: 'puja'
+				action: 'boost',
+				effects: { morale: 5 },
+				log: 'The village gathers for evening prayers.'
+			},
+			agnihotra: {
+				name: 'Agnihotra',
+				cost: { food: 30, wood: 10 },
+				desc: 'Dawn offering at the altar. +8 morale, +6 vidya.',
+				action: 'boost',
+				effects: { morale: 8, vidya: 6 },
+				requires: 'altar',
+				log: 'The sacred fire is fed at dawn and the rishis chant.'
 			},
 			ashwamedha: {
 				name: 'Ashwamedha Yajna',
 				cost: { food: 500, vidya: 100 },
-				desc: 'Imperial rite to move into the next era.',
-				action: 'era'
+				desc: 'Imperial rite to move into the next era. Grows costlier each time.',
+				action: 'era',
+				requires: 'altar'
 			}
 		},
 		upgrades: {
@@ -127,7 +149,13 @@ export function createInitialState() {
 			era: 'Early Vedic',
 			tickCount: 0,
 			weather: 'Normal',
+			weatherTicks: 0,
 			morale: 70
+		},
+		story: {
+			chapter: 0,
+			complete: false,
+			introSeen: false
 		},
 		chronicles: [
 			{ year: 1000, text: 'Your tribe settles near the Ganga. The land is fertile.', tone: 'gray' }

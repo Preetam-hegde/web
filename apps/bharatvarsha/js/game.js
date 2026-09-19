@@ -1,4 +1,5 @@
-import { GAME_CONSTANTS, createInitialState, deepClone } from './config.js';
+import { GAME_CONSTANTS, ERAS, bundleText, createInitialState, deepClone } from './config.js';
+import { CHAPTERS, DECISIONS, ENDING, ROMAN } from './story.js';
 
 export class BharatGame {
 	constructor() {
@@ -17,9 +18,18 @@ export class BharatGame {
 
 	start() {
 		this.normalizePopulation();
-		this.hooks.onUpdate(this.getViewModel());
+		if (!this.data.story.introSeen) {
+			this.data.story.introSeen = true;
+			this.showStory();
+		}
+		this.refresh();
 		this.loopId = setInterval(() => this.loop(), GAME_CONSTANTS.TICK_RATE);
 		this.eventId = setInterval(() => this.checkRandomEvent(), 15000);
+	}
+
+	refresh() {
+		this.checkChapter();
+		this.hooks.onUpdate(this.getViewModel());
 	}
 
 	loop() {
@@ -36,6 +46,11 @@ export class BharatGame {
 		this.normalizePopulation();
 
 		if (state.tickCount % 5 === 0) state.year -= 1;
+
+		if (state.weatherTicks > 0 && --state.weatherTicks === 0) {
+			this.log(state.weather === 'Monsoon' ? 'Monsoon season has passed.' : 'Drought has ended.', 'gray');
+			state.weather = 'Normal';
+		}
 
 		const moraleFactor = 0.75 + this.clamp(state.morale, 0, 100) / 200;
 		let foodGain = this.data.population.farmer * GAME_CONSTANTS.FOOD_PER_FARMER * this.data.modifiers.food * moraleFactor;
@@ -68,7 +83,7 @@ export class BharatGame {
 		}
 
 		if (state.tickCount % 10 === 0) this.save(true);
-		this.hooks.onUpdate(this.getViewModel());
+		this.refresh();
 	}
 
 	starvationCheck() {
@@ -86,7 +101,7 @@ export class BharatGame {
 	manualGather(resource) {
 		if (resource === 'food') this.data.resources.food += 1;
 		if (resource === 'wood') this.data.resources.wood += 1;
-		this.hooks.onUpdate(this.getViewModel());
+		this.refresh();
 	}
 
 	recruitVillager() {
@@ -106,7 +121,7 @@ export class BharatGame {
 		this.data.population.total += 1;
 		this.adjustMorale(1);
 		this.log('A family of settlers has joined your village.', 'blue');
-		this.hooks.onUpdate(this.getViewModel());
+		this.refresh();
 	}
 
 	assignWorker(type) {
@@ -117,14 +132,14 @@ export class BharatGame {
 		if (this.data.population.idle <= 0) return;
 		this.data.population.idle -= 1;
 		this.data.population[type] += 1;
-		this.hooks.onUpdate(this.getViewModel());
+		this.refresh();
 	}
 
 	removeWorker(type) {
 		if (this.data.population[type] <= 0) return;
 		this.data.population[type] -= 1;
 		this.data.population.idle += 1;
-		this.hooks.onUpdate(this.getViewModel());
+		this.refresh();
 	}
 
 	build(key) {
@@ -135,19 +150,33 @@ export class BharatGame {
 		this.applyBuildingEffect(building.effect);
 		this.scaleCost(building.cost);
 		this.log(`Constructed ${building.name}.`, 'blue');
-		this.hooks.onUpdate(this.getViewModel());
+		this.refresh();
 	}
 
 	performRitual(key) {
 		const ritual = this.data.rituals[key];
 		if (!ritual || !this.canAfford(ritual.cost)) return;
-		this.payCost(ritual.cost);
-		if (ritual.action === 'puja') {
-			this.adjustMorale(5);
-			this.log('The village gathers for evening prayers.', 'purple');
+		const blocked = this.ritualBlock(ritual);
+		if (blocked) {
+			this.log(blocked, 'orange');
+			return;
 		}
-		if (ritual.action === 'era') this.advanceEra();
-		this.hooks.onUpdate(this.getViewModel());
+		this.payCost(ritual.cost);
+		if (ritual.action === 'era') {
+			this.advanceEra();
+			this.scaleCost(ritual.cost);
+		} else {
+			this.applyEffects(ritual.effects);
+			this.log(ritual.log, 'purple');
+		}
+		this.refresh();
+	}
+
+	ritualBlock(ritual) {
+		const needed = ritual.requires && this.data.buildings[ritual.requires];
+		if (needed && needed.count < 1) return `Build a ${needed.name} first.`;
+		if (ritual.action === 'era' && this.data.state.era === ERAS[ERAS.length - 1]) return 'Your realm already stands as a Mahajanapada.';
+		return '';
 	}
 
 	research(key) {
@@ -158,7 +187,7 @@ export class BharatGame {
 		this.applyUpgradeEffect(upgrade.effect);
 		this.adjustMorale(3);
 		this.log(`Research completed: ${upgrade.name}.`, 'blue');
-		this.hooks.onUpdate(this.getViewModel());
+		this.refresh();
 	}
 
 	advanceEra() {
@@ -166,79 +195,161 @@ export class BharatGame {
 			this.data.state.era = 'Later Vedic';
 			this.data.buildings.school.cost.wood = 200;
 			this.log('The tribe has grown into a kingdom.', 'purple');
-			this.hooks.onModal('Era Advanced', 'Later Vedic age begins. Agriculture and state administration expand.');
+			this.hooks.onModal({ eyebrow: 'Era Advanced', title: 'Later Vedic', body: 'Later Vedic age begins. Agriculture and state administration expand.' });
 			return;
 		}
 		if (this.data.state.era === 'Later Vedic') {
 			this.data.state.era = 'Mahajanapada';
 			this.log('Your kingdom is now a great realm.', 'purple');
-			this.hooks.onModal('Era Advanced', 'The age of Mahajanapadas has begun. Trade and philosophy flourish.');
+			this.hooks.onModal({ eyebrow: 'Era Advanced', title: 'Mahajanapada', body: 'The age of Mahajanapadas has begun. Trade and philosophy flourish.' });
 		}
+	}
+
+	chapterProgress({ type, key, target }) {
+		const { buildings, population, resources, upgrades, state } = this.data;
+		const now = {
+			building: () => buildings[key].count,
+			worker: () => population[key],
+			resource: () => Math.floor(resources[key]),
+			upgrades: () => Object.values(upgrades).filter((upgrade) => upgrade.applied).length,
+			era: () => ERAS.indexOf(state.era)
+		}[type]();
+		return Math.min(now, target);
+	}
+
+	checkChapter() {
+		const { story } = this.data;
+		const chapter = CHAPTERS[story.chapter];
+		if (story.complete || !chapter || this.chapterProgress(chapter.goal) < chapter.goal.target) return;
+		this.applyEffects(chapter.reward);
+		this.log(`Chapter complete: ${chapter.title}. ${bundleText(chapter.reward)}`, 'purple');
+		story.chapter += 1;
+		story.complete = story.chapter >= CHAPTERS.length;
+		this.showStory();
+	}
+
+	showStory() {
+		const { chapter, complete } = this.data.story;
+		if (complete) {
+			this.hooks.onModal(ENDING);
+			return;
+		}
+		const { title, story } = CHAPTERS[chapter];
+		this.hooks.onModal({ eyebrow: `Chapter ${ROMAN[chapter]}`, title, body: story });
+	}
+
+	getChapter() {
+		const { chapter, complete } = this.data.story;
+		if (complete) return { eyebrow: ENDING.eyebrow, title: ENDING.title, goal: 'Your realm endures. Keep it prosperous.', now: 1, target: 1 };
+		const { title, goal } = CHAPTERS[chapter];
+		return { eyebrow: `Chapter ${ROMAN[chapter]}`, title, goal: goal.text, now: this.chapterProgress(goal), target: goal.target };
+	}
+
+	// effects: { food: -40, stone: 20, morale: 3 }, negative resource values are a price
+	canApply(effects) {
+		return Object.entries(effects).every(([key, amount]) => key === 'morale' || amount >= 0 || this.data.resources[key] >= -amount);
+	}
+
+	applyEffects(effects) {
+		Object.entries(effects).forEach(([key, amount]) => {
+			if (key === 'morale') this.adjustMorale(amount);
+			else this.data.resources[key] += amount;
+		});
+	}
+
+	offerDecision() {
+		if (this.decisionOpen) return;
+		this.decisionOpen = true;
+		const event = DECISIONS[Math.floor(Math.random() * DECISIONS.length)];
+		this.hooks.onModal({
+			eyebrow: 'A Royal Decision',
+			title: event.title,
+			body: event.body,
+			choices: event.choices.map((choice) => ({
+				label: choice.label,
+				hint: bundleText(choice.effects),
+				disabled: !this.canApply(choice.effects),
+				run: () => this.resolveChoice(choice)
+			}))
+		});
+	}
+
+	resolveChoice(choice) {
+		this.decisionOpen = false;
+		if (this.canApply(choice.effects)) {
+			this.applyEffects(choice.effects);
+			this.log(choice.log, 'purple');
+		} else {
+			this.log('You lacked the means to act on that ruling.', 'orange');
+		}
+		this.refresh();
+	}
+
+	setWeather(kind, ticks) {
+		this.data.state.weather = kind;
+		this.data.state.weatherTicks = ticks;
 	}
 
 	checkRandomEvent() {
 		if (this.data.time.paused) return;
 		const roll = Math.random();
 		if (roll < 0.1) {
-			this.data.state.weather = 'Monsoon';
+			this.setWeather('Monsoon', 20);
 			this.adjustMorale(4);
 			this.log('Monsoon rains arrived. Crops flourish.', 'blue');
-			setTimeout(() => {
-				this.data.state.weather = 'Normal';
-				this.log('Monsoon season has passed.', 'gray');
-				this.hooks.onUpdate(this.getViewModel());
-			}, 20000);
 		} else if (roll < 0.15) {
-			this.data.state.weather = 'Drought';
+			this.setWeather('Drought', 15);
 			this.adjustMorale(-6);
 			this.log('Drought strikes the fields.', 'red');
-			setTimeout(() => {
-				this.data.state.weather = 'Normal';
-				this.log('Drought has ended.', 'gray');
-				this.hooks.onUpdate(this.getViewModel());
-			}, 15000);
 		} else if (roll < 0.2) {
 			this.data.resources.vidya += 10;
 			this.log('A wandering rishi shared ancient wisdom. +10 Vidya.', 'purple');
 		} else if (roll < 0.25 && this.data.resources.food > 50) {
-			const loss = Math.floor(this.data.resources.food * 0.1);
+			const loss = Math.floor(this.data.resources.food * 0.1 * 0.5 ** this.data.buildings.granary.count);
 			this.data.resources.food -= loss;
 			this.adjustMorale(-3);
 			this.log(`Pests raided stores. Lost ${loss} food.`, 'orange');
 		} else if (roll < 0.3) {
 			this.data.resources.wood += 8;
 			this.log('A caravan traded tools and timber. +8 Wood.', 'blue');
+		} else if (roll < 0.4 && this.data.state.tickCount > 120) {
+			this.offerDecision();
 		}
-		this.hooks.onUpdate(this.getViewModel());
+		this.refresh();
 	}
 
 	togglePause() {
 		this.data.time.paused = !this.data.time.paused;
 		this.log(this.data.time.paused ? 'Royal court is paused.' : 'Royal court resumes.', 'blue');
-		this.hooks.onUpdate(this.getViewModel());
+		this.refresh();
 	}
 
 	setSpeed(speed) {
 		this.data.time.speed = this.clamp(Number(speed) || 1, 1, 4);
 		this.log(`Game speed set to ${this.data.time.speed}x.`, 'blue');
-		this.hooks.onUpdate(this.getViewModel());
+		this.refresh();
 	}
 
 	reset() {
 		localStorage.removeItem(GAME_CONSTANTS.SAVE_KEY);
 		this.data = createInitialState();
+		this.data.story.introSeen = true;
+		this.decisionOpen = false;
 		this.normalizePopulation();
 		this.log('Kingdom chronicles reset.', 'orange');
-		this.hooks.onUpdate(this.getViewModel());
+		this.showStory();
+		this.refresh();
 	}
 
 	save(silent = false) {
 		try {
 			localStorage.setItem(GAME_CONSTANTS.SAVE_KEY, JSON.stringify(this.data));
-			if (!silent) this.log('Chronicles saved.', 'blue');
+			if (!silent) this.log('Chronicles saved.', 'green');
 		} catch {
 			if (!silent) this.log('Unable to save in this browser.', 'red');
 		}
+		// a paused game has no tick to redraw, so show the confirmation now
+		if (!silent) this.refresh();
 	}
 
 	restore() {
@@ -257,12 +368,23 @@ export class BharatGame {
 				rituals: this.mergeObjectState(createInitialState().rituals, saved.rituals || {}),
 				upgrades: this.mergeObjectState(createInitialState().upgrades, saved.upgrades || {}),
 				state: { ...createInitialState().state, ...(saved.state || {}) },
+				story: { ...createInitialState().story, ...(saved.story || {}) },
 				chronicles: Array.isArray(saved.chronicles) ? saved.chronicles : createInitialState().chronicles
 			};
+			// weather is timed by ticks now; a save with no time left on it must not stay stuck on Drought
+			if (!this.data.state.weatherTicks) this.data.state.weather = 'Normal';
+			if (!saved.story) this.skipEarnedChapters();
 		} catch {
 			localStorage.removeItem(GAME_CONSTANTS.SAVE_KEY);
 		}
 		this.normalizePopulation();
+	}
+
+	// A save from before the story existed: skip chapters it already earned, without replaying rewards or modals.
+	skipEarnedChapters() {
+		const { story } = this.data;
+		while (CHAPTERS[story.chapter] && this.chapterProgress(CHAPTERS[story.chapter].goal) >= CHAPTERS[story.chapter].goal.target) story.chapter += 1;
+		story.complete = story.chapter >= CHAPTERS.length;
 	}
 
 	normalizePopulation() {
@@ -297,14 +419,15 @@ export class BharatGame {
 		}
 	}
 
+	// only progress carries over from a save; names and descriptions always come from config
 	mergeObjectState(base, saved) {
 		const merged = deepClone(base);
-		Object.keys(saved).forEach((key) => {
-			if (!merged[key]) return;
-			merged[key] = { ...merged[key], ...saved[key] };
-			if (merged[key].cost && saved[key]?.cost) {
-				merged[key].cost = { ...merged[key].cost, ...saved[key].cost };
-			}
+		Object.entries(saved).forEach(([key, entry]) => {
+			if (!merged[key] || !entry) return;
+			['count', 'applied'].forEach((field) => {
+				if (field in entry) merged[key][field] = entry[field];
+			});
+			if (entry.cost) merged[key].cost = { ...merged[key].cost, ...entry.cost };
 		});
 		return merged;
 	}
@@ -345,15 +468,8 @@ export class BharatGame {
 	}
 
 	getObjective() {
-		if (this.data.population.idle === 0 && this.data.population.total > 0) return 'You have no idle workers. Use Remove (-) or recruit settlers.';
 		if (this.data.population.total === 0) return 'Settlement collapsed. Gather food and use Recruit Villager to recover.';
-		if (this.data.buildings.hut.count < 3) return 'Build 3 Mud Huts to increase population capacity.';
-		if (this.data.population.farmer < 3) return 'Assign at least 3 farmers for food stability.';
-		if (this.data.resources.wood < 50) return 'Stockpile 50 wood to support expansion.';
-		if (this.data.buildings.granary.count < 1) return 'Build a Granary to secure reserves.';
-		if (this.data.buildings.school.count < 1) return 'Build a Gurukul to unlock scholars.';
-		if (Object.values(this.data.upgrades).some((upgrade) => !upgrade.applied)) return 'Complete at least one research upgrade.';
-		return 'Prepare the Ashwamedha Yajna and expand into a great realm.';
+		return this.getChapter().goal;
 	}
 
 	getRates() {
@@ -384,6 +500,7 @@ export class BharatGame {
 		return {
 			...this.data,
 			rates: this.getRates(),
+			chapter: this.getChapter(),
 			objective: this.getObjective(),
 			statusHint: this.getStatusHint()
 		};

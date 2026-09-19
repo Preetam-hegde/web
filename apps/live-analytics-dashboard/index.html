@@ -3,107 +3,573 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Live Analytics Dashboard</title>
+	<title>DevPulse // Live Telemetry & Observability Matrix</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=Sora:wght@500;600;700&display=swap" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Space+Grotesk:wght@500;600;700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="styles.css">
 	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 </head>
-<body>
-	<div class="bg-orb orb-1" aria-hidden="true"></div>
-	<div class="bg-orb orb-2" aria-hidden="true"></div>
-	<div class="bg-grid" aria-hidden="true"></div>
+<body data-theme="cyber-neon">
+	<div id="crt-overlay" class="crt-overlay" aria-hidden="true"></div>
 
-	<main class="dashboard">
-		<header class="hero">
-			<p class="eyebrow">Data Viz Case Study</p>
-			<h1>Live Analytics Dashboard</h1>
-			<p class="hero-copy">
-				Blend GitHub profile telemetry, optional Plausible pageview metrics, and streak analytics into one animated command center.
-			</p>
-		</header>
+	<!-- Top Navigation HUD -->
+	<header class="navbar" role="banner">
+		<div class="nav-left">
+			<div class="brand">
+				<div class="brand-icon">
+					<span class="live-dot" aria-hidden="true"></span>
+				</div>
+				<div class="brand-text">
+					<span class="brand-name">DevPulse</span>
+					<span class="brand-badge">OBSERVABILITY</span>
+				</div>
+			</div>
 
-		<section class="panel controls" aria-label="Data source controls">
-			<div class="control-group">
-				<label for="github-username">GitHub Username</label>
-				<input id="github-username" name="github-username" type="text" placeholder="octocat" autocomplete="off">
+			<div class="hud-clock" aria-label="System Time">
+				<span class="clock-tag">UTC</span>
+				<span id="clock-utc" class="clock-time">00:00:00.000</span>
+				<span class="clock-div">/</span>
+				<span class="clock-tag">LOC</span>
+				<span id="clock-local" class="clock-time">00:00:00</span>
 			</div>
-			<div class="control-group checkbox-group">
-				<label for="use-proxy">Use Local Plausible Proxy</label>
-				<label class="toggle-row" for="use-proxy">
-					<input id="use-proxy" name="use-proxy" type="checkbox">
-					<span>Avoid browser CORS with /api/plausible</span>
-				</label>
+		</div>
+
+		<div class="nav-center">
+			<div class="presets-bar" aria-label="Quick profiles">
+				<span class="presets-caption">Profiles:</span>
+				<button type="button" class="preset-pill active" data-username="torvalds">@torvalds</button>
+				<button type="button" class="preset-pill" data-username="antfu">@antfu</button>
+				<button type="button" class="preset-pill" data-username="shadcn">@shadcn</button>
+				<button type="button" class="preset-pill" data-username="gaearon">@gaearon</button>
+				<button type="button" class="preset-pill" data-username="preetam-hegde">@preetam-hegde</button>
 			</div>
-			<div class="control-group">
-				<label for="plausible-site">Plausible Site ID</label>
-				<input id="plausible-site" name="plausible-site" type="text" placeholder="example.com" autocomplete="off">
+		</div>
+
+		<div class="nav-right">
+			<div class="stream-pill">
+				<button id="stream-toggle-btn" class="nav-btn stream-btn" type="button" aria-label="Toggle live stream mode">
+					<span class="stream-indicator"></span>
+					<span id="stream-btn-text">STREAM: OFF</span>
+				</button>
+				<select id="stream-interval" class="nav-select" aria-label="Stream interval">
+					<option value="15000">15s</option>
+					<option value="30000" selected>30s</option>
+					<option value="60000">60s</option>
+				</select>
 			</div>
-			<div class="control-group">
-				<label for="plausible-api-key">Plausible API Key (optional)</label>
-				<input id="plausible-api-key" name="plausible-api-key" type="password" placeholder="plausible_api_token" autocomplete="off">
+
+			<div class="action-group">
+				<button id="audio-toggle-btn" class="icon-btn" type="button" title="Toggle Web Audio procedural FX" aria-label="Toggle sound FX">
+					<svg id="audio-icon-on" class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><path d="M19.07 4.93a10 10 0 0 1 0 14.14M15.54 8.46a5 5 0 0 1 0 7.07"/></svg>
+					<svg id="audio-icon-off" class="svg-icon hidden" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"/><line x1="23" y1="9" x2="17" y2="15"/><line x1="17" y1="9" x2="23" y2="15"/></svg>
+				</button>
+
+				<button id="crt-toggle-btn" class="icon-btn" type="button" title="Toggle CRT scanline raster effect" aria-label="Toggle CRT effect">
+					<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="2" y="3" width="20" height="14" rx="2"/><line x1="8" y1="21" x2="16" y2="21"/><line x1="12" y1="17" x2="12" y2="21"/></svg>
+				</button>
+
+				<div class="select-wrap">
+					<select id="theme-select" class="theme-select" aria-label="Interface theme">
+						<option value="cyber-neon">Cyber Neon</option>
+						<option value="deep-nebula">Deep Nebula</option>
+						<option value="solar-flare">Solar Flare</option>
+						<option value="matrix-obsidian">Matrix Obsidian</option>
+						<option value="hyper-frost">Hyper Frost</option>
+					</select>
+				</div>
+
+				<button id="export-btn" class="nav-btn" type="button" title="Export snapshot as JSON/CSV">
+					<svg class="svg-icon sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+					<span>Export</span>
+				</button>
+
+				<button id="fullscreen-btn" class="icon-btn" type="button" title="Toggle Fullscreen" aria-label="Toggle fullscreen">
+					<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><polyline points="9 21 3 21 3 15"/><polyline points="21 15 21 21 15 21"/><polyline points="3 9 3 3 9 3"/></svg>
+				</button>
 			</div>
-			<div class="control-group">
-				<label for="plausible-endpoint">Plausible Endpoint</label>
-				<input id="plausible-endpoint" name="plausible-endpoint" type="url" value="https://plausible.io/api/v1/stats/aggregate" autocomplete="off">
+		</div>
+	</header>
+
+	<main class="app-layout">
+		<!-- Unified Command & Search Deck -->
+		<section class="command-deck" aria-label="Search and Controls">
+			<div class="search-main-row">
+				<div class="search-box">
+					<svg class="search-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+					<input id="github-username" name="github-username" type="text" placeholder="Enter GitHub username (e.g. torvalds, antfu, preetam-hegde)..." autocomplete="off" spellcheck="false" value="torvalds">
+					<kbd class="search-kbd">ENTER</kbd>
+				</div>
+
+				<div class="deck-btn-group">
+					<button id="refresh-btn" class="btn-primary" type="button">
+						<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+						<span>Sync Telemetry</span>
+					</button>
+					<button id="probe-network-btn" class="btn-secondary" type="button" title="Probe global edge nodes">
+						<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><path d="M16.24 7.76a6 6 0 0 1 0 8.49m-8.48-.01a6 6 0 0 1 0-8.49m11.31-2.82a10 10 0 0 1 0 14.14m-14.14 0a10 10 0 0 1 0-14.14"/></svg>
+						<span>Probe Edge</span>
+					</button>
+					<button id="toggle-config-btn" class="btn-ghost" type="button" title="Toggle advanced telemetry sources">
+						<svg class="svg-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></svg>
+						<span>Config</span>
+					</button>
+					<button id="reset-btn" class="btn-ghost" type="button" title="Reset settings and cached data">Reset</button>
+				</div>
 			</div>
-			<div class="button-row">
-				<button id="refresh-btn" type="button">Refresh Dashboard</button>
-				<button id="reset-btn" type="button" class="subtle" title="Clear saved settings">Reset</button>
+
+			<!-- Collapsible Advanced Sources Drawer -->
+			<div id="config-drawer" class="config-drawer hidden">
+				<div class="config-grid">
+					<div class="config-field">
+						<label for="npm-package">NPM Package Telemetry</label>
+						<input id="npm-package" name="npm-package" type="text" placeholder="e.g. react or three" value="react" autocomplete="off" spellcheck="false">
+					</div>
+					<div class="config-field">
+						<label for="plausible-site">Plausible Site ID (Optional)</label>
+						<input id="plausible-site" name="plausible-site" type="text" placeholder="e.g. preetamhegde.in" autocomplete="off">
+					</div>
+					<div class="config-field">
+						<label for="plausible-api-key">Plausible Bearer Token</label>
+						<input id="plausible-api-key" name="plausible-api-key" type="password" placeholder="plausible_api_token" autocomplete="off">
+					</div>
+				</div>
+				<div class="config-toggles">
+					<label class="check-toggle" for="use-proxy">
+						<input id="use-proxy" name="use-proxy" type="checkbox">
+						<span>Use Local Proxy (/api/plausible)</span>
+					</label>
+					<label class="check-toggle" for="use-synthetic">
+						<input id="use-synthetic" name="use-synthetic" type="checkbox" checked>
+						<span>Synthetic Traffic Simulation</span>
+					</label>
+				</div>
 			</div>
-			<p id="status" class="status" role="status" aria-live="polite">Enter a GitHub username to begin.</p>
+
+			<!-- Status & Segmented Filter Bar -->
+			<div class="sub-deck-row">
+				<div class="status-box">
+					<span id="status-dot" class="status-indicator"></span>
+					<span id="status" class="status-message" role="status" aria-live="polite">Ready. Enter username or select a preset to sync.</span>
+					<span id="rate-limit-badge" class="badge-rate">RATE: 60/60</span>
+				</div>
+
+				<div class="segmented-tabs" role="tablist" aria-label="Telemetry Filter Tabs">
+					<button type="button" class="tab-btn active" data-tab="all" role="tab" aria-selected="true">All Modules</button>
+					<button type="button" class="tab-btn" data-tab="repos" role="tab" aria-selected="false">Starred & Repos</button>
+					<button type="button" class="tab-btn" data-tab="news" role="tab" aria-selected="false">Developer News</button>
+					<button type="button" class="tab-btn" data-tab="activity" role="tab" aria-selected="false">Activity & Stack</button>
+					<button type="button" class="tab-btn" data-tab="diagnostics" role="tab" aria-selected="false">Diagnostics & Edge</button>
+				</div>
+			</div>
 		</section>
 
-		<section class="widgets" aria-label="KPI widgets">
-			<article class="widget" data-widget="repos">
-				<p class="widget-label">Public Repositories</p>
-				<p id="repo-count" class="widget-value">0</p>
-				<p class="widget-foot">From GitHub profile</p>
-			</article>
-			<article class="widget" data-widget="followers">
-				<p class="widget-label">Followers</p>
-				<p id="follower-count" class="widget-value">0</p>
-				<p class="widget-foot">From GitHub profile</p>
-			</article>
-			<article class="widget" data-widget="streak">
-				<p class="widget-label">Current Activity Streak</p>
-				<p id="streak-count" class="widget-value">0</p>
-				<p id="streak-foot" class="widget-foot">Calculated from recent public events</p>
-			</article>
-			<article class="widget" data-widget="velocity">
-				<p class="widget-label">Commit Velocity (7d / 30d)</p>
-				<p id="velocity-count" class="widget-value">0.00x</p>
-				<p id="velocity-foot" class="widget-foot">Based on PushEvent frequency</p>
-			</article>
-			<article class="widget" data-widget="pageviews">
-				<p class="widget-label">Plausible Pageviews (30d)</p>
-				<p id="pageview-count" class="widget-value">0</p>
-				<p id="plausible-foot" class="widget-foot">Configure site ID + API key</p>
-			</article>
+		<!-- Primary KPI Metrics Grid -->
+		<section class="metrics-grid" aria-label="Telemetry Key Metrics">
+			<div class="metric-card" data-module="repos">
+				<div class="metric-head">
+					<span class="metric-title">Public Repositories</span>
+					<span class="metric-badge" id="stars-badge">0 Stars</span>
+				</div>
+				<div class="metric-value-wrap">
+					<span id="repo-count" class="metric-number">0</span>
+				</div>
+				<div class="metric-foot">
+					<span id="forks-foot">Forks: 0</span>
+					<span class="tag-success" id="repo-trend">Synced</span>
+				</div>
+			</div>
+
+			<div class="metric-card" data-module="repos">
+				<div class="metric-head">
+					<span class="metric-title">Starred Repositories</span>
+					<span class="metric-badge" id="starred-badge">★ Starred</span>
+				</div>
+				<div class="metric-value-wrap">
+					<span id="starred-count" class="metric-number">0</span>
+				</div>
+				<div class="metric-foot">
+					<span id="starred-foot">Starred by User</span>
+					<span class="tag-info">Curated</span>
+				</div>
+			</div>
+
+			<div class="metric-card" data-module="repos">
+				<div class="metric-head">
+					<span class="metric-title">Followers & Reach</span>
+					<span class="metric-badge" id="following-badge">0 Following</span>
+				</div>
+				<div class="metric-value-wrap">
+					<span id="follower-count" class="metric-number">0</span>
+				</div>
+				<div class="metric-foot">
+					<span id="account-age-foot">Active Account</span>
+					<span class="tag-neutral" id="follower-ratio">Ratio: 0.0</span>
+				</div>
+			</div>
+
+			<div class="metric-card" data-module="activity">
+				<div class="metric-head">
+					<span class="metric-title">Activity Streak</span>
+					<span class="metric-badge" id="streak-badge">ACTIVE</span>
+				</div>
+				<div class="metric-value-wrap">
+					<span class="metric-number"><span id="streak-count">0</span><span class="unit">d</span></span>
+				</div>
+				<div class="metric-foot">
+					<span id="streak-foot">Longest: 0 days</span>
+					<span id="streak-flame" class="flame-icon dimmed" aria-hidden="true">&#x1F525;</span>
+				</div>
+			</div>
+
+			<div class="metric-card" data-module="activity">
+				<div class="metric-head">
+					<span class="metric-title">Commit Velocity</span>
+					<span class="metric-badge" id="velocity-badge">STABLE</span>
+				</div>
+				<div class="metric-value-wrap">
+					<span class="metric-number"><span id="velocity-count">0.00</span><span class="unit">x</span></span>
+				</div>
+				<div class="metric-foot">
+					<span id="velocity-foot">7d: 0 | 30d: 0 pushes</span>
+					<span class="tag-info" id="velocity-indicator">Normal</span>
+				</div>
+			</div>
+
+			<div class="metric-card" data-module="activity">
+				<div class="metric-head">
+					<span class="metric-title">Productivity Index</span>
+					<span class="metric-badge" id="prod-grade">GRADE A</span>
+				</div>
+				<div class="gauge-center">
+					<div class="gauge-box">
+						<svg class="gauge-svg" viewBox="0 0 100 100">
+							<circle class="gauge-track" cx="50" cy="50" r="40"/>
+							<circle id="prod-gauge-circle" class="gauge-meter" cx="50" cy="50" r="40"/>
+						</svg>
+						<div class="gauge-text">
+							<span id="prod-score-val" class="gauge-val">0</span>
+							<span class="gauge-sub">/100</span>
+						</div>
+					</div>
+				</div>
+				<div class="metric-foot">
+					<span id="prod-foot">Push cadence & consistency</span>
+				</div>
+			</div>
 		</section>
 
-		<section class="panel charts" aria-label="Charts">
-			<div class="chart-card">
-				<div class="chart-head">
-					<h2>GitHub Activity Timeline</h2>
-					<p>Push events per day in the latest sample.</p>
+		<!-- Primary Showcase Grid (Starred Repos & Developer News Hub) -->
+		<section class="showcase-grid" aria-label="Repositories and Developer News">
+			<!-- Panel 1: Repositories & Starred Projects Showcase (with direct links) -->
+			<div class="content-card repo-showcase-panel" data-module="repos">
+				<div class="card-header">
+					<div class="card-title-group">
+						<h2>GitHub Repositories & Starred Projects</h2>
+						<p>Explore top user repositories and projects starred on GitHub with direct links.</p>
+					</div>
+					<div class="repo-sub-tabs">
+						<button id="tab-own-repos" class="sub-tab-btn active" type="button">Top Repos (<span id="own-repo-count">0</span>)</button>
+						<button id="tab-starred-repos" class="sub-tab-btn" type="button">Starred by User (<span id="starred-repo-count">0</span>)</button>
+					</div>
 				</div>
-				<div id="activity-bars" class="bar-chart" role="img" aria-label="Daily activity bars"></div>
+
+				<div class="repo-filter-row">
+					<div class="repo-search-input-wrap">
+						<svg class="search-icon-sm" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+						<input id="repo-filter-input" type="text" placeholder="Filter repositories by name or language..." autocomplete="off">
+					</div>
+				</div>
+
+				<div id="repo-list-container" class="repo-cards-scroll">
+					<div class="empty-state">Loading repositories...</div>
+				</div>
 			</div>
-			<div class="chart-card">
-				<div class="chart-head">
-					<h2>Data Source Health</h2>
-					<p>Quick read on API fetch state.</p>
+
+			<!-- Panel 2: Expanded Developer News & Tech Pulse Hub -->
+			<div class="content-card news-hub-panel" data-module="news">
+				<div class="card-header">
+					<div class="card-title-group">
+						<h2>Developer News & Tech Pulse Hub</h2>
+						<p>Real-time trending developer stories, Show HN prototypes, and discussions (<span id="hn-count">0 stories</span>).</p>
+					</div>
+					<div class="news-category-pills">
+						<button class="news-pill active" data-category="top" type="button">Top Stories</button>
+						<button class="news-pill" data-category="show" type="button">Show HN</button>
+						<button class="news-pill" data-category="ask" type="button">Ask HN</button>
+					</div>
 				</div>
-				<ul id="health-list" class="health-list">
-					<li><span>GitHub profile</span><strong>idle</strong></li>
-					<li><span>GitHub events</span><strong>idle</strong></li>
-					<li><span>Plausible aggregate</span><strong>idle</strong></li>
-				</ul>
+
+				<div id="hn-stories-list" class="hn-feed-expanded">
+					<div class="empty-state">Streaming developer discussions...</div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Secondary Analytics Grid (Activity Punchcard & Language Stack) -->
+		<section class="analytics-panels-grid" aria-label="Activity and Language Visualizations">
+			<!-- GitHub Activity Punchcard & Daily Timeline -->
+			<div class="content-card chart-panel" data-module="activity">
+				<div class="card-header">
+					<div class="card-title-group">
+						<h2>GitHub Activity Punchcard & Timeline</h2>
+						<p>Hourly distribution of sampled push events across all 7 days of the week.</p>
+					</div>
+					<span class="card-tag" id="punchcard-total">0 events</span>
+				</div>
+
+				<div class="punchcard-wrapper">
+					<div class="punchcard-days">
+						<span>Sun</span><span>Mon</span><span>Tue</span><span>Wed</span><span>Thu</span><span>Fri</span><span>Sat</span>
+					</div>
+					<div class="punchcard-body">
+						<div id="punchcard-grid" class="punchcard-cells" role="img" aria-label="Activity punchcard heatmap"></div>
+						<div class="punchcard-hours">
+							<span>00h</span><span>04h</span><span>08h</span><span>12h</span><span>16h</span><span>20h</span><span>23h</span>
+						</div>
+					</div>
+				</div>
+
+				<div class="timeline-wrapper">
+					<h3 class="panel-subheading">Daily Push Frequency (Last 14 Days)</h3>
+					<div id="activity-bars" class="timeline-bars" role="img" aria-label="Daily activity bars"></div>
+				</div>
+			</div>
+
+			<!-- Language Stack & Event Composition -->
+			<div class="content-card chart-panel" data-module="activity">
+				<div class="card-header">
+					<div class="card-title-group">
+						<h2>Language & Tech Stack Distribution</h2>
+						<p>Aggregated primary languages across public repositories.</p>
+					</div>
+					<span class="card-tag" id="lang-repo-count">0 repos</span>
+				</div>
+
+				<div class="donut-layout">
+					<div class="donut-graphic">
+						<svg id="lang-donut-svg" class="donut-svg" viewBox="0 0 200 200">
+							<circle class="donut-bg" cx="100" cy="100" r="75"/>
+							<g id="donut-segments"></g>
+							<text id="donut-center-pct" x="100" y="96" class="donut-pct">0%</text>
+							<text id="donut-center-lbl" x="100" y="118" class="donut-lbl">STACK</text>
+						</svg>
+					</div>
+					<div id="lang-legend" class="donut-legend">
+						<p class="empty-state">No repository languages loaded.</p>
+					</div>
+				</div>
+
+				<div class="event-types-wrapper">
+					<h3 class="panel-subheading">Public Event Type Composition</h3>
+					<div id="event-types-list" class="event-pills-row"></div>
+				</div>
+			</div>
+		</section>
+
+		<!-- Dedicated System Diagnostics & Edge Network Deck (Moved Features) -->
+		<section id="diagnostics-section" class="diagnostics-deck" data-module="diagnostics" aria-label="System Diagnostics and Network">
+			<div class="section-title-bar">
+				<div class="title-left">
+					<span class="section-badge">DIAGNOSTICS & NETWORK</span>
+					<h2>System Diagnostics & Global Edge Latency</h2>
+				</div>
+				<p class="section-desc">Client Web Vitals, 60Hz Canvas Oscilloscope, Edge Network Benchmarks, NPM Telemetry & Console Log.</p>
+			</div>
+
+			<div class="diagnostics-grid">
+				<!-- Client Render Oscilloscope & Web Vitals -->
+				<div class="content-card chart-panel" data-module="diagnostics">
+					<div class="card-header">
+						<div class="card-title-group">
+							<h2>Client Render Oscilloscope & Web Vitals</h2>
+							<p>Real-time frame duration waveform & Navigation Timing waterfall.</p>
+						</div>
+						<span class="live-tag"><span class="live-dot sm"></span>60Hz CANVAS</span>
+					</div>
+
+					<div class="canvas-box">
+						<canvas id="fps-canvas" width="600" height="130" aria-label="FPS oscilloscope canvas"></canvas>
+						<div class="canvas-legend">
+							<span id="canvas-latency-stat">Frame: 16.6ms</span>
+							<span id="canvas-target-stat">Target: 60 FPS</span>
+						</div>
+					</div>
+
+					<div class="waterfall-box">
+						<h3 class="panel-subheading">Navigation Timing Latency Waterfall</h3>
+						<div class="waterfall-list">
+							<div class="waterfall-item">
+								<span class="wf-label">DNS Lookup</span>
+								<div class="wf-track"><div id="v-dns" class="wf-fill" style="width: 12%"></div></div>
+								<span id="v-dns-val" class="wf-val">12ms</span>
+							</div>
+							<div class="waterfall-item">
+								<span class="wf-label">TCP Connect</span>
+								<div class="wf-track"><div id="v-tcp" class="wf-fill" style="width: 18%"></div></div>
+								<span id="v-tcp-val" class="wf-val">18ms</span>
+							</div>
+							<div class="waterfall-item">
+								<span class="wf-label">TTFB (Server)</span>
+								<div class="wf-track"><div id="v-ttfb" class="wf-fill" style="width: 35%"></div></div>
+								<span id="v-ttfb-val" class="wf-val">45ms</span>
+							</div>
+							<div class="waterfall-item">
+								<span class="wf-label">DOMContentLoaded</span>
+								<div class="wf-track"><div id="v-dcl" class="wf-fill" style="width: 65%"></div></div>
+								<span id="v-dcl-val" class="wf-val">90ms</span>
+							</div>
+							<div class="waterfall-item">
+								<span class="wf-label">Total Load</span>
+								<div class="wf-track"><div id="v-load" class="wf-fill" style="width: 85%"></div></div>
+								<span id="v-load-val" class="wf-val">120ms</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Global Edge Latency & Network Matrix -->
+				<div class="content-card chart-panel" data-module="diagnostics">
+					<div class="card-header">
+						<div class="card-title-group">
+							<h2>Global Edge Latency & Network Matrix</h2>
+							<p>Real-time round-trip HTTP pings to global edge CDN nodes.</p>
+						</div>
+						<button id="reprobe-btn" class="btn-xs" type="button">Re-probe</button>
+					</div>
+
+					<div class="edge-list" id="edge-nodes-list">
+						<div class="edge-item">
+							<div class="edge-meta">
+								<span class="edge-name">Cloudflare Edge</span>
+								<span class="edge-sub">1.1.1.1 / Global Anycast</span>
+							</div>
+							<div class="edge-meter"><div id="node-bar-cf" class="edge-meter-fill" style="width: 25%"></div></div>
+							<span id="node-val-cf" class="edge-ping">-- ms</span>
+							<span id="node-status-cf" class="tag-neutral">IDLE</span>
+						</div>
+
+						<div class="edge-item">
+							<div class="edge-meta">
+								<span class="edge-name">GitHub API Edge</span>
+								<span class="edge-sub">api.github.com / US-East</span>
+							</div>
+							<div class="edge-meter"><div id="node-bar-gh" class="edge-meter-fill" style="width: 35%"></div></div>
+							<span id="node-val-gh" class="edge-ping">-- ms</span>
+							<span id="node-status-gh" class="tag-neutral">IDLE</span>
+						</div>
+
+						<div class="edge-item">
+							<div class="edge-meta">
+								<span class="edge-name">Google Edge Network</span>
+								<span class="edge-sub">dns.google / Multi-Region</span>
+							</div>
+							<div class="edge-meter"><div id="node-bar-gg" class="edge-meter-fill" style="width: 20%"></div></div>
+							<span id="node-val-gg" class="edge-ping">-- ms</span>
+							<span id="node-status-gg" class="tag-neutral">IDLE</span>
+						</div>
+
+						<div class="edge-item">
+							<div class="edge-meta">
+								<span class="edge-name">Fastly CDN Edge</span>
+								<span class="edge-sub">fastly.net / Global PoP</span>
+							</div>
+							<div class="edge-meter"><div id="node-bar-fa" class="edge-meter-fill" style="width: 30%"></div></div>
+							<span id="node-val-fa" class="edge-ping">-- ms</span>
+							<span id="node-status-fa" class="tag-neutral">IDLE</span>
+						</div>
+					</div>
+
+					<div class="edge-summary">
+						<div class="summary-cell"><span>Mean Jitter:</span> <strong id="edge-jitter">0.0 ms</strong></div>
+						<div class="summary-cell"><span>Fastest Edge:</span> <strong id="edge-fastest">Cloudflare</strong></div>
+						<div class="summary-cell"><span>Health:</span> <strong id="edge-health" class="text-success">OPTIMAL</strong></div>
+					</div>
+				</div>
+
+				<!-- Client Hardware, NPM & Traffic Sub-Grid -->
+				<div class="content-card chart-panel" data-module="diagnostics">
+					<div class="card-header">
+						<div class="card-title-group">
+							<h2>Hardware, Network & Ecosystem Pulse</h2>
+							<p>Real-time client device capabilities, NPM downloads, and traffic metrics.</p>
+						</div>
+					</div>
+
+					<div class="diagnostics-sub-metrics">
+						<div class="sub-metric-row">
+							<div class="sub-metric-cell">
+								<span class="cell-label">Render Performance</span>
+								<span class="cell-val"><span id="fps-count">60</span><span class="unit">FPS</span></span>
+								<span class="cell-sub" id="fps-status">Smooth (<span id="fps-drops">0</span> dropped)</span>
+							</div>
+							<div class="sub-metric-cell">
+								<span class="cell-label">Hardware & Cores</span>
+								<span class="cell-val"><span id="hardware-cores">8</span><span class="unit">CORES</span></span>
+								<span class="cell-sub"><span id="hardware-ram">~8 GB RAM</span> &bull; <span id="dom-count">DOM: 0</span></span>
+							</div>
+						</div>
+
+						<div class="sub-metric-row">
+							<div class="sub-metric-cell">
+								<span class="cell-label">Network Throughput <span id="net-status" class="status-pill ok">OPTIMAL</span></span>
+								<span class="cell-val"><span id="net-downlink">10</span><span class="unit">Mbps</span></span>
+								<span class="cell-sub"><span id="net-type">4G / ONLINE</span> (<span id="net-rtt">RTT: ~50ms</span>)</span>
+							</div>
+							<div class="sub-metric-cell">
+								<span class="cell-label">NPM Downloads <span id="npm-pkg-badge" class="domain-pill">react</span> <span id="npm-status" class="status-pill ok">ACTIVE</span></span>
+								<span class="cell-val" id="npm-downloads">0</span>
+								<span class="cell-sub" id="npm-version">Latest: v0.0.0</span>
+							</div>
+						</div>
+
+						<div class="sub-metric-row">
+							<div class="sub-metric-cell full-width">
+								<span class="cell-label">Web Traffic (30d) <span id="traffic-badge" class="domain-pill">SYNTHETIC</span></span>
+								<span class="cell-val" id="pageview-count">0</span>
+								<span class="cell-sub" id="plausible-foot">Visitors: 0 | Bounce: 0%</span>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Real-Time Telemetry Event Log Stream -->
+				<div class="content-card chart-panel terminal-panel" data-module="diagnostics">
+					<div class="card-header">
+						<div class="card-title-group">
+							<h2>Telemetry Stream & Event Log</h2>
+							<p>Chronological feed of telemetry packets, sync operations, and edge probes.</p>
+						</div>
+						<button id="clear-terminal-btn" class="btn-xs" type="button">Clear Log</button>
+					</div>
+
+					<div id="terminal-ticker" class="terminal-feed" role="log" aria-live="polite">
+						<div class="term-row info"><span class="term-ts">[00:00:00]</span> [BOOT] DevPulse Telemetry Matrix v2.4 initialized.</div>
+						<div class="term-row ok"><span class="term-ts">[00:00:00]</span> [READY] Telemetry engines online. Awaiting sync.</div>
+					</div>
+				</div>
 			</div>
 		</section>
 	</main>
+
+	<!-- Snapshot Modal Dialog -->
+	<dialog id="snapshot-dialog" class="modal-dialog">
+		<div class="modal-box">
+			<div class="modal-head">
+				<h3>Telemetry Snapshot Export</h3>
+				<button id="close-dialog-btn" class="btn-close" type="button" aria-label="Close dialog">&times;</button>
+			</div>
+			<p class="modal-sub">Export real-time captured telemetry state for external analysis or reporting.</p>
+			<div class="modal-preview">
+				<pre><code id="snapshot-preview">{}</code></pre>
+			</div>
+			<div class="modal-foot">
+				<button id="copy-json-btn" class="btn-primary" type="button">Copy JSON</button>
+				<button id="download-json-btn" class="btn-secondary" type="button">Download JSON</button>
+				<button id="download-csv-btn" class="btn-secondary" type="button">Download CSV</button>
+			</div>
+		</div>
+	</dialog>
 
 	<script src="script.js"></script>
 </body>

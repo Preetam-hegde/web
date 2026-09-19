@@ -1,120 +1,700 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Geolocation Finder</title>
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>GeoIntel // Geospatial &amp; Network Intelligence Suite</title>
+	<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+	<link rel="stylesheet" href="styles.css">
+	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 </head>
 <body>
 
-    <div class="bg"></div>
-    <div class="bg bg2"></div>
-    <div class="bg bg3"></div>
-    <main class="content">
-        <h1>Geolocation Finder</h1>
-        <p class="lead">Find your precise coordinates, nearby address, and open the spot in your favorite maps app.</p>
+	<!-- TOP HEADER -->
+	<header class="app-header">
+		<div class="header-container">
+			<div class="brand">
+				<div class="brand-icon">
+					<svg width="22" height="22" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+						<circle cx="12" cy="12" r="10"></circle>
+						<line x1="2" y1="12" x2="22" y2="12"></line>
+						<path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
+					</svg>
+				</div>
+				<div>
+					<h1 class="brand-title">GeoIntel</h1>
+					<p class="brand-subtitle">Geospatial, IP &amp; Phone Intelligence Suite</p>
+				</div>
+			</div>
+			<div class="header-meta">
+				<span class="status-indicator online" id="global-status-pill">System Ready</span>
+				<div class="map-theme-toggle">
+					<button id="map-theme-btn" class="secondary-btn btn-sm" type="button" title="Toggle Map Style">Map: Dark</button>
+				</div>
+			</div>
+		</div>
+	</header>
 
-        <div class="controls">
-            <button class="find-me" id="find-me" type="button">Detect My Location</button>
-            <p class="permission-hint" id="permission-hint"></p>
-        </div>
+	<!-- TAB NAVIGATION -->
+	<nav class="nav-tabs" aria-label="Tool Navigation">
+		<div class="tabs-container">
+			<button class="tab-btn active" data-tab="device-tab" type="button">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+				<span>My Location</span>
+			</button>
+			<button class="tab-btn" data-tab="ip-tab" type="button">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="20" height="8" rx="2" ry="2"/><rect x="2" y="14" width="20" height="8" rx="2" ry="2"/><line x1="6" y1="6" x2="6.01" y2="6"/><line x1="6" y1="18" x2="6.01" y2="18"/></svg>
+				<span>IP Geolocation</span>
+			</button>
+			<button class="tab-btn" data-tab="phone-tab" type="button">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>
+				<span>Phone Intel</span>
+			</button>
+			<button class="tab-btn" data-tab="simulator-tab" type="button">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polygon points="3 11 22 2 13 21 11 13 3 11"/></svg>
+				<span>Change GPS / Simulator</span>
+			</button>
+			<button class="tab-btn" data-tab="weather-tab" type="button">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M17.5 19H9a7 7 0 1 1 6.71-9h1.79a4.5 4.5 0 1 1 0 9Z"/></svg>
+				<span>Weather &amp; Elevation</span>
+			</button>
+			<button class="tab-btn" data-tab="distance-tab" type="button">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"/><polyline points="12 5 19 12 12 19"/></svg>
+				<span>Distance Calculator</span>
+			</button>
+			<button class="tab-btn" data-tab="batch-tab" type="button">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/><polyline points="10 9 9 9 8 9"/></svg>
+				<span>Batch CSV Uploader</span>
+			</button>
+			<button class="tab-btn" data-tab="converter-tab" type="button">
+				<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="10"/><path d="m4.93 4.93 4.24 4.24"/><path d="m14.83 9.17 4.24-4.24"/><path d="m14.83 14.83 4.24 4.24"/><path d="m9.17 14.83-4.24 4.24"/></svg>
+				<span>Military / MGRS / UTM</span>
+			</button>
+		</div>
+	</nav>
 
-        <p id="status" class="status" role="status" aria-live="polite"></p>
+	<!-- MAIN WORKSPACE -->
+	<main class="main-layout">
 
-        <section id="location-card" class="location-card hidden" aria-live="polite">
-            <div class="coordinate-grid">
-                <div class="coordinate">
-                    <span class="label">Latitude</span>
-                    <div class="value-row">
-                        <span id="latitude" class="value">—</span>
-                        <button class="icon-button" type="button" data-copy="latitude" aria-label="Copy latitude">Copy</button>
-                    </div>
-                </div>
-                <div class="coordinate">
-                    <span class="label">Longitude</span>
-                    <div class="value-row">
-                        <span id="longitude" class="value">—</span>
-                        <button class="icon-button" type="button" data-copy="longitude" aria-label="Copy longitude">Copy</button>
-                    </div>
-                </div>
-            </div>
+		<!-- LEFT COLUMN: TOOL PANELS -->
+		<section class="tool-column">
 
-            <dl class="meta">
-                <div>
-                    <dt>Accuracy</dt>
-                    <dd id="accuracy">—</dd>
-                </div>
-                <div>
-                    <dt>Altitude</dt>
-                    <dd id="altitude">—</dd>
-                </div>
-                <div>
-                    <dt>Speed</dt>
-                    <dd id="speed">—</dd>
-                </div>
-                <div>
-                    <dt>Bearing</dt>
-                    <dd id="heading">—</dd>
-                </div>
-                <div>
-                    <dt>Timestamp</dt>
-                    <dd id="timestamp">—</dd>
-                </div>
-            </dl>
+			<!-- TAB 1: DEVICE GPS LOCATION -->
+			<div class="tab-panel active" id="device-tab">
+				<div class="panel-card">
+					<div class="card-header">
+						<h2>Device Location &amp; Live Tracking</h2>
+						<span class="badge" id="gps-status-badge">Standby</span>
+					</div>
+					<p class="card-desc">Retrieve your real-time browser coordinates, accuracy radius, velocity, and altitude profile.</p>
 
-            <p class="address" id="address">Fetching nearby address…</p>
+					<div class="action-row">
+						<button id="find-me-btn" class="primary-btn" type="button">
+							<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><circle cx="12" cy="12" r="3"/></svg>
+							Detect My Location
+						</button>
+						<button id="live-track-btn" class="secondary-btn" type="button" data-tracking="false">
+							Start Live Tracking
+						</button>
+					</div>
 
-            <div class="map-links">
-                <a id="osm-link" href="#" target="_blank" rel="noopener noreferrer">OpenStreetMap</a>
-                <a id="google-link" href="#" target="_blank" rel="noopener noreferrer">Google Maps</a>
-                <a id="apple-link" href="#" target="_blank" rel="noopener noreferrer">Apple Maps</a>
-            </div>
-        </section>
+					<p id="device-status-msg" class="status-msg" role="status" aria-live="polite">Click 'Detect My Location' to begin.</p>
+					<p id="permission-hint" class="hint-text"></p>
 
-        <section id="map-section" class="map-section hidden" aria-label="Map preview">
-            <iframe id="map-frame" title="Location preview" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
-        </section>
+					<div class="data-grid">
+						<div class="data-item">
+							<span class="data-label">Latitude</span>
+							<div class="data-val-row">
+								<span id="dev-lat" class="data-val">—</span>
+								<button class="copy-btn" type="button" data-copy="dev-lat" title="Copy">Copy</button>
+							</div>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Longitude</span>
+							<div class="data-val-row">
+								<span id="dev-lon" class="data-val">—</span>
+								<button class="copy-btn" type="button" data-copy="dev-lon" title="Copy">Copy</button>
+							</div>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Accuracy</span>
+							<span id="dev-accuracy" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Altitude</span>
+							<span id="dev-altitude" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Speed</span>
+							<span id="dev-speed" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Bearing</span>
+							<span id="dev-heading" class="data-val">—</span>
+						</div>
+					</div>
 
-        <section class="actions">
-            <button id="track-toggle" type="button">Start Live Tracking</button>
-            <button id="share-location" type="button">Share Location</button>
-            <button id="download-gpx" type="button">Download GPX</button>
-        </section>
+					<div class="address-card">
+						<span class="data-label">Reverse Geocoded Address</span>
+						<p id="dev-address" class="address-text">No location fix yet.</p>
+					</div>
 
-        <section id="sun-card" class="sun-card hidden" aria-live="polite">
-            <h2>Sun &amp; Daylight</h2>
-            <dl class="sun-grid">
-                <div>
-                    <dt>Sunrise</dt>
-                    <dd id="sunrise">—</dd>
-                </div>
-                <div>
-                    <dt>Sunset</dt>
-                    <dd id="sunset">—</dd>
-                </div>
-                <div>
-                    <dt>Golden Hour</dt>
-                    <dd id="golden-hour">—</dd>
-                </div>
-                <div>
-                    <dt>Day Length</dt>
-                    <dd id="day-length">—</dd>
-                </div>
-            </dl>
-        </section>
+					<div class="card-footer-actions">
+						<button id="share-loc-btn" class="secondary-btn btn-sm" type="button" disabled>Share Location</button>
+						<button id="export-gpx-btn" class="secondary-btn btn-sm" type="button" disabled>Export GPX</button>
+					</div>
+				</div>
+			</div>
 
-        <section id="history-section" class="history hidden" aria-live="polite">
-            <div class="history-header">
-                <h2>Location History</h2>
-                <button id="clear-history" type="button" class="icon-button">Clear</button>
-            </div>
-            <ol id="history-list" class="history-list"></ol>
-        </section>
-    </main>
+			<!-- TAB 2: IP GEOLOCATION LOOKUP -->
+			<div class="tab-panel" id="ip-tab">
+				<div class="panel-card">
+					<div class="card-header">
+						<h2>IP Address Geolocation &amp; Network Recon</h2>
+						<span class="badge" id="ip-badge">IPv4 / IPv6</span>
+					</div>
+					<p class="card-desc">Inspect any public IP address or domain to resolve geographic coordinates, ISP, ASN, and organization.</p>
 
-    <script src="script.js"></script>
+					<form id="ip-search-form" class="search-form" autocomplete="off">
+						<div class="search-input-wrap">
+							<input type="text" id="ip-input" class="text-input" placeholder="Enter IP (e.g. 8.8.8.8) or domain (e.g. github.com)..." required>
+							<button type="submit" class="primary-btn">Lookup IP</button>
+						</div>
+						<button type="button" id="my-ip-btn" class="secondary-btn btn-sm">Use My Current IP</button>
+					</form>
+
+					<p id="ip-status-msg" class="status-msg" role="status" aria-live="polite">Enter an IP or click 'Use My Current IP'.</p>
+
+					<div class="data-grid">
+						<div class="data-item full-width">
+							<span class="data-label">Resolved IP Address</span>
+							<div class="data-val-row">
+								<span id="ip-res-addr" class="data-val highlight">—</span>
+								<button class="copy-btn" type="button" data-copy="ip-res-addr" title="Copy">Copy</button>
+							</div>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Country &amp; Code</span>
+							<span id="ip-res-country" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">City &amp; Region</span>
+							<span id="ip-res-city" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">ISP &amp; Organization</span>
+							<span id="ip-res-isp" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Autonomous System (ASN)</span>
+							<span id="ip-res-asn" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Coordinates (Lat, Lon)</span>
+							<div class="data-val-row">
+								<span id="ip-res-coords" class="data-val">—</span>
+								<button class="copy-btn" type="button" data-copy="ip-res-coords" title="Copy">Copy</button>
+							</div>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Timezone</span>
+							<span id="ip-res-tz" class="data-val">—</span>
+						</div>
+					</div>
+
+					<div class="card-footer-actions">
+						<button id="view-ip-on-map-btn" class="secondary-btn btn-sm" type="button" disabled>Center Map on IP</button>
+						<button id="set-ip-as-target-btn" class="secondary-btn btn-sm" type="button" disabled>Use as Distance Target</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- TAB 3: PHONE NUMBER INTELLIGENCE -->
+			<div class="tab-panel" id="phone-tab">
+				<div class="panel-card">
+					<div class="card-header">
+						<h2>Phone Number Intelligence &amp; Region Geocoder</h2>
+						<span class="badge" id="phone-badge">E.164 Standard</span>
+					</div>
+					<p class="card-desc">Analyze international phone numbers to resolve origin country, telecom prefix, regional area code, and timezone.</p>
+
+					<div class="info-alert">
+						<svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/></svg>
+						<span><strong>Notice:</strong> Real-time physical GPS tracking of an external phone without consent is restricted to telecom network operators. This tool provides registered telecom prefix &amp; regional geocoding.</span>
+					</div>
+
+					<form id="phone-search-form" class="search-form" autocomplete="off">
+						<div class="phone-input-group">
+							<select id="phone-country-select" class="select-input phone-country-select" aria-label="Country Dialing Code">
+								<option value="auto">Auto-Detect (+Code)</option>
+								<option value="+91" selected>🇮🇳 India (+91)</option>
+								<option value="+1">🇺🇸/🇨🇦 USA / Canada (+1)</option>
+								<option value="+44">🇬🇧 United Kingdom (+44)</option>
+								<option value="+61">🇦🇺 Australia (+61)</option>
+								<option value="+49">🇩🇪 Germany (+49)</option>
+								<option value="+33">🇫🇷 France (+33)</option>
+								<option value="+81">🇯🇵 Japan (+81)</option>
+								<option value="+86">🇨🇳 China (+86)</option>
+								<option value="+971">🇦🇪 UAE (+971)</option>
+								<option value="+55">🇧🇷 Brazil (+55)</option>
+								<option value="+7">🇷🇺 Russia (+7)</option>
+								<option value="+39">🇮🇹 Italy (+39)</option>
+								<option value="+34">🇪🇸 Spain (+34)</option>
+								<option value="+52">🇲🇽 Mexico (+52)</option>
+								<option value="+92">🇵🇰 Pakistan (+92)</option>
+								<option value="+880">🇧🇩 Bangladesh (+880)</option>
+								<option value="+62">🇮🇩 Indonesia (+62)</option>
+								<option value="+234">🇳🇬 Nigeria (+234)</option>
+								<option value="+27">🇿🇦 South Africa (+27)</option>
+								<option value="+966">🇸🇦 Saudi Arabia (+966)</option>
+								<option value="+65">🇸🇬 Singapore (+65)</option>
+								<option value="+60">🇲🇾 Malaysia (+60)</option>
+								<option value="+64">🇳🇿 New Zealand (+64)</option>
+								<option value="+94">🇱🇰 Sri Lanka (+94)</option>
+								<option value="+977">🇳🇵 Nepal (+977)</option>
+								<option value="+41">🇨🇭 Switzerland (+41)</option>
+								<option value="+31">🇳🇱 Netherlands (+31)</option>
+								<option value="+46">🇸🇪 Sweden (+46)</option>
+								<option value="+47">🇳🇴 Norway (+47)</option>
+								<option value="+48">🇵🇱 Poland (+48)</option>
+								<option value="+90">🇹🇷 Turkey (+90)</option>
+								<option value="+20">🇪🇬 Egypt (+20)</option>
+							</select>
+							<input type="tel" id="phone-input" class="text-input" placeholder="Enter phone (e.g. 9876543210 or +1 415 555 2671)" required>
+							<button type="submit" class="primary-btn">Track Phone</button>
+						</div>
+						<div class="quick-samples">
+							<span class="hint-text">Quick test:</span>
+							<button type="button" class="sample-btn" data-phone="+91 98450 12345">Bangalore, IN</button>
+							<button type="button" class="sample-btn" data-phone="+91 98200 12345">Mumbai, IN</button>
+							<button type="button" class="sample-btn" data-phone="+1 415 555 2671">SF, USA</button>
+							<button type="button" class="sample-btn" data-phone="+1 212 555 0199">NYC, USA</button>
+							<button type="button" class="sample-btn" data-phone="+44 20 7946 0950">London, UK</button>
+							<button type="button" class="sample-btn" data-phone="+81 3 1234 5678">Tokyo, JP</button>
+						</div>
+					</form>
+
+					<p id="phone-status-msg" class="status-msg" role="status" aria-live="polite">Enter an international phone number with country code.</p>
+
+					<div class="data-grid">
+						<div class="data-item full-width">
+							<span class="data-label">Formatted Number (E.164)</span>
+							<div class="data-val-row">
+								<span id="phone-res-formatted" class="data-val highlight">—</span>
+								<button class="copy-btn" type="button" data-copy="phone-res-formatted" title="Copy">Copy</button>
+							</div>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Country of Origin</span>
+							<span id="phone-res-country" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Region / Area / City</span>
+							<span id="phone-res-region" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Country Dialing Code</span>
+							<span id="phone-res-dialcode" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Estimated Line Type</span>
+							<span id="phone-res-type" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Associated Timezone</span>
+							<span id="phone-res-tz" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Regional Coordinates</span>
+							<div class="data-val-row">
+								<span id="phone-res-coords" class="data-val">—</span>
+								<button class="copy-btn" type="button" data-copy="phone-res-coords" title="Copy">Copy</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="card-footer-actions">
+						<button id="view-phone-on-map-btn" class="secondary-btn btn-sm" type="button" disabled>Center Map on Region</button>
+						<button id="set-phone-as-target-btn" class="secondary-btn btn-sm" type="button" disabled>Use as Distance Target</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- TAB 4: CHANGE GPS / LOCATION SIMULATOR -->
+			<div class="tab-panel" id="simulator-tab">
+				<div class="panel-card">
+					<div class="card-header">
+						<h2>Location Simulator &amp; Place Explorer</h2>
+						<span class="badge" id="sim-badge">Change GPS</span>
+					</div>
+					<p class="card-desc">Override active GPS or explore any place on Earth. Search an address, type custom coordinates, or click anywhere on the map.</p>
+
+					<!-- Place Search -->
+					<form id="place-search-form" class="search-form" autocomplete="off">
+						<label for="place-search-input" class="data-label">Search Place / Address (Geocoding)</label>
+						<div class="search-input-wrap">
+							<input type="text" id="place-search-input" class="text-input" placeholder="e.g. Eiffel Tower, Tokyo, San Francisco..." required>
+							<button type="submit" class="primary-btn">Search Place</button>
+						</div>
+					</form>
+
+					<!-- Manual Coordinates -->
+					<div class="coords-manual-inputs">
+						<label class="data-label">Or Enter Custom Coordinates</label>
+						<div class="coords-input-row">
+							<input type="number" id="sim-lat-input" class="text-input" step="any" placeholder="Latitude (e.g. 48.8584)">
+							<input type="number" id="sim-lon-input" class="text-input" step="any" placeholder="Longitude (e.g. 2.2945)">
+							<button type="button" id="apply-coords-btn" class="primary-btn">Set GPS</button>
+						</div>
+					</div>
+
+					<!-- Click-to-pick indicator -->
+					<div class="map-pick-hint">
+						<span class="hint-bullet">&#9679;</span>
+						<span><strong>Tip:</strong> You can also click anywhere directly on the map to set a new custom GPS location!</span>
+					</div>
+
+					<p id="sim-status-msg" class="status-msg" role="status" aria-live="polite">No simulated location active.</p>
+
+					<div class="data-grid">
+						<div class="data-item full-width">
+							<span class="data-label">Active Simulated Coordinates</span>
+							<div class="data-val-row">
+								<span id="sim-coords-display" class="data-val highlight">—</span>
+								<button class="copy-btn" type="button" data-copy="sim-coords-display" title="Copy">Copy</button>
+							</div>
+						</div>
+						<div class="data-item full-width">
+							<span class="data-label">Resolved Address</span>
+							<span id="sim-address-display" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Distance from My Real GPS</span>
+							<span id="sim-dist-from-real" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Bearing from My Real GPS</span>
+							<span id="sim-bearing-from-real" class="data-val">—</span>
+						</div>
+					</div>
+
+					<div class="card-footer-actions">
+						<button id="center-sim-btn" class="secondary-btn btn-sm" type="button" disabled>Center Map Here</button>
+						<button id="clear-sim-btn" class="secondary-btn btn-sm" type="button">Reset to Real GPS</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- TAB 5: DISTANCE & BEARING CALCULATOR -->
+			<div class="tab-panel" id="distance-tab">
+				<div class="panel-card">
+					<div class="card-header">
+						<h2>Distance &amp; Rangefinder Calculator</h2>
+						<span class="badge">Great-Circle</span>
+					</div>
+					<p class="card-desc">Calculate true geodesic distance, initial compass bearing, and travel time estimates between any two points.</p>
+
+					<div class="points-selector-grid">
+						<div class="point-box">
+							<span class="point-tag">Point A (Origin)</span>
+							<div class="select-row">
+								<select id="point-a-select" class="select-input">
+									<option value="device">My Device Location</option>
+									<option value="simulated">Simulated / Custom GPS</option>
+									<option value="custom">Custom Coordinates</option>
+								</select>
+							</div>
+							<div class="point-inputs" id="point-a-inputs" style="display:none;">
+								<input type="number" id="pt-a-lat" class="text-input text-sm" step="any" placeholder="Lat A">
+								<input type="number" id="pt-a-lon" class="text-input text-sm" step="any" placeholder="Lon A">
+							</div>
+							<span id="pt-a-summary" class="point-summary">Awaiting coordinates…</span>
+						</div>
+
+						<div class="point-box">
+							<span class="point-tag">Point B (Destination)</span>
+							<div class="select-row">
+								<select id="point-b-select" class="select-input">
+									<option value="preset_nyc">New York City, USA</option>
+									<option value="preset_london">London, UK</option>
+									<option value="preset_tokyo">Tokyo, Japan</option>
+									<option value="preset_paris">Paris, France</option>
+									<option value="preset_sydney">Sydney, Australia</option>
+									<option value="ip_loc">Last Searched IP Location</option>
+									<option value="phone_loc">Last Searched Phone Region</option>
+									<option value="custom" selected>Custom Coordinates</option>
+								</select>
+							</div>
+							<div class="point-inputs" id="point-b-inputs">
+								<input type="number" id="pt-b-lat" class="text-input text-sm" step="any" placeholder="Lat B (e.g. 51.5074)">
+								<input type="number" id="pt-b-lon" class="text-input text-sm" step="any" placeholder="Lon B (e.g. -0.1278)">
+							</div>
+							<span id="pt-b-summary" class="point-summary">Awaiting coordinates…</span>
+						</div>
+					</div>
+
+					<button type="button" id="calc-dist-btn" class="primary-btn full-width-btn">Calculate Distance &amp; Heading</button>
+
+					<div class="data-grid results-grid">
+						<div class="data-item">
+							<span class="data-label">Great-Circle Distance</span>
+							<span id="dist-res-km" class="data-val highlight">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Miles &amp; Nautical Miles</span>
+							<span id="dist-res-mi" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Compass Bearing</span>
+							<span id="dist-res-bearing" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Cardinal Direction</span>
+							<span id="dist-res-cardinal" class="data-val">—</span>
+						</div>
+					</div>
+
+					<div class="travel-estimates">
+						<span class="data-label">Estimated Travel Durations</span>
+						<div class="travel-grid">
+							<div class="travel-chip">
+								<span class="travel-mode">Walking (5 km/h)</span>
+								<span id="travel-walk" class="travel-val">—</span>
+							</div>
+							<div class="travel-chip">
+								<span class="travel-mode">Driving (80 km/h)</span>
+								<span id="travel-drive" class="travel-val">—</span>
+							</div>
+							<div class="travel-chip">
+								<span class="travel-mode">Flight (800 km/h)</span>
+								<span id="travel-flight" class="travel-val">—</span>
+							</div>
+						</div>
+					</div>
+
+					<div class="card-footer-actions">
+						<button id="draw-line-btn" class="secondary-btn btn-sm" type="button" disabled>Draw Path on Map</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- TAB 6: WEATHER & ELEVATION -->
+			<div class="tab-panel" id="weather-tab">
+				<div class="panel-card">
+					<div class="card-header">
+						<h2>Live Weather &amp; Atmosphere</h2>
+						<span class="badge">Open-Meteo (No Key)</span>
+					</div>
+					<p class="card-desc">Real-time atmospheric telemetry and elevation above sea level for any coordinates.</p>
+
+					<div class="action-row">
+						<button id="weather-my-gps-btn" class="secondary-btn btn-sm" type="button">My GPS</button>
+						<button id="weather-sim-btn" class="secondary-btn btn-sm" type="button">Simulated GPS</button>
+						<button id="weather-ip-btn" class="secondary-btn btn-sm" type="button">Last IP</button>
+					</div>
+
+					<form id="weather-coords-form" class="search-form" autocomplete="off">
+						<div class="coords-input-row">
+							<input type="number" id="weather-lat-input" class="text-input" step="any" placeholder="Latitude" required>
+							<input type="number" id="weather-lon-input" class="text-input" step="any" placeholder="Longitude" required>
+							<button type="submit" class="primary-btn">Get Weather</button>
+						</div>
+					</form>
+
+					<p id="weather-status-msg" class="status-msg" role="status" aria-live="polite">Select a location or enter coordinates to fetch weather.</p>
+
+					<div class="weather-hero-card" id="weather-hero-card">
+						<div class="weather-main-row">
+							<div class="weather-icon-wrap" id="weather-icon">&#9728;&#65039;</div>
+							<div>
+								<div class="weather-temp-wrap">
+									<span id="weather-temp" class="weather-temp">—</span>
+									<span id="weather-temp-unit" class="weather-temp-unit">°C</span>
+									<span id="weather-temp-f" class="weather-temp-f">(—°F)</span>
+								</div>
+								<div id="weather-condition" class="weather-condition">Awaiting data…</div>
+							</div>
+						</div>
+					</div>
+
+					<div class="data-grid">
+						<div class="data-item">
+							<span class="data-label">Feels Like</span>
+							<span id="weather-feels" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Relative Humidity</span>
+							<span id="weather-humidity" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Wind Velocity</span>
+							<span id="weather-wind" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Barometric Pressure</span>
+							<span id="weather-pressure" class="data-val">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Elevation (Above Sea Level)</span>
+							<span id="weather-elevation" class="data-val highlight">—</span>
+						</div>
+						<div class="data-item">
+							<span class="data-label">Precipitation</span>
+							<span id="weather-precip" class="data-val">—</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- TAB 7: BATCH CSV / COORDINATES UPLOADER -->
+			<div class="tab-panel" id="batch-tab">
+				<div class="panel-card">
+					<div class="card-header">
+						<h2>Batch Coordinates &amp; CSV Uploader</h2>
+						<span class="badge">Multi-Pin Cluster</span>
+					</div>
+					<p class="card-desc">Plot multiple locations simultaneously on the map from a CSV file or pasted coordinate list.</p>
+
+					<div class="batch-input-wrap">
+						<label for="batch-textarea" class="data-label">Paste Coordinates (lat, lon, [label]) or IP addresses:</label>
+						<textarea id="batch-textarea" class="batch-textarea" rows="5" placeholder="37.7749, -122.4194, San Francisco&#10;40.7128, -74.0060, New York City&#10;51.5074, -0.1278, London&#10;35.6762, 139.6503, Tokyo"></textarea>
+					</div>
+
+					<div class="batch-file-row">
+						<label class="secondary-btn btn-sm file-upload-label">
+							<input type="file" id="batch-file-input" accept=".csv,.txt" style="display:none;">
+							<span>Choose CSV/TXT File</span>
+						</label>
+						<button type="button" id="load-sample-batch-btn" class="secondary-btn btn-sm">Load Sample</button>
+						<button type="button" id="plot-batch-btn" class="primary-btn btn-sm">Plot All on Map</button>
+						<button type="button" id="clear-batch-btn" class="secondary-btn btn-sm">Clear</button>
+					</div>
+
+					<p id="batch-status-msg" class="status-msg" role="status" aria-live="polite">Enter coordinates above and click 'Plot All on Map'.</p>
+
+					<div class="batch-summary-card">
+						<div class="data-grid">
+							<div class="data-item">
+								<span class="data-label">Total Points Plotted</span>
+								<span id="batch-count" class="data-val highlight">0</span>
+							</div>
+							<div class="data-item">
+								<span class="data-label">Centroid</span>
+								<span id="batch-centroid" class="data-val">—</span>
+							</div>
+						</div>
+						<div class="card-footer-actions">
+							<button type="button" id="export-batch-geojson-btn" class="secondary-btn btn-sm" disabled>Export GeoJSON</button>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- TAB 8: ADVANCED MILITARY & MGRS / UTM CONVERTER -->
+			<div class="tab-panel" id="converter-tab">
+				<div class="panel-card">
+					<div class="card-header">
+						<h2>Military, UTM &amp; Advanced Coordinates</h2>
+						<span class="badge">WGS84 Projection</span>
+					</div>
+					<p class="card-desc">Convert coordinates between Decimal Degrees, DMS, UTM, NATO MGRS, and Amateur Radio Maidenhead Grid.</p>
+
+					<div class="action-row">
+						<button id="conv-my-gps-btn" class="secondary-btn btn-sm" type="button">Use My Location</button>
+						<button id="conv-sim-btn" class="secondary-btn btn-sm" type="button">Use Simulated</button>
+					</div>
+
+					<form id="conv-form" class="search-form" autocomplete="off">
+						<div class="coords-input-row">
+							<input type="number" id="conv-lat-input" class="text-input" step="any" placeholder="Latitude (e.g. 37.7749)" required>
+							<input type="number" id="conv-lon-input" class="text-input" step="any" placeholder="Longitude (e.g. -122.4194)" required>
+							<button type="submit" class="primary-btn">Convert</button>
+						</div>
+					</form>
+
+					<div class="data-grid">
+						<div class="data-item full-width">
+							<span class="data-label">Decimal Degrees (DD)</span>
+							<div class="data-val-row">
+								<span id="conv-dd" class="data-val highlight">—</span>
+								<button class="copy-btn" type="button" data-copy="conv-dd" title="Copy">Copy</button>
+							</div>
+						</div>
+						<div class="data-item full-width">
+							<span class="data-label">Degrees, Minutes, Seconds (DMS)</span>
+							<div class="data-val-row">
+								<span id="conv-dms" class="data-val">—</span>
+								<button class="copy-btn" type="button" data-copy="conv-dms" title="Copy">Copy</button>
+							</div>
+						</div>
+						<div class="data-item full-width">
+							<span class="data-label">UTM (Universal Transverse Mercator)</span>
+							<div class="data-val-row">
+								<span id="conv-utm" class="data-val highlight">—</span>
+								<button class="copy-btn" type="button" data-copy="conv-utm" title="Copy">Copy</button>
+							</div>
+						</div>
+						<div class="data-item full-width">
+							<span class="data-label">MGRS (Military Grid Reference System)</span>
+							<div class="data-val-row">
+								<span id="conv-mgrs" class="data-val highlight">—</span>
+								<button class="copy-btn" type="button" data-copy="conv-mgrs" title="Copy">Copy</button>
+							</div>
+						</div>
+						<div class="data-item full-width">
+							<span class="data-label">Maidenhead QTH Grid (Amateur Radio / Recon)</span>
+							<div class="data-val-row">
+								<span id="conv-maidenhead" class="data-val">—</span>
+								<button class="copy-btn" type="button" data-copy="conv-maidenhead" title="Copy">Copy</button>
+							</div>
+						</div>
+					</div>
+
+					<div class="w3w-card">
+						<span class="data-label">What3Words Locator</span>
+						<p class="hint-text">View the exact 3 words for these coordinates on what3words.com:</p>
+						<a id="conv-w3w-link" class="primary-btn btn-sm" href="https://what3words.com" target="_blank" rel="noopener noreferrer">Open on What3Words &#8599;</a>
+					</div>
+				</div>
+			</div>
+
+		</section>
+
+		<!-- RIGHT COLUMN: INTERACTIVE MAP VIEWPORT -->
+		<section class="map-column" aria-label="Geospatial Map">
+			<div class="map-wrapper">
+				<div class="map-toolbar">
+					<div class="map-status-row">
+						<span class="map-badge" id="map-active-layer-pill">Active: Device GPS</span>
+						<span class="map-coords-pill" id="cursor-coords-pill">Lat: — | Lon: —</span>
+					</div>
+					<div class="map-actions-row">
+						<div class="map-style-selector">
+							<button class="map-style-btn active" data-style="dark" type="button" title="Dark Canvas (Esri)">Dark</button>
+							<button class="map-style-btn" data-style="street" type="button" title="Street Map (Esri)">Street</button>
+							<button class="map-style-btn" data-style="satellite" type="button" title="Satellite Imagery (Esri)">Satellite</button>
+							<button class="map-style-btn" data-style="topo" type="button" title="Topographical Terrain (Esri)">Terrain</button>
+						</div>
+						<button id="recenter-map-btn" class="map-tool-btn" type="button" title="Center on Active Location">Center</button>
+						<button id="clear-pins-btn" class="map-tool-btn" type="button" title="Clear Map Pins">Clear Pins</button>
+					</div>
+				</div>
+				<div id="geointel-map" class="map-canvas"></div>
+				<div class="map-legend">
+					<div class="legend-item"><span class="legend-dot dot-green"></span><span>My GPS</span></div>
+					<div class="legend-item"><span class="legend-dot dot-blue"></span><span>IP Location</span></div>
+					<div class="legend-item"><span class="legend-dot dot-purple"></span><span>Phone Region</span></div>
+					<div class="legend-item"><span class="legend-dot dot-amber"></span><span>Simulated / Custom</span></div>
+					<div class="legend-item"><span class="legend-dot dot-red"></span><span>Batch Pin</span></div>
+				</div>
+			</div>
+		</section>
+
+	</main>
+
+	<!-- LEAFLET MAP JS -->
+	<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js" integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+	<script src="script.js"></script>
 
 </body>
 </html>

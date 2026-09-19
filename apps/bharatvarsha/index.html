@@ -3,64 +3,113 @@
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<meta name="theme-color" content="#4a140e">
 	<title>Bharatvarsha: Rise of the Janapada</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700&family=Lato:wght@400;700&display=swap" rel="stylesheet">
-	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
+	<link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;700;900&family=Lato:wght@400;700;900&family=Tiro+Devanagari+Sanskrit&display=swap" rel="stylesheet">
+	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 </head>
 <body>
+	<!-- Sprites used by the settlement scene (js/scene.js). Flat fills only: this svg is zero-sized, not display:none. -->
+	<svg class="sprite-defs" width="0" height="0" aria-hidden="true" focusable="false">
+		<symbol id="s-hut" viewBox="0 0 64 64">
+			<ellipse cx="32" cy="59" rx="25" ry="4" fill="#2a1608" opacity=".22"/>
+			<path d="M13 58V35h38v23z" fill="#c08a5c"/>
+			<path d="M13 58V35h9v23z" fill="#a4714a"/>
+			<path d="M4 38 32 8l28 30z" fill="#e0b04a"/>
+			<path d="M4 38 32 8l28 30" fill="none" stroke="#a9741f" stroke-width="2.5" stroke-linejoin="round"/>
+			<path d="M15 33 32 15l17 18M22 35l10-11 10 11" fill="none" stroke="#b98a2c" stroke-width="1.6"/>
+			<path d="M27 58V47a5 5 0 0 1 10 0v11z" fill="#4a2a14"/>
+		</symbol>
+		<symbol id="s-farm" viewBox="0 0 64 64">
+			<path d="M2 58 14 34h50L52 58z" fill="#8a6234"/>
+			<path d="M8 57 20 35M17 57 29 35M26 57 38 35M35 57 47 35M44 57 56 35" fill="none" stroke="#79c04a" stroke-width="4" stroke-linecap="round" stroke-dasharray="0.1 6"/>
+		</symbol>
+		<symbol id="s-granary" viewBox="0 0 64 64">
+			<ellipse cx="32" cy="59" rx="22" ry="4" fill="#2a1608" opacity=".22"/>
+			<path d="M14 58C8 46 9 34 18 30h28c9 4 10 16 4 28z" fill="#cf9a66"/>
+			<path d="M14 58C8 46 9 34 18 30h9c-8 6-9 18-5 28z" fill="#b57f4f"/>
+			<path d="M9 33 32 8l23 25z" fill="#8a5a2b"/>
+			<path d="M9 33 32 8l23 25" fill="none" stroke="#5b3813" stroke-width="2.5" stroke-linejoin="round"/>
+			<path d="M28 58V48a4 4 0 0 1 8 0v10z" fill="#4a2a14"/>
+			<circle cx="32" cy="8" r="2.5" fill="#f2b93b"/>
+		</symbol>
+		<symbol id="s-school" viewBox="0 0 64 64">
+			<ellipse cx="32" cy="59" rx="28" ry="4" fill="#2a1608" opacity=".22"/>
+			<path d="M6 58h52v-4H6z" fill="#9b8466"/>
+			<rect x="10" y="30" width="44" height="24" fill="#f4e4bd"/>
+			<path d="M14 30v24M24 30v24M40 30v24M50 30v24" stroke="#c9a46a" stroke-width="3"/>
+			<path d="M4 32 32 13l28 19z" fill="#b5442c"/>
+			<path d="M4 32 32 13l28 19" fill="none" stroke="#7f2a18" stroke-width="2.5" stroke-linejoin="round"/>
+			<path d="M32 13V3" stroke="#4a2a14" stroke-width="2"/>
+			<path d="M32 3h13l-4 4 4 4H32z" fill="#f59e0b"/>
+			<path d="M28 54V44a4 4 0 0 1 8 0v10z" fill="#4a2a14"/>
+		</symbol>
+		<symbol id="s-altar" viewBox="0 0 64 64">
+			<ellipse cx="32" cy="59" rx="26" ry="4" fill="#2a1608" opacity=".22"/>
+			<path d="M6 58h52l-7-11H13z" fill="#a89b88"/>
+			<path d="M14 47h36l-5-9H19z" fill="#c4b8a4"/>
+			<path d="M32 6c9 9 13 16 9 24-2 4-6 6-9 6s-7-2-9-6c-4-8 0-15 9-24z" fill="#f97316"/>
+			<path d="M32 17c5 6 7 10 5 14-1 2-3 4-5 4s-4-2-5-4c-2-4 0-8 5-14z" fill="#fde047"/>
+		</symbol>
+		<symbol id="s-plot" viewBox="0 0 64 64">
+			<path d="M6 48 32 36l26 12-26 12z" fill="#fff" fill-opacity=".14" stroke="#fff" stroke-opacity=".75" stroke-width="2" stroke-dasharray="4 4"/>
+			<path d="M32 42v12M26 48h12" stroke="#fff" stroke-opacity=".85" stroke-width="2.5" stroke-linecap="round"/>
+		</symbol>
+	</svg>
+
 	<div class="game-shell">
 		<div class="game-ambience" aria-hidden="true"></div>
 
 		<header class="game-header">
 			<div class="brand">
 				<div class="brand-icon"><i class="fas fa-dharmachakra"></i></div>
-				<div>
-					<h1 class="title-font">Bharatvarsha</h1>
-					<span>Rise of the Janapada</span>
+				<div class="brand-text">
+					<h1 class="title-font">Bharatvarsha <span class="brand-deva" lang="sa">भारतवर्ष</span></h1>
+					<span class="brand-sub">Rise of the Janapada</span>
 				</div>
 			</div>
 			<div class="hud">
-				<div class="hud-chip">
-					<label>Morale</label>
+				<div class="hud-chip chip-morale">
+					<span class="chip-label"><i class="fas fa-face-smile"></i> Morale</span>
 					<strong id="morale-display">70%</strong>
 					<div class="morale-meter"><div id="morale-fill" class="morale-fill"></div></div>
 				</div>
 				<div class="hud-chip">
-					<label>Weather</label>
+					<span class="chip-label"><i class="fas fa-cloud-sun"></i> Weather</span>
 					<strong id="weather-display">Normal</strong>
 				</div>
 				<div class="hud-chip">
-					<label>Era</label>
+					<span class="chip-label"><i class="fas fa-landmark"></i> Era</span>
 					<strong id="era-display">Early Vedic</strong>
 				</div>
 				<div class="hud-chip">
-					<label>Year</label>
+					<span class="chip-label"><i class="fas fa-hourglass-half"></i> Year</span>
 					<strong id="year-display">1000 BCE</strong>
 				</div>
 				<div class="hud-chip">
-					<label>Population</label>
+					<span class="chip-label"><i class="fas fa-users"></i> Population</span>
 					<strong id="pop-display">2 / 5</strong>
 				</div>
 				<div class="control-cluster">
-					<button id="btn-pause-game" data-action="pause">Pause</button>
+					<button id="btn-pause-game" data-action="pause"><i class="fas fa-pause"></i> Pause</button>
 					<select id="speed-select" aria-label="Game speed">
 						<option value="1">1x</option>
 						<option value="2">2x</option>
 						<option value="4">4x</option>
 					</select>
-					<button id="btn-save-game" data-action="save">Save</button>
-					<button id="btn-reset-game" data-action="reset">Reset</button>
+					<button id="btn-save-game" data-action="save"><i class="fas fa-floppy-disk"></i> Save</button>
+					<button id="btn-reset-game" data-action="reset"><i class="fas fa-rotate-left"></i> Reset</button>
 				</div>
 			</div>
 		</header>
 
 		<main class="main-grid">
 			<aside class="panel">
-				<div class="panel-title"><i class="fas fa-coins"></i> Treasury & Labor</div>
+				<div class="panel-title"><i class="fas fa-coins"></i> Treasury &amp; Labor</div>
 				<div class="panel-body">
 					<div id="resource-grid" class="resource-grid"></div>
 					<section class="manual-labor-panel">
@@ -76,30 +125,64 @@
 			</aside>
 
 			<section class="center-stage">
-				<section class="war-room">
-					<div class="war-banner">
-						<img src="./assets/warrior-banner.svg" alt="Royal command banner">
-						<div>
-							<h2 class="title-font">Royal War Council</h2>
-							<p>Read the map, issue decrees, and guide your people from village to empire.</p>
+				<section class="scene-card">
+					<div class="scene" id="scene">
+						<div class="sky sky-day" aria-hidden="true"></div>
+						<div class="sky sky-dusk" aria-hidden="true"></div>
+						<div class="sky sky-night" aria-hidden="true"></div>
+						<div class="orbit" aria-hidden="true"><span class="sun"></span><span class="moon"></span></div>
+						<div class="cloud c1" aria-hidden="true"></div>
+						<div class="cloud c2" aria-hidden="true"></div>
+
+						<svg class="scene-bg" viewBox="0 0 1200 400" preserveAspectRatio="xMidYMax slice" aria-hidden="true" focusable="false">
+							<path class="mtn" d="M0 250 L70 190 L130 220 L230 120 L320 205 L400 160 L480 225 L610 125 L700 210 L790 170 L880 228 L1010 135 L1110 205 L1200 170 V270 H0Z"/>
+							<path class="snow" d="M230 120 L204 146 L217 141 L230 152 L243 141 L256 145Z M610 125 L582 147 L597 142 L610 155 L623 142 L634 148Z M1010 135 L982 155 L997 151 L1010 163 L1023 151 L1038 155Z M400 160 L380 171 L391 168 L400 177 L410 168 L422 177Z M790 170 L770 179 L781 177 L790 184 L799 177 L810 184Z"/>
+							<path class="hill-far" d="M0 270 Q120 232 260 258 T520 252 T780 256 T1040 250 T1200 258 V330 H0Z"/>
+							<g class="era era-1" fill="#6f4d2c">
+								<path d="M292 262l14-16 14 16zM324 262l12-13 12 13zM356 262l14-16 14 16z"/>
+							</g>
+							<g class="era era-2">
+								<path d="M520 258V226h12v-7h8v7h12v-7h8v7h12v-7h8v7h12v-7h8v7h12V258z" fill="#c9b07e"/>
+								<path d="M566 226V198h30v28z" fill="#d7bf8c"/>
+								<path d="M560 198l21-14 21 14z" fill="#b5442c"/>
+								<path d="M581 184v-16" stroke="#4a2a14" stroke-width="2"/>
+								<path d="M581 168h14l-4 4 4 4h-14z" fill="#f59e0b"/>
+							</g>
+							<path class="hill-near" d="M0 300 Q200 268 430 292 T860 286 T1200 274 V400 H0Z"/>
+							<g transform="translate(58 306)"><rect x="-3" y="-4" width="6" height="22" fill="#6b4423"/><circle cy="-16" r="20" class="leaf-a"/><circle cx="-11" cy="-6" r="14" class="leaf-b"/><circle cx="11" cy="-8" r="13" class="leaf-b"/></g>
+							<g transform="translate(112 312) scale(.8)"><rect x="-3" y="-4" width="6" height="22" fill="#6b4423"/><circle cy="-16" r="20" class="leaf-a"/><circle cx="-11" cy="-6" r="14" class="leaf-b"/><circle cx="11" cy="-8" r="13" class="leaf-b"/></g>
+							<g transform="translate(1140 304)"><rect x="-3" y="-4" width="6" height="22" fill="#6b4423"/><circle cy="-16" r="20" class="leaf-a"/><circle cx="-11" cy="-6" r="14" class="leaf-b"/><circle cx="11" cy="-8" r="13" class="leaf-b"/></g>
+							<path class="river" d="M0 356 Q180 338 380 352 T780 350 T1200 340 V400 H0Z"/>
+							<path class="bank" d="M0 356 Q180 338 380 352 T780 350 T1200 340"/>
+							<g class="glint"><path d="M50 374q26-7 52 0M260 386q26-7 52 0M470 372q26-7 52 0M700 384q26-7 52 0M930 372q26-7 52 0M1110 386q26-7 52 0"/></g>
+						</svg>
+
+						<div id="scene-buildings" class="scene-layer" aria-hidden="true"></div>
+						<div id="scene-people" class="scene-layer" aria-hidden="true"></div>
+						<div class="weather-tint" aria-hidden="true"></div>
+						<div class="rain" aria-hidden="true"></div>
+						<div class="night-shade" aria-hidden="true"></div>
+
+						<div class="scene-overlay">
+							<div class="scene-chip">
+								<div>
+									<span id="chapter-eyebrow" class="chip-eyebrow">Chapter I</span>
+									<strong id="chapter-title" class="title-font">The Banks of the Ganga</strong>
+								</div>
+								<button type="button" data-action="story" aria-label="Re-read this chapter's story" title="Re-read the story"><i class="fas fa-book-open"></i></button>
+							</div>
 						</div>
 					</div>
-					<div class="war-map">
-						<div class="overlay-card">
-							<strong><i class="fas fa-location-dot"></i> Frontier Watch</strong>
-							<p>Border villages and grain roads are tracked on the command map.</p>
-						</div>
-						<div class="overlay-card" id="status-hint">Balanced governance and reserves ensure kingdom stability.</div>
-					</div>
+					<div class="scene-caption"><i class="fas fa-feather-pointed" aria-hidden="true"></i><span id="status-hint">Balanced governance and reserves ensure kingdom stability.</span></div>
 				</section>
 
 				<h3 class="section-title title-font">Construction</h3>
 				<div id="building-container" class="grid-3"></div>
 
-				<h3 class="section-title title-font">Rituals & Decrees</h3>
-				<div id="rituals-container" class="grid-2"></div>
+				<h3 class="section-title title-font">Rituals &amp; Decrees</h3>
+				<div id="rituals-container" class="grid-3"></div>
 
-				<h3 class="section-title title-font">Research & Statecraft</h3>
+				<h3 class="section-title title-font">Research &amp; Statecraft</h3>
 				<div id="upgrades-container" class="grid-3"></div>
 
 			</section>
@@ -114,18 +197,24 @@
 				</div>
 				<div class="objective-box">
 					<strong><i class="fas fa-scroll"></i> Current Objective</strong>
-					<p id="objective-text">Build 3 Mud Huts to increase population capacity.</p>
+					<p id="objective-text">Raise 3 Mud Huts to shelter your growing clan.</p>
+					<div class="progress" role="presentation"><i id="objective-fill"></i></div>
+					<small id="objective-count">1 / 3</small>
 				</div>
 			</aside>
 		</main>
 
-		<div id="modal-overlay" class="modal hidden">
+		<div id="modal-overlay" class="modal hidden" role="dialog" aria-modal="true" aria-labelledby="modal-title">
 			<div class="modal-card">
+				<span id="modal-eyebrow" class="modal-eyebrow">Royal Event</span>
 				<h2 id="modal-title" class="title-font">Royal Event</h2>
+				<div class="ornament" aria-hidden="true"></div>
 				<p id="modal-body"></p>
-				<button class="action-btn" data-action="modal-close" id="modal-close">Continue</button>
+				<div id="modal-actions" class="modal-actions"></div>
 			</div>
 		</div>
+
+		<div id="toasts" class="toasts" role="status" aria-live="polite"></div>
 	</div>
 
 	<script type="module" src="js/main.js"></script>

@@ -25,7 +25,7 @@ const projects = [
     category: "personal",
     icon: "tent",
     link: "apps/bharatvarsha/index.html",
-    description: "Step into the Later Vedic period as a tribal chief — manage resources, make alliances, and shape your civilization's destiny in this historical strategy simulation.",
+    description: "Lead a Vedic clan from a riverside village to a Mahajanapada — a nine-chapter story, royal decisions, sacred rites, and a living settlement that shifts with day, night, and monsoon.",
     tech: ["HTML5", "CSS3", "JavaScript", "Game Design", "Simulation"]
   },
   {
@@ -53,12 +53,12 @@ const projects = [
     tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "SVG Charts", "Game Design"]
   },
   {
-    name: "Live Analytics Dashboard",
+    name: "DevPulse: Live Telemetry Matrix",
     category: "personal",
-    icon: "chart-no-axes-combined",
+    icon: "activity",
     link: "apps/live-analytics-dashboard/index.html",
-    description: "A live data dashboard case study that fuses GitHub profile telemetry, optional Plausible pageview analytics, and activity streak insights into animated KPI widgets.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Data Visualization", "GitHub API", "Plausible API"]
+    description: "An over-engineered real-time developer and systems telemetry matrix fusing GitHub deep analytics, client Web Vitals, global edge latency probes, live synthetic streaming, and Plausible metrics.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Web Vitals API", "Canvas API", "Web Audio API", "GitHub API", "Plausible API"]
   },
   {
     name: "GeoLocation Explorer",
@@ -152,6 +152,7 @@ const projectIcons = {
   'dna': '<path d="m10 16 1.5 1.5"/> <path d="m14 8-1.5-1.5"/> <path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993"/> <path d="m16.5 10.5 1 1"/> <path d="m17 6-2.891-2.891"/> <path d="M2 15c6.667-6 13.333 0 20-6"/> <path d="m20 9 .891.891"/> <path d="M3.109 14.109 4 15"/> <path d="m6.5 12.5 1 1"/> <path d="m7 18 2.891 2.891"/> <path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993"/>',
   'keyboard': '<path d="M10 8h.01"/> <path d="M12 12h.01"/> <path d="M14 8h.01"/> <path d="M16 12h.01"/> <path d="M18 8h.01"/> <path d="M6 8h.01"/> <path d="M7 16h10"/> <path d="M8 12h.01"/> <rect width="20" height="16" x="2" y="4" rx="2"/>',
   'building-2':'<path d="M10 12h4"/> <path d="M10 8h4"/> <path d="M14 21v-3a2 2 0 0 0-4 0v3"/> <path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/> <path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/>',
+  'activity': '<path d="M22 12h-2.48a2 2 0 0 0-1.93 1.46l-2.35 8.36a.25.25 0 0 1-.48 0L9.24 2.18a.25.25 0 0 0-.48 0l-2.35 8.36A2 2 0 0 1 4.48 12H2"/>',
   'chart-no-axes-combined': '<path d="M12 16v5"/> <path d="M16 14.639V21"/> <path d="M20 10.656V21"/> <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15"/> <path d="M4 18.463V21"/> <path d="M8 14.656V21"/>',
   'map-pin': '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/> <circle cx="12" cy="10" r="3"/>',
   'crosshair': '<circle cx="12" cy="12" r="10"/> <line x1="22" x2="18" y1="12" y2="12"/> <line x1="6" x2="2" y1="12" y2="12"/> <line x1="12" x2="12" y1="6" y2="2"/> <line x1="12" x2="12" y1="22" y2="18"/>',
