@@ -3,40 +3,16 @@ let shellRuntime = null;
 const sharedProjects = typeof projects !== 'undefined' && Array.isArray(projects) ? projects : [];
 
 document.addEventListener('DOMContentLoaded', function() {
-  // Boot sequence and typing animation
-  setTimeout(() => {
-      simulateTyping("sudo start portfolio.sh", document.querySelector('.typed-text'), () => {
-          setTimeout(() => {
-              document.querySelector('.terminal-content').style.opacity = '1';
-          }, 200);
-      });
-  }, 1000);
-
   // Set up interactive elements
   setupNavigation();
-  setupThemeToggler();
-  setupCustomCursor();
+  setupSettings();
   setupSkillBars();
   setupStatusBar();
   setupMatrixBackground();
-  simulateHackerData();
   setupTerminalMusicPlayer();
   setupDesktopEnvironment();
   setupInteractiveShell();
 });
-
-// Simulate typing animation
-function simulateTyping(text, element, callback) {
-  let i = 0;
-  const typingInterval = setInterval(() => {
-      element.textContent += text.charAt(i);
-      i++;
-      if (i >= text.length) {
-          clearInterval(typingInterval);
-          if (callback) callback();
-      }
-  }, 40);
-}
 
 // Setup navigation between sections
 function setupNavigation() {
@@ -69,6 +45,9 @@ function activateSection(target) {
     }
   });
 
+  const termBody = document.querySelector('#window-terminal .terminal-body');
+  if (termBody) termBody.scrollTop = 0;
+
   const commandInput = document.querySelector('.command-input');
   if (commandInput) {
     commandInput.textContent = `cd /${target}`;
@@ -95,45 +74,84 @@ function animateSection(section) {
   });
 }
 
-// Setup theme toggler
-function setupThemeToggler() {
-  const themeBtns = document.querySelectorAll('.theme-btn');
+// Theme registry: id -> display name (colours live in style.css)
+const THEMES = {
+  kali: 'Kali Linux',
+  dusk: 'Dusk Blue',
+  spiderman: 'Spider-Man',
+  stranger: 'Stranger Things',
+  claude: 'Claude',
+  dexter: 'Dexter'
+};
+const rainColors = { fg: '#4d8cff', bg: '#0b0d12' };
 
-  themeBtns.forEach(btn => {
-      btn.addEventListener('click', () => {
-          const theme = btn.getAttribute('data-theme');
-      applyTheme(theme);
-      });
-  });
-
-  applyTheme('kali');
+function storeSetting(key, value) {
+  try { localStorage.setItem(key, value); } catch (e) { /* private mode: setting just won't persist */ }
 }
 
 function applyTheme(theme) {
-  const body = document.body;
-  const themeBtns = document.querySelectorAll('.theme-btn');
-  const matrixBg = document.querySelector('.matrix-bg');
+  if (!THEMES[theme]) theme = 'kali';
+  const root = document.documentElement;
+  root.dataset.theme = theme;
+  storeSetting('classicTheme', theme);
 
-  body.classList.remove('kali-theme', 'matrix-theme', 'synthwave-theme', 'light-theme','retro-green-theme','blue-dusk-theme','ember-glow-theme','mono-chrome-theme');
-  body.classList.add(`${theme}-theme`);
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.classList.toggle('active', btn.dataset.theme === theme);
+  });
+  const label = document.getElementById('themeLabel');
+  if (label) label.textContent = THEMES[theme];
 
-  themeBtns.forEach(btn => {
-    btn.classList.toggle('active', btn.getAttribute('data-theme') === theme);
+  const styles = getComputedStyle(root);
+  rainColors.fg = styles.getPropertyValue('--accent').trim();
+  rainColors.bg = styles.getPropertyValue('--bg').trim();
+}
+
+// Bottom-bar settings popover: theme + matrix rain
+function setupSettings() {
+  const toggle = document.getElementById('settingsToggle');
+  const menu = document.getElementById('settingsMenu');
+  const rainToggle = document.getElementById('rainToggle');
+  if (!toggle || !menu) return;
+
+  document.querySelectorAll('.theme-btn').forEach(btn => {
+    btn.addEventListener('click', () => applyTheme(btn.dataset.theme));
   });
 
-  if (matrixBg) {
-    matrixBg.style.opacity = theme === 'matrix' ? '0.3' : '0.15';
+  function setMenu(open) {
+    menu.classList.toggle('window-hidden', !open);
+    toggle.setAttribute('aria-expanded', String(open));
   }
+  toggle.addEventListener('click', () => setMenu(menu.classList.contains('window-hidden')));
+  document.addEventListener('click', event => {
+    if (!event.target.closest('#settingsMenu, #settingsToggle')) setMenu(false);
+  });
+  document.addEventListener('keydown', event => {
+    if (event.key === 'Escape') setMenu(false);
+  });
+
+  function applyRain(on) {
+    document.documentElement.dataset.rain = on ? 'on' : 'off';
+    rainToggle.checked = on;
+    storeSetting('classicRain', on ? 'on' : 'off');
+  }
+  rainToggle.addEventListener('change', () => applyRain(rainToggle.checked));
+  let savedRain = null;
+  try { savedRain = localStorage.getItem('classicRain'); } catch (e) { /* ignore */ }
+  applyRain(savedRain !== 'off');
+
+  let savedTheme = null;
+  try { savedTheme = localStorage.getItem('classicTheme'); } catch (e) { /* ignore */ }
+  applyTheme(savedTheme);
 }
 
 function setupInteractiveShell() {
   const shellOutput = document.getElementById('shell-output');
   const shellInput = document.getElementById('shell-command');
   const shellPrompt = document.getElementById('shell-prompt');
+  const shellPs1 = document.getElementById('shell-ps1');
   const shellContainer = document.getElementById('linux-shell');
-  const quickCommandButtons = document.querySelectorAll('.quick-cmd');
 
-  if (!shellOutput || !shellInput || !shellPrompt || !shellContainer) {
+  if (!shellOutput || !shellInput || !shellPrompt || !shellPs1 || !shellContainer) {
     return;
   }
 
@@ -172,7 +190,6 @@ function setupInteractiveShell() {
   };
 
   const COMMANDS = ['help', 'ls', 'pwd', 'cd', 'cat', 'clear', 'whoami', 'uname', 'date', 'echo', 'projects', 'open', 'openall', 'openmodern', 'theme', 'goto', 'resume', 'lsapps', 'openapp', 'ps', 'kill', 'systemctl', 'history', 'services', 'which', 'man', 'uptime', 'neofetch', 'sudo'];
-  const THEMES = ['kali', 'matrix', 'synthwave', 'light', 'retro-green', 'blue-dusk', 'ember-glow', 'mono-chrome'];
   const SHELL_START_TIME = Date.now();
   const state = {
     cwd: '/home',
@@ -185,7 +202,7 @@ function setupInteractiveShell() {
   }
 
   function updatePrompt() {
-    shellPrompt.textContent = `ptwo@kali:${promptPath()}$`;
+    shellPs1.textContent = `┌──(ptwo㉿kali)-[${promptPath()}]`;
   }
 
   function printLine(text, variant = '') {
@@ -193,10 +210,10 @@ function setupInteractiveShell() {
     line.className = `shell-line ${variant}`.trim();
     line.textContent = text;
     shellOutput.appendChild(line);
-    shellOutput.scrollTop = shellOutput.scrollHeight;
   }
 
   function printCommand(command) {
+    printLine(shellPs1.textContent, 'shell-ps1-line');
     printLine(`${shellPrompt.textContent} ${command}`);
   }
 
@@ -421,18 +438,18 @@ function setupInteractiveShell() {
       break;
     }
     case 'theme': {
+      const wanted = arg.toLowerCase().replace(/[^a-z]/g, '');
+      const id = Object.keys(THEMES).find(key => key === wanted || THEMES[key].toLowerCase().replace(/[^a-z]/g, '') === wanted);
       if (!arg) {
-        printLine(`Current themes: ${THEMES.join(', ')}`, 'shell-line-muted');
+        Object.keys(THEMES).forEach(key => printLine(`${key.padEnd(10)} ${THEMES[key]}`, 'shell-line-muted'));
         break;
       }
-
-      if (!THEMES.includes(arg)) {
-        printLine(`theme: unknown theme '${arg}'`, 'shell-line-error');
+      if (!id) {
+        printLine(`theme: unknown theme '${arg}' (run 'theme' to list)`, 'shell-line-error');
         break;
       }
-
-      applyTheme(arg);
-      printLine(`Theme changed to '${arg}'.`, 'shell-line-muted');
+      applyTheme(id);
+      printLine(`Theme changed to ${THEMES[id]}.`, 'shell-line-muted');
       break;
     }
     case 'goto': {
@@ -463,7 +480,7 @@ function setupInteractiveShell() {
       printLine('ptwo@kali', 'shell-line-muted');
       printLine('OS: Kali Linux Portfolio Edition', 'shell-line-muted');
       printLine('Shell: portfolio-sh 2.0', 'shell-line-muted');
-      printLine('Theme Engine: multi-profile terminal UI', 'shell-line-muted');
+      printLine(`Theme: ${THEMES[document.documentElement.dataset.theme] || THEMES.kali}`, 'shell-line-muted');
       break;
     case 'resume':
       if (window.desktopOS && typeof window.desktopOS.openApp === 'function') {
@@ -608,6 +625,7 @@ function setupInteractiveShell() {
     if (event.key === 'Enter') {
       runCommand(shellInput.value);
       shellInput.value = '';
+      shellInput.scrollIntoView({ block: 'nearest' });
     }
 
     if (event.key === 'ArrowUp') {
@@ -638,61 +656,13 @@ function setupInteractiveShell() {
     shellInput.focus();
   });
 
-  quickCommandButtons.forEach(button => {
-    button.addEventListener('click', () => {
-      const command = button.getAttribute('data-command') || '';
-      if (!command) return;
-      runCommand(command);
-      shellInput.value = '';
-      shellInput.focus();
-    });
-  });
-
-  printLine('Welcome to Portfolio Linux Shell v2.0');
-  printLine("Type 'help' to explore commands.", 'shell-line-muted');
+  printLine("Welcome to Portfolio Linux Shell v2.0. Type 'help' to explore commands.", 'shell-line-muted');
   updatePrompt();
   shellInput.focus({ preventScroll: true });
 
   shellRuntime = {
     syncPathFromSection
   };
-}
-
-// Setup custom cursor effect
-function setupCustomCursor() {
-  const cursor = document.querySelector('.cursor');
-  if (!cursor) return;
-  
-  if (window.innerWidth > 768) {
-      cursor.style.display = 'block';
-      
-      document.addEventListener('mousemove', e => {
-          cursor.style.translate = `${e.clientX}px ${e.clientY}px`;
-      }, { passive: true });
-      
-      // Scale effect on clickable elements
-      const clickables = document.querySelectorAll('button, a, input, textarea');
-      clickables.forEach(el => {
-          el.addEventListener('mouseenter', () => {
-              cursor.style.transform = 'translate(-50%, -50%) scale(1.5)';
-              cursor.style.borderColor = 'var(--kali-accent)';
-          });
-          
-          el.addEventListener('mouseleave', () => {
-              cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-              cursor.style.borderColor = 'var(--kali-text)';
-          });
-      });
-      
-      // Click animation
-      document.addEventListener('mousedown', () => {
-          cursor.style.transform = 'translate(-50%, -50%) scale(0.8)';
-      });
-      
-      document.addEventListener('mouseup', () => {
-          cursor.style.transform = 'translate(-50%, -50%) scale(1)';
-      });
-  }
 }
 
 // Setup skill bars animation
@@ -745,13 +715,14 @@ function setupMatrixBackground() {
 
   function drawMatrix(now) {
       requestAnimationFrame(drawMatrix);
-      if (document.hidden || now - last < frameMs) return;
+      if (document.hidden || document.documentElement.dataset.rain === 'off' || now - last < frameMs) return;
       last = now;
 
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.05)';
+      ctx.globalAlpha = 0.06;
+      ctx.fillStyle = rainColors.bg;
       ctx.fillRect(0, 0, canvas.width, canvas.height);
-      // canvas can't resolve CSS vars, so read the themed color each frame
-      ctx.fillStyle = getComputedStyle(document.body).getPropertyValue('--kali-text');
+      ctx.globalAlpha = 1;
+      ctx.fillStyle = rainColors.fg;
       ctx.font = `${fontSize}px monospace`;
 
       for (let i = 0; i < drops.length; i++) {
@@ -769,61 +740,6 @@ function setupMatrixBackground() {
 
   resize();
   requestAnimationFrame(drawMatrix);
-}
-
-// Simulate hacker data streams
-function simulateHackerData() {
-  const dataStreams = document.querySelectorAll('.data-stream');
-  
-  dataStreams.forEach(stream => {
-      setInterval(() => {
-          // Generate random binary/hex data
-          let data = '';
-          for (let i = 0; i < 50; i++) {
-              if (Math.random() > 0.5) {
-                  data += Math.random() > 0.5 ? '1' : '0';
-              } else {
-                  data += Math.floor(Math.random() * 16).toString(16);
-              }
-          }
-          
-          // Create and append data element
-          const dataElement = document.createElement('div');
-          dataElement.className = 'data-bit';
-          dataElement.textContent = data;
-          dataElement.style.position = 'absolute';
-          dataElement.style.color = 'var(--kali-text)';
-          dataElement.style.fontSize = '10px';
-          dataElement.style.opacity = '0.7';
-          dataElement.style.whiteSpace = 'nowrap';
-          dataElement.style.left = Math.random() * 100 + '%';
-          dataElement.style.top = Math.random() * 100 + '%';
-          dataElement.style.transform = 'translateX(-50%)';
-          dataElement.style.animation = 'fade-out 2s forwards';
-          
-          stream.appendChild(dataElement);
-          
-          // Remove after animation completes
-          setTimeout(() => {
-              dataElement.remove();
-          }, 2000);
-      }, Math.random() * 5000 + 2000);
-  });
-  
-  // Add keyframe animation for fade-out
-  const style = document.createElement('style');
-  style.textContent = `
-      @keyframes fade-out {
-          from {
-              opacity: 0.7;
-          }
-          to {
-              opacity: 0;
-              transform: translateY(20px) translateX(-50%);
-          }
-      }
-  `;
-  document.head.appendChild(style);
 }
 
 function setupTerminalMusicPlayer() {
@@ -1516,48 +1432,11 @@ document.querySelector('.submit-btn').addEventListener('click', function(e) {
       }, 1500);
   } else {
       // Show error animation
-      this.style.color = 'var(--kali-accent)';
+      this.style.color = 'var(--accent)';
       setTimeout(() => {
-          this.style.color = 'var(--kali-text)';
+          this.style.color = '';
       }, 1000);
   }
-});
-
-// Add typewriter effect to section titles
-document.querySelectorAll('.section-title').forEach(title => {
-  const originalText = title.textContent;
-  title.textContent = '';
-  
-  function typeTitle() {
-      let i = 0;
-      title.textContent = '';
-      
-      const typeInterval = setInterval(() => {
-          if (i < originalText.length) {
-              title.textContent += originalText.charAt(i);
-              i++;
-          } else {
-              clearInterval(typeInterval);
-              
-              // Reset after a delay for endless animation
-              setTimeout(() => {
-                  typeTitle();
-              }, 5000);
-          }
-      }, 100);
-  }
-  
-  // Start typing when section becomes visible
-  const observer = new IntersectionObserver((entries) => {
-      entries.forEach(entry => {
-          if (entry.isIntersecting) {
-              typeTitle();
-              observer.unobserve(entry.target);
-          }
-      });
-  });
-  
-  observer.observe(title);
 });
 
 // Function to populate projects on page load
@@ -1594,17 +1473,6 @@ function populateProjects() {
         <span class="project-category">${project.category.toUpperCase()}</span>
       </div>
     `;
-    
-    // Add hover effect
-    projectCard.addEventListener('mouseenter', () => {
-      projectCard.style.borderColor = 'var(--kali-text)';
-      projectCard.querySelector('.project-image').style.transform = 'scale(1.05)';
-    });
-    
-    projectCard.addEventListener('mouseleave', () => {
-      projectCard.style.borderColor = 'rgba(255, 255, 255, 0.1)';
-      projectCard.querySelector('.project-image').style.transform = 'scale(1)';
-    });
     
     projectsGrid.appendChild(projectCard);
   });

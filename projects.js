@@ -45,6 +45,14 @@ const projects = [
     tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Game Design"]
   },
   {
+    name: "Keystorm",
+    category: "personal",
+    icon: "keyboard",
+    link: "apps/keystorm/index.html",
+    description: "A typing game with five modes — Sprint, Razor, Rain, Orbit, and Zen — combo-driven particle effects, and a per-key analytics dashboard with WPM history and a keyboard heatmap.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "SVG Charts", "Game Design"]
+  },
+  {
     name: "Live Analytics Dashboard",
     category: "personal",
     icon: "chart-no-axes-combined",
@@ -142,7 +150,8 @@ const projectIcons = {
   'network': '<rect x="16" y="16" width="6" height="6" rx="1"/> <rect x="2" y="16" width="6" height="6" rx="1"/> <rect x="9" y="2" width="6" height="6" rx="1"/> <path d="M5 16v-3a1 1 0 0 1 1-1h12a1 1 0 0 1 1 1v3"/> <path d="M12 12V8"/>',
   'tent': '<path d="M3.5 21 14 3"/> <path d="M20.5 21 10 3"/> <path d="M15.5 21 12 15l-3.5 6"/> <path d="M2 21h20"/>',
   'dna': '<path d="m10 16 1.5 1.5"/> <path d="m14 8-1.5-1.5"/> <path d="M15 2c-1.798 1.998-2.518 3.995-2.807 5.993"/> <path d="m16.5 10.5 1 1"/> <path d="m17 6-2.891-2.891"/> <path d="M2 15c6.667-6 13.333 0 20-6"/> <path d="m20 9 .891.891"/> <path d="M3.109 14.109 4 15"/> <path d="m6.5 12.5 1 1"/> <path d="m7 18 2.891 2.891"/> <path d="M9 22c1.798-1.998 2.518-3.995 2.807-5.993"/>',
-  'building-2': '<path d="M10 12h4"/> <path d="M10 8h4"/> <path d="M14 21v-3a2 2 0 0 0-4 0v3"/> <path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/> <path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/>',
+  'keyboard': '<path d="M10 8h.01"/> <path d="M12 12h.01"/> <path d="M14 8h.01"/> <path d="M16 12h.01"/> <path d="M18 8h.01"/> <path d="M6 8h.01"/> <path d="M7 16h10"/> <path d="M8 12h.01"/> <rect width="20" height="16" x="2" y="4" rx="2"/>',
+  'building-2':'<path d="M10 12h4"/> <path d="M10 8h4"/> <path d="M14 21v-3a2 2 0 0 0-4 0v3"/> <path d="M6 10H4a2 2 0 0 0-2 2v7a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-2"/> <path d="M6 21V5a2 2 0 0 1 2-2h8a2 2 0 0 1 2 2v16"/>',
   'chart-no-axes-combined': '<path d="M12 16v5"/> <path d="M16 14.639V21"/> <path d="M20 10.656V21"/> <path d="m22 3-8.646 8.646a.5.5 0 0 1-.708 0L9.354 8.354a.5.5 0 0 0-.707 0L2 15"/> <path d="M4 18.463V21"/> <path d="M8 14.656V21"/>',
   'map-pin': '<path d="M20 10c0 4.993-5.539 10.193-7.399 11.799a1 1 0 0 1-1.202 0C9.539 20.193 4 14.993 4 10a8 8 0 0 1 16 0"/> <circle cx="12" cy="10" r="3"/>',
   'crosshair': '<circle cx="12" cy="12" r="10"/> <line x1="22" x2="18" y1="12" y2="12"/> <line x1="6" x2="2" y1="12" y2="12"/> <line x1="12" x2="12" y1="6" y2="2"/> <line x1="12" x2="12" y1="22" y2="18"/>',

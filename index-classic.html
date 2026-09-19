@@ -3,12 +3,13 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Terminal@Kali:~# Preetam</title>
+    <title>ptwo@kali: ~ | Preetam Hegde</title>
     <link rel="stylesheet" href="v0/style.css">
     <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
     <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
     <link rel="icon" type="image/svg+xml" href="v1/favicon.svg">
+    <script>try{document.documentElement.dataset.theme=localStorage.getItem('classicTheme')||'kali'}catch(e){}</script>
 </head>
 <body>
     <div class="matrix-bg"></div>
@@ -47,50 +48,29 @@
                 <div class="term-btn minimize"></div>
                 <div class="term-btn maximize"></div>
             </div>
-            <div class="terminal-title">Terminal@Kali:~#</div>
+            <div class="terminal-title">ptwo@kali: ~</div>
         </div>
 
+        <nav class="terminal-tabs" aria-label="Sections">
+            <button class="nav-btn" data-target="home">./home</button>
+            <button class="nav-btn" data-target="projects">./projects</button>
+            <button class="nav-btn" data-target="experience">./experience</button>
+            <button class="nav-btn" data-target="resume">./resume</button>
+            <button class="nav-btn" data-target="contact">./contact</button>
+        </nav>
+
         <div class="terminal-body">
-            <div class="cyber-hud">
-                <div class="hud-item">
-                    <span class="hud-label">USER</span>
-                    <span class="hud-value">ptwo</span>
-                </div>
-                <div class="hud-item">
-                    <span class="hud-label">MODE</span>
-                    <span class="hud-value">INTERACTIVE_SHELL</span>
-                </div>
-                <div class="hud-item">
-                    <span class="hud-label">SECURITY</span>
-                    <span class="hud-value">AES-256</span>
-                </div>
-            </div>
-
-            <div class="boot-sequence">
-                <p class="boot-text">Booting Preetams' Kali Linux 2025.1 ...</p>
-                <p class="boot-text">Loading kernel modules ...</p>
-                <p class="boot-text">Starting system services ...</p>
-                <p class="boot-text">Establishing secure connection ...</p>
-                <p class="boot-text">Initializing portfolio system ...</p>
-                <p class="boot-text">Connection established.</p>
-            </div>
-
-            <div class="login-prompt">
-                <p class="login-text">Kali Linux 2025.1</p>
-                <p class="login-text">Terminal@Kali:~# <span class="typed-text"></span></p>
-            </div>
-
             <div class="terminal-content">
                 <section id="home" class="section active">
                     <div class="command-line">
-                        <span class="prompt">ptwo@kali:~#</span>
-                        <span class="command">cat about_me.txt</span>
+                        <span class="ps1">┌──(<b>ptwo㉿kali</b>)-[<em>~</em>]</span>
+                        <span class="ps2">└─$ <span class="command">cat about_me.txt</span></span>
                     </div>
                     <div class="output">
-                        <div class="glitch-wrapper">
-                            <h1 class="glitch" data-text="[YOUR NAME]">Preetam Hegde</h1>
+                        <div>
+                            <h1 class="name">Preetam Hegde</h1>
                         </div>
-                        <h2 class="blink-text" id="classicHomeTitle">Software Developer at Oracle</h2>
+                        <h2 class="tagline" id="classicHomeTitle">Software Developer at Oracle</h2>
                         <div class="bio-container">
                             <!-- <p>// Replace with your actual bio</p> -->
                             <p id="classicHomeSummary">Self-driven software engineer with 2+ years of experience at Oracle and a solid internship in real-time 
@@ -117,9 +97,9 @@
 
                 <section id="projects" class="section">
                   <div class="command-line">
-                      <span class="prompt">ptwo@kali:~#</span>
-                      <span class="command">ls -la /projects/</span>
-                  </div>
+                        <span class="ps1">┌──(<b>ptwo㉿kali</b>)-[<em>~</em>]</span>
+                        <span class="ps2">└─$ <span class="command">ls -la /projects/</span></span>
+                    </div>
                   <div class="output">
                       <h2 class="section-title">Projects</h2>
                       <!-- Project filters will be inserted here by JavaScript -->
@@ -131,8 +111,8 @@
 
                 <section id="experience" class="section">
                     <div class="command-line">
-                        <span class="prompt">ptwo@kali:~#</span>
-                        <span class="command">more /home/experience.log</span>
+                        <span class="ps1">┌──(<b>ptwo㉿kali</b>)-[<em>~</em>]</span>
+                        <span class="ps2">└─$ <span class="command">more /home/experience.log</span></span>
                     </div>
                     <div class="output">
                         <h2 class="section-title">Experience</h2>
@@ -175,8 +155,8 @@
 
                 <section id="resume" class="section">
                     <div class="command-line">
-                        <span class="prompt">ptwo@kali:~#</span>
-                        <span class="command">cat /resume/profile.md</span>
+                        <span class="ps1">┌──(<b>ptwo㉿kali</b>)-[<em>~</em>]</span>
+                        <span class="ps2">└─$ <span class="command">cat /resume/profile.md</span></span>
                     </div>
                     <div class="output">
                         <h2 class="section-title">Resume Snapshot</h2>
@@ -203,8 +183,8 @@
 
                 <section id="contact" class="section">
                     <div class="command-line">
-                        <span class="prompt">ptwo@kali:~#</span>
-                        <span class="command">nano contact_me.sh</span>
+                        <span class="ps1">┌──(<b>ptwo㉿kali</b>)-[<em>~</em>]</span>
+                        <span class="ps2">└─$ <span class="command">nano contact_me.sh</span></span>
                     </div>
                     <div class="output">
                         <h2 class="section-title">Contact Me</h2>
@@ -250,54 +230,20 @@
             </div>
 
             <div class="linux-shell" id="linux-shell">
-                <div class="shell-header">Interactive Linux Shell</div>
-                <div class="shell-quick-commands">
-                    <button class="quick-cmd" data-command="help">help</button>
-                    <button class="quick-cmd" data-command="ls">ls</button>
-                    <button class="quick-cmd" data-command="projects">projects</button>
-                    <button class="quick-cmd" data-command="resume">resume</button>
-                    <button class="quick-cmd" data-command="neofetch">neofetch</button>
-                    <button class="quick-cmd" data-command="theme matrix">theme matrix</button>
-                </div>
                 <div class="shell-output" id="shell-output" aria-live="polite"></div>
                 <div class="shell-input-line">
-                    <span class="shell-prompt" id="shell-prompt">ptwo@kali:~$</span>
-                    <input
-                        id="shell-command"
-                        class="shell-command"
-                        type="text"
-                        autocomplete="off"
-                        spellcheck="false"
-                        aria-label="Terminal command input"
-                        placeholder="Type 'help' and press Enter"
-                    >
-                </div>
-            </div>
-
-            <div class="terminal-nav">
-                <div class="command-prompt">
-                    <span class="prompt">ptwo@kali:~#</span>
-                    <span class="command-input">cd /</span>
-                </div>
-                <div class="nav-options">
-                    <button class="nav-btn" data-target="home">./home</button>
-                    <button class="nav-btn" data-target="projects">./projects</button>
-                    <button class="nav-btn" data-target="experience">./experience</button>
-                    <button class="nav-btn" data-target="resume">./resume</button>
-                    <button class="nav-btn" data-target="contact">./contact</button>
-                </div>
-                <div class="theme-toggler">
-                    <span class="prompt">ptwo@kali:~#</span>
-                    <span class="command-input">switch_theme</span>
-                    <div class="theme-options">
-                        <button class="theme-btn" data-theme="kali">Kali</button>
-                        <button class="theme-btn" data-theme="matrix">Matrix</button>
-                        <button class="theme-btn" data-theme="synthwave">Synthwave</button>
-                        <button class="theme-btn" data-theme="light">Light</button>
-                        <button class="theme-btn" data-theme="retro-green">Retro</button>
-                        <button class="theme-btn" data-theme="blue-dusk">Dusk-blue</button>
-                        <button class="theme-btn" data-theme="ember-glow">Glow-ember</button>
-                        <button class="theme-btn" data-theme="mono-chrome">Chrome-mono</button>
+                    <div class="ps1" id="shell-ps1"></div>
+                    <div class="shell-row">
+                        <span class="ps2" id="shell-prompt">└─$</span>
+                        <input
+                            id="shell-command"
+                            class="shell-command"
+                            type="text"
+                            autocomplete="off"
+                            spellcheck="false"
+                            aria-label="Terminal command input"
+                            placeholder="help"
+                        >
                     </div>
                 </div>
             </div>
@@ -451,12 +397,18 @@
 
     <div class="snap-preview window-hidden" id="snapPreview"></div>
 
-    <div class="floating-data">
-        <div class="data-stream"></div>
-        <div class="data-stream"></div>
-        <div class="data-stream"></div>
-        <div class="data-stream"></div>
-        <div class="data-stream"></div>
+    <div class="settings-menu window-hidden" id="settingsMenu" role="dialog" aria-label="Settings">
+        <div class="menu-header">Settings</div>
+        <div class="menu-label">Theme</div>
+        <div class="theme-list">
+            <button class="theme-btn" data-theme="kali" data-name="Kali Linux"><i class="swatch" style="--a:#4d8cff;--b:#b48cff;--c:#0b0d12"></i>Kali Linux</button>
+            <button class="theme-btn" data-theme="dusk" data-name="Dusk Blue"><i class="swatch" style="--a:#7aa2f7;--b:#ff9e64;--c:#0a1220"></i>Dusk Blue</button>
+            <button class="theme-btn" data-theme="spiderman" data-name="Spider-Man"><i class="swatch" style="--a:#ff2b36;--b:#3d7bff;--c:#0a0b1a"></i>Spider-Man</button>
+            <button class="theme-btn" data-theme="stranger" data-name="Stranger Things"><i class="swatch" style="--a:#e0243a;--b:#ffb454;--c:#06090f"></i>Stranger Things</button>
+            <button class="theme-btn" data-theme="claude" data-name="Claude"><i class="swatch" style="--a:#d97757;--b:#e6b989;--c:#1b1a18"></i>Claude</button>
+            <button class="theme-btn" data-theme="dexter" data-name="Dexter"><i class="swatch" style="--a:#e01b2f;--b:#2fb8c4;--c:#0c0d0e"></i>Dexter</button>
+        </div>
+        <label class="menu-toggle"><input type="checkbox" id="rainToggle" checked> Matrix rain background</label>
     </div>
 
     <div class="status-bar">
@@ -470,24 +422,12 @@
             <button class="task-app" data-open-window="window-music-player">Music</button>
             <button class="task-app" data-open-window="window-modern-portfolio">PortfolioUI</button>
         </div>
-        <div class="status-item">
-            <i class="fas fa-wifi"></i>
-            <span class="status-text">Connected</span>
-        </div>
-        <div class="status-item">
-            <i class="fas fa-shield-alt"></i>
-            <span class="status-text">Encrypted</span>
-        </div>
-        <div class="status-item">
-            <i class="fas fa-code-branch"></i>
-            <span class="status-text">v1.0</span>
-        </div>
-        <div class="status-item date-time">
-            <span class="status-text" id="current-time"></span>
-        </div>
+        <button class="task-app task-settings" id="settingsToggle" type="button" aria-haspopup="true" aria-expanded="false">
+            <i class="fas fa-gear"></i> <span id="themeLabel">Kali Linux</span>
+        </button>
+        <span class="status-item" id="current-time"></span>
     </div>
 
-    <div class="cursor"></div>
     <script defer src="projects.js"></script>
     <script defer src="resource/resume-common.js"></script>
     <script defer src="v0/script.js"></script>

@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Keystorm — Typing Game</title>
+	<meta name="description" content="A typing game with five modes, combo-driven visual effects, and a per-key analytics dashboard.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="styles.css">
+	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
+</head>
+<body data-screen="menu">
+	<canvas id="fx" aria-hidden="true"></canvas>
+	<div id="vig" aria-hidden="true"></div>
+	<div id="toast" aria-hidden="true"></div>
+
+	<div id="app">
+		<header class="topbar">
+			<button class="brand" type="button" data-go="menu">keystorm</button>
+			<nav aria-label="Primary">
+				<button type="button" data-go="menu">Play</button>
+				<button type="button" data-go="stats">Stats</button>
+				<a href="../../index.html">Portfolio ↗</a>
+			</nav>
+		</header>
+
+		<main>
+			<section class="screen" id="menu">
+				<h1 class="logo" aria-label="Keystorm">
+					<span style="--i:0">K</span><span style="--i:1">E</span><span style="--i:2">Y</span><span style="--i:3">S</span><span style="--i:4">T</span><span style="--i:5">O</span><span style="--i:6">R</span><span style="--i:7">M</span>
+				</h1>
+				<p class="tag">Type fast. Build the storm.</p>
+				<div class="modes" id="modes"></div>
+				<div class="len" role="group" aria-label="Sprint length">
+					<span>Sprint length</span>
+					<button type="button" data-len="15">15s</button>
+					<button type="button" data-len="30">30s</button>
+					<button type="button" data-len="60">60s</button>
+				</div>
+				<p class="hint">Press <kbd>1</kbd>–<kbd>5</kbd> to jump in · <kbd>tab</kbd> restarts · <kbd>esc</kbd> leaves a run</p>
+				<p class="touch-note">Keystorm needs a physical keyboard.</p>
+			</section>
+
+			<section class="screen" id="play">
+				<div class="hud">
+					<div><b id="hTime">0</b><small>time</small></div>
+					<div><b id="hWpm">0</b><small>wpm</small></div>
+					<div><b id="hAcc">100</b><small>acc %</small></div>
+					<div><b id="hStreak">0</b><small>streak</small></div>
+					<div class="arena-only"><b id="hScore">0</b><small>score</small></div>
+					<div class="arena-only"><b id="hLives" aria-label="Lives"></b><small>lives</small></div>
+				</div>
+				<div class="stream pre" id="stream"><div id="streamInner"><i id="caret"></i></div></div>
+				<p class="hint" id="playHint"></p>
+			</section>
+
+			<section class="screen" id="results" aria-live="polite">
+				<p class="eyebrow" id="rMode"></p>
+				<div class="big"><b id="rScore">0</b><span id="rUnit">wpm</span><em id="rPb" hidden>new best</em></div>
+				<div class="kpis" id="rKpis"></div>
+				<div class="panel" id="rChart"></div>
+				<div class="actions">
+					<button type="button" class="primary" id="again">Again <kbd>enter</kbd></button>
+					<button type="button" id="toMenu">Menu <kbd>esc</kbd></button>
+				</div>
+			</section>
+
+			<section class="screen" id="stats">
+				<h2>Your typing, measured</h2>
+				<div class="kpis" id="sKpis"></div>
+				<div class="cols">
+					<div class="panel"><h3>WPM · last 30 runs</h3><div id="sChart"></div></div>
+					<div class="panel"><h3>Personal bests</h3><ul class="bests" id="sBest"></ul></div>
+				</div>
+				<div class="panel">
+					<div class="panel-head">
+						<h3>Keyboard heatmap</h3>
+						<div class="seg" id="sMetric" role="group" aria-label="Heatmap metric">
+							<button type="button" data-m="speed">Speed</button>
+							<button type="button" data-m="err">Errors</button>
+						</div>
+					</div>
+					<div class="keymap" id="sKeys"></div>
+					<p class="hint" id="sKeyHint"></p>
+				</div>
+				<div class="panel"><h3>Recent runs</h3><table id="sRuns"></table></div>
+				<button type="button" class="ghost" id="reset">Reset stats</button>
+			</section>
+		</main>
+	</div>
+
+	<script src="script.js"></script>
+</body>
+</html>

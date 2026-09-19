@@ -19,6 +19,7 @@ Maintainer workflow details live in [PROJECT_PLAYBOOK.md](PROJECT_PLAYBOOK.md).
 | System Design Prototype | Interactive whiteboard for sketching distributed architectures with exportable diagrams | [Open](https://sysdesign.preetamhegde.in) |
 | Bharatvarsha | Strategy simulation set in the Vedic era with economy, events, and progression | [Open](https://preetamhegde.in/apps/bharatvarsha/index.html) |
 | Reflex Arena | Browser FPS aim trainer with accuracy and session metrics | [Open](https://preetamhegde.in/apps/aim-trainer/index.html) |
+| Keystorm | Typing game with five modes, combo-driven effects, and a per-key analytics dashboard | [Open](https://preetamhegde.in/apps/keystorm/index.html) |
 | Live Analytics Dashboard | Animated KPI dashboard with GitHub telemetry and optional Plausible data | [Open](https://preetamhegde.in/apps/live-analytics-dashboard/index.html) |
 | Game of Life | Interactive Conway simulation with pattern experimentation | [Open](https://preetamhegde.in/apps/cellular-automata/index.html) |
 | Nine Dimension | Physics and vector playground with multiple interactive panels | [Open](https://preetamhegde.in/apps/nine-dimension/index.html) |

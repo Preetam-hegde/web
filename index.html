@@ -25,6 +25,7 @@
 <body class="loom-page">
 	<a class="skip-link" href="#projects">Skip to selected work</a>
 	<header class="loom-header" data-site-header>
+		<span class="loom-progress" aria-hidden="true"></span>
 		<a class="loom-mark" href="#about" aria-label="Preetam Hegde, back to beginning"><span class="loom-mark-sigil" aria-hidden="true"></span><span>PH / 01</span></a>
 		<nav class="loom-nav" aria-label="Primary navigation">
 			<a href="#about" data-nav-link>Beginning</a>
@@ -32,7 +33,7 @@
 			<a href="#experience" data-nav-link>Experience</a>
 			<a href="#projects" data-nav-link>Selected work</a>
 			<a href="#contact" data-nav-link>Contact</a>
-			<a href="./index-classic.html" target="_blank" rel="noopener noreferrer">Classic</a>
+			<a class="loom-nav-terminal" data-nav-link data-target="#terminal" href="./index-classic.html" target="_blank" rel="noopener noreferrer" aria-label="Open the terminal portfolio"><span aria-hidden="true">&gt;_</span><span class="loom-nav-terminal-label">Terminal</span></a>
 		</nav>
 	</header>
 
@@ -43,8 +44,14 @@
 					<img class="loom-scene-image" src="resource/Image/loom/loom-hero-v3.jpg" alt="" fetchpriority="high">
 					<i class="loom-fog loom-fog-a"></i><i class="loom-fog loom-fog-b"></i>
 					<i class="loom-glow loom-glow-temple" style="--x:62.8%;--y:48%;--s:22%"></i>
-					<i class="loom-glow loom-glow-halo" style="--x:81.2%;--y:17.4%;--s:30%"></i>
-					<svg class="loom-halo-ring" style="--x:81.2%;--y:17.4%" viewBox="0 0 100 100"><circle cx="50" cy="50" r="47"></circle><circle cx="50" cy="50" r="41"></circle></svg>
+					<i class="loom-glow loom-glow-halo" style="--x:81.2%;--y:20.8%;--s:30%"></i>
+					<svg class="loom-halo-ring" style="--x:81.2%;--y:20.8%" viewBox="-130 -130 260 260">
+						<circle class="hr-solid" r="99" pathLength="1"></circle>
+						<g class="hr-spin hr-a"><circle class="hr-ticks" r="90"></circle></g>
+						<g class="hr-spin hr-b"><circle class="hr-dots" r="106"></circle><path d="M0-99v-13M99 0h13M0 99v13M-99 0h-13"></path></g>
+						<g class="hr-spin hr-c"><circle class="hr-dash" r="116"></circle></g>
+						<g class="hr-spin hr-d"><circle class="hr-spark" cx="99" r="2.4"></circle><circle class="hr-spark" cx="-99" r="1.6"></circle></g>
+					</svg>
 					<i class="loom-glow loom-glow-lamp" style="--x:98.1%;--y:45.2%;--s:7%"></i>
 					<i class="loom-glow loom-glow-lamp" style="--x:97.8%;--y:78.8%;--s:6%;--t:2.3s"></i>
 				</div></div>
@@ -53,6 +60,7 @@
 			<div class="loom-hero-light" aria-hidden="true"></div>
 			<div class="loom-flash" aria-hidden="true"></div>
 			<div class="loom-rain" aria-hidden="true"><canvas class="loom-rain-canvas"></canvas></div>
+			<canvas class="loom-magic" aria-hidden="true"></canvas>
 			<div class="loom-hero-content">
 				<p class="loom-kicker">An atelier for digital systems · 2026</p>
 				<h1 id="hero-title">Preetam<br><em>Hegde.</em></h1>
@@ -60,59 +68,87 @@
 				<div class="loom-actions"><a class="loom-button loom-button-primary" href="#projects">Trace the work <span aria-hidden="true">↘</span></a><a class="loom-button loom-button-quiet" href="resource/pdf/Preetam_resume_2026.pdf" target="_blank" rel="noopener noreferrer">Read the résumé <span aria-hidden="true">↗</span></a></div>
 				<dl class="loom-stats"><div><dt>Projects in the archive</dt><dd data-stat="all">16</dd></div><div><dt>Live products</dt><dd data-stat="featured">2</dd></div><div><dt>Interactive studies</dt><dd data-stat="fcc">8</dd></div></dl>
 			</div>
-			<div class="loom-hero-note" aria-hidden="true"><span>01 / monsoon study</span><span>scroll to unspool</span></div>
+			<div class="loom-hero-note" aria-hidden="true"><span>01 / monsoon study</span><span>click / tap to cast</span><span>scroll to unspool</span></div>
 		</section>
+
+		<div class="loom-marquee" aria-hidden="true" data-scroll>
+			<div class="loom-marquee-row"><span>Systems<i>✦</i>Interfaces<i>✦</i>Simulations<i>✦</i>Visual experiments<i>✦</i>Systems<i>✦</i>Interfaces<i>✦</i>Simulations<i>✦</i>Visual experiments<i>✦</i></span></div>
+			<div class="loom-marquee-row is-alt"><span>Metadata<i>/</i>SQL<i>/</i>LangGraph<i>/</i>RAG<i>/</i>React<i>/</i>Canvas<i>/</i>Kafka<i>/</i>Oracle JET<i>/</i>Metadata<i>/</i>SQL<i>/</i>LangGraph<i>/</i>RAG<i>/</i>React<i>/</i>Canvas<i>/</i>Kafka<i>/</i>Oracle JET<i>/</i></span></div>
+		</div>
 
 		<section class="loom-craft" id="resume" aria-labelledby="craft-title">
 			<div class="loom-craft-texture" aria-hidden="true"></div>
-			<div class="loom-section-label"><span>02</span><span>Craft / engineering</span></div>
-			<div class="loom-craft-copy"><p class="loom-eyebrow">A developer with range, not a pile of buzzwords.</p><h2 id="craft-title">Every project starts with a <em>strong thread.</em></h2><p class="loom-body-copy">I work from the system outward: clarify the real constraint, make the interface obvious, then give the details enough care that the whole thing holds up in use.</p></div>
-			<div class="loom-capability-list" aria-label="Capabilities">
-				<article class="loom-capability"><span class="loom-capability-number">I</span><div><h3>Product surfaces</h3><p>Thoughtful frontends, interaction design, and the product judgement to make a tool legible at first touch.</p></div></article>
-				<article class="loom-capability"><span class="loom-capability-number">II</span><div><h3>Full-stack systems</h3><p>React, TypeScript, APIs, data flows, and the architecture that keeps an experience trustworthy.</p></div></article>
-				<article class="loom-capability"><span class="loom-capability-number">III</span><div><h3>Data &amp; platform work</h3><p>Metadata-heavy dashboards and enterprise workflows shaped around real investigation.</p></div></article>
-				<article class="loom-capability"><span class="loom-capability-number">IV</span><div><h3>Play as research</h3><p>Simulations and canvas experiments used to explore emergence, learning, motion, and feedback.</p></div></article>
+			<i class="loom-fog loom-fog-a" aria-hidden="true"></i>
+			<i class="loom-glow" aria-hidden="true" style="--x:6%;--y:18%;--s:38%;--t:8s"></i>
+			<i class="loom-glow" aria-hidden="true" style="--x:96%;--y:82%;--s:30%;--t:6s"></i>
+			<div class="loom-section-label" data-reveal="line"><span>02</span><span>Craft / engineering</span></div>
+			<div class="loom-craft-copy">
+				<p class="loom-eyebrow" data-reveal="up">Range, not buzzwords.</p>
+				<h2 id="craft-title" data-split>Every project starts with a <em>strong thread.</em></h2>
+				<p class="loom-body-copy" data-reveal="up" style="--d:250ms">I work from the system outward: find the real constraint, make the interface obvious, then sweat the details.</p>
 			</div>
-			<figure class="loom-workshop-image"><img src="resource/Image/loom/loom-portrait-v1.jpg" alt="Illustrated portrait of Preetam Hegde in a dark hoodie and sunglasses."><figcaption>A clear point of view, rendered in code.</figcaption></figure>
+			<div class="loom-capability-list" data-scroll aria-label="Capabilities">
+				<i class="loom-tip" aria-hidden="true"></i>
+				<article class="loom-capability" data-reveal="left"><span class="loom-capability-number">I</span><div><h3>Product surfaces</h3><p>Frontends and interactions that read at first touch.</p></div></article>
+				<article class="loom-capability" data-reveal="left" style="--d:90ms"><span class="loom-capability-number">II</span><div><h3>Full-stack systems</h3><p>React, TypeScript, APIs, and data flows you can trust.</p></div></article>
+				<article class="loom-capability" data-reveal="left" style="--d:180ms"><span class="loom-capability-number">III</span><div><h3>Data &amp; platform work</h3><p>Metadata-heavy dashboards and enterprise workflows.</p></div></article>
+				<article class="loom-capability" data-reveal="left" style="--d:270ms"><span class="loom-capability-number">IV</span><div><h3>Play as research</h3><p>Simulations and canvas experiments in emergence.</p></div></article>
+			</div>
+			<figure class="loom-workshop-image" data-reveal="wipe"><svg class="loom-mandala" data-scroll viewBox="-100 -100 200 200" aria-hidden="true">
+					<circle class="m-draw" r="98" pathLength="1"></circle>
+					<g class="m-spin"><circle class="m-dots" r="92"></circle></g>
+					<circle class="m-draw" r="84" pathLength="1"></circle>
+					<g class="m-spin m-rev"><circle class="m-ticks" r="76"></circle></g>
+					<polygon class="m-draw" pathLength="1" points="0,-64 55.4,32 -55.4,32"></polygon>
+					<polygon class="m-draw" pathLength="1" points="0,64 55.4,-32 -55.4,-32"></polygon>
+					<circle class="m-draw" r="32" pathLength="1"></circle>
+				</svg>
+				<div class="loom-workshop-frame"><img data-scroll loading="lazy" decoding="async" width="1254" height="1254" src="resource/Image/loom/loom-portrait-v1.jpg" alt="Illustrated portrait of Preetam Hegde in a dark hoodie and sunglasses."></div><figcaption>A clear point of view, rendered in code.</figcaption></figure>
 		</section>
 
 		<section class="loom-experience" id="experience" aria-labelledby="experience-title">
 			<div class="loom-experience-stage">
-				<div class="loom-section-label"><span>03</span><span>Experience / where it ran</span></div>
-				<div class="loom-experience-head"><p class="loom-eyebrow">3+ years building enterprise backend systems at Oracle</p><h2 id="experience-title">Built inside <em>real constraints.</em></h2></div>
+				<div class="loom-section-label" data-reveal="line"><span>03</span><span>Experience / where it ran</span></div>
+				<div class="loom-experience-head"><p class="loom-eyebrow" data-reveal="up">Backend systems at Oracle</p><h2 id="experience-title" data-split>Built inside <em>real constraints.</em></h2></div>
+				<dl class="loom-numbers">
+					<div data-reveal="up"><dt>Years at Oracle</dt><dd data-count="3" data-suffix="+">3+</dd></div>
+					<div data-reveal="up" style="--d:120ms"><dt>Faster front-end builds</dt><dd data-count="40" data-suffix="%">40%</dd></div>
+					<div data-reveal="up" style="--d:240ms"><dt>Students taught DSA</dt><dd data-count="200" data-suffix="+">200+</dd></div>
+				</dl>
 				<div class="loom-experience-body">
-					<ol class="loom-timeline">
-						<li class="loom-job">
+					<ol class="loom-timeline" data-scroll>
+						<li class="loom-tip" aria-hidden="true"></li>
+						<li class="loom-job" data-reveal="left">
 							<p class="loom-job-date">Aug 2023 — Present</p>
 							<h3>Data System Engineer</h3><p class="loom-job-org">Oracle · Bengaluru</p>
 							<ul>
-								<li>Designed a metadata-driven target-menu framework on dynamic APIs, replacing static configuration with an extensible navigation and routing layer for enterprise dashboards.</li>
-								<li>Built a SQL optimization layer (named queries, dynamic fragments) and extended the visualization engine for concurrent metrics, cutting dashboard load and refresh latency.</li>
-								<li>Architected an AI dashboard generator with LangGraph, GPT-4, and RAG that turns natural-language prompts into executable, SQL-driven widgets.</li>
-								<li>Automated builds and deployment to Oracle Enterprise Manager, including hot-swap library updates, and cut front-end compilation time by 40%.</li>
+								<li>Built a metadata-driven menu framework on dynamic APIs, replacing static configuration across enterprise dashboards.</li>
+								<li>Cut dashboard load times with a SQL optimization layer and a multi-metric visualization engine.</li>
+								<li>Architected an AI dashboard generator (LangGraph, GPT-4, RAG): natural language in, SQL-driven widgets out.</li>
+								<li>Automated builds and Oracle Enterprise Manager deployment, including hot-swap library updates.</li>
 							</ul>
 						</li>
-						<li class="loom-job">
+						<li class="loom-job" data-reveal="left">
 							<p class="loom-job-date">Aug 2021 — Nov 2021</p>
 							<h3>Software Developer Intern</h3><p class="loom-job-org">Taproots.ai · Bengaluru</p>
 							<ul>
-								<li>Built real-time computer-vision pipelines (Python, OpenCV, TensorFlow) for ball tracking and event detection in live tennis and cricket.</li>
-								<li>Designed a low-latency Kafka and FFmpeg streaming and inference architecture for high-frequency ingestion across distributed nodes.</li>
+								<li>Real-time computer vision (OpenCV, TensorFlow) tracking balls in live cricket and tennis.</li>
+								<li>Low-latency Kafka and FFmpeg streaming and inference across distributed nodes.</li>
 							</ul>
 						</li>
 					</ol>
-					<aside class="loom-skills" aria-label="Skills, education and recognition">
+					<aside class="loom-skills" data-reveal="right" aria-label="Skills, education and recognition">
 						<h3 class="loom-eyebrow">Toolkit</h3>
 						<dl class="loom-skill-groups">
-							<div><dt>Languages</dt><dd>Java · Python · Golang · SQL · JavaScript · C++ · Dart</dd></div>
-							<div><dt>Backend &amp; APIs</dt><dd>REST · Microservices · Metadata-driven architecture · Oracle JET · Node.js</dd></div>
-							<div><dt>Data &amp; AI</dt><dd>LangGraph · RAG · GPT-4 · Vector embeddings · TensorFlow · OpenCV</dd></div>
-							<div><dt>Cloud &amp; tooling</dt><dd>OCI · Docker · Jenkins · Kafka · Gradle · Webpack · Linux</dd></div>
+							<div><dt>Languages</dt><dd>Java · Python · Go · SQL · JS · C++</dd></div>
+							<div><dt>Backend</dt><dd>REST · Microservices · Oracle JET · Node.js</dd></div>
+							<div><dt>Data &amp; AI</dt><dd>LangGraph · RAG · GPT-4 · TensorFlow · OpenCV</dd></div>
+							<div><dt>Cloud &amp; tools</dt><dd>OCI · Docker · Jenkins · Kafka · Gradle</dd></div>
 						</dl>
 						<h3 class="loom-eyebrow">Education</h3>
-						<p class="loom-skill-note">BMS College of Engineering<br>B.E. Information Science, 2019 – 2023 · GPA 8.7</p>
+						<p class="loom-skill-note">BMS College of Engineering<br>B.E. Information Science · 2023 · GPA 8.7</p>
 						<h3 class="loom-eyebrow">Recognition</h3>
-						<p class="loom-skill-note">3rd place, GE HealthCare HACK-E-LTH 2022 — an end-to-end IoT system for patient data.<br>Senior core member, CodeIO — taught DSA to 200+ students.</p>
+						<p class="loom-skill-note">3rd place, GE HealthCare HACK-E-LTH 2022<br>Senior core member, CodeIO</p>
 					</aside>
 				</div>
 			</div>
@@ -120,17 +156,62 @@
 
 		<section class="loom-work" id="projects" aria-labelledby="work-title">
 			<div class="loom-work-stage">
-				<div class="loom-section-label"><span>04</span><span>Selected work / the archive</span></div>
-				<div class="loom-work-heading"><p class="loom-eyebrow">Projects selected from the archive</p><h2 id="work-title">Pull a thread.<br><em>Find the system.</em></h2></div>
-				<div class="loom-filters" id="loom-filters" role="group" aria-label="Filter projects"></div>
+				<div class="loom-section-label" data-reveal="line"><span>04</span><span>Selected work / the archive</span></div>
+				<div class="loom-work-heading"><h2 id="work-title" data-split>Pull a thread.<br><em>Find the system.</em></h2></div>
+				<div class="loom-filters" id="loom-filters" role="group" aria-label="Filter projects" data-reveal="up"></div>
 				<div class="loom-grid" id="loom-grid"></div>
 				<noscript><p class="loom-noscript">Projects need JavaScript — or browse the <a href="./index-classic.html">classic version</a>.</p></noscript>
 			</div>
 		</section>
 
-		<section class="loom-contact" id="contact" aria-labelledby="contact-title"><img class="loom-contact-image" src="resource/Image/loom/loom-contact-v3.jpg" alt="" aria-hidden="true"><div class="loom-contact-wash" aria-hidden="true"></div><div class="loom-contact-content"><div class="loom-section-label"><span>05</span><span>Make contact</span></div><p class="loom-eyebrow">A good brief is a good beginning.</p><h2 id="contact-title">Let’s make a system<br>worth <em>returning to.</em></h2><p class="loom-contact-copy">If you’re working on a product, a platform, or an idea that needs both engineering care and a clear point of view, I’d like to hear about it. Based in Bengaluru, India.</p><div class="loom-contact-links"><a href="mailto:preetam@preetamhegde.in">preetam@preetamhegde.in <span aria-hidden="true">↗</span></a><a href="https://github.com/preetam-hegde" target="_blank" rel="noopener noreferrer">GitHub <span aria-hidden="true">↗</span></a><a href="https://www.linkedin.com/in/preetam-hegde-8b53311a7" target="_blank" rel="noopener noreferrer">LinkedIn <span aria-hidden="true">↗</span></a></div></div><svg class="loom-sigil loom-contact-seal" viewBox="0 0 240 240" aria-hidden="true"><path class="loom-sigil-path" d="M120 16 214 70v100l-94 54-94-54V70l94-54Z"></path><path class="loom-sigil-path" d="m65 86 55 34 55-34M65 154l55-34 55 34M120 50v140"></path></svg></section>
+				<section class="loom-terminal" id="terminal" aria-labelledby="terminal-title">
+			<div class="loom-terminal-stage">
+				<div class="loom-terminal-copy">
+					<div class="loom-section-label" data-reveal="line"><span>05</span><span>Terminal / classic</span></div>
+					<p class="loom-eyebrow" data-reveal="up">Prefer a command line?</p>
+					<h2 id="terminal-title" data-split>The same work, <em>in a shell.</em></h2>
+					<p class="loom-body-copy" data-reveal="up" style="--d:250ms">An interactive Linux-style portfolio with 8 themes. Type <code>help</code> and explore.</p>
+					<a class="loom-button loom-button-primary" data-reveal="up" style="--d:400ms" href="./index-classic.html" target="_blank" rel="noopener noreferrer">Open the terminal <span aria-hidden="true">↗</span></a>
+				</div>
+				<a class="loom-term-window" data-reveal="right" href="./index-classic.html" target="_blank" rel="noopener noreferrer" aria-label="Open the terminal portfolio">
+					<span class="loom-term-bar" aria-hidden="true"><i></i><i></i><i></i><b>guest@preetamhegde.in: ~</b></span>
+					<pre class="loom-term-body" aria-hidden="true"><code id="loom-term-code">$ open ./index-classic.html</code><span class="loom-term-cursor"></span></pre>
+				</a>
+			</div>
+		</section>
+
+		<section class="loom-contact" id="contact" aria-labelledby="contact-title">
+			<img class="loom-contact-image" data-scroll loading="lazy" decoding="async" src="resource/Image/loom/loom-contact-v3.jpg" alt="" aria-hidden="true">
+			<div class="loom-contact-wash" aria-hidden="true"></div>
+			<canvas class="loom-magic" aria-hidden="true"></canvas>
+			<div class="loom-contact-inner">
+				<div class="loom-section-label" data-reveal="line"><span>06</span><span>Make contact</span></div>
+				<div class="loom-contact-grid">
+					<div class="loom-contact-content">
+						<p class="loom-eyebrow" data-reveal="up">A good brief is a good beginning.</p>
+						<h2 id="contact-title" data-split>Let’s make a system<br>worth <em>returning to.</em></h2>
+						<p class="loom-contact-copy" data-reveal="up" style="--d:250ms">Have a product, platform, or idea that needs engineering care and a clear point of view? Let’s talk.</p>
+						<p class="loom-contact-hint" data-reveal="up" style="--d:350ms" aria-hidden="true">click anywhere to cast ✦</p>
+					</div>
+					<div class="loom-contact-card" data-reveal="right">
+						<p class="loom-card-kicker">Say hello</p>
+						<div class="loom-mail">
+							<a class="loom-mail-link" href="mailto:preetam@preetamhegde.in">preetam@preetamhegde.in</a>
+							<button class="loom-copy" type="button" data-copy="preetam@preetamhegde.in" aria-live="polite">Copy</button>
+						</div>
+						<ul class="loom-links">
+							<li><a href="https://github.com/preetam-hegde" target="_blank" rel="noopener noreferrer"><span>GitHub</span><em>@preetam-hegde</em><b aria-hidden="true">↗</b></a></li>
+							<li><a href="https://www.linkedin.com/in/preetam-hegde-8b53311a7" target="_blank" rel="noopener noreferrer"><span>LinkedIn</span><em>preetam-hegde</em><b aria-hidden="true">↗</b></a></li>
+							<li><a href="resource/pdf/Preetam_resume_2026.pdf" target="_blank" rel="noopener noreferrer"><span>Résumé</span><em>PDF · 2026</em><b aria-hidden="true">↗</b></a></li>
+						</ul>
+						<p class="loom-local"><i aria-hidden="true"></i>Bengaluru · <time id="loom-time">--:--</time> IST</p>
+					</div>
+				</div>
+			</div>
+			<svg class="loom-sigil loom-contact-seal" viewBox="0 0 240 240" aria-hidden="true"><path class="loom-sigil-path" d="M120 16 214 70v100l-94 54-94-54V70l94-54Z"></path><path class="loom-sigil-path" d="m65 86 55 34 55-34M65 154l55-34 55 34M120 50v140"></path></svg>
+		</section>
 	</main>
-	<footer class="loom-footer"><p>Made with intent, code, and a little monsoon static.</p><p>© <span id="loom-year"></span> Preetam Hegde</p></footer>
+	<footer class="loom-footer"><p>Made with intent, code, and a little monsoon static. <a href="./index-classic.html">Terminal version ↗</a></p><p>© <span id="loom-year"></span> Preetam Hegde</p></footer>
 
 	<script src="projects.js"></script>
 	<script src="v1/script.js"></script>
