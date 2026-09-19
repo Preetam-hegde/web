@@ -343,7 +343,7 @@ function finish(why) {
 		ok: run.ok, bad: run.bad, streak: run.maxStreak, unit: m.unit,
 		score: m.arena ? run.score : run.mode === 'razor' ? run.ok : Math.round(s.wpm)
 	};
-	const keep = run.ok + run.bad >= 5 && sec >= 2;
+	const keep = (why === 'quit' ? run.ok + run.bad >= 1 : run.ok + run.bad >= 5) && sec >= 0.5;
 	res.pb = keep && !m.noBest && res.score > (store.best[run.key] || 0);
 	if (keep) {
 		if (res.pb) store.best[run.key] = res.score;
@@ -407,7 +407,7 @@ function start(mode) {
 	run = newRun(mode);
 	const isArena = !!MODES[mode].arena, token = run;
 	$('#play').classList.toggle('arena', isArena);
-	$('#playHint').innerHTML = `<kbd>esc</kbd> ${mode === 'zen' ? 'finish' : 'quit'} · <kbd>tab</kbd> restart`;
+	$('#playHint').innerHTML = `<kbd>esc</kbd> finish & save · <kbd>tab</kbd> restart`;
 	parts.length = 0; rings.length = 0; energy = 0;
 	go('play');
 	state = 'count';
@@ -702,7 +702,7 @@ addEventListener('keydown', (e) => {
 	// count | play | end
 	if (k === ' ' || k === 'Tab' || k === 'Backspace') e.preventDefault();
 	if (k === 'Escape') {
-		if (run.mode === 'zen' && state === 'play' && run.ok + run.bad >= 5) finish('quit'); else toMenu();
+		if (state === 'play' && run.ok + run.bad > 0) finish('quit'); else toMenu();
 		return;
 	}
 	if (k === 'Tab') { start(run.mode); return; }

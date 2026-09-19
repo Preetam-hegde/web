@@ -208,6 +208,8 @@ body[data-screen='stats'] #stats {
 /* ── Menu Screen ─────────────────────────────────────────── */
 .logo {
 	display: flex;
+	justify-content: center;
+	text-align: center;
 	margin: 0;
 	font: 700 clamp(3.2rem, 11vw, 7.2rem) / 1 var(--sans);
 	letter-spacing: -0.05em;
@@ -231,7 +233,7 @@ body[data-screen='stats'] #stats {
 }
 
 .tag {
-	margin: 14px 0 36px;
+	margin: 14px auto 36px;
 	color: var(--dim);
 	letter-spacing: 0.02em;
 	text-align: center;
@@ -341,13 +343,69 @@ body[data-screen='stats'] #stats {
 	right: 14px;
 }
 
+/* Pill Selectors & Controls Row */
+.selectors-row {
+	display: flex;
+	flex-wrap: wrap;
+	justify-content: center;
+	align-items: center;
+	gap: 12px 24px;
+	margin-top: 24px;
+	width: 100%;
+}
+
 .len {
 	display: flex;
 	align-items: center;
+	justify-content: center;
 	gap: 8px;
 	margin-top: 24px;
 	color: var(--dim);
 	font-size: 0.85rem;
+}
+
+.selectors-row .len {
+	margin-top: 0;
+}
+
+/* Menu Watermark */
+.menu-watermark {
+	margin-top: 20px;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	gap: 6px;
+	font: 500 0.82rem var(--mono);
+	letter-spacing: 0.04em;
+	color: var(--dim);
+	opacity: 0.75;
+	transition: opacity 0.2s ease, transform 0.2s ease;
+	user-select: none;
+}
+
+.menu-watermark:hover {
+	opacity: 1;
+	transform: translateY(-1px);
+}
+
+.menu-watermark strong {
+	color: var(--text);
+	font-weight: 600;
+}
+
+.menu-watermark .watermark-heart {
+	display: inline-block;
+	color: #ff4d6d;
+	font-size: 0.9em;
+	animation: heartBeat 2.4s ease-in-out infinite;
+}
+
+@keyframes heartBeat {
+	0%, 100% { transform: scale(1); }
+	14% { transform: scale(1.22); }
+	28% { transform: scale(1); }
+	42% { transform: scale(1.22); }
+	70% { transform: scale(1); }
 }
 
 .len span {
@@ -716,6 +774,258 @@ body[data-screen='stats'] #stats {
 	border-color: var(--bad);
 	background: rgba(255, 77, 109, 0.25);
 	animation: wrong 0.35s;
+}
+
+/* ── 5. Visual Matrix View ──────────────────────────────── */
+.matrix-status {
+	font: 700 0.85rem var(--mono);
+	letter-spacing: 0.16em;
+	color: var(--dim);
+	margin-bottom: 18px;
+	text-transform: uppercase;
+}
+
+.matrix-grid {
+	display: grid;
+	grid-template-columns: repeat(var(--cols, 3), 1fr);
+	gap: 10px;
+	width: 100%;
+	max-width: 420px;
+	aspect-ratio: 1;
+}
+
+.matrix-tile {
+	background: rgba(255, 255, 255, 0.04);
+	border: 1.5px solid var(--line);
+	border-radius: 12px;
+	cursor: pointer;
+	aspect-ratio: 1;
+	transition: background 0.2s, border-color 0.2s, box-shadow 0.2s, transform 0.15s;
+}
+
+.matrix-tile:hover:not(.tile-correct):not(.tile-wrong) {
+	border-color: var(--accent);
+	background: rgba(0, 240, 255, 0.1);
+}
+
+.matrix-tile.tile-flash {
+	background: var(--accent);
+	border-color: #fff;
+	box-shadow: 0 0 26px var(--accent);
+	transform: scale(1.04);
+}
+
+.matrix-tile.tile-correct {
+	background: rgba(0, 240, 255, 0.35);
+	border-color: var(--accent);
+	box-shadow: 0 0 20px var(--accent);
+	animation: pop 0.35s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.matrix-tile.tile-wrong {
+	background: rgba(255, 77, 109, 0.45);
+	border-color: var(--bad);
+	animation: wrong 0.35s;
+}
+
+/* ── 6. N-Back Flux View ────────────────────────────────── */
+.nback-header {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	margin-bottom: 24px;
+}
+
+.nback-badge {
+	font: 700 0.8rem var(--mono);
+	padding: 4px 12px;
+	border-radius: 999px;
+	background: rgba(0, 240, 255, 0.15);
+	color: var(--accent);
+	border: 1px solid var(--accent);
+	box-shadow: 0 0 14px rgba(0, 240, 255, 0.3);
+}
+
+.nback-status {
+	font: 700 0.85rem var(--mono);
+	letter-spacing: 0.14em;
+	color: var(--dim);
+	text-transform: uppercase;
+}
+
+.nback-stage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	width: 100%;
+	max-width: 380px;
+	min-height: 200px;
+	margin-bottom: 24px;
+	position: relative;
+}
+
+.nback-grid {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 12px;
+	width: 220px;
+	aspect-ratio: 1;
+	margin-bottom: 16px;
+}
+
+.nback-grid-cell {
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid var(--line);
+	border-radius: 12px;
+	aspect-ratio: 1;
+	transition: background 0.15s, border-color 0.15s, box-shadow 0.15s;
+}
+
+.nback-grid-cell.active-pos {
+	background: var(--accent);
+	border-color: #fff;
+	box-shadow: 0 0 24px var(--accent);
+}
+
+.nback-symbol {
+	font: 700 clamp(2.4rem, 6vw, 3.6rem) var(--sans);
+	color: var(--accent-2);
+	text-shadow: 0 0 28px var(--accent-2);
+	min-height: 1.2em;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+}
+
+.nback-actions {
+	display: grid;
+	grid-template-columns: repeat(2, 1fr);
+	gap: 16px;
+	width: 100%;
+	max-width: 440px;
+}
+
+.nback-btn {
+	padding: 16px 20px;
+	border-radius: 14px;
+	font: 700 1rem var(--mono);
+	border: 1px solid var(--line);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	transition: transform 0.15s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+}
+
+.nback-btn.match {
+	background: rgba(0, 240, 255, 0.08);
+	color: var(--accent);
+	border-color: rgba(0, 240, 255, 0.4);
+}
+
+.nback-btn.match:hover {
+	background: rgba(0, 240, 255, 0.2);
+	box-shadow: 0 0 24px rgba(0, 240, 255, 0.4);
+	transform: translateY(-2px);
+}
+
+.nback-btn.nomatch {
+	background: rgba(255, 255, 255, 0.04);
+	color: var(--text);
+}
+
+.nback-btn.nomatch:hover {
+	background: rgba(255, 255, 255, 0.08);
+	border-color: rgba(255, 255, 255, 0.2);
+	transform: translateY(-2px);
+}
+
+.nback-btn kbd {
+	font: 500 0.8rem var(--mono);
+	padding: 2px 6px;
+	border: 1px solid var(--line);
+	border-radius: 5px;
+	color: var(--dim);
+}
+
+/* ── 7. Neural Link View ─────────────────────────────────── */
+.trail-status {
+	font: 700 0.85rem var(--mono);
+	letter-spacing: 0.16em;
+	color: var(--dim);
+	margin-bottom: 16px;
+	text-transform: uppercase;
+}
+
+.trail-stage {
+	position: relative;
+	width: 100%;
+	max-width: 580px;
+	height: 380px;
+	background: rgba(0, 0, 0, 0.25);
+	border: 1px solid var(--line);
+	border-radius: 18px;
+	overflow: hidden;
+}
+
+.trail-svg {
+	position: absolute;
+	inset: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+}
+
+.trail-nodes {
+	position: absolute;
+	inset: 0;
+}
+
+.trail-node {
+	position: absolute;
+	transform: translate(-50%, -50%);
+	width: 44px;
+	height: 44px;
+	border-radius: 50%;
+	background: rgba(255, 255, 255, 0.05);
+	border: 2px solid var(--line);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font: 700 1.05rem var(--mono);
+	color: var(--text);
+	cursor: pointer;
+	user-select: none;
+	transition: transform 0.15s, border-color 0.2s, background 0.2s, box-shadow 0.2s;
+	backdrop-filter: blur(8px);
+}
+
+.trail-node:hover {
+	transform: translate(-50%, -50%) scale(1.15);
+	border-color: var(--accent);
+	box-shadow: 0 0 16px var(--accent);
+}
+
+.trail-node.connected {
+	background: rgba(0, 240, 255, 0.25);
+	border-color: var(--accent);
+	color: var(--accent);
+	pointer-events: none;
+	box-shadow: 0 0 14px rgba(0, 240, 255, 0.35);
+}
+
+.trail-node.active-target {
+	border-color: var(--warn);
+	color: var(--warn);
+	box-shadow: 0 0 20px rgba(255, 230, 0, 0.5);
+	animation: pop 0.4s cubic-bezier(0.2, 1.6, 0.4, 1);
+}
+
+.trail-laser {
+	stroke: var(--accent);
+	stroke-width: 3;
+	stroke-linecap: round;
+	filter: drop-shadow(0 0 8px var(--accent));
 }
 
 /* ── Results Screen ──────────────────────────────────────── */

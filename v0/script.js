@@ -2,6 +2,23 @@
 let shellRuntime = null;
 const sharedProjects = typeof projects !== 'undefined' && Array.isArray(projects) ? projects : [];
 
+function getGameProjects() {
+  const gameSlugs = [
+    'apps/aim-trainer/index.html',
+    'apps/keystorm/index.html',
+    'apps/vectordrift/index.html',
+    'apps/synapse/index.html',
+    'apps/dreamscape/index.html',
+    'apps/bharatvarsha/index.html',
+    'apps/cellular-automata/index.html',
+    'apps/natural-selection-sim/index.html'
+  ];
+  return sharedProjects.filter(p => {
+    return gameSlugs.includes(p.link) ||
+      (p.tech && (p.tech.includes('Game Design') || p.tech.includes('Simulation') || p.tech.includes('Cellular Automata')));
+  });
+}
+
 document.addEventListener('DOMContentLoaded', function() {
   // Set up interactive elements
   setupNavigation();
@@ -164,16 +181,17 @@ function setupInteractiveShell() {
   };
 
   const PATH_ENTRIES = {
-    '/': ['home/', 'projects/', 'experience/', 'resume/', 'contact/', 'README.md'],
+    '/': ['home/', 'projects/', 'games/', 'experience/', 'resume/', 'contact/', 'README.md'],
     '/home': ['about_me.txt', 'skills.json', 'resume.md', 'whoami.txt'],
     '/projects': ['featured.list', 'open <name-or-index>'],
+    '/games': ['aim-trainer', 'keystorm', 'vectordrift', 'synapse', 'dreamscape', 'bharatvarsha', 'cellular-automata', 'natural-selection-sim'],
     '/experience': ['career.log'],
     '/resume': ['summary.txt', 'skills.list', 'experience.list', 'highlights.list', 'resume.pdf'],
     '/contact': ['contact.txt', 'resume.md', 'resume.pdf']
   };
 
   const FILES = {
-    '/README.md': 'Portfolio Linux Shell\\nUse commands: help, ls, cd, cat, projects, open, theme, clear',
+    '/README.md': 'Portfolio Linux Shell\\nUse commands: help, ls, cd, cat, projects, games, open, theme, clear',
     '/home/about_me.txt': 'Preetam Hegde | Software Developer at Oracle | Full-stack + AI/ML',
     '/home/skills.json': '{"languages":["Python","JavaScript","Java","C++"],"focus":["Full Stack","AI","Oracle JET"]}',
     '/home/resume.md': 'Open: resource/RESUME.md\\nPDF: resource/pdf/Preetam_resume_2026.pdf',
@@ -189,7 +207,7 @@ function setupInteractiveShell() {
     '/contact/resume.pdf': 'Download: resource/pdf/Preetam_resume_2026.pdf'
   };
 
-  const COMMANDS = ['help', 'ls', 'pwd', 'cd', 'cat', 'clear', 'whoami', 'uname', 'date', 'echo', 'projects', 'open', 'openall', 'openmodern', 'theme', 'goto', 'resume', 'lsapps', 'openapp', 'ps', 'kill', 'systemctl', 'history', 'services', 'which', 'man', 'uptime', 'neofetch', 'sudo'];
+  const COMMANDS = ['help', 'ls', 'pwd', 'cd', 'cat', 'clear', 'whoami', 'uname', 'date', 'echo', 'projects', 'games', 'open', 'openall', 'openmodern', 'theme', 'goto', 'resume', 'music', 'lsapps', 'openapp', 'ps', 'kill', 'systemctl', 'history', 'services', 'which', 'man', 'uptime', 'neofetch', 'sudo'];
   const SHELL_START_TIME = Date.now();
   const state = {
     cwd: '/home',
@@ -334,7 +352,7 @@ function setupInteractiveShell() {
     switch (command) {
     case 'help':
       printLine('Available commands:');
-      printLine('help, ls, pwd, cd <dir>, cat <file>, projects, open <name|index>, openall <window|tabs>, openmodern, resume, lsapps, openapp <app>, ps, kill <pid>, systemctl <status|start|stop> <service>, services, history [-c], which <cmd>, man <cmd>, uptime, theme <name>, goto <section>, neofetch, sudo <cmd>, whoami, uname, date, echo <msg>, clear', 'shell-line-muted');
+      printLine('help, ls, pwd, cd <dir>, cat <file>, projects, games, open <name|index>, openall <window|tabs>, openmodern, resume, music <cmd>, lsapps, openapp <app>, ps, kill <pid>, systemctl <status|start|stop> <service>, services, history [-c], which <cmd>, man <cmd>, uptime, theme <name>, goto <section>, neofetch, sudo <cmd>, whoami, uname, date, echo <msg>, clear', 'shell-line-muted');
       break;
     case 'ls': {
       const entries = PATH_ENTRIES[state.cwd] || [];
@@ -381,6 +399,11 @@ function setupInteractiveShell() {
     case 'projects':
       sharedProjects.forEach((project, index) => {
         printLine(`${index + 1}. ${project.name} (${project.category})`, 'shell-line-muted');
+      });
+      break;
+    case 'games':
+      getGameProjects().forEach((game, index) => {
+        printLine(`${index + 1}. ${game.name} (${game.link})`, 'shell-line-muted');
       });
       break;
     case 'open': {
@@ -491,6 +514,90 @@ function setupInteractiveShell() {
         printLine('Opening resume PDF in a new tab...', 'shell-line-muted');
       }
       break;
+    case 'music': {
+      const sub = (rest[0] || '').toLowerCase();
+      const param = rest.slice(1).join(' ').trim();
+      const mp = window.musicPlayer;
+      if (!mp) {
+        printLine('music: music player is not available', 'shell-line-error');
+        break;
+      }
+
+      if (!sub || sub === 'status' || sub === 'info') {
+        const info = mp.getInfo();
+        printLine(`Now Playing: ${info.track.title} - ${info.track.genre} [${info.isPlaying ? 'PLAYING' : 'PAUSED'}]`, 'shell-line-muted');
+        printLine(`Progress: ${info.isPlaying ? '▶ ' : '⏸ '}${Math.floor(info.currentTime)}s / ${Math.floor(info.duration || 0)}s | Vol: ${info.volume}% | Loop: ${info.loopMode} | Shuffle: ${info.isShuffle ? 'on' : 'off'}`, 'shell-line-muted');
+        printLine('Commands: music <play|pause|next|prev|list|vol [0-100]|loop|shuffle|open>', 'shell-line-muted');
+        break;
+      }
+
+      switch (sub) {
+      case 'play':
+        mp.play();
+        printLine(`Playing: ${mp.getInfo().track.title}`, 'shell-line-muted');
+        break;
+      case 'pause':
+        mp.pause();
+        printLine('Playback paused', 'shell-line-muted');
+        break;
+      case 'toggle':
+        mp.toggle();
+        printLine(`Playback ${mp.getInfo().isPlaying ? 'started' : 'paused'}`, 'shell-line-muted');
+        break;
+      case 'next':
+        mp.next();
+        printLine(`Next track: ${mp.getInfo().track.title}`, 'shell-line-muted');
+        break;
+      case 'prev':
+        mp.prev();
+        printLine(`Previous track: ${mp.getInfo().track.title}`, 'shell-line-muted');
+        break;
+      case 'list': {
+        const list = mp.getPlaylist();
+        const currentId = mp.getInfo().track.id;
+        list.forEach((t, i) => {
+          const marker = t.id === currentId ? '▶ ' : '  ';
+          printLine(`${marker}${i + 1}. ${t.title} (${t.genre})`, 'shell-line-muted');
+        });
+        break;
+      }
+      case 'vol':
+      case 'volume': {
+        if (!param) {
+          printLine(`Current volume: ${mp.getInfo().volume}%`, 'shell-line-muted');
+          break;
+        }
+        const val = Number(param);
+        if (Number.isNaN(val) || val < 0 || val > 100) {
+          printLine('music vol: specify volume between 0 and 100', 'shell-line-error');
+          break;
+        }
+        const newVol = mp.setVolume(val);
+        printLine(`Volume set to ${newVol}%`, 'shell-line-muted');
+        break;
+      }
+      case 'loop': {
+        const mode = param.toLowerCase();
+        const newMode = mp.setLoop(mode);
+        printLine(`Loop mode: ${newMode}`, 'shell-line-muted');
+        break;
+      }
+      case 'shuffle': {
+        const isShuf = mp.setShuffle();
+        printLine(`Shuffle: ${isShuf ? 'enabled' : 'disabled'}`, 'shell-line-muted');
+        break;
+      }
+      case 'open':
+        if (window.desktopOS && typeof window.desktopOS.openApp === 'function') {
+          window.desktopOS.openApp('music');
+          printLine('Opened Music Player window', 'shell-line-muted');
+        }
+        break;
+      default:
+        printLine(`music: unknown subcommand '${sub}'. Use 'music help' or 'music info'`, 'shell-line-error');
+      }
+      break;
+    }
     case 'lsapps': {
       const appNames = window.desktopOS && typeof window.desktopOS.listApps === 'function'
         ? window.desktopOS.listApps()
@@ -597,6 +704,7 @@ function setupInteractiveShell() {
       const manPages = {
         openall: 'openall <window|tabs>: Open projects in browser window or new tabs',
         openmodern: 'openmodern: Open modern portfolio in new browser window',
+        music: 'music <play|pause|next|prev|info|list|vol [0-100]|loop|shuffle|open>: Control terminal music player',
         systemctl: 'systemctl <status|start|stop> <service>: Manage desktop app services',
         kill: 'kill <pid>: Terminate a desktop app process',
         ps: 'ps: List desktop app process table',
@@ -743,15 +851,30 @@ function setupMatrixBackground() {
 }
 
 function setupTerminalMusicPlayer() {
+  const playerContainer = document.getElementById('terminalMusicPlayer');
   const albumGrid = document.getElementById('musicAlbumGrid');
   const titleEl = document.getElementById('musicTrackTitle');
   const genreEl = document.getElementById('musicTrackGenre');
   const coverEl = document.getElementById('musicCurrentCover');
   const currentCard = document.getElementById('musicCurrentCard');
   const playBtn = document.getElementById('musicPlayBtn');
+  const playIcon = document.getElementById('musicPlayIcon');
+  const playText = document.getElementById('musicPlayText');
   const prevBtn = document.getElementById('musicPrevBtn');
   const nextBtn = document.getElementById('musicNextBtn');
+  const shuffleBtn = document.getElementById('musicShuffleBtn');
+  const loopBtn = document.getElementById('musicLoopBtn');
+  const muteBtn = document.getElementById('musicMuteBtn');
+  const volumeIcon = document.getElementById('musicVolumeIcon');
   const volumeSlider = document.getElementById('musicVolumeSlider');
+  const volumeLevel = document.getElementById('musicVolumeLevel');
+  const progressBar = document.getElementById('musicProgressBar');
+  const progressFill = document.getElementById('musicProgressFill');
+  const currentTimeEl = document.getElementById('musicCurrentTime');
+  const durationEl = document.getElementById('musicDuration');
+  const taskbarMini = document.getElementById('taskbarMusicMini');
+  const taskbarTrack = document.getElementById('taskbarMusicTrack');
+  const musicWindow = document.getElementById('window-music-player');
 
   if (!albumGrid || !titleEl || !genreEl || !coverEl || !currentCard || !playBtn || !prevBtn || !nextBtn || !volumeSlider) {
     return;
@@ -766,13 +889,22 @@ function setupTerminalMusicPlayer() {
 
   const player = new Audio();
   player.preload = 'none';
-  player.loop = true;
   player.volume = Number(volumeSlider.value) / 100;
 
   const state = {
     index: 0,
-    isPlaying: false
+    isPlaying: false,
+    isShuffle: false,
+    loopMode: 'all',
+    savedVolume: player.volume || 0.55
   };
+
+  function formatTime(seconds) {
+    if (!Number.isFinite(seconds) || seconds < 0) return '00:00';
+    const mins = Math.floor(seconds / 60);
+    const secs = Math.floor(seconds % 60);
+    return `${mins.toString().padStart(2, '0')}:${secs.toString().padStart(2, '0')}`;
+  }
 
   function updateAlbumActive() {
     albumGrid.querySelectorAll('.music-album').forEach((album, idx) => {
@@ -787,34 +919,139 @@ function setupTerminalMusicPlayer() {
     coverEl.src = track.cover;
     coverEl.alt = `${track.title} album cover`;
     currentCard.dataset.cover = track.id;
+    if (taskbarTrack) {
+      taskbarTrack.textContent = track.title;
+    }
     updateAlbumActive();
   }
 
   function loadTrack(index) {
     state.index = (index + playlist.length) % playlist.length;
     player.src = playlist[state.index].src;
+    if (progressFill) progressFill.style.width = '0%';
+    if (currentTimeEl) currentTimeEl.textContent = '00:00';
+    if (durationEl) durationEl.textContent = '00:00';
     updateNowPlaying();
   }
 
-  function updatePlayButton() {
-    playBtn.textContent = state.isPlaying ? 'Pause' : 'Play';
+  function updatePlayUI() {
+    if (playText) {
+      playText.textContent = state.isPlaying ? 'Pause' : 'Play';
+    } else {
+      playBtn.textContent = state.isPlaying ? 'Pause' : 'Play';
+    }
+
+    if (playIcon) {
+      playIcon.className = state.isPlaying ? 'fas fa-pause' : 'fas fa-play';
+    }
+
+    if (playerContainer) {
+      playerContainer.classList.toggle('is-playing', state.isPlaying);
+    }
+
+    if (taskbarMini) {
+      taskbarMini.style.display = 'inline-flex';
+      const discIcon = taskbarMini.querySelector('i');
+      if (discIcon) {
+        discIcon.className = state.isPlaying ? 'fas fa-compact-disc fa-spin' : 'fas fa-compact-disc';
+      }
+    }
+  }
+
+  function updateVolumeUI() {
+    const currentVol = player.muted ? 0 : player.volume;
+    const pct = Math.round(currentVol * 100);
+    volumeSlider.value = pct;
+    if (volumeLevel) volumeLevel.textContent = `${pct}%`;
+
+    if (volumeIcon) {
+      if (player.muted || pct === 0) {
+        volumeIcon.className = 'fas fa-volume-mute';
+      } else if (pct < 45) {
+        volumeIcon.className = 'fas fa-volume-down';
+      } else {
+        volumeIcon.className = 'fas fa-volume-up';
+      }
+    }
+  }
+
+  function updateLoopUI() {
+    if (!loopBtn) return;
+    if (state.loopMode === 'all') {
+      loopBtn.className = 'btn btn-icon active';
+      loopBtn.innerHTML = '<i class="fas fa-redo"></i>';
+      loopBtn.title = 'Loop: All tracks';
+    } else if (state.loopMode === 'one') {
+      loopBtn.className = 'btn btn-icon active';
+      loopBtn.innerHTML = '<i class="fas fa-redo"></i><span style="font-size:0.55rem;position:absolute;margin-top:-8px;margin-left:8px;font-weight:700">1</span>';
+      loopBtn.title = 'Loop: Current track';
+    } else {
+      loopBtn.className = 'btn btn-icon';
+      loopBtn.innerHTML = '<i class="fas fa-redo"></i>';
+      loopBtn.title = 'Loop: Off';
+    }
+  }
+
+  function updateShuffleUI() {
+    if (!shuffleBtn) return;
+    shuffleBtn.classList.toggle('active', state.isShuffle);
+    shuffleBtn.title = state.isShuffle ? 'Shuffle (On)' : 'Shuffle (Off)';
   }
 
   async function playCurrentTrack() {
     try {
       await player.play();
       state.isPlaying = true;
-      updatePlayButton();
+      updatePlayUI();
     } catch (error) {
       state.isPlaying = false;
-      updatePlayButton();
+      updatePlayUI();
     }
   }
 
   function pauseCurrentTrack() {
     player.pause();
     state.isPlaying = false;
-    updatePlayButton();
+    updatePlayUI();
+  }
+
+  function togglePlay() {
+    if (state.isPlaying) {
+      pauseCurrentTrack();
+    } else {
+      playCurrentTrack();
+    }
+  }
+
+  function getNextIndex() {
+    if (state.isShuffle && playlist.length > 1) {
+      let nextIdx;
+      do {
+        nextIdx = Math.floor(Math.random() * playlist.length);
+      } while (nextIdx === state.index);
+      return nextIdx;
+    }
+    return (state.index + 1) % playlist.length;
+  }
+
+  function getPrevIndex() {
+    return (state.index - 1 + playlist.length) % playlist.length;
+  }
+
+  function nextTrack() {
+    const shouldResume = state.isPlaying;
+    loadTrack(getNextIndex());
+    if (shouldResume) {
+      playCurrentTrack();
+    }
+  }
+
+  function prevTrack() {
+    const shouldResume = state.isPlaying;
+    loadTrack(getPrevIndex());
+    if (shouldResume) {
+      playCurrentTrack();
+    }
   }
 
   function renderAlbums() {
@@ -827,36 +1064,116 @@ function setupTerminalMusicPlayer() {
     `).join('');
   }
 
-  renderAlbums();
-  loadTrack(0);
-  updatePlayButton();
-
-  playBtn.addEventListener('click', () => {
-    if (state.isPlaying) {
-      pauseCurrentTrack();
-      return;
+  // Audio Event Listeners
+  player.addEventListener('timeupdate', () => {
+    if (!Number.isFinite(player.duration) || player.duration <= 0) return;
+    const progress = (player.currentTime / player.duration) * 100;
+    if (progressFill) {
+      progressFill.style.width = `${progress}%`;
     }
-    playCurrentTrack();
+    if (currentTimeEl) {
+      currentTimeEl.textContent = formatTime(player.currentTime);
+    }
+    if (progressBar) {
+      progressBar.setAttribute('aria-valuenow', Math.round(progress));
+    }
   });
 
-  prevBtn.addEventListener('click', () => {
-    const shouldResume = state.isPlaying;
-    loadTrack(state.index - 1);
-    if (shouldResume) {
+  player.addEventListener('loadedmetadata', () => {
+    if (durationEl && Number.isFinite(player.duration)) {
+      durationEl.textContent = formatTime(player.duration);
+    }
+  });
+
+  player.addEventListener('durationchange', () => {
+    if (durationEl && Number.isFinite(player.duration)) {
+      durationEl.textContent = formatTime(player.duration);
+    }
+  });
+
+  player.addEventListener('ended', () => {
+    if (state.loopMode === 'one') {
+      player.currentTime = 0;
       playCurrentTrack();
+    } else if (state.loopMode === 'all') {
+      nextTrack();
+    } else {
+      if (state.index < playlist.length - 1 || state.isShuffle) {
+        nextTrack();
+      } else {
+        pauseCurrentTrack();
+        loadTrack(0);
+      }
     }
   });
 
-  nextBtn.addEventListener('click', () => {
-    const shouldResume = state.isPlaying;
-    loadTrack(state.index + 1);
-    if (shouldResume) {
-      playCurrentTrack();
-    }
+  player.addEventListener('play', () => {
+    state.isPlaying = true;
+    updatePlayUI();
   });
+
+  player.addEventListener('pause', () => {
+    state.isPlaying = false;
+    updatePlayUI();
+  });
+
+  // Progress Bar Seek
+  if (progressBar) {
+    progressBar.addEventListener('click', event => {
+      if (!Number.isFinite(player.duration) || player.duration <= 0) return;
+      const rect = progressBar.getBoundingClientRect();
+      const clickX = Math.max(0, Math.min(event.clientX - rect.left, rect.width));
+      const ratio = clickX / rect.width;
+      player.currentTime = ratio * player.duration;
+      if (progressFill) {
+        progressFill.style.width = `${ratio * 100}%`;
+      }
+    });
+  }
+
+  // Button Listeners
+  playBtn.addEventListener('click', togglePlay);
+  prevBtn.addEventListener('click', prevTrack);
+  nextBtn.addEventListener('click', nextTrack);
+
+  if (shuffleBtn) {
+    shuffleBtn.addEventListener('click', () => {
+      state.isShuffle = !state.isShuffle;
+      updateShuffleUI();
+    });
+  }
+
+  if (loopBtn) {
+    loopBtn.addEventListener('click', () => {
+      if (state.loopMode === 'all') {
+        state.loopMode = 'one';
+      } else if (state.loopMode === 'one') {
+        state.loopMode = 'none';
+      } else {
+        state.loopMode = 'all';
+      }
+      updateLoopUI();
+    });
+  }
+
+  if (muteBtn) {
+    muteBtn.addEventListener('click', () => {
+      if (player.muted || player.volume === 0) {
+        player.muted = false;
+        player.volume = state.savedVolume > 0 ? state.savedVolume : 0.55;
+      } else {
+        state.savedVolume = player.volume;
+        player.muted = true;
+      }
+      updateVolumeUI();
+    });
+  }
 
   volumeSlider.addEventListener('input', () => {
+    player.muted = false;
     player.volume = Number(volumeSlider.value) / 100;
+    state.savedVolume = player.volume;
+    updateVolumeUI();
   });
 
   albumGrid.addEventListener('click', event => {
@@ -870,6 +1187,83 @@ function setupTerminalMusicPlayer() {
       playCurrentTrack();
     }
   });
+
+  // Keyboard controls when music window is focused
+  if (musicWindow) {
+    musicWindow.addEventListener('keydown', event => {
+      if (['INPUT', 'TEXTAREA'].includes(event.target.tagName)) return;
+      if (event.code === 'Space') {
+        event.preventDefault();
+        togglePlay();
+      } else if (event.key === 'ArrowRight') {
+        event.preventDefault();
+        nextTrack();
+      } else if (event.key === 'ArrowLeft') {
+        event.preventDefault();
+        prevTrack();
+      } else if (event.key === 'ArrowUp') {
+        event.preventDefault();
+        window.musicPlayer.setVolume(Math.min(100, Math.round(player.volume * 100) + 5));
+      } else if (event.key === 'ArrowDown') {
+        event.preventDefault();
+        window.musicPlayer.setVolume(Math.max(0, Math.round(player.volume * 100) - 5));
+      }
+    });
+  }
+
+  // Expose global controller for shell and desktop environment
+  window.musicPlayer = {
+    play: playCurrentTrack,
+    pause: pauseCurrentTrack,
+    toggle: togglePlay,
+    next: nextTrack,
+    prev: prevTrack,
+    loadTrack: (idx) => {
+      loadTrack(idx);
+      playCurrentTrack();
+    },
+    setVolume: (vol) => {
+      const clamped = Math.max(0, Math.min(100, Number(vol)));
+      player.muted = false;
+      player.volume = clamped / 100;
+      state.savedVolume = player.volume;
+      updateVolumeUI();
+      return clamped;
+    },
+    setShuffle: (flag) => {
+      state.isShuffle = typeof flag === 'boolean' ? flag : !state.isShuffle;
+      updateShuffleUI();
+      return state.isShuffle;
+    },
+    setLoop: (mode) => {
+      if (['all', 'one', 'none'].includes(mode)) {
+        state.loopMode = mode;
+      } else {
+        if (state.loopMode === 'all') state.loopMode = 'one';
+        else if (state.loopMode === 'one') state.loopMode = 'none';
+        else state.loopMode = 'all';
+      }
+      updateLoopUI();
+      return state.loopMode;
+    },
+    getInfo: () => ({
+      track: playlist[state.index],
+      isPlaying: state.isPlaying,
+      currentTime: player.currentTime,
+      duration: player.duration,
+      volume: Math.round(player.volume * 100),
+      isShuffle: state.isShuffle,
+      loopMode: state.loopMode
+    }),
+    getPlaylist: () => [...playlist]
+  };
+
+  renderAlbums();
+  loadTrack(0);
+  updatePlayUI();
+  updateVolumeUI();
+  updateShuffleUI();
+  updateLoopUI();
 }
 
 function setupDesktopEnvironment() {
@@ -890,8 +1284,9 @@ function setupDesktopEnvironment() {
     terminal: { windowId: 'window-terminal', aliases: ['terminal', 'shell'], service: 'shell' },
     resume: { windowId: 'window-resume', aliases: ['resume', 'cv'], service: 'resume' },
     projects: { windowId: 'window-projects-folder', aliases: ['projects', 'projects-folder', 'folder'], service: 'files' },
+    games: { windowId: 'window-games-folder', aliases: ['games', 'games-folder'], service: 'games' },
     browser: { windowId: 'window-project-browser', aliases: ['browser', 'projectbrowser', 'preview'], service: 'browser' },
-    aimtrainer: { windowId: 'window-aim-trainer', aliases: ['aimtrainer', 'aim', 'game'], service: 'games' },
+    aimtrainer: { windowId: 'window-aim-trainer', aliases: ['aimtrainer', 'aim'], service: 'aim' },
     music: { windowId: 'window-music-player', aliases: ['music', 'musicplayer', 'player'], service: 'audio' },
     portfolio: { windowId: 'window-modern-portfolio', aliases: ['portfolio', 'modern', 'ui'], service: 'portfolio' }
   };
@@ -1188,15 +1583,53 @@ function setupDesktopEnvironment() {
     });
   }
 
+  function createProjectFolderCard(project, displayIndex, previewIndex) {
+    const card = document.createElement('div');
+    card.className = 'desktop-project-card';
+    const techTags = (project.tech || []).map(t => `<span class="tag">${t}</span>`).join('');
+    const iconSvg = typeof projectIcon === 'function' ? projectIcon(project.icon) : '<i class="fas fa-folder"></i>';
+
+    card.innerHTML = `
+      <div class="desktop-project-icon">
+        ${iconSvg}
+      </div>
+      <div class="desktop-project-content">
+        <div class="desktop-project-header">
+          <h3 class="desktop-project-title">
+            <span class="desktop-project-index">${displayIndex}.</span> ${project.name}
+          </h3>
+          <span class="desktop-project-badge">${(project.category || 'project').toUpperCase()}</span>
+        </div>
+        <p class="desktop-project-desc">${project.description || ''}</p>
+        <div class="desktop-project-tags">
+          ${techTags}
+        </div>
+      </div>
+      <div class="desktop-project-actions">
+        <a href="${project.link}" class="btn" target="_blank" rel="noopener noreferrer">Open <i class="fas fa-external-link-alt"></i></a>
+        <button class="btn project-preview-btn" data-preview-index="${previewIndex}" type="button">Preview</button>
+      </div>
+    `;
+    return card;
+  }
+
   function renderDesktopProjects() {
     const list = document.getElementById('desktopProjectsList');
     if (!list) return;
     list.innerHTML = '';
     sharedProjects.forEach((project, index) => {
-      const row = document.createElement('div');
-      row.className = 'desktop-project-item';
-      row.innerHTML = `<a href="${project.link}" target="_blank">${index + 1}. ${project.name}</a><span>${project.category}</span><button class="btn project-preview-btn" data-preview-index="${index}" type="button">Preview</button>`;
-      list.appendChild(row);
+      list.appendChild(createProjectFolderCard(project, index + 1, index));
+    });
+  }
+
+  function renderDesktopGames() {
+    const list = document.getElementById('desktopGamesList');
+    if (!list) return;
+    list.innerHTML = '';
+    const games = getGameProjects();
+    games.forEach((game, index) => {
+      const globalIndex = sharedProjects.indexOf(game);
+      list.appendChild(createProjectFolderCard(game, index + 1, globalIndex));
     });
   }
 
@@ -1277,6 +1710,38 @@ function setupDesktopEnvironment() {
         openProjectBrowser(idx);
       });
     }
+
+    const openAllGamesWindowBtn = document.getElementById('openAllGamesWindow');
+    const openAllGamesTabsBtn = document.getElementById('openAllGamesTabs');
+    const gamesList = document.getElementById('desktopGamesList');
+
+    if (openAllGamesWindowBtn) {
+      openAllGamesWindowBtn.addEventListener('click', () => {
+        const games = getGameProjects();
+        if (games.length) {
+          const firstIdx = sharedProjects.indexOf(games[0]);
+          openProjectBrowser(firstIdx >= 0 ? firstIdx : 0);
+        }
+      });
+    }
+
+    if (openAllGamesTabsBtn) {
+      openAllGamesTabsBtn.addEventListener('click', () => {
+        getGameProjects().forEach(game => {
+          window.open(game.link, '_blank');
+        });
+      });
+    }
+
+    if (gamesList) {
+      gamesList.addEventListener('click', event => {
+        const btn = event.target.closest('.project-preview-btn');
+        if (!btn) return;
+        const idx = Number(btn.getAttribute('data-preview-index'));
+        if (Number.isNaN(idx)) return;
+        openProjectBrowser(idx);
+      });
+    }
   }
 
   async function renderDesktopResume() {
@@ -1333,6 +1798,7 @@ function setupDesktopEnvironment() {
   setupStartMenu();
 
   renderDesktopProjects();
+  renderDesktopGames();
   renderDesktopResume();
   setupProjectBrowserControls();
 
@@ -1347,7 +1813,7 @@ function setupDesktopEnvironment() {
       return openWindow(mappedId);
     },
     listApps() {
-      return ['terminal', 'resume', 'projects', 'browser', 'aimtrainer', 'music', 'portfolio'];
+      return ['terminal', 'resume', 'projects', 'games', 'browser', 'aimtrainer', 'music', 'portfolio'];
     },
     getProcessLines() {
       return Object.keys(processByPid).map(pid => {

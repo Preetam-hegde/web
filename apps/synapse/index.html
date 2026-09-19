@@ -73,22 +73,49 @@
 						<p>Two-frame flicker with mask. Spot the altered micro-element.</p>
 						<div class="best">best: <b id="best-blindness">0</b> CPS</div>
 					</button>
+
+					<button class="card" type="button" data-mode="matrix">
+						<svg viewBox="0 0 24 24"><rect width="18" height="18" x="3" y="3" rx="2"/><path d="M3 9h18M3 15h18M9 3v18M15 3v18"/></svg>
+						<kbd>5</kbd>
+						<h3>Visual Matrix</h3>
+						<p>Pattern memory grid. Memorize flashing active tiles as matrix expands.</p>
+						<div class="best">best span: <b id="best-matrix">0</b> tiles</div>
+					</button>
+
+					<button class="card" type="button" data-mode="nback">
+						<svg viewBox="0 0 24 24"><path d="m12 19-7-7 7-7"/><path d="M19 12H5"/><circle cx="19" cy="12" r="2"/></svg>
+						<kbd>6</kbd>
+						<h3>N-Back Flux</h3>
+						<p>Continuous executive updating. Identify items matching N-steps prior.</p>
+						<div class="best">best: <b id="best-nback">0</b> CPS</div>
+					</button>
+
+					<button class="card" type="button" data-mode="trail">
+						<svg viewBox="0 0 24 24"><path d="m3 12 7-9 7 9-7 9-7-9Z"/><path d="M10 3v18M3 12h14"/></svg>
+						<kbd>7</kbd>
+						<h3>Neural Link</h3>
+						<p>Trail Making Test. Rapidly link alternating 1 → A → 2 → B sequences.</p>
+						<div class="best">best: <b id="best-trail">0</b> CPS</div>
+					</button>
 				</div>
 
-				<div class="len" role="group" aria-label="Difficulty level">
-					<span>Difficulty</span>
-					<button type="button" data-diff="standard">Standard</button>
-					<button type="button" data-diff="overclocked">Overclocked</button>
-					<button type="button" data-diff="extreme">Extreme</button>
+				<div class="selectors-row">
+					<div class="len" role="group" aria-label="Difficulty level">
+						<span>Difficulty</span>
+						<button type="button" data-diff="standard">Standard</button>
+						<button type="button" data-diff="overclocked">Overclocked</button>
+						<button type="button" data-diff="extreme">Extreme</button>
+					</div>
+
+					<div class="len" role="group" aria-label="Span direction" id="spatialConfigRow">
+						<span>Span Order</span>
+						<button type="button" data-span-dir="forward">Forward</button>
+						<button type="button" data-span-dir="reversed">Reversed</button>
+					</div>
 				</div>
 
-				<div class="len" role="group" aria-label="Span direction" id="spatialConfigRow">
-					<span>Span Order</span>
-					<button type="button" data-span-dir="forward">Forward</button>
-					<button type="button" data-span-dir="reversed">Reversed</button>
-				</div>
-
-				<p class="hint">Press <kbd>1</kbd>–<kbd>4</kbd> to launch · <kbd>R</kbd> restarts · <kbd>ESC</kbd> exits to menu</p>
+				<p class="hint">Press <kbd>1</kbd>–<kbd>7</kbd> to launch · <kbd>R</kbd> restarts · <kbd>ESC</kbd> finishes & saves</p>
+				<div class="menu-watermark">Made with <span class="watermark-heart">❤️</span> by <strong>Preetam Ptwo</strong></div>
 			</section>
 
 			<!-- ── Play Screen ──────────────────────────────────────── -->
@@ -148,6 +175,43 @@
 					<div class="arena-view" id="arenaBlindness" hidden>
 						<div class="blindness-status" id="blindnessStatus">SPOT THE ALTERED NODE</div>
 						<div class="blindness-grid" id="blindnessGrid"></div>
+					</div>
+
+					<!-- Visual Matrix Arena -->
+					<div class="arena-view" id="arenaVisualMatrix" hidden>
+						<div class="matrix-status" id="matrixStatus">MEMORIZE THE PATTERN</div>
+						<div class="matrix-grid" id="matrixGrid"></div>
+					</div>
+
+					<!-- N-Back Flux Arena -->
+					<div class="arena-view" id="arenaNBack" hidden>
+						<div class="nback-header">
+							<span class="nback-badge" id="nbackBadge">1-BACK</span>
+							<div class="nback-status" id="nbackStatus">MATCH 1 STEP AGO?</div>
+						</div>
+						<div class="nback-stage">
+							<div class="nback-grid" id="nbackGrid"></div>
+							<div class="nback-symbol" id="nbackSymbol">▲</div>
+						</div>
+						<div class="nback-actions">
+							<button type="button" class="nback-btn match" id="btnNBackMatch">
+								<span>MATCH</span>
+								<kbd>space</kbd>
+							</button>
+							<button type="button" class="nback-btn nomatch" id="btnNBackNoMatch">
+								<span>NO MATCH</span>
+								<kbd>enter</kbd>
+							</button>
+						</div>
+					</div>
+
+					<!-- Neural Link Arena -->
+					<div class="arena-view" id="arenaNeuralLink" hidden>
+						<div class="trail-status" id="trailStatus">LINK: 1 → A → 2 → B...</div>
+						<div class="trail-stage" id="trailStage">
+							<svg class="trail-svg" id="trailSvg"></svg>
+							<div class="trail-nodes" id="trailNodes"></div>
+						</div>
 					</div>
 				</div>
 

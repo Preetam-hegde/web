@@ -93,22 +93,25 @@
 					</button>
 				</div>
 
-				<div class="len" role="group" aria-label="Session length">
-					<span>Duration</span>
-					<button type="button" data-len="30">30s</button>
-					<button type="button" data-len="60">60s</button>
-					<button type="button" data-len="120">120s</button>
+				<div class="selectors-row">
+					<div class="len" role="group" aria-label="Session length">
+						<span>Duration</span>
+						<button type="button" data-len="30">30s</button>
+						<button type="button" data-len="60">60s</button>
+						<button type="button" data-len="120">120s</button>
+					</div>
+
+					<div class="len" role="group" aria-label="Difficulty">
+						<span>Difficulty</span>
+						<button type="button" data-diff="easy">Easy</button>
+						<button type="button" data-diff="normal">Normal</button>
+						<button type="button" data-diff="hard">Hard</button>
+						<button type="button" data-diff="extreme">Extreme</button>
+					</div>
 				</div>
 
-				<div class="len" role="group" aria-label="Difficulty">
-					<span>Difficulty</span>
-					<button type="button" data-diff="easy">Easy</button>
-					<button type="button" data-diff="normal">Normal</button>
-					<button type="button" data-diff="hard">Hard</button>
-					<button type="button" data-diff="extreme">Extreme</button>
-				</div>
-
-				<p class="hint">Press <kbd>1</kbd>–<kbd>6</kbd> to jump in · <kbd>r</kbd> restarts · <kbd>esc</kbd> pauses / finishes</p>
+				<p class="hint">Press <kbd>1</kbd>–<kbd>6</kbd> to jump in · <kbd>r</kbd> restarts · <kbd>esc</kbd> pauses / finishes & saves</p>
+				<div class="menu-watermark">Made with <span class="watermark-heart">❤️</span> by <strong>Preetam Ptwo</strong></div>
 			</section>
 
 			<!-- Play Screen -->
@@ -124,10 +127,10 @@
 				<div id="pause-screen" class="pause-overlay" hidden>
 					<div class="pause-card">
 						<h2>PAUSED</h2>
-						<p class="hint">Click or press <kbd>esc</kbd> to resume</p>
+						<p class="hint">Press <kbd>space</kbd> to resume · <kbd>esc</kbd> to finish & save</p>
 						<div class="actions">
-							<button type="button" class="primary" id="btnResume">Resume <kbd>esc</kbd></button>
-							<button type="button" id="btnFinish">Finish & Save <kbd>f</kbd></button>
+							<button type="button" class="primary" id="btnResume">Resume <kbd>space</kbd></button>
+							<button type="button" id="btnFinish">Finish & Save <kbd>esc</kbd> / <kbd>f</kbd></button>
 							<button type="button" id="btnRestart">Restart <kbd>r</kbd></button>
 							<button type="button" data-go="settings">Settings</button>
 							<button type="button" id="btnQuit">Quit <kbd>q</kbd></button>

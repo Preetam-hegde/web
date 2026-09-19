@@ -1,7 +1,7 @@
 'use strict';
 
 const loomProjects = typeof projects === 'undefined' ? [] : projects;
-const loomCategories = { personal: 'Independent build', fcc: 'Interactive study' };
+const loomCategories = { games: 'Game', personal: 'Independent build', fcc: 'Interactive study' };
 
 document.addEventListener('DOMContentLoaded', () => {
 	document.documentElement.classList.add('js');
@@ -449,7 +449,21 @@ function renderLoomProjects() {
 	const filters = document.getElementById('loom-filters');
 	if (!grid || !filters) return;
 	grid.replaceChildren(...loomProjects.map(createProjectCard));
-	const options = [['all', 'All'], ['personal', 'Independent builds'], ['fcc', 'Interactive studies']];
+	const categoryLabels = {
+		games: 'Games',
+		personal: 'Independent builds',
+		fcc: 'Interactive studies'
+	};
+	const preferredOrder = ['games', 'personal', 'fcc'];
+	const presentCategories = [...new Set(loomProjects.map((p) => p.category))];
+	const orderedCategories = [
+		...preferredOrder.filter((c) => presentCategories.includes(c)),
+		...presentCategories.filter((c) => !preferredOrder.includes(c))
+	];
+	const options = [
+		['all', 'All'],
+		...orderedCategories.map((cat) => [cat, categoryLabels[cat] || cat.toUpperCase()])
+	];
 	filters.replaceChildren(...options.map(([value, label]) => {
 		const count = value === 'all' ? loomProjects.length : loomProjects.filter((project) => project.category === value).length;
 		const button = document.createElement('button');

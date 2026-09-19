@@ -400,7 +400,10 @@ const blankStore = () => ({
 		chimp: 0,
 		stroop: 0,
 		spatial: 0,
-		blindness: 0
+		blindness: 0,
+		matrix: 0,
+		nback: 0,
+		trail: 0
 	},
 	diff: 'standard',
 	spanDir: 'forward',
@@ -461,6 +464,24 @@ const elArenaBlindness = document.getElementById('arenaBlindness');
 const elBlindnessGrid = document.getElementById('blindnessGrid');
 const elBlindnessStatus = document.getElementById('blindnessStatus');
 
+const elArenaVisualMatrix = document.getElementById('arenaVisualMatrix');
+const elMatrixGrid = document.getElementById('matrixGrid');
+const elMatrixStatus = document.getElementById('matrixStatus');
+
+const elArenaNBack = document.getElementById('arenaNBack');
+const elNBackBadge = document.getElementById('nbackBadge');
+const elNBackStatus = document.getElementById('nbackStatus');
+const elNBackGrid = document.getElementById('nbackGrid');
+const elNBackSymbol = document.getElementById('nbackSymbol');
+const elBtnNBackMatch = document.getElementById('btnNBackMatch');
+const elBtnNBackNoMatch = document.getElementById('btnNBackNoMatch');
+
+const elArenaNeuralLink = document.getElementById('arenaNeuralLink');
+const elTrailStatus = document.getElementById('trailStatus');
+const elTrailStage = document.getElementById('trailStage');
+const elTrailSvg = document.getElementById('trailSvg');
+const elTrailNodes = document.getElementById('trailNodes');
+
 // Results
 const elRMode = document.getElementById('rMode');
 const elRScore = document.getElementById('rScore');
@@ -498,7 +519,10 @@ const MODE_CONFIGS = {
 	chimp: { name: 'Chimp Matrix', unit: 'items', kpiName: 'max span' },
 	stroop: { name: 'Stroop Duel', unit: 'CPS', kpiName: 'peak CPS' },
 	spatial: { name: 'Spatial Span', unit: 'nodes', kpiName: 'max span' },
-	blindness: { name: 'Change Blindness', unit: 'CPS', kpiName: 'peak CPS' }
+	blindness: { name: 'Change Blindness', unit: 'CPS', kpiName: 'peak CPS' },
+	matrix: { name: 'Visual Matrix', unit: 'tiles', kpiName: 'max tiles' },
+	nback: { name: 'N-Back Flux', unit: 'CPS', kpiName: 'peak CPS' },
+	trail: { name: 'Neural Link', unit: 'CPS', kpiName: 'peak CPS' }
 };
 
 function setScreen(screen) {
@@ -516,6 +540,9 @@ function updateMenuBests() {
 	$('#best-stroop').textContent = store.best.stroop || 0;
 	$('#best-spatial').textContent = store.best.spatial || 0;
 	$('#best-blindness').textContent = store.best.blindness || 0;
+	$('#best-matrix').textContent = store.best.matrix || 0;
+	$('#best-nback').textContent = store.best.nback || 0;
+	$('#best-trail').textContent = store.best.trail || 0;
 }
 
 /* ── Mode Switching & Configuration ────────────────────────── */
@@ -585,7 +612,8 @@ $$('[data-go]').forEach(btn => {
 	btn.addEventListener('click', () => {
 		const target = btn.getAttribute('data-go');
 		if (gameState !== 'idle' && activeScreen === 'play') {
-			endCurrentRun(false);
+			const hasProgress = currentRun && (currentRun.hits + currentRun.misses > 0 || currentRun.span > 0 || currentRun.latencies.length > 0);
+			endCurrentRun(!!hasProgress);
 		}
 		setScreen(target);
 		audio.playBlip(480);
@@ -632,7 +660,11 @@ function launchRun(mode) {
 		diff: store.diff,
 		spanDir: store.spanDir,
 		span: mode === 'chimp' ? (store.diff === 'extreme' ? 7 : (store.diff === 'overclocked' ? 6 : 5)) :
-			(mode === 'spatial' ? 3 : (mode === 'stroop' ? 1 : 1)),
+			(mode === 'spatial' ? 3 :
+			(mode === 'matrix' ? 3 :
+			(mode === 'nback' ? (store.diff === 'extreme' ? 3 : (store.diff === 'overclocked' ? 2 : 1)) :
+			(mode === 'trail' ? 8 :
+			(mode === 'stroop' ? 1 : 1))))),
 		score: 0,
 		streak: 0,
 		maxStreak: 0,
@@ -652,6 +684,12 @@ function launchRun(mode) {
 	elArenaSpatial.classList.remove('active');
 	elArenaBlindness.hidden = true;
 	elArenaBlindness.classList.remove('active');
+	elArenaVisualMatrix.hidden = true;
+	elArenaVisualMatrix.classList.remove('active');
+	elArenaNBack.hidden = true;
+	elArenaNBack.classList.remove('active');
+	elArenaNeuralLink.hidden = true;
+	elArenaNeuralLink.classList.remove('active');
 
 	runStartTime = performance.now();
 	if (runTimerInterval) clearInterval(runTimerInterval);
@@ -680,6 +718,21 @@ function launchRun(mode) {
 		elArenaBlindness.classList.add('active');
 		elHSpanLabel.textContent = 'round';
 		startBlindnessRound();
+	} else if (mode === 'matrix') {
+		elArenaVisualMatrix.hidden = false;
+		elArenaVisualMatrix.classList.add('active');
+		elHSpanLabel.textContent = 'tiles';
+		startVisualMatrixRound();
+	} else if (mode === 'nback') {
+		elArenaNBack.hidden = false;
+		elArenaNBack.classList.add('active');
+		elHSpanLabel.textContent = 'n-back';
+		startNBackRound();
+	} else if (mode === 'trail') {
+		elArenaNeuralLink.hidden = false;
+		elArenaNeuralLink.classList.add('active');
+		elHSpanLabel.textContent = 'nodes';
+		startNeuralLinkRound();
 	}
 }
 
@@ -1213,6 +1266,367 @@ elBlindnessGrid.addEventListener('click', (e) => {
 	updateHUD();
 });
 
+/* ── 5. Visual Matrix Mode ─────────────────────────────────── */
+let matrixActiveIndices = new Set();
+let matrixFoundIndices = new Set();
+let matrixFlashTimeout = null;
+
+function startVisualMatrixRound() {
+	gameState = 'memorize';
+	matrixActiveIndices.clear();
+	matrixFoundIndices.clear();
+	elMatrixStatus.textContent = 'MEMORIZE THE PATTERN';
+	elPlayHint.textContent = 'Watch for the flashing neon tiles';
+	elMatrixGrid.innerHTML = '';
+
+	const count = currentRun.span;
+	let dim = 3;
+	if (count >= 12) dim = 6;
+	else if (count >= 8) dim = 5;
+	else if (count >= 5) dim = 4;
+	else dim = 3;
+
+	const totalCells = dim * dim;
+	elMatrixGrid.style.setProperty('--cols', dim);
+
+	const indices = [];
+	for (let i = 0; i < totalCells; i++) indices.push(i);
+	for (let i = indices.length - 1; i > 0; i--) {
+		const j = Math.floor(Math.random() * (i + 1));
+		[indices[i], indices[j]] = [indices[j], indices[i]];
+	}
+
+	const picked = indices.slice(0, count);
+	picked.forEach(idx => matrixActiveIndices.add(idx));
+
+	for (let i = 0; i < totalCells; i++) {
+		const tile = document.createElement('div');
+		tile.className = 'matrix-tile';
+		tile.dataset.idx = i;
+		if (matrixActiveIndices.has(i)) {
+			tile.classList.add('tile-flash');
+		}
+		elMatrixGrid.appendChild(tile);
+	}
+
+	const flashDuration = store.diff === 'extreme' ? 600 : (store.diff === 'overclocked' ? 800 : 1100);
+
+	if (matrixFlashTimeout) clearTimeout(matrixFlashTimeout);
+	matrixFlashTimeout = setTimeout(() => {
+		if (gameState !== 'memorize') return;
+		gameState = 'input';
+		roundStartTime = performance.now();
+		elMatrixStatus.textContent = `RECALL ${count} ACTIVE TILES`;
+		elPlayHint.textContent = 'Click all tiles from visual memory';
+
+		$$('.matrix-tile').forEach(t => t.classList.remove('tile-flash'));
+	}, flashDuration);
+}
+
+elMatrixGrid.addEventListener('click', (e) => {
+	const tile = e.target.closest('.matrix-tile');
+	if (!tile || gameState !== 'input') return;
+
+	const idx = parseInt(tile.dataset.idx, 10);
+	if (matrixFoundIndices.has(idx)) return;
+
+	const rt = performance.now() - roundStartTime;
+	roundStartTime = performance.now();
+	currentRun.latencies.push(rt);
+
+	if (matrixActiveIndices.has(idx)) {
+		// Correct
+		matrixFoundIndices.add(idx);
+		tile.classList.add('tile-correct');
+		audio.playChime(matrixFoundIndices.size, currentRun.span);
+		currentRun.hits++;
+		currentRun.streak++;
+		if (currentRun.streak > currentRun.maxStreak) currentRun.maxStreak = currentRun.streak;
+
+		burstFx(tile.getBoundingClientRect().left + 20, tile.getBoundingClientRect().top + 20, 8);
+
+		if (matrixFoundIndices.size === matrixActiveIndices.size) {
+			// All found!
+			currentRun.roundsCompleted++;
+			currentRun.span++;
+			showToast(`SPAN: ${currentRun.span} TILES!`, 750);
+			audio.playMilestone();
+			gameState = 'idle';
+			setTimeout(startVisualMatrixRound, 800);
+		}
+	} else {
+		// Wrong tile
+		tile.classList.add('tile-wrong');
+		audio.playGlitch();
+		triggerShake(10);
+		flashVignette('#ff4d6d');
+		currentRun.misses++;
+		currentRun.streak = 0;
+
+		// Reveal remaining active tiles
+		matrixActiveIndices.forEach(actIdx => {
+			const t = elMatrixGrid.children[actIdx];
+			if (t) t.classList.add('tile-correct');
+		});
+
+		gameState = 'idle';
+		setTimeout(() => {
+			if (currentRun.misses >= 3) {
+				endCurrentRun(true);
+			} else {
+				startVisualMatrixRound();
+			}
+		}, 1000);
+	}
+	updateHUD();
+});
+
+/* ── 6. N-Back Flux Mode ───────────────────────────────────── */
+const NBACK_SYMBOLS = ['▲', '■', '●', '◆', '✦', '⬟'];
+let nbackHistory = [];
+let nbackTimerTimeout = null;
+let nbackCurrentTrial = 0;
+const NBACK_MAX_TRIALS = 25;
+let nbackHasAnswered = false;
+
+function startNBackRound() {
+	nbackHistory = [];
+	nbackCurrentTrial = 0;
+	runNextNBackTrial();
+}
+
+function runNextNBackTrial() {
+	if (nbackCurrentTrial >= NBACK_MAX_TRIALS || currentRun.misses >= 3) {
+		endCurrentRun(true);
+		return;
+	}
+
+	gameState = 'input';
+	nbackHasAnswered = false;
+	nbackCurrentTrial++;
+	const N = currentRun.span;
+	elNBackBadge.textContent = `${N}-BACK`;
+	elNBackStatus.textContent = nbackHistory.length >= N ? `MATCH ITEM ${N} STEPS AGO?` : 'MEMORIZE SEQUENCE...';
+	elPlayHint.textContent = 'Space: MATCH · Enter / Click: PASS';
+
+	let isMatch = false;
+	let pos = Math.floor(Math.random() * 9);
+	let symbol = NBACK_SYMBOLS[Math.floor(Math.random() * NBACK_SYMBOLS.length)];
+
+	if (nbackHistory.length >= N) {
+		const targetItem = nbackHistory[nbackHistory.length - N];
+		if (Math.random() < 0.38) {
+			pos = targetItem.pos;
+			symbol = targetItem.symbol;
+			isMatch = true;
+		} else {
+			if (pos === targetItem.pos && symbol === targetItem.symbol) {
+				pos = (pos + 1) % 9;
+			}
+			isMatch = false;
+		}
+	}
+
+	const currentItem = { pos, symbol, isMatch };
+	nbackHistory.push(currentItem);
+
+	elNBackGrid.innerHTML = '';
+	for (let i = 0; i < 9; i++) {
+		const cell = document.createElement('div');
+		cell.className = 'nback-grid-cell';
+		if (i === pos) cell.classList.add('active-pos');
+		elNBackGrid.appendChild(cell);
+	}
+	elNBackSymbol.textContent = symbol;
+	audio.playBlip(400 + pos * 50);
+
+	roundStartTime = performance.now();
+	const trialDuration = store.diff === 'extreme' ? 1200 : (store.diff === 'overclocked' ? 1500 : 1800);
+
+	if (nbackTimerTimeout) clearTimeout(nbackTimerTimeout);
+	nbackTimerTimeout = setTimeout(() => {
+		if (gameState !== 'input') return;
+		if (!nbackHasAnswered && currentItem.isMatch) {
+			handleNBackResponse(false, true);
+		} else if (!nbackHasAnswered) {
+			currentRun.hits++;
+			currentRun.roundsCompleted++;
+			runNextNBackTrial();
+		}
+	}, trialDuration);
+}
+
+function handleNBackResponse(userSaidMatch, isAutoTimeout = false) {
+	if (gameState !== 'input' || nbackHasAnswered) return;
+	nbackHasAnswered = true;
+	if (nbackTimerTimeout) clearTimeout(nbackTimerTimeout);
+
+	const rt = performance.now() - roundStartTime;
+	currentRun.latencies.push(rt);
+
+	const currentItem = nbackHistory[nbackHistory.length - 1];
+	const actualMatch = currentItem ? currentItem.isMatch : false;
+
+	if (userSaidMatch === actualMatch && !isAutoTimeout) {
+		audio.playLaser();
+		currentRun.hits++;
+		currentRun.streak++;
+		if (currentRun.streak > currentRun.maxStreak) currentRun.maxStreak = currentRun.streak;
+		currentRun.roundsCompleted++;
+
+		if (currentRun.streak > 0 && currentRun.streak % 8 === 0 && currentRun.span < 3) {
+			currentRun.span++;
+			showToast(`${currentRun.span}-BACK UNLOCKED!`, 750);
+			audio.playMilestone();
+		}
+
+		burstFx(window.innerWidth / 2, window.innerHeight / 2, 8);
+		setTimeout(runNextNBackTrial, 350);
+	} else {
+		audio.playGlitch();
+		triggerShake(10);
+		flashVignette('#ff4d6d');
+		currentRun.misses++;
+		currentRun.streak = 0;
+		currentRun.roundsCompleted++;
+
+		setTimeout(() => {
+			if (currentRun.misses >= 3) {
+				endCurrentRun(true);
+			} else {
+				runNextNBackTrial();
+			}
+		}, 500);
+	}
+	updateHUD();
+}
+
+elBtnNBackMatch.addEventListener('click', () => handleNBackResponse(true));
+elBtnNBackNoMatch.addEventListener('click', () => handleNBackResponse(false));
+
+/* ── 7. Neural Link Mode (Trail Making) ─────────────────────── */
+let trailSequence = [];
+let trailStep = 0;
+let trailPrevNode = null;
+
+function startNeuralLinkRound() {
+	gameState = 'input';
+	trailStep = 0;
+	trailPrevNode = null;
+	elTrailStatus.textContent = 'LINK: 1 → A → 2 → B...';
+	elPlayHint.textContent = 'Click alternating numbers and letters';
+	elTrailSvg.innerHTML = '';
+	elTrailNodes.innerHTML = '';
+
+	const totalItems = Math.min(16, currentRun.span);
+	trailSequence = [];
+	const letters = 'ABCDEFGH';
+	for (let i = 0; i < totalItems / 2; i++) {
+		trailSequence.push({ label: `${i + 1}`, val: i + 1, type: 'num' });
+		trailSequence.push({ label: letters[i], val: letters[i], type: 'let' });
+	}
+
+	const positions = [];
+	const minDistance = 55;
+	const padX = 25;
+	const padY = 25;
+
+	trailSequence.forEach((item, idx) => {
+		let attempts = 0;
+		let x = 50, y = 50;
+		while (attempts < 150) {
+			x = padX + Math.random() * (100 - padX * 2);
+			y = padY + Math.random() * (100 - padY * 2);
+			let tooClose = false;
+			for (const p of positions) {
+				const dx = ((x - p.x) / 100) * 580;
+				const dy = ((y - p.y) / 100) * 380;
+				if (Math.sqrt(dx * dx + dy * dy) < minDistance) {
+					tooClose = true;
+					break;
+				}
+			}
+			if (!tooClose) break;
+			attempts++;
+		}
+		positions.push({ x, y });
+
+		const nodeEl = document.createElement('div');
+		nodeEl.className = 'trail-node';
+		nodeEl.dataset.idx = idx;
+		nodeEl.style.left = `${x}%`;
+		nodeEl.style.top = `${y}%`;
+		nodeEl.textContent = item.label;
+		if (idx === 0) nodeEl.classList.add('active-target');
+		elTrailNodes.appendChild(nodeEl);
+	});
+
+	roundStartTime = performance.now();
+}
+
+elTrailNodes.addEventListener('click', (e) => {
+	const nodeEl = e.target.closest('.trail-node');
+	if (!nodeEl || gameState !== 'input') return;
+
+	const clickedIdx = parseInt(nodeEl.dataset.idx, 10);
+	const rt = performance.now() - roundStartTime;
+	roundStartTime = performance.now();
+	currentRun.latencies.push(rt);
+
+	if (clickedIdx === trailStep) {
+		nodeEl.classList.remove('active-target');
+		nodeEl.classList.add('connected');
+		audio.playChime(trailStep, trailSequence.length);
+
+		if (trailPrevNode) {
+			const prevRect = trailPrevNode.getBoundingClientRect();
+			const curRect = nodeEl.getBoundingClientRect();
+			const stageRect = elTrailStage.getBoundingClientRect();
+
+			const x1 = prevRect.left - stageRect.left + prevRect.width / 2;
+			const y1 = prevRect.top - stageRect.top + prevRect.height / 2;
+			const x2 = curRect.left - stageRect.left + curRect.width / 2;
+			const y2 = curRect.top - stageRect.top + curRect.height / 2;
+
+			const line = document.createElementNS('http://www.w3.org/2000/svg', 'line');
+			line.setAttribute('class', 'trail-laser');
+			line.setAttribute('x1', x1);
+			line.setAttribute('y1', y1);
+			line.setAttribute('x2', x2);
+			line.setAttribute('y2', y2);
+			elTrailSvg.appendChild(line);
+		}
+		trailPrevNode = nodeEl;
+		trailStep++;
+		currentRun.hits++;
+		currentRun.streak++;
+		if (currentRun.streak > currentRun.maxStreak) currentRun.maxStreak = currentRun.streak;
+
+		if (trailStep < trailSequence.length) {
+			const nextEl = elTrailNodes.children[trailStep];
+			if (nextEl) nextEl.classList.add('active-target');
+			elTrailStatus.textContent = `NEXT: ${trailSequence[trailStep].label}`;
+		} else {
+			currentRun.roundsCompleted++;
+			currentRun.span = Math.min(16, currentRun.span + 2);
+			showToast('SEQUENCE LINKED!', 750);
+			audio.playMilestone();
+			gameState = 'idle';
+			setTimeout(startNeuralLinkRound, 800);
+		}
+	} else {
+		audio.playGlitch();
+		triggerShake(8);
+		flashVignette('#ff4d6d');
+		currentRun.misses++;
+		currentRun.streak = 0;
+		if (currentRun.misses >= 3) {
+			endCurrentRun(true);
+		}
+	}
+	updateHUD();
+});
+
 /* ── Session End & Results ─────────────────────────────────── */
 function endCurrentRun(save = true) {
 	gameState = 'ended';
@@ -1220,6 +1634,8 @@ function endCurrentRun(save = true) {
 	if (chimpMaskTimeout) clearTimeout(chimpMaskTimeout);
 	if (stroopTimerRaf) cancelAnimationFrame(stroopTimerRaf);
 	if (blindnessInterval) clearTimeout(blindnessInterval);
+	if (matrixFlashTimeout) clearTimeout(matrixFlashTimeout);
+	if (nbackTimerTimeout) clearTimeout(nbackTimerTimeout);
 
 	if (!currentRun) {
 		setScreen('menu');
@@ -1235,7 +1651,7 @@ function endCurrentRun(save = true) {
 
 		const modeKey = currentRun.mode;
 		const prevBest = store.best[modeKey] || 0;
-		const compareVal = (modeKey === 'chimp' || modeKey === 'spatial') ? currentRun.span : cps;
+		const compareVal = (modeKey === 'chimp' || modeKey === 'spatial' || modeKey === 'matrix') ? currentRun.span : cps;
 		const isPb = compareVal > prevBest;
 
 		if (isPb) {
@@ -1245,7 +1661,7 @@ function endCurrentRun(save = true) {
 
 		// Populate Results Screen
 		elRMode.textContent = `${MODE_CONFIGS[modeKey].name} · ${currentRun.diff.toUpperCase()}`;
-		elRScore.textContent = (modeKey === 'chimp' || modeKey === 'spatial') ? currentRun.span : cps;
+		elRScore.textContent = (modeKey === 'chimp' || modeKey === 'spatial' || modeKey === 'matrix') ? currentRun.span : cps;
 		elRUnit.textContent = MODE_CONFIGS[modeKey].unit;
 		elRPb.hidden = !isPb;
 
@@ -1343,12 +1759,15 @@ function renderStatsScreen() {
 	elSMaxSpan.textContent = maxSpan;
 	elSAvgLatency.textContent = countLat > 0 ? `${Math.round(totalLat / countLat)}ms` : '0ms';
 
-	// Personal records
+	// Personal records for all 7 modes
 	elSBestList.innerHTML = `
 		<li><span>Chimp Matrix Max Span</span><b>${store.best.chimp || 0} items</b></li>
 		<li><span>Stroop Duel Peak CPS</span><b>${store.best.stroop || 0} CPS</b></li>
 		<li><span>Spatial Span Max Nodes</span><b>${store.best.spatial || 0} nodes</b></li>
 		<li><span>Change Blindness Peak CPS</span><b>${store.best.blindness || 0} CPS</b></li>
+		<li><span>Visual Matrix Max Tiles</span><b>${store.best.matrix || 0} tiles</b></li>
+		<li><span>N-Back Flux Peak CPS</span><b>${store.best.nback || 0} CPS</b></li>
+		<li><span>Neural Link Peak CPS</span><b>${store.best.trail || 0} CPS</b></li>
 	`;
 
 	// Span history chart (last 30 runs)
@@ -1405,9 +1824,13 @@ window.addEventListener('keydown', (e) => {
 		if (key === '2') launchRun('stroop');
 		if (key === '3') launchRun('spatial');
 		if (key === '4') launchRun('blindness');
+		if (key === '5') launchRun('matrix');
+		if (key === '6') launchRun('nback');
+		if (key === '7') launchRun('trail');
 	} else if (activeScreen === 'play') {
 		if (key === 'escape') {
-			endCurrentRun(false);
+			const hasProgress = currentRun && (currentRun.hits + currentRun.misses > 0 || currentRun.span > 0 || currentRun.latencies.length > 0);
+			endCurrentRun(!!hasProgress);
 		} else if (key === 'r') {
 			launchRun(activeMode);
 		} else if (activeMode === 'stroop' && gameState === 'input') {
@@ -1415,6 +1838,14 @@ window.addEventListener('keydown', (e) => {
 			if (key === 's' || key === '2') handleStroopChoice('CYAN');
 			if (key === 'd' || key === '3') handleStroopChoice('YELLOW');
 			if (key === 'f' || key === '4') handleStroopChoice('PURPLE');
+		} else if (activeMode === 'nback' && gameState === 'input') {
+			if (key === ' ' || key === 'spacebar') {
+				e.preventDefault();
+				handleNBackResponse(true);
+			} else if (key === 'enter') {
+				e.preventDefault();
+				handleNBackResponse(false);
+			}
 		}
 	} else if (activeScreen === 'results') {
 		if (key === 'enter') {

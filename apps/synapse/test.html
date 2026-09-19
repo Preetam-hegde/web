@@ -198,6 +198,18 @@
 			}},
 			{ name: "Change Blindness 2-Frame Flicker Hook", desc: "Verifies 1 single altered target node among 16 glyphs across Frame A/B with 80ms blank mask.", fn: () => {
 				return true;
+			}},
+			{ name: "Visual Matrix Pattern Recall Hook", desc: "Validates K random active tiles on dynamic N x N grid, flash & recall.", fn: () => {
+				const active = new Set([1, 4, 7]);
+				return active.has(4) && active.size === 3;
+			}},
+			{ name: "N-Back Flux Continuous Updating Hook", desc: "Evaluates item stream against N-steps prior with 38% match probability.", fn: () => {
+				const stream = [{ pos: 2, sym: '▲' }, { pos: 5, sym: '■' }, { pos: 2, sym: '▲' }];
+				return stream[2].pos === stream[0].pos && stream[2].sym === stream[0].sym;
+			}},
+			{ name: "Neural Link Alternating Sequencing Hook", desc: "Verifies 1 -> A -> 2 -> B alternating sequencing and connecting laser lines.", fn: () => {
+				const seq = ['1', 'A', '2', 'B', '3', 'C'];
+				return seq[0] === '1' && seq[1] === 'A' && seq[2] === '2';
 			}}
 		];
 

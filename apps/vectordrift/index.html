@@ -1,0 +1,311 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>VectorDrift — Micro-Evasion & Bullet-Hell Grazing</title>
+	<meta name="description" content="A high-speed cursor agility and micro-evasion game. Flirt with death to charge your graze multiplier across Graze Arena, Vortex, and Laser Grid.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700;800&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="css/style.css">
+	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
+</head>
+<body data-screen="menu">
+	<canvas id="gameCanvas" aria-hidden="true"></canvas>
+	<div id="vignette" aria-hidden="true"></div>
+	<div id="screenFlash" aria-hidden="true"></div>
+	<div id="toastNotice" aria-hidden="true"></div>
+
+	<div id="app">
+		<header class="topbar">
+			<button class="brand" type="button" data-go="menu">
+				<svg class="brand-icon" viewBox="0 0 24 24">
+					<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+				</svg>
+				vectordrift
+			</button>
+			<nav aria-label="Primary">
+				<button type="button" data-go="menu" class="active">Play</button>
+				<button type="button" data-go="stats">Stats</button>
+				<button type="button" data-go="settings">Settings</button>
+				<a href="../../index.html">Portfolio ↗</a>
+			</nav>
+		</header>
+
+		<main>
+			<!-- ── Menu Screen ──────────────────────────────────────── -->
+			<section class="screen" id="menu">
+				<div class="hero-badge">Micro-Evasion · Bullet-Hell Grazing</div>
+
+				<h1 class="logo" aria-label="VectorDrift">
+					<span style="--i:0">V</span><span style="--i:1">E</span><span style="--i:2">C</span><span style="--i:3">T</span><span style="--i:4">O</span><span style="--i:5">R</span><span style="--i:6">D</span><span style="--i:7">R</span><span style="--i:8">I</span><span style="--i:9">F</span><span style="--i:10">T</span>
+				</h1>
+
+				<p class="tag">
+					Flirt with death. Keep your cursor <strong>within pixels of lethal hazards</strong> to charge your Graze Multiplier exponentially.
+				</p>
+
+				<div class="modes-grid" id="modesGrid">
+					<div class="mode-card selected" data-mode="graze-arena">
+						<div class="mode-header">
+							<div class="mode-icon">
+								<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="12" cy="12" r="10"/>
+									<line x1="12" y1="2" x2="12" y2="22"/>
+									<line x1="2" y1="12" x2="22" y2="12"/>
+								</svg>
+							</div>
+							<kbd>1</kbd>
+						</div>
+						<h3>Graze Arena</h3>
+						<p>Lethal geometric vectors, sweeping lasers, and rotating death blades. Skim hazard perimeters to ignite the multiplier.</p>
+						<div class="mode-best">best: <b id="best-arena">0</b> pts</div>
+					</div>
+
+					<div class="mode-card" data-mode="vortex">
+						<div class="mode-header">
+							<div class="mode-icon">
+								<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M20.341 6.484A10 10 0 0 1 10.266 21.85"/>
+									<path d="M3.659 17.516A10 10 0 0 1 13.74 2.152"/>
+									<circle cx="12" cy="12" r="3"/>
+								</svg>
+							</div>
+							<kbd>2</kbd>
+						</div>
+						<h3>Vortex</h3>
+						<p>Pulsing central event horizon. Weave through expanding kinetic rings and rotating aperture gaps as the beats drop.</p>
+						<div class="mode-best">best: <b id="best-vortex">0</b> pts</div>
+					</div>
+
+					<div class="mode-card" data-mode="laser-grid">
+						<div class="mode-header">
+							<div class="mode-icon">
+								<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<rect width="18" height="18" x="3" y="3" rx="2"/>
+									<path d="M3 9h18"/>
+									<path d="M3 15h18"/>
+									<path d="M9 3v18"/>
+									<path d="M15 3v18"/>
+								</svg>
+							</div>
+							<kbd>3</kbd>
+						</div>
+						<h3>Laser Grid</h3>
+						<p>Procedural laser tripwires arm and fire in rapid patterns. Execute high-speed flick movements to park in safe zones.</p>
+						<div class="mode-best">best: <b id="best-grid">0</b> pts</div>
+					</div>
+
+					<div class="mode-card" data-mode="hell">
+						<div class="mode-header">
+							<div class="mode-icon">
+								<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+								</svg>
+							</div>
+							<kbd>4</kbd>
+						</div>
+						<h3>Hell Mode</h3>
+						<p>The ultimate crucible. Simultaneous rotating blades, expanding vortex rings, and procedural laser grids all active at once.</p>
+						<div class="mode-best">best: <b id="best-hell">0</b> pts</div>
+					</div>
+				</div>
+
+				<div class="selectors-row">
+					<div class="selector-group" role="group" aria-label="Duration">
+						<span class="selector-label">Duration</span>
+						<button type="button" data-len="30">30s</button>
+						<button type="button" data-len="60" class="active">60s</button>
+						<button type="button" data-len="inf">Endless</button>
+					</div>
+
+					<div class="selector-group" role="group" aria-label="Difficulty">
+						<span class="selector-label">Difficulty</span>
+						<button type="button" data-diff="cadet">Cadet</button>
+						<button type="button" data-diff="pilot" class="active">Pilot</button>
+						<button type="button" data-diff="cyber">Cyber</button>
+						<button type="button" data-diff="singularity">Singularity</button>
+					</div>
+				</div>
+
+				<div class="actions-row">
+					<button type="button" class="primary" id="btnStart">Launch VectorDrift <kbd>Enter</kbd></button>
+				</div>
+
+				<div class="menu-hints">
+					<span><kbd>1</kbd>–<kbd>4</kbd> Choose Mode</span>
+					<span><kbd>Esc</kbd> Pause / Save</span>
+					<span><kbd>R</kbd> Restart</span>
+				</div>
+
+				<div class="menu-watermark">Made with <span class="watermark-heart">❤️</span> by <strong>Preetam Ptwo</strong></div>
+			</section>
+
+			<!-- ── In-Game Play Screen ──────────────────────────────── -->
+			<section class="screen" id="play">
+				<div class="hud-bar">
+					<div class="hud-item"><b id="hTime">60.0s</b><small>Time</small></div>
+					<div class="hud-item highlight"><b id="hScore">0</b><small>Score</small></div>
+					<div class="hud-item danger"><b id="hMult">x1.0</b><small>Multiplier</small></div>
+					<div class="hud-item"><b id="hGrazeDist">--</b><small>Proximity</small></div>
+					<div class="hud-item"><b id="hDanger">LOW</b><small>Threat</small></div>
+				</div>
+
+				<div class="graze-gauge-container">
+					<div class="graze-proximity-bar">
+						<div class="graze-proximity-fill" id="grazeFill"></div>
+					</div>
+					<div class="graze-proximity-text">
+						Proximity: <span id="grazeDistVal">0.0</span> px from death
+					</div>
+				</div>
+
+				<div id="pauseScreen" class="pause-overlay" hidden>
+					<div class="pause-card">
+						<h2>SIMULATION PAUSED</h2>
+						<p style="color: var(--text-dim); font-size: 0.9rem;">Cursor released · Audio suspended</p>
+						<div class="actions">
+							<button type="button" class="primary" id="btnResume">Resume <kbd>Space</kbd></button>
+							<button type="button" class="secondary" id="btnFinish">Finish & Save <kbd>Esc</kbd> / <kbd>F</kbd></button>
+							<button type="button" class="secondary" id="btnRestart">Restart Run <kbd>R</kbd></button>
+							<button type="button" class="ghost" id="btnQuit">Quit & Save <kbd>Q</kbd></button>
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- ── Results Screen ───────────────────────────────────── -->
+			<section class="screen" id="results" aria-live="polite">
+				<p class="results-eyebrow" id="rMode">GRAZE ARENA · PILOT · 60S</p>
+
+				<div class="results-big-score">
+					<b id="rScore">0</b>
+					<span>pts</span>
+					<span class="new-pb-badge" id="rPb" hidden>New Best</span>
+				</div>
+
+				<div class="kpis-grid" id="rKpis"></div>
+
+				<div class="analytics-grid">
+					<div class="analytics-panel">
+						<div class="panel-header">
+							<h3>
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M2 12h20M12 2v20"/></svg>
+								Movement Efficiency Heatmap
+							</h3>
+							<span class="panel-tag">Spatial Density vs Waste</span>
+						</div>
+						<div class="heatmap-canvas-wrap">
+							<canvas id="resultsHeatmapCanvas" width="480" height="270"></canvas>
+						</div>
+					</div>
+
+					<div class="analytics-panel">
+						<div class="panel-header">
+							<h3>
+								<svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M3 3v18h18"/><path d="m19 9-5 5-4-4-3 3"/></svg>
+								Survival Duration & Multiplier Timeline
+							</h3>
+							<span class="panel-tag">Risk-Reward Flow</span>
+						</div>
+						<div class="timeline-chart-wrap" id="resultsTimelineContainer"></div>
+					</div>
+				</div>
+
+				<div class="actions-row">
+					<button type="button" class="primary" id="btnPlayAgain">Play Again <kbd>Enter</kbd></button>
+					<button type="button" class="secondary" data-go="stats">Telemetry Stats <kbd>S</kbd></button>
+					<button type="button" class="ghost" id="btnToMenu">Main Menu <kbd>Esc</kbd></button>
+				</div>
+			</section>
+
+			<!-- ── Stats Screen ─────────────────────────────────────── -->
+			<section class="screen" id="stats">
+				<h2>Movement Telemetry & Records</h2>
+				<div class="kpis-grid" id="sKpis"></div>
+
+				<div class="analytics-panel">
+					<div class="panel-header">
+						<h3>Aggregate Movement Heatmap</h3>
+						<span class="panel-tag">Last Run Arena Trajectory</span>
+					</div>
+					<div class="heatmap-canvas-wrap">
+						<canvas id="statsHeatmapCanvas" width="480" height="270"></canvas>
+					</div>
+				</div>
+
+				<div class="analytics-panel">
+					<div class="panel-header">
+						<h3>Recent Missions</h3>
+						<span class="panel-tag">Telemetry Log</span>
+					</div>
+					<div class="stats-table-wrap">
+						<table class="stats-table" id="sRuns"></table>
+					</div>
+				</div>
+
+				<div class="actions-row">
+					<button type="button" class="ghost" id="resetStatsBtn" style="color: var(--magenta);">Reset Telemetry Data</button>
+				</div>
+			</section>
+
+			<!-- ── Settings Screen ──────────────────────────────────── -->
+			<section class="screen" id="settings">
+				<h2>Simulation Parameters</h2>
+
+				<div class="settings-card">
+					<div class="setting-row">
+						<div class="setting-info">
+							<h4>Master Audio</h4>
+							<p>Overall volume level for audio synthesizer and SFX</p>
+						</div>
+						<div class="setting-ctrl">
+							<input type="range" id="setMasterVol" min="0" max="1" step="0.05" value="0.4">
+						</div>
+					</div>
+
+					<div class="setting-row">
+						<div class="setting-info">
+							<h4>Acid Bassline (BPM)</h4>
+							<p>Procedural synth bassline volume scaling with graze multiplier</p>
+						</div>
+						<div class="setting-ctrl">
+							<input type="range" id="setMusicVol" min="0" max="1" step="0.05" value="0.35">
+						</div>
+					</div>
+
+					<div class="setting-row">
+						<div class="setting-info">
+							<h4>Sound Effects & Graze Sizzle</h4>
+							<p>Frequency-modulated proximity sizzle and lethal impacts</p>
+						</div>
+						<div class="setting-ctrl">
+							<input type="range" id="setSfxVol" min="0" max="1" step="0.05" value="0.5">
+						</div>
+					</div>
+
+					<div class="setting-row">
+						<div class="setting-info">
+							<h4>Screen Shake & Shockwaves</h4>
+							<p>Haptic visual feedback on laser sweeps and close calls</p>
+						</div>
+						<div class="setting-ctrl">
+							<input type="checkbox" id="setScreenshake" checked>
+						</div>
+					</div>
+				</div>
+
+				<div class="actions-row">
+					<button type="button" class="secondary" data-go="menu">Return to Menu</button>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<!-- Logic Modules -->
+	<script src="js/audio.js"></script>
+	<script src="js/analytics.js"></script>
+	<script src="js/game.js"></script>
+</body>
+</html>

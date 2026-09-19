@@ -1,191 +1,297 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Idle Empire Builder</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link
-        href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&display=swap"
-        rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="stylesheet" href="style.css">
-    <link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Idle Empire Builder</title>
+	<meta name="description" content="A real estate and metropolis idle simulation. Invest, expand, and automate your way to an empire.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+	<link rel="stylesheet" href="style.css">
+	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 </head>
-<body>
-    <div class="container">
-        <header class="top-hud">
-            <div class="logo">
-                <i class="fas fa-city"></i>
-                <span>Idle Empire Builder</span>
-            </div>
-            <div class="resource-bar">
-                <div class="resource">
-                    <span class="resource-label">Capital</span>
-                    <div class="resource-value">
-                        <i class="fas fa-coins"></i>
-                        <span id="money">0</span>
-                    </div>
-                </div>
-                <div class="resource">
-                    <span class="resource-label">Citizens</span>
-                    <div class="resource-value">
-                        <i class="fas fa-user"></i>
-                        <span id="population">0</span>
-                    </div>
-                </div>
-                <div class="resource prestige-chip">
-                    <span class="resource-label">Prestige</span>
-                    <div class="resource-value">
-                        <i class="fas fa-star"></i>
-                        <span id="prestige">0</span>
-                    </div>
-                </div>
-            </div>
-        </header>
+<body data-tab="empire">
+	<!-- Canvas Background FX & Ambient Simulation -->
+	<canvas id="fx" aria-hidden="true"></canvas>
+	<div id="vig" aria-hidden="true"></div>
+	<div id="toast" aria-hidden="true"></div>
 
-        <main class="command-grid">
-            <aside class="panel build-panel">
-                <div class="panel-header">
-                    <h3><i class="fas fa-building"></i> Master Plan</h3>
-                    <p class="panel-subtext">Deploy structures to expand your skyline.</p>
-                </div>
-                <div class="building-list" id="buildingList">
-                    <!-- Buildings will be added here dynamically -->
-                </div>
-            </aside>
+	<div id="app">
+		<!-- Topbar Navigation -->
+		<header class="topbar">
+			<div class="brand" role="banner">
+				<i class="fa-solid fa-city brand-icon"></i>
+				<span class="logo">
+					<span style="--i:0">I</span><span style="--i:1">D</span><span style="--i:2">L</span><span style="--i:3">E</span>
+					<span style="--i:4">&nbsp;</span>
+					<span style="--i:5">E</span><span style="--i:6">M</span><span style="--i:7">P</span><span style="--i:8">I</span><span style="--i:9">R</span><span style="--i:10">E</span>
+				</span>
+			</div>
+			<nav class="nav-tabs" aria-label="Primary">
+				<button type="button" class="nav-btn active" data-tab-target="empire">
+					<i class="fa-solid fa-building"></i>
+					<span>Empire</span>
+				</button>
+				<button type="button" class="nav-btn" data-tab-target="upgrades">
+					<i class="fa-solid fa-microchip"></i>
+					<span>Upgrades</span>
+					<span class="badge" id="upgradesBadge" hidden>0</span>
+				</button>
+				<button type="button" class="nav-btn" data-tab-target="prestige">
+					<i class="fa-solid fa-star"></i>
+					<span>Syndicate</span>
+					<span class="badge prestige-badge" id="prestigeBadge" hidden>!</span>
+				</button>
+				<button type="button" class="nav-btn" data-tab-target="stats">
+					<i class="fa-solid fa-chart-line"></i>
+					<span>Analytics</span>
+				</button>
+				<button type="button" class="icon-btn" id="audioToggle" title="Toggle Sound" aria-label="Toggle Sound">
+					<i class="fa-solid fa-volume-high" id="audioIcon"></i>
+				</button>
+				<a href="../../index.html" class="portfolio-link">Portfolio ↗</a>
+			</nav>
+		</header>
 
-            <section class="city-stage">
-                <div class="city-atmosphere">
-                    <div class="city-halo"></div>
-                    <div class="city-grid-overlay"></div>
-                </div>
-                <div class="city-container">
-                    <div class="building-grid" id="cityGrid">
-                        <!-- Grid buildings will be added here dynamically -->
-                    </div>
-                </div>
-            </section>
+		<!-- Global HUD -->
+		<section class="hud" aria-label="Resource HUD">
+			<div class="hud-card" id="hudCapital">
+				<div class="hud-label"><i class="fa-solid fa-coins hud-icon gold"></i> Capital</div>
+				<div class="hud-value gold" id="displayMoney">$0</div>
+				<div class="hud-subtext" id="displayIncomePerSec">+$0/sec</div>
+			</div>
+			<div class="hud-card" id="hudPopulation">
+				<div class="hud-label"><i class="fa-solid fa-users hud-icon blue"></i> Citizens</div>
+				<div class="hud-value blue" id="displayPopulation">0</div>
+				<div class="hud-subtext" id="displayWorkforceBonus">+0% Synergy</div>
+			</div>
+			<div class="hud-card" id="hudPrestige">
+				<div class="hud-label"><i class="fa-solid fa-crown hud-icon purple"></i> Prestige Stars</div>
+				<div class="hud-value purple" id="displayPrestige">0</div>
+				<div class="hud-subtext" id="displayPrestigeMult">1.0x Multiplier</div>
+			</div>
+			<div class="hud-card" id="hudClick">
+				<div class="hud-label"><i class="fa-solid fa-bolt hud-icon cyan"></i> Click Power</div>
+				<div class="hud-value cyan" id="displayClickPower">$1</div>
+				<div class="hud-subtext" id="displayCombo">Combo: 1.0x</div>
+			</div>
+		</section>
 
-            <aside class="panel intel-panel">
-                <div class="panel-header">
-                    <h3><i class="fas fa-chart-line"></i> Empire Metrics</h3>
-                    <p class="panel-subtext">Track the pulse of your economy.</p>
-                </div>
-                <div class="metric-stack" id="statsContainer">
-                    <div class="metric-card">
-                        <span class="metric-label">Income / sec</span>
-                        <span class="metric-value" id="incomePerSecond">0</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Total earned</span>
-                        <span class="metric-value" id="totalEarned">0</span>
-                    </div>
-                    <div class="metric-card">
-                        <span class="metric-label">Holdings</span>
-                        <span class="metric-value" id="buildingsOwned">0</span>
-                    </div>
-                </div>
-                <div class="intel-footnote">
-                    Reinvest profit to unlock landmark-class structures and increase passive flow.
-                </div>
-            </aside>
-        </main>
+		<!-- Main Views Container -->
+		<main class="main-content">
+			<!-- TAB 1: EMPIRE (Holdings & Interactive Skyline) -->
+			<section class="tab-screen active" id="tab-empire">
+				<!-- Skyline Interactive Canvas Section -->
+				<div class="skyline-showcase" id="skylineClickArea" role="button" tabindex="0" aria-label="Click skyline to earn capital and build combo">
+					<canvas id="skylineCanvas"></canvas>
+					<div class="skyline-overlay">
+						<div class="skyline-hint">
+							<i class="fa-solid fa-arrow-pointer"></i>
+							<span>Click the skyline to generate capital · Rapid clicks trigger combo frenzy</span>
+						</div>
+						<div class="combo-meter-wrap">
+							<div class="combo-bar" id="comboBar"></div>
+							<span class="combo-label" id="comboLabel">Combo 1x</span>
+						</div>
+					</div>
+				</div>
 
-        <footer class="bottom-hud">
-            <div class="game-info">
-                <span>Idle Empire Builder v1.0</span>
-            </div>
-            <div class="controls">
-                <button class="control-btn" id="settingsBtn">
-                    <i class="fas fa-cog"></i> Settings
-                </button>
-                <button class="control-btn" id="helpBtn">
-                    <i class="fas fa-question-circle"></i> Help
-                </button>
-            </div>
-        </footer>
-    </div>
-    
-    <!-- Tutorial Overlay -->
-    <div class="tutorial-overlay" id="tutorialOverlay">
-        <div class="tutorial-box">
-            <h2>Welcome to Idle Empire Builder!</h2>
-            <p>Build your own city and watch it grow! Click on buildings to purchase and upgrade them. Your city will generate income even when you're away.</p>
-            <p>Let's start with a quick tutorial to get you familiar with the game.</p>
-            <button class="tutorial-btn" id="startTutorialBtn">Start Tutorial</button>
-        </div>
-    </div>
-    
-    <!-- Help Modal -->
-    <div class="modal" id="helpModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>How to Play</h3>
-                <button class="close-btn" id="closeHelpBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <h4>Game Objective</h4>
-                <p>Build and upgrade buildings to generate income and grow your city. The more buildings you have, the more money you earn automatically!</p>
-                
-                <h4>Buildings</h4>
-                <p>Each building generates income over time. Upgrade buildings to increase their income. More expensive buildings generate more income.</p>
-                
-                <h4>Prestige</h4>
-                <p>Once you've built a substantial city, you can reset your progress to earn prestige points. These points provide permanent bonuses to your income in future runs.</p>
-                
-                <h4>Automation</h4>
-                <p>Your city generates income even when you're not actively playing. Come back later to collect your earnings!</p>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn primary-btn" id="closeTutorialBtn">Got it!</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Settings Modal -->
-    <div class="modal" id="settingsModal">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h3>Settings</h3>
-                <button class="close-btn" id="closeSettingsBtn">&times;</button>
-            </div>
-            <div class="modal-body">
-                <div class="settings-option">
-                    <label for="musicToggle">Music</label>
-                    <label class="switch">
-                        <input type="checkbox" id="musicToggle" checked>
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-                <div class="settings-option">
-                    <label for="soundToggle">Sound Effects</label>
-                    <label class="switch">
-                        <input type="checkbox" id="soundToggle" checked>
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-                <div class="settings-option">
-                    <label for="notificationsToggle">Notifications</label>
-                    <label class="switch">
-                        <input type="checkbox" id="notificationsToggle" checked>
-                        <span class="slider round"></span>
-                    </label>
-                </div>
-                <div class="settings-option">
-                    <button class="modal-btn" id="resetGameBtn">Reset Game</button>
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button class="modal-btn primary-btn" id="saveSettingsBtn">Save</button>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Notification Container -->
-    <div class="notification" id="notification"></div>
-    
-    <script src="script.js"></script>
+				<!-- Holdings Management Section -->
+				<div class="holdings-section">
+					<div class="holdings-header">
+						<div class="holdings-title">
+							<h2>Metropolis Holdings</h2>
+							<p>Acquire and scale urban real estate to boost automated cash flow.</p>
+						</div>
+						<div class="multiplier-group" role="group" aria-label="Purchase Multiplier">
+							<span class="mult-label">Buy:</span>
+							<button type="button" class="mult-btn active" data-mult="1">1x</button>
+							<button type="button" class="mult-btn" data-mult="10">10x</button>
+							<button type="button" class="mult-btn" data-mult="100">100x</button>
+							<button type="button" class="mult-btn" data-mult="max">Max</button>
+						</div>
+					</div>
+					<div class="holdings-grid" id="holdingsGrid">
+						<!-- Dynamically populated holding cards -->
+					</div>
+				</div>
+			</section>
+
+			<!-- TAB 2: UPGRADES -->
+			<section class="tab-screen" id="tab-upgrades">
+				<div class="panel-header">
+					<div class="title-wrap">
+						<h2>Technological & Policy Matrix</h2>
+						<p>Fund infrastructure innovations to permanently multiply holding yields.</p>
+					</div>
+					<div class="upgrades-filter" role="group" aria-label="Upgrades Filter">
+						<button type="button" class="filter-btn active" data-filter="all">All</button>
+						<button type="button" class="filter-btn" data-filter="available">Available</button>
+						<button type="button" class="filter-btn" data-filter="researched">Researched</button>
+					</div>
+				</div>
+				<div class="upgrades-grid" id="upgradesGrid">
+					<!-- Dynamically populated upgrades -->
+				</div>
+			</section>
+
+			<!-- TAB 3: PRESTIGE (Megacity Syndicate) -->
+			<section class="tab-screen" id="tab-prestige">
+				<div class="prestige-container">
+					<div class="prestige-hero">
+						<div class="prestige-glow"></div>
+						<i class="fa-solid fa-award hero-badge"></i>
+						<h2>The Megacity Syndicate</h2>
+						<p class="hero-desc">
+							Rebirth your empire into a higher-tier syndicate. Reset your current capital and holdings in exchange for permanent <strong>Prestige Stars</strong> and game-altering syndicate perks.
+						</p>
+
+						<div class="prestige-stats-row">
+							<div class="prestige-stat-box">
+								<span class="stat-caption">Current Stars</span>
+								<strong class="stat-number purple" id="prestigeCurrentStars">0</strong>
+								<span class="stat-sub" id="prestigeCurrentBonus">+0% Income</span>
+							</div>
+							<div class="prestige-stat-box highlight">
+								<span class="stat-caption">Claim on Rebirth</span>
+								<strong class="stat-number gold" id="prestigePendingStars">+0</strong>
+								<span class="stat-sub" id="prestigeNextStarReq">Next star at: $1.00M</span>
+							</div>
+							<div class="prestige-stat-box">
+								<span class="stat-caption">Lifetime Earned</span>
+								<strong class="stat-number cyan" id="prestigeLifetimeEarned">$0</strong>
+								<span class="stat-sub">Across all runs</span>
+							</div>
+						</div>
+
+						<div class="rebirth-action-wrap">
+							<button type="button" class="rebirth-btn" id="prestigeRebirthBtn" disabled>
+								<i class="fa-solid fa-arrows-rotate"></i>
+								<span>Initiate Syndicate Rebirth (+0 Stars)</span>
+							</button>
+							<p class="rebirth-note">Requires at least 1 pending Prestige Star ($1M lifetime earnings).</p>
+						</div>
+					</div>
+
+					<!-- Syndicate Perks Shop -->
+					<div class="syndicate-perks-section">
+						<h3>Syndicate Perks Tree</h3>
+						<p>Invest your Prestige Stars into permanent empire modifications.</p>
+						<div class="perks-grid" id="perksGrid">
+							<!-- Dynamically populated perks -->
+						</div>
+					</div>
+				</div>
+			</section>
+
+			<!-- TAB 4: STATS & SETTINGS -->
+			<section class="tab-screen" id="tab-stats">
+				<div class="stats-container">
+					<h2>Empire Telemetry & Records</h2>
+					<div class="stats-kpi-grid" id="statsKpiGrid">
+						<!-- Dynamic KPI cards -->
+					</div>
+
+					<!-- Income Sparkline / Chart -->
+					<div class="panel chart-panel">
+						<div class="panel-head">
+							<h3>Cash Flow Trend (Last 30 Ticks)</h3>
+							<span class="chart-unit" id="chartPeakRate">Peak: $0/s</span>
+						</div>
+						<div class="chart-container" id="incomeChartWrap">
+							<svg class="income-chart" id="incomeChart" viewBox="0 0 800 160" preserveAspectRatio="none">
+								<!-- Dynamically rendered SVG chart -->
+							</svg>
+						</div>
+					</div>
+
+					<!-- Achievements Showcase -->
+					<div class="panel">
+						<div class="panel-head">
+							<h3>Empire Milestones & Achievements</h3>
+							<span class="achieve-counter" id="achieveCount">0 / 12 Unlocked</span>
+						</div>
+						<div class="achievements-grid" id="achievementsGrid">
+							<!-- Dynamically rendered achievements -->
+						</div>
+					</div>
+
+					<!-- Save Management & Data Controls -->
+					<div class="panel save-panel">
+						<h3>Save & Syndicate Data</h3>
+						<p>All progress is saved locally in your browser every 15 seconds.</p>
+						<div class="save-actions">
+							<button type="button" class="btn secondary-btn" id="saveManualBtn">
+								<i class="fa-solid fa-floppy-disk"></i> Save Game
+							</button>
+							<button type="button" class="btn secondary-btn" id="exportSaveBtn">
+								<i class="fa-solid fa-file-export"></i> Export Save
+							</button>
+							<button type="button" class="btn secondary-btn" id="importSaveBtn">
+								<i class="fa-solid fa-file-import"></i> Import Save
+							</button>
+							<button type="button" class="btn danger-btn" id="resetGameBtn">
+								<i class="fa-solid fa-trash-can"></i> Hard Reset
+							</button>
+						</div>
+					</div>
+				</div>
+			</section>
+		</main>
+	</div>
+
+	<!-- Offline Earnings Modal -->
+	<dialog class="game-modal" id="offlineModal">
+		<div class="modal-box">
+			<div class="modal-icon"><i class="fa-solid fa-moon"></i></div>
+			<h2>Welcome Back, Tycoon!</h2>
+			<p>Your metropolitan holdings generated revenue while you were away:</p>
+			<div class="offline-revenue-box">
+				<span class="offline-time" id="offlineTimeText">Away for 0m 0s</span>
+				<strong class="offline-amount gold" id="offlineEarnedText">+$0</strong>
+			</div>
+			<button type="button" class="btn primary-btn modal-confirm-btn" id="offlineCollectBtn">
+				Collect Revenue
+			</button>
+		</div>
+	</dialog>
+
+	<!-- Import Save Modal -->
+	<dialog class="game-modal" id="importModal">
+		<div class="modal-box">
+			<div class="modal-icon"><i class="fa-solid fa-file-import"></i></div>
+			<h2>Import Save Data</h2>
+			<p>Paste your base64 save string below to restore your empire:</p>
+			<textarea class="import-textarea" id="importSaveInput" placeholder="Paste save code here..."></textarea>
+			<div class="modal-actions">
+				<button type="button" class="btn secondary-btn" id="importCancelBtn">Cancel</button>
+				<button type="button" class="btn primary-btn" id="importConfirmBtn">Load Save</button>
+			</div>
+		</div>
+	</dialog>
+
+	<!-- Rebirth Confirmation Modal -->
+	<dialog class="game-modal" id="rebirthConfirmModal">
+		<div class="modal-box">
+			<div class="modal-icon purple"><i class="fa-solid fa-crown"></i></div>
+			<h2>Confirm Syndicate Rebirth?</h2>
+			<p>
+				You are about to reset your current capital, buildings, and upgrades in exchange for
+				<strong class="purple" id="confirmRebirthStars">+0 Prestige Stars</strong>!
+			</p>
+			<p class="modal-warning">
+				<i class="fa-solid fa-triangle-exclamation"></i>
+				Prestige Stars and Syndicate Perks are permanent and will dramatically accelerate your next run.
+			</p>
+			<div class="modal-actions">
+				<button type="button" class="btn secondary-btn" id="rebirthCancelBtn">Nevermind</button>
+				<button type="button" class="btn rebirth-confirm-btn" id="rebirthConfirmBtn">Rebirth Empire</button>
+			</div>
+		</div>
+	</dialog>
+
+	<script src="script.js"></script>
 </body>
 </html>

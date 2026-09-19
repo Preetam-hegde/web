@@ -387,10 +387,17 @@ class ReflexGame {
 
 			if (e.code === 'Escape') {
 				if (this.isActive) {
-					this.togglePause();
+					if (this.isPaused) {
+						this.endGame(true);
+					} else {
+						this.togglePause();
+					}
 				} else if (currentScreen !== 'menu') {
 					this.go('menu');
 				}
+			} else if (e.code === 'Space' && this.isPaused) {
+				e.preventDefault();
+				this.resume();
 			} else if (e.code === 'KeyF' && (this.isActive || this.isPaused)) {
 				this.endGame(true);
 			} else if (e.code === 'KeyQ' && this.isPaused) {

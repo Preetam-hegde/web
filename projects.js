@@ -19,34 +19,26 @@ const projects = [
     tech: ["React", "TypeScript", "Canvas API", "System Design"]
   },
 
-  // ── Personal ────────────────────────────────────────────────────────────
+  // ── Games & Simulations ──────────────────────────────────────────────────
   {
-    name: "Bharatvarsha",
-    category: "personal",
-    icon: "tent",
-    link: "apps/bharatvarsha/index.html",
-    description: "Lead a Vedic clan from a riverside village to a Mahajanapada — a nine-chapter story, royal decisions, sacred rites, and a living settlement that shifts with day, night, and monsoon.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Game Design", "Simulation"]
+    name: "VectorDrift",
+    category: "games",
+    icon: "zap",
+    link: "apps/vectordrift/index.html",
+    description: "Micro-evasion and bullet-hell grazing game — pure cursor agility, spatial anticipation, and risk-reward flow state across Graze Arena, Vortex, Laser Grid, and the all-out Hell Mode.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Web Audio API", "Telemetry"]
   },
   {
-    name: "Natural Selection Simulator",
-    category: "personal",
-    icon: "dna",
-    link: "apps/natural-selection-sim/index.html",
-    description: "Watch evolution unfold in real time — organisms with randomized traits compete to survive, reproduce, mutate, and diverge into new species across generations.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Simulation", "Genetics"]
-  },
-  {
-    name: "Idle Empire Builder",
-    category: "personal",
-    icon: "building-2",
-    link: "apps/dreamscape/index.html",
-    description: "A real estate–inspired idle browser game where you invest, expand, and automate your way to an empire — blending reflex challenges with strategic decision-making.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Game Design"]
+    name: "Reflex Arena",
+    category: "games",
+    icon: "crosshair",
+    link: "apps/aim-trainer/index.html",
+    description: "A browser-based FPS aim trainer with configurable FOV, target size, duration, and difficulty modes — track accuracy, hit rate, and personal records over sessions.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Game Design", "Audio API"]
   },
   {
     name: "Keystorm",
-    category: "personal",
+    category: "games",
     icon: "keyboard",
     link: "apps/keystorm/index.html",
     description: "A typing game with five modes — Sprint, Razor, Rain, Orbit, and Zen — combo-driven particle effects, and a per-key analytics dashboard with WPM history and a keyboard heatmap.",
@@ -54,12 +46,54 @@ const projects = [
   },
   {
     name: "Synapse",
-    category: "personal",
+    category: "games",
     icon: "brain",
     link: "apps/synapse/index.html",
-    description: "High-speed working memory and cognitive matrix — train visual memory, mental processing speed, and rapid pattern recall across Chimp Matrix, Stroop Duel, Spatial Span, and Change Blindness modes.",
+    description: "High-speed working memory and cognitive matrix — train visual memory, mental processing speed, and rapid pattern recall across Chimp Matrix, Stroop Duel, Spatial Span, Change Blindness, Visual Matrix, N-Back Flux, and Neural Link modes.",
     tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Web Audio API", "SVG Charts", "Cognitive Benchmarks"]
   },
+  {
+    name: "Idle Empire Builder",
+    category: "games",
+    icon: "building-2",
+    link: "apps/dreamscape/index.html",
+    description: "A real estate–inspired idle browser game where you invest, expand, and automate your way to an empire — blending reflex challenges with strategic decision-making.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Game Design"]
+  },
+  {
+    name: "Bharatvarsha",
+    category: "games",
+    icon: "tent",
+    link: "apps/bharatvarsha/index.html",
+    description: "Lead a Vedic clan from a riverside village to a Mahajanapada — a nine-chapter story, royal decisions, sacred rites, and a living settlement that shifts with day, night, and monsoon.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Game Design", "Simulation"]
+  },
+  {
+    name: "Natural Selection Simulator",
+    category: "games",
+    icon: "dna",
+    link: "apps/natural-selection-sim/index.html",
+    description: "Watch evolution unfold in real time — organisms with randomized traits compete to survive, reproduce, mutate, and diverge into new species across generations.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Simulation", "Genetics"]
+  },
+  {
+    name: "Game of Life",
+    category: "games",
+    icon: "grid-3x3",
+    link: "apps/cellular-automata/index.html",
+    description: "An interactive canvas implementation of Conway's Game of Life — draw seed patterns, control simulation speed, and observe emergent complexity from simple rules.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Algorithms", "Cellular Automata"]
+  },
+  {
+    name: "Ball Physics Illusion",
+    category: "games",
+    icon: "atom",
+    link: "apps/bg-illusion/index.html",
+    description: "A mesmerizing canvas experience where hundreds of collision-aware balls create vivid optical illusions through physics-driven motion, color blending, and layered trails.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Physics", "Animation"]
+  },
+
+  // ── Web Apps & Platforms ────────────────────────────────────────────────
   {
     name: "DevPulse: Live Telemetry Matrix",
     category: "personal",
@@ -76,23 +110,23 @@ const projects = [
     description: "Instantly retrieve your geographic coordinates, altitude, and accuracy radius via the browser Geolocation API, with map embed and shareable location links.",
     tech: ["HTML5", "CSS3", "JavaScript", "Geolocation API", "Maps"]
   },
-
-  // ── For-fun / FCC ────────────────────────────────────────────────────────
   {
-    name: "Reflex Arena",
-    category: "fcc",
-    icon: "crosshair",
-    link: "apps/aim-trainer/index.html",
-    description: "A browser-based FPS aim trainer with configurable FOV, target size, duration, and difficulty modes — track accuracy, hit rate, and personal records over sessions.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Game Design", "Audio API"]
+    name: "Dear Diary",
+    category: "personal",
+    icon: "notebook-pen",
+    link: "https://sites.google.com/view/ptwo-diary",
+    description: "An external Google Sites experiment for journaling and notes — not part of this repository's in-repo app set.",
+    tech: ["Google Sites", "Content Writing"]
   },
+
+  // ── Interactive Studies & Visualizers (FCC) ──────────────────────────────
   {
-    name: "Game of Life",
+    name: "Sorting Algorithm Visualizer",
     category: "fcc",
-    icon: "grid-3x3",
-    link: "apps/cellular-automata/index.html",
-    description: "An interactive canvas implementation of Conway's Game of Life — draw seed patterns, control simulation speed, and observe emergent complexity from simple rules.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Algorithms", "Cellular Automata"]
+    icon: "chart-no-axes-column-increasing",
+    link: "apps/analyser/index.html",
+    description: "Watch Bubble, Insertion, Selection, Quick, and Merge sorts animate step-by-step — compare time complexities live and develop intuition for algorithmic efficiency.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Algorithms", "Data Structures", "Animation"]
   },
   {
     name: "Nine Dimension",
@@ -103,28 +137,12 @@ const projects = [
     tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Physics", "Vectors"]
   },
   {
-    name: "Sorting Algorithm Visualizer",
-    category: "fcc",
-    icon: "chart-no-axes-column-increasing",
-    link: "apps/analyser/index.html",
-    description: "Watch Bubble, Insertion, Selection, Quick, and Merge sorts animate step-by-step — compare time complexities live and develop intuition for algorithmic efficiency.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Algorithms", "Data Structures", "Animation"]
-  },
-  {
     name: "Verilog Vectors Playground",
     category: "fcc",
     icon: "cpu",
     link: "apps/vector-01/index.html",
     description: "A visual learning tool that demystifies Verilog vector operations — manipulate bit-widths, indexing, and part-selects interactively to reinforce digital design concepts.",
     tech: ["HTML5", "CSS3", "JavaScript", "Digital Design", "Verilog"]
-  },
-  {
-    name: "Ball Physics Illusion",
-    category: "fcc",
-    icon: "atom",
-    link: "apps/bg-illusion/index.html",
-    description: "A mesmerizing canvas experience where hundreds of collision-aware balls create vivid optical illusions through physics-driven motion, color blending, and layered trails.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Physics", "Animation"]
   },
   {
     name: "Pomodoro Timer",
@@ -141,14 +159,6 @@ const projects = [
     link: "apps/quote/index.html",
     description: "Fetch and display a new inspirational quote on demand from a public REST API — with smooth transitions and one-click sharing to social platforms.",
     tech: ["HTML5", "CSS3", "JavaScript", "REST API", "Fetch API"]
-  },
-  {
-    name: "Dear Diary",
-    category: "personal",
-    icon: "notebook-pen",
-    link: "https://sites.google.com/view/ptwo-diary",
-    description: "An external Google Sites experiment for journaling and notes — not part of this repository's in-repo app set.",
-    tech: ["Google Sites", "Content Writing"]
   }
 ];
 
@@ -173,6 +183,7 @@ const projectIcons = {
   'quote': '<path d="M16 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/> <path d="M5 3a2 2 0 0 0-2 2v6a2 2 0 0 0 2 2 1 1 0 0 1 1 1v1a2 2 0 0 1-2 2 1 1 0 0 0-1 1v2a1 1 0 0 0 1 1 6 6 0 0 0 6-6V5a2 2 0 0 0-2-2z"/>',
   'notebook-pen': '<path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/> <path d="M2 6h4"/> <path d="M2 10h4"/> <path d="M2 14h4"/> <path d="M2 18h4"/> <path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/>',
   'brain': '<path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/> <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/> <path d="M12 5v13"/> <path d="M12 13a4.5 4.5 0 0 1-3-4"/> <path d="M12 13a4.5 4.5 0 0 0 3-4"/>',
+  'zap': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
 };
 
 function projectIcon(name) {
