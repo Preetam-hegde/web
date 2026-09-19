@@ -39,6 +39,12 @@
 					<button type="button" data-len="30">30s</button>
 					<button type="button" data-len="60">60s</button>
 				</div>
+				<div class="len" role="group" aria-label="Difficulty">
+					<span>Difficulty</span>
+					<button type="button" data-diff="easy">Easy</button>
+					<button type="button" data-diff="medium">Medium</button>
+					<button type="button" data-diff="hard">Hard</button>
+				</div>
 				<p class="hint">Press <kbd>1</kbd>–<kbd>5</kbd> to jump in · <kbd>tab</kbd> restarts · <kbd>esc</kbd> leaves a run</p>
 				<p class="touch-note">Keystorm needs a physical keyboard.</p>
 			</section>
@@ -72,7 +78,7 @@
 				<div class="kpis" id="sKpis"></div>
 				<div class="cols">
 					<div class="panel"><h3>WPM · last 30 runs</h3><div id="sChart"></div></div>
-					<div class="panel"><h3>Personal bests</h3><ul class="bests" id="sBest"></ul></div>
+					<div class="panel"><h3 id="sBestTitle">Personal bests</h3><ul class="bests" id="sBest"></ul></div>
 				</div>
 				<div class="panel">
 					<div class="panel-head">

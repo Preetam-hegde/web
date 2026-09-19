@@ -144,6 +144,7 @@ body[data-screen='stats'] #stats { display: flex; }
 .card kbd { position: absolute; top: 14px; right: 14px; }
 
 .len { display: flex; align-items: center; gap: 6px; margin-top: 26px; color: var(--dim); font-size: 0.85rem; }
+.len + .len { margin-top: 12px; }
 .len span { margin-right: 6px; }
 .len button, .seg button {
 	background: none; border: 1px solid var(--line); border-radius: 999px;

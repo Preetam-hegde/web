@@ -1,6 +1,6 @@
 'use strict';
 
-// Word pools by difficulty. Easy: short everyday words. Medium: common 5-8 letter words. Hard: long, spelling-heavy words.
+// Word pools by difficulty. Easy: short everyday words. Medium: common 5-7 letter words. Hard: long (9+), spelling-heavy words.
 const split = (s) => s.trim().split(/\s+/);
 const WORDS = {
 	easy: split(`the and for are but not you all can her was one our out day get has him his how man new now old see two
@@ -8,7 +8,7 @@ way who boy did its let put say she too use time year work life home hand part w
 long make many move much name need next only open over play read same seem show side take tell than that them then they
 this turn very want well went were what when will with your book city door face fact fall fast feel find fire five food
 four free full game girl gold grow hair half hard head hear high hold hope hour idea join just kind know land late lead
-left less line live love mind miss more most name near nice note once page pick plan road rock room rule safe seat send
+left less line live love mind miss more most near nice note once page pick plan road rock room rule safe seat send
 ship shop sing sleep slow snow song soon star stay stop sure talk team tree true walk warm wash wind wish wood yard`),
 	medium: split(`house world still great small group point water right place thing think night going light mother father
 family school system number always around change follow letter minute moment second should simple spring street strong
@@ -18,9 +18,9 @@ rabbit reader season shadow silver spirit station stream studio sunset teacher t
 balance battery blanket button candle castle circle client closet coffee comedy corner cotton county custom danger dinner
 doctor double dragon eleven flower guitar hammer harbor helmet hunter jacket jungle ladder lesson little magnet member
 memory method middle modern muscle napkin normal object online parent people pepper photo player pirate proud public
-puzzle quality quiet random record repair rhythm rocket safety salad sample screen secret senior signal simple sister
+puzzle quality quiet random record repair rhythm rocket safety salad sample screen secret senior signal sister
 speed spider square stable stone story sugar switch table tablet target thread thunder tomato tunnel volume walnut weekend`),
-	hard: split(`necessary beautiful rhythm conscience occurrence entrepreneur acquaintance bureaucracy environment government
+	hard: split(`necessary beautiful conscience occurrence entrepreneur acquaintance bureaucracy environment government
 immediately independent knowledge maintenance miscellaneous opportunity particularly perseverance phenomenon
 pronunciation psychology restaurant simultaneous sophisticated temperature unfortunately vocabulary embarrassment
 experience extraordinary fluorescent guarantee hierarchy hypothesis infrastructure jurisdiction laboratory legitimate
@@ -61,10 +61,16 @@ const app = $('#app');
 
 /* ── Storage ───────────────────────────────────────────────── */
 const STORE_KEY = 'keystorm:v1';
-const blank = () => ({ runs: [], keys: {}, best: {}, len: 30 });
+const blank = () => ({ runs: [], keys: {}, best: {}, len: 30, diff: 'medium' });
 let store = (() => {
-	try { return { ...blank(), ...JSON.parse(localStorage.getItem(STORE_KEY)) }; } catch { return blank(); }
+	try {
+		const s = { ...blank(), ...JSON.parse(localStorage.getItem(STORE_KEY)) };
+		// Bests saved before difficulty existed were all "medium".
+		for (const k of Object.keys(s.best)) if (!k.includes(':')) { s.best[k + ':medium'] = s.best[k]; delete s.best[k]; }
+		return s;
+	} catch { return blank(); }
 })();
+const pool = () => WORDS[store.diff] || WORDS.medium;
 const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { /* private mode: run works, stats just won't persist */ } };
 
 /* ── FX engine: aurora + warp stars + particles + shockwaves ── */
@@ -185,7 +191,8 @@ const elapsed = () => (run.t0 ? (now() - run.t0) / 1000 : 0);
 const fmtTime = (s) => `${Math.floor(s / 60)}:${String(Math.floor(s % 60)).padStart(2, '0')}`;
 const go = (screen) => { document.body.dataset.screen = screen; state = screen; };
 
-const newRun = (mode) => ({ mode, key: mode === 'sprint' ? 'sprint' + store.len : mode, t0: 0, ks: [], ok: 0, bad: 0, net: 0, streak: 0, maxStreak: 0, score: 0, over: false });
+const bestKey = (id) => `${id === 'sprint' ? 'sprint' + store.len : id}:${store.diff}`;
+const newRun = (mode) => ({ mode, key: bestKey(mode), t0: 0, ks: [], ok: 0, bad: 0, net: 0, streak: 0, maxStreak: 0, score: 0, over: false });
 
 // Every keystroke in every mode funnels through here: log it, feed the heat meter, fire combo milestones.
 function hit(want, ok) {
@@ -243,8 +250,8 @@ const stream = {
 	},
 	more(n = 30) {
 		for (let k = 0; k < n; k++) {
-			let word = rand(WORDS);
-			while (word === this.prev) word = rand(WORDS);
+			let word = rand(pool());
+			while (word === this.prev) word = rand(pool());
 			this.prev = word;
 			const w = document.createElement('span');
 			w.className = 'w';
@@ -331,7 +338,7 @@ function finish(why) {
 	const m = MODES[run.mode], sec = why === 'time' ? store.len : elapsed();
 	const s = calc(sec), ser = series(sec);
 	const res = {
-		t: Date.now(), mode: run.mode, key: run.key, dur: +sec.toFixed(1),
+		t: Date.now(), mode: run.mode, key: run.key, diff: store.diff, dur: +sec.toFixed(1),
 		wpm: +s.wpm.toFixed(1), raw: +s.raw.toFixed(1), acc: +s.acc.toFixed(1), cons: Math.round(consistency(ser.wpm)),
 		ok: run.ok, bad: run.bad, streak: run.maxStreak, unit: m.unit,
 		score: m.arena ? run.score : run.mode === 'razor' ? run.ok : Math.round(s.wpm)
@@ -381,7 +388,7 @@ function countUp(el, to, ms = 900) {
 
 function showResults(res, ser) {
 	go('results');
-	$('#rMode').textContent = MODES[res.mode].name + (res.mode === 'sprint' ? ` · ${store.len}s` : '');
+	$('#rMode').textContent = [MODES[res.mode].name, res.mode === 'sprint' && store.len + 's', DIFFS[res.diff]].filter(Boolean).join(' · ');
 	$('#rUnit').textContent = res.unit;
 	$('#rPb').hidden = !res.pb;
 	countUp($('#rScore'), res.score);
@@ -440,10 +447,11 @@ const arena = {
 		w.y = oy + Math.sin(w.a) * w.r * H * 0.32;
 	},
 	spawn() {
-		const maxLen = 4 + Math.min(7, Math.floor(this.level / 2) + Math.floor(Math.random() * 3));
-		let text = rand(WORDS);
+		// Word length ramps up with level, starting just above the shortest word in the pool.
+		const P = pool(), maxLen = Math.min(...P.map((w) => w.length)) + 1 + Math.min(8, Math.floor(this.level / 2) + Math.floor(Math.random() * 3));
+		let text = rand(P);
 		// Re-roll long words and words sharing a first letter with something on screen, so targeting is never ambiguous.
-		for (let k = 0; k < 40 && (text.length > maxLen || this.words.some((o) => o.text[0] === text[0])); k++) text = rand(WORDS);
+		for (let k = 0; k < 40 && (text.length > maxLen || this.words.some((o) => o.text[0] === text[0])); k++) text = rand(P);
 		const w = { text, typed: 0, x: 0, y: 0, age: 0, shake: 0, v: 0, a: 0, r: 1, spin: 0 };
 		if (this.kind === 'rain') {
 			const half = (text.length * this.cw) / 2 + 26;
@@ -593,8 +601,6 @@ const arena = {
 };
 
 /* ── Menu ──────────────────────────────────────────────────── */
-const bestKey = (id) => (id === 'sprint' ? 'sprint' + store.len : id);
-
 function renderMenu() {
 	$('#modes').innerHTML = Object.entries(MODES).map(([id, m], i) => `
 		<button class="card" type="button" data-mode="${id}">
@@ -608,6 +614,7 @@ function renderMenu() {
 		c.style.setProperty('--rx', '0deg'); c.style.setProperty('--ry', '0deg');
 	}));
 	document.querySelectorAll('[data-len]').forEach((b) => b.setAttribute('aria-pressed', +b.dataset.len === store.len));
+	document.querySelectorAll('[data-diff]').forEach((b) => b.setAttribute('aria-pressed', b.dataset.diff === store.diff));
 }
 
 $('#modes').addEventListener('pointermove', (e) => {
@@ -619,6 +626,7 @@ $('#modes').addEventListener('pointermove', (e) => {
 });
 $('#modes').addEventListener('click', (e) => { const c = e.target.closest('[data-mode]'); if (c) start(c.dataset.mode); });
 document.querySelectorAll('[data-len]').forEach((b) => b.addEventListener('click', () => { store.len = +b.dataset.len; save(); renderMenu(); }));
+document.querySelectorAll('[data-diff]').forEach((b) => b.addEventListener('click', () => { store.diff = b.dataset.diff; save(); renderMenu(); }));
 
 /* ── Stats ─────────────────────────────────────────────────── */
 let metric = 'speed';
@@ -650,9 +658,10 @@ function renderStats() {
 	$('#sChart').innerHTML = r.length
 		? chart(recent.map((x) => x.wpm), { tips: recent.map((x) => `${MODES[x.mode].name} · ${Math.round(x.wpm)} wpm · ${x.acc.toFixed(0)}% · ${date(x)}`) })
 		: '<p class="empty">Finish a run to see your progress here.</p>';
-	$('#sBest').innerHTML = BESTS.map(([l, k, u]) => `<li><span>${l}</span><b>${store.best[k] ? store.best[k] + ' ' + u : '—'}</b></li>`).join('');
+	$('#sBestTitle').textContent = `Personal bests · ${DIFFS[store.diff]}`;
+	$('#sBest').innerHTML = BESTS.map(([l, k, u]) => `<li><span>${l}</span><b>${store.best[k + ':' + store.diff] ? store.best[k + ':' + store.diff] + ' ' + u : '—'}</b></li>`).join('');
 	$('#sRuns').innerHTML = r.length
-		? '<tr><th>Mode</th><th>WPM</th><th>Acc</th><th>Score</th><th>Date</th></tr>' + r.slice(-8).reverse().map((x) => `<tr><td>${MODES[x.mode].name}</td><td>${Math.round(x.wpm)}</td><td>${x.acc.toFixed(1)}%</td><td>${x.score} ${x.unit}</td><td>${date(x)}</td></tr>`).join('')
+		? '<tr><th>Mode</th><th>Level</th><th>WPM</th><th>Acc</th><th>Score</th><th>Date</th></tr>' + r.slice(-8).reverse().map((x) => `<tr><td>${MODES[x.mode].name}</td><td>${DIFFS[x.diff] || 'Medium'}</td><td>${Math.round(x.wpm)}</td><td>${x.acc.toFixed(1)}%</td><td>${x.score} ${x.unit}</td><td>${date(x)}</td></tr>`).join('')
 		: '<tr><td class="empty">No runs yet.</td></tr>';
 	renderKeys();
 }
