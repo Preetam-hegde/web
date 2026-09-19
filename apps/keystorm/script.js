@@ -1,18 +1,40 @@
 'use strict';
 
-const WORDS = `nebula cascade ember vortex quartz lantern horizon whisper thunder crimson velvet orbit prism glacier meadow
-copper anchor fable harbor jungle kernel lumen marble nectar oasis pebble quiver ripple summit tundra umbra violet
-willow zenith aurora beacon canyon dagger eclipse falcon galaxy hollow island jasmine kindle legend mirror nimbus
-opal phantom quasar raven saffron temple unfold voyage wander xenon yonder zephyr amber blaze cipher drift echo
-flint gleam haze ivory jolt karma lotus mist noble onyx pulse quill rune spark twist ultra vapor wisp yield zeal
-atlas bloom cinder dusk elude forge grove husk inlet jade knoll lunar mosaic nova ozone plume quest realm shard
-tidal umber vivid wharf axiom bramble chorus dynamo ether flare gust haven iris jester kelp lyric mirage nomad
-orchid pinnacle riddle sonic tangle utopia vertex wraith yarrow zodiac apex breeze crest delta fjord glint hymn
-ignite jigsaw knight labyrinth maelstrom nocturne oracle paradox quiet resonance solstice torrent unravel valley
-wildfire xylophone yearning zigzag abyss bliss cosmos dawn emerald frost gravity hush indigo jubilee kaleidoscope
-lightning moonlight nightfall overture polaris quicksilver radiance stardust twilight umbrella voltage whirlwind
-sapphire crystal thistle marrow tempest rhythm silence memory shadow ocean forest river mountain desert engine
-signal circuit rocket comet planet cosmic vector matrix pixel binary neon glow shine spin leap dash flow wave`.split(/\s+/);
+// Word pools by difficulty. Easy: short everyday words. Medium: common 5-8 letter words. Hard: long, spelling-heavy words.
+const split = (s) => s.trim().split(/\s+/);
+const WORDS = {
+	easy: split(`the and for are but not you all can her was one our out day get has him his how man new now old see two
+way who boy did its let put say she too use time year work life home hand part word look come give good help keep last
+long make many move much name need next only open over play read same seem show side take tell than that them then they
+this turn very want well went were what when will with your book city door face fact fall fast feel find fire five food
+four free full game girl gold grow hair half hard head hear high hold hope hour idea join just kind know land late lead
+left less line live love mind miss more most name near nice note once page pick plan road rock room rule safe seat send
+ship shop sing sleep slow snow song soon star stay stop sure talk team tree true walk warm wash wind wish wood yard`),
+	medium: split(`house world still great small group point water right place thing think night going light mother father
+family school system number always around change follow letter minute moment second should simple spring street strong
+summer morning nothing picture problem program reason answer animal bridge camera garden energy engine forest friend
+future growth health island kitchen library machine market message mirror monkey nature office orange planet pocket
+rabbit reader season shadow silver spirit station stream studio sunset teacher ticket travel wonder window winter yellow
+balance battery blanket button candle castle circle client closet coffee comedy corner cotton county custom danger dinner
+doctor double dragon eleven flower guitar hammer harbor helmet hunter jacket jungle ladder lesson little magnet member
+memory method middle modern muscle napkin normal object online parent people pepper photo player pirate proud public
+puzzle quality quiet random record repair rhythm rocket safety salad sample screen secret senior signal simple sister
+speed spider square stable stone story sugar switch table tablet target thread thunder tomato tunnel volume walnut weekend`),
+	hard: split(`necessary beautiful rhythm conscience occurrence entrepreneur acquaintance bureaucracy environment government
+immediately independent knowledge maintenance miscellaneous opportunity particularly perseverance phenomenon
+pronunciation psychology restaurant simultaneous sophisticated temperature unfortunately vocabulary embarrassment
+experience extraordinary fluorescent guarantee hierarchy hypothesis infrastructure jurisdiction laboratory legitimate
+mathematics mischievous neighborhood parliament philosophy photography possibility procedure professional
+recommendation responsibility sacrifice subsequently technology thoroughly transportation unnecessary vulnerability
+worthwhile accommodate achievement acknowledge adolescence algorithm architecture authentic catastrophe
+characteristic circumstances communication competition concentration congratulations consciousness controversial
+correspondence democratic determination development disappointment discipline distinguished electricity enthusiasm
+establishment exaggerate exceptional imagination implementation intelligence international investigation
+manufacturing memorable negotiation organization pharmaceutical presentation qualification quarantine questionnaire
+reconciliation refrigerator resurrection significance spontaneous strengthening surveillance synchronize
+unconditional understanding unpredictable vegetarian ventriloquist weatherproof wholesome zoological`)
+};
+const DIFFS = { easy: 'Easy', medium: 'Medium', hard: 'Hard' };
 
 const ICONS = {
 	sprint: '<line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/>',

@@ -174,8 +174,8 @@ body[data-screen='stats'] #stats { display: flex; }
 	position: relative; width: 100%; max-width: 900px; overflow: hidden;
 	font: 500 clamp(1.3rem, 2.8vw, 2.1rem) / 1.7 var(--mono);
 	height: 5.1em;
-	-webkit-mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
-	mask-image: linear-gradient(transparent, #000 22%, #000 78%, transparent);
+	-webkit-mask-image: linear-gradient(rgba(0, 0, 0, 0.5), #000 30%);
+	mask-image: linear-gradient(rgba(0, 0, 0, 0.5), #000 30%);
 	transition: filter 0.5s, opacity 0.5s;
 }
 .stream.pre { filter: blur(9px); opacity: 0.45; }
@@ -183,7 +183,7 @@ body[data-screen='stats'] #stats { display: flex; }
 
 #streamInner { position: relative; transition: transform 0.28s cubic-bezier(0.2, 0.9, 0.3, 1); }
 .w { display: inline-block; white-space: pre; }
-.c { display: inline-block; white-space: pre; color: var(--dim); }
+.c { display: inline-block; white-space: pre; color: #9aa1b8; }
 .c.ok { color: var(--text); animation: pop 0.3s cubic-bezier(0.2, 1.6, 0.4, 1); }
 .c.bad { color: var(--bad); background: rgba(255, 77, 109, 0.16); border-radius: 5px; animation: wrong 0.32s; }
 
