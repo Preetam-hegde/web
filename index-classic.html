@@ -5,7 +5,9 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Terminal@Kali:~# Preetam</title>
     <link rel="stylesheet" href="v0/style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <link rel="preconnect" href="https://cdnjs.cloudflare.com" crossorigin>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" media="print" onload="this.media='all'">
+    <noscript><link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css"></noscript>
     <link rel="icon" type="image/svg+xml" href="v1/favicon.svg">
 </head>
 <body>
@@ -378,7 +380,7 @@
         </div>
         <div class="terminal-body">
             <div class="output app-iframe-wrapper">
-                <iframe src="apps/aim-trainer/index.html" title="Aim Trainer" loading="lazy"></iframe>
+                <iframe data-src="apps/aim-trainer/index.html" title="Aim Trainer"></iframe>
             </div>
         </div>
     </div>
@@ -429,7 +431,7 @@
                 <div class="project-browser-controls">
                     <button id="openModernNewWindow" class="btn" type="button">Open Modern in New Window</button>
                 </div>
-                <iframe src="index.html?desktopEmbed=1" title="Modern Portfolio" loading="lazy"></iframe>
+                <iframe data-src="index.html?desktopEmbed=1" title="Modern Portfolio"></iframe>
             </div>
         </div>
     </div>
@@ -486,8 +488,8 @@
     </div>
 
     <div class="cursor"></div>
-    <script src="projects.js"></script>
-    <script src="resource/resume-common.js"></script>
-    <script src="v0/script.js"></script>
+    <script defer src="projects.js"></script>
+    <script defer src="resource/resume-common.js"></script>
+    <script defer src="v0/script.js"></script>
 </body>
 </html>
