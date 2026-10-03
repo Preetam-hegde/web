@@ -169,6 +169,45 @@ class SoundEngine {
 			osc.stop(start + 0.36);
 		});
 	}
+
+	playLevelUp() {
+		if (!this.enabled) return;
+		this.resume();
+		if (!this.ctx) return;
+		const t = this.ctx.currentTime;
+		const chord = [440.00, 554.37, 659.25, 880.00, 1108.73, 1318.51];
+		chord.forEach((freq, i) => {
+			const osc = this.ctx.createOscillator();
+			const gain = this.ctx.createGain();
+			const start = t + i * 0.055;
+			osc.type = 'triangle';
+			osc.frequency.setValueAtTime(freq, start);
+			osc.frequency.exponentialRampToValueAtTime(freq * 1.02, start + 0.3);
+			gain.gain.setValueAtTime(0.2, start);
+			gain.gain.exponentialRampToValueAtTime(0.001, start + 0.38);
+			osc.connect(gain);
+			gain.connect(this.masterGain);
+			osc.start(start);
+			osc.stop(start + 0.4);
+		});
+	}
+
+	playTick(freq = 820) {
+		if (!this.enabled) return;
+		this.resume();
+		if (!this.ctx) return;
+		const t = this.ctx.currentTime;
+		const osc = this.ctx.createOscillator();
+		const gain = this.ctx.createGain();
+		osc.type = 'sine';
+		osc.frequency.setValueAtTime(freq, t);
+		gain.gain.setValueAtTime(0.08, t);
+		gain.gain.exponentialRampToValueAtTime(0.001, t + 0.03);
+		osc.connect(gain);
+		gain.connect(this.masterGain);
+		osc.start(t);
+		osc.stop(t + 0.035);
+	}
 }
 
 const audio = new SoundEngine();
@@ -405,6 +444,15 @@ const blankStore = () => ({
 		nback: 0,
 		trail: 0
 	},
+	bestLevels: {
+		chimp: 1,
+		stroop: 1,
+		spatial: 1,
+		blindness: 1,
+		matrix: 1,
+		nback: 1,
+		trail: 1
+	},
 	diff: 'standard',
 	spanDir: 'forward',
 	muted: false
@@ -412,8 +460,14 @@ const blankStore = () => ({
 
 let store = (() => {
 	try {
-		const s = { ...blankStore(), ...JSON.parse(localStorage.getItem(STORE_KEY)) };
-		return s;
+		const b = blankStore();
+		const s = JSON.parse(localStorage.getItem(STORE_KEY)) || {};
+		return {
+			...b,
+			...s,
+			best: { ...b.best, ...(s.best || {}) },
+			bestLevels: { ...b.bestLevels, ...(s.bestLevels || {}) }
+		};
 	} catch {
 		return blankStore();
 	}
@@ -437,28 +491,37 @@ const elDiffButtons = $$('.len [data-diff]');
 const elSpanDirButtons = $$('.len [data-span-dir]');
 const elModesContainer = document.getElementById('modes');
 
-// HUD
+// HUD & Level Elements
 const elHTime = document.getElementById('hTime');
 const elHCps = document.getElementById('hCps');
+const elHLevel = document.getElementById('hLevel');
+const elHLevelLabel = document.getElementById('hLevelLabel');
 const elHSpan = document.getElementById('hSpan');
 const elHSpanLabel = document.getElementById('hSpanLabel');
 const elHStreak = document.getElementById('hStreak');
 const elHAcc = document.getElementById('hAcc');
 const elPlayHint = document.getElementById('playHint');
+const elLevelBar = document.getElementById('levelBar');
+const elLevelUpBanner = document.getElementById('levelUpBanner');
+const elLevelUpTitle = document.getElementById('levelUpTitle');
+const elLevelUpDesc = document.getElementById('levelUpDesc');
 
 // Arena views
 const elArenaChimp = document.getElementById('arenaChimp');
 const elChimpGrid = document.getElementById('chimpGrid');
 const elChimpStatus = document.getElementById('chimpStatus');
+const elChimpTimerBar = document.getElementById('chimpTimerBar');
 
 const elArenaStroop = document.getElementById('arenaStroop');
 const elStroopWord = document.getElementById('stroopWord');
 const elStroopTimerBar = document.getElementById('stroopTimerBar');
+const elStroopRuleBadge = document.getElementById('stroopRuleBadge');
 const elStroopOptions = document.getElementById('stroopOptions');
 
 const elArenaSpatial = document.getElementById('arenaSpatial');
 const elSpatialGrid = document.getElementById('spatialGrid');
 const elSpatialStatus = document.getElementById('spatialStatus');
+const elSpatialStepBadge = document.getElementById('spatialStepBadge');
 
 const elArenaBlindness = document.getElementById('arenaBlindness');
 const elBlindnessGrid = document.getElementById('blindnessGrid');
@@ -467,10 +530,13 @@ const elBlindnessStatus = document.getElementById('blindnessStatus');
 const elArenaVisualMatrix = document.getElementById('arenaVisualMatrix');
 const elMatrixGrid = document.getElementById('matrixGrid');
 const elMatrixStatus = document.getElementById('matrixStatus');
+const elMatrixTimerBar = document.getElementById('matrixTimerBar');
+const elMatrixCounter = document.getElementById('matrixCounter');
 
 const elArenaNBack = document.getElementById('arenaNBack');
 const elNBackBadge = document.getElementById('nbackBadge');
 const elNBackStatus = document.getElementById('nbackStatus');
+const elNBackTrail = document.getElementById('nbackTrail');
 const elNBackGrid = document.getElementById('nbackGrid');
 const elNBackSymbol = document.getElementById('nbackSymbol');
 const elBtnNBackMatch = document.getElementById('btnNBackMatch');
@@ -487,6 +553,7 @@ const elRMode = document.getElementById('rMode');
 const elRScore = document.getElementById('rScore');
 const elRUnit = document.getElementById('rUnit');
 const elRPb = document.getElementById('rPb');
+const elRKpiLevel = document.getElementById('rKpiLevel');
 const elRKpiSpan = document.getElementById('rKpiSpan');
 const elRKpiLatency = document.getElementById('rKpiLatency');
 const elRKpiStreak = document.getElementById('rKpiStreak');
@@ -497,6 +564,7 @@ const elBtnMenu = document.getElementById('btnMenu');
 
 // Stats
 const elSHighCps = document.getElementById('sHighCps');
+const elSMaxLevel = document.getElementById('sMaxLevel');
 const elSMaxSpan = document.getElementById('sMaxSpan');
 const elSAvgLatency = document.getElementById('sAvgLatency');
 const elSTotalRuns = document.getElementById('sTotalRuns');
@@ -620,18 +688,25 @@ $$('[data-go]').forEach(btn => {
 	});
 });
 
-/* ── HUD Updates ───────────────────────────────────────────── */
+/* ── HUD & Level Updates ───────────────────────────────────── */
 function updateHUD() {
 	if (!currentRun) return;
 	const elapsedSec = ((performance.now() - runStartTime) / 1000).toFixed(1);
 	elHTime.textContent = `${elapsedSec}s`;
 	elHCps.textContent = calculateCPS();
+	elHLevel.textContent = currentRun.level || 1;
 	elHSpan.textContent = currentRun.span;
 	elHStreak.textContent = currentRun.streak;
 
 	const totalAtt = currentRun.hits + currentRun.misses;
 	const acc = totalAtt > 0 ? Math.round((currentRun.hits / totalAtt) * 100) : 100;
 	elHAcc.textContent = `${acc}%`;
+
+	// Update Level Progress Bar
+	const req = currentRun.levelRoundsRequired || 1;
+	const cleared = currentRun.levelRoundsCleared || 0;
+	const progress = Math.min(1, cleared / req);
+	elLevelBar.style.transform = `scaleX(${progress})`;
 }
 
 function calculateCPS() {
@@ -648,8 +723,32 @@ function calculateCPS() {
 	if (store.diff === 'overclocked') diffMult = 1.25;
 	if (store.diff === 'extreme') diffMult = 1.5;
 
-	const score = Math.round((1000 / clampedLatency) * Math.pow(acc, 2) * (1 + currentRun.span / 8) * 220 * diffMult);
+	const levelBonus = 1 + (currentRun.level - 1) * 0.08;
+	const score = Math.round((1000 / clampedLatency) * Math.pow(acc, 2) * (1 + currentRun.span / 8) * 220 * diffMult * levelBonus);
 	return Math.max(0, score);
+}
+
+function triggerLevelUp(levelTitle, levelDesc) {
+	if (!currentRun) return;
+	currentRun.level++;
+	currentRun.levelRoundsCleared = 0;
+	audio.playLevelUp();
+	triggerShake(14);
+	flashVignette('var(--accent)');
+	burstFx(window.innerWidth / 2, window.innerHeight / 2, 28, 185);
+	ringFx(window.innerWidth / 2, window.innerHeight / 2, 220, 185);
+
+	elLevelUpTitle.textContent = `LEVEL ${currentRun.level}`;
+	elLevelUpDesc.textContent = levelDesc || levelTitle || 'Advancing cognitive parameters';
+	elLevelUpBanner.hidden = false;
+	elLevelUpBanner.style.animation = 'none';
+	void elLevelUpBanner.offsetWidth; // force reflow
+	elLevelUpBanner.style.animation = 'levelUpPopup 0.5s cubic-bezier(0.2, 1.4, 0.3, 1) both';
+
+	showToast(`LEVEL ${currentRun.level} UNLOCKED!`, 900);
+	setTimeout(() => {
+		elLevelUpBanner.hidden = true;
+	}, 1300);
 }
 
 /* ── Session Launcher ──────────────────────────────────────── */
@@ -659,7 +758,15 @@ function launchRun(mode) {
 		mode,
 		diff: store.diff,
 		spanDir: store.spanDir,
-		span: mode === 'chimp' ? (store.diff === 'extreme' ? 7 : (store.diff === 'overclocked' ? 6 : 5)) :
+		level: 1,
+		levelRoundsCleared: 0,
+		levelRoundsRequired: mode === 'chimp' ? 2 :
+			(mode === 'spatial' ? 2 :
+			(mode === 'matrix' ? 2 :
+			(mode === 'blindness' ? 2 :
+			(mode === 'nback' ? 12 :
+			(mode === 'trail' ? 2 : 6))))),
+		span: mode === 'chimp' ? (store.diff === 'extreme' ? 6 : (store.diff === 'overclocked' ? 5 : 4)) :
 			(mode === 'spatial' ? 3 :
 			(mode === 'matrix' ? 3 :
 			(mode === 'nback' ? (store.diff === 'extreme' ? 3 : (store.diff === 'overclocked' ? 2 : 1)) :
@@ -740,18 +847,23 @@ function launchRun(mode) {
 let chimpNumbers = [];
 let chimpExpected = 1;
 let chimpMaskTimeout = null;
+let chimpTimerRaf = null;
 
 function startChimpRound() {
 	gameState = 'memorize';
 	elChimpStatus.textContent = 'READY...';
-	elPlayHint.textContent = 'Focus your eyes on the grid';
+	elPlayHint.textContent = 'Focus your eyes on the grid · Tap 1 to drop mask early';
 	elChimpGrid.innerHTML = '';
 	chimpExpected = 1;
 
-	const totalCells = 25;
-	const count = currentRun.span;
+	// Dynamic grid dimension based on level
+	const cols = currentRun.level >= 9 ? 7 : (currentRun.level >= 6 ? 6 : (currentRun.level >= 3 ? 5 : 4));
+	elChimpGrid.dataset.cols = cols;
+	const totalCells = cols * cols;
+
+	const count = Math.min(totalCells - 2, currentRun.span);
 	const indices = [];
-	while (indices.length < totalCells) indices.push(indices.length);
+	for (let i = 0; i < totalCells; i++) indices.push(i);
 	// Shuffle indices
 	for (let i = indices.length - 1; i > 0; i--) {
 		const j = Math.floor(Math.random() * (i + 1));
@@ -770,11 +882,13 @@ function startChimpRound() {
 		elChimpGrid.appendChild(tile);
 	}
 
-	// 600ms ready delay, then reveal numbers
+	elChimpTimerBar.style.transform = 'scaleX(1)';
+
+	// 550ms ready delay, then reveal numbers
 	setTimeout(() => {
 		if (gameState !== 'memorize') return;
 		elChimpStatus.textContent = 'MEMORIZE THE NUMBERS';
-		elPlayHint.textContent = 'Observe locations before mask engages';
+		elPlayHint.textContent = 'Observe locations before mask engages (or tap 1 for speed bonus)';
 
 		chimpNumbers.forEach(numObj => {
 			const tile = elChimpGrid.children[numObj.pos];
@@ -786,30 +900,62 @@ function startChimpRound() {
 			}
 		});
 
-		// Dynamic human-friendly flash duration scaling with count
-		let flashDuration = Math.max(1200, count * 220); // ~1.2s - 2.5s for standard
-		if (store.diff === 'overclocked') flashDuration = Math.max(800, count * 150);
-		if (store.diff === 'extreme') flashDuration = Math.max(450, count * 90);
+		// Dynamic flash duration scaling with level and count
+		let flashDuration = Math.max(1200, count * 220 - (currentRun.level - 1) * 60);
+		if (store.diff === 'overclocked') flashDuration = Math.max(800, count * 150 - (currentRun.level - 1) * 45);
+		if (store.diff === 'extreme') flashDuration = Math.max(450, count * 90 - (currentRun.level - 1) * 30);
+
+		const flashStart = performance.now();
+		if (chimpTimerRaf) cancelAnimationFrame(chimpTimerRaf);
+
+		function updateChimpBar() {
+			if (gameState !== 'memorize') return;
+			const elapsed = performance.now() - flashStart;
+			const progress = Math.max(0, 1 - elapsed / flashDuration);
+			elChimpTimerBar.style.transform = `scaleX(${progress})`;
+			if (progress > 0) {
+				chimpTimerRaf = requestAnimationFrame(updateChimpBar);
+			}
+		}
+		chimpTimerRaf = requestAnimationFrame(updateChimpBar);
 
 		if (chimpMaskTimeout) clearTimeout(chimpMaskTimeout);
 		chimpMaskTimeout = setTimeout(() => {
-			if (gameState !== 'memorize') return;
-			gameState = 'input';
-			roundStartTime = performance.now();
-			elChimpStatus.textContent = 'CLICK SQUARES IN ASCENDING ORDER';
-			elPlayHint.textContent = 'Recall from visual working memory: 1 → 2 → 3...';
-
-			$$('.chimp-tile.active-number').forEach(tile => {
-				tile.classList.add('masked');
-				tile.textContent = '';
-			});
+			engageChimpMask();
 		}, flashDuration);
-	}, 600);
+	}, 550);
+}
+
+function engageChimpMask(earlyBonus = false) {
+	if (gameState !== 'memorize') return;
+	if (chimpMaskTimeout) clearTimeout(chimpMaskTimeout);
+	if (chimpTimerRaf) cancelAnimationFrame(chimpTimerRaf);
+	elChimpTimerBar.style.transform = 'scaleX(0)';
+
+	gameState = 'input';
+	roundStartTime = performance.now();
+	elChimpStatus.textContent = earlyBonus ? 'SPEED MEMORY ENGAGED · 1 → 2 → 3...' : 'CLICK SQUARES IN ASCENDING ORDER';
+	elPlayHint.textContent = 'Recall from visual working memory: 1 → 2 → 3...';
+
+	$$('.chimp-tile.active-number').forEach(tile => {
+		tile.classList.add('masked');
+		tile.textContent = '';
+	});
 }
 
 elChimpGrid.addEventListener('click', (e) => {
 	const tile = e.target.closest('.chimp-tile');
-	if (!tile || gameState !== 'input') return;
+	if (!tile) return;
+
+	// Check if player clicked '1' during memorization for instant mask trigger (Ayumu test mechanic)
+	if (gameState === 'memorize' && parseInt(tile.dataset.val, 10) === 1) {
+		engageChimpMask(true);
+		audio.playLaser();
+		burstFx(tile.getBoundingClientRect().left + 24, tile.getBoundingClientRect().top + 24, 12, 185);
+		return;
+	}
+
+	if (gameState !== 'input') return;
 	if (tile.classList.contains('blank-idle') || tile.classList.contains('cleared')) return;
 
 	const val = parseInt(tile.dataset.val, 10);
@@ -837,9 +983,20 @@ elChimpGrid.addEventListener('click', (e) => {
 		if (chimpExpected > currentRun.span) {
 			// Round Complete!
 			currentRun.roundsCompleted++;
-			currentRun.span = Math.min(15, currentRun.span + 1);
-			showToast(`SPAN EXPANDED: ${currentRun.span}!`, 800);
+			currentRun.levelRoundsCleared++;
 			audio.playMilestone();
+
+			// Check Level Progression
+			if (currentRun.levelRoundsCleared >= currentRun.levelRoundsRequired) {
+				currentRun.levelRoundsRequired = Math.min(4, 2 + Math.floor(currentRun.level / 3));
+				const nextCols = (currentRun.level + 1) >= 9 ? 7 : ((currentRun.level + 1) >= 6 ? 6 : ((currentRun.level + 1) >= 3 ? 5 : 4));
+				const currentCols = currentRun.level >= 9 ? 7 : (currentRun.level >= 6 ? 6 : (currentRun.level >= 3 ? 5 : 4));
+				const perk = nextCols > currentCols ? `Matrix expanded to ${nextCols}x${nextCols}` : 'Memory span increased';
+				triggerLevelUp('CHIMP MATRIX', perk);
+			}
+
+			currentRun.span = Math.min(22, currentRun.span + 1);
+			showToast(`SPAN: ${currentRun.span} ITEMS!`, 750);
 			gameState = 'idle';
 			setTimeout(startChimpRound, 700);
 		}
@@ -854,7 +1011,7 @@ elChimpGrid.addEventListener('click', (e) => {
 		currentRun.misses++;
 		currentRun.streak = 0;
 
-		// Reveal all
+		// Reveal all numbers
 		$$('.chimp-tile.active-number').forEach(t => {
 			t.classList.remove('masked');
 			t.textContent = t.dataset.val;
@@ -875,42 +1032,74 @@ const STROOP_COLORS = [
 	{ name: 'RED', hex: '#ff4d6d', key: 'a' },
 	{ name: 'CYAN', hex: '#00f0ff', key: 's' },
 	{ name: 'YELLOW', hex: '#ffe600', key: 'd' },
-	{ name: 'PURPLE', hex: '#c060ff', key: 'f' }
+	{ name: 'PURPLE', hex: '#c060ff', key: 'f' },
+	{ name: 'GREEN', hex: '#00ff88', key: 'g' },
+	{ name: 'ORANGE', hex: '#ff8800', key: 'h' }
 ];
 
 let stroopCurrentInk = null;
+let stroopCurrentWord = null;
+let stroopCurrentRule = 'ink'; // 'ink' | 'word'
 let stroopTimerRaf = null;
 let stroopTimeLimit = 500;
 let stroopRoundStart = 0;
 
 function startStroopRound() {
-	if (currentRun.roundsCompleted >= 30 || currentRun.misses >= 3) {
+	if (currentRun.roundsCompleted >= 50 || currentRun.misses >= 3) {
 		endCurrentRun(true);
 		return;
 	}
 
 	gameState = 'input';
-	elPlayHint.textContent = 'Select INK COLOR (Keys: A, S, D, F or Click)';
+
+	// Determine active palette based on level
+	let activeColorCount = 4;
+	if (currentRun.level === 1) activeColorCount = 2;
+	else if (currentRun.level === 2) activeColorCount = 4;
+	else activeColorCount = 6;
+
+	elStroopOptions.dataset.count = activeColorCount;
+	const availableColors = STROOP_COLORS.slice(0, activeColorCount);
+
+	// Toggle extra buttons for 6 colors
+	$$('.stroop-extra').forEach(btn => {
+		btn.hidden = activeColorCount < 6;
+	});
+
+	// Inverted Stroop rule introduction in Level 4+
+	if (currentRun.level >= 4 && Math.random() < 0.42) {
+		stroopCurrentRule = 'word';
+		elStroopRuleBadge.textContent = 'MATCH WORD MEANING';
+		elStroopRuleBadge.classList.add('rule-inverted');
+		elPlayHint.textContent = 'INVERTED: Select the SEMANTIC WORD (ignore font color)';
+	} else {
+		stroopCurrentRule = 'ink';
+		elStroopRuleBadge.textContent = 'MATCH INK COLOR';
+		elStroopRuleBadge.classList.remove('rule-inverted');
+		elPlayHint.textContent = 'STANDARD: Select the FONT INK COLOR (ignore text)';
+	}
 
 	// Pick random word and ink (75% conflict)
-	const wordItem = STROOP_COLORS[Math.floor(Math.random() * STROOP_COLORS.length)];
+	const wordItem = availableColors[Math.floor(Math.random() * availableColors.length)];
 	let inkItem = wordItem;
-	if (Math.random() < 0.75) {
-		const others = STROOP_COLORS.filter(c => c.name !== wordItem.name);
+	if (Math.random() < 0.78) {
+		const others = availableColors.filter(c => c.name !== wordItem.name);
 		inkItem = others[Math.floor(Math.random() * others.length)];
 	}
 
 	stroopCurrentInk = inkItem;
+	stroopCurrentWord = wordItem;
 	elStroopWord.textContent = wordItem.name;
 	elStroopWord.style.color = inkItem.hex;
 	elStroopWord.style.textShadow = `0 0 35px ${inkItem.hex}`;
 
-	// Scale time limit by difficulty and streak
-	let baseLimit = 1400;
-	if (store.diff === 'overclocked') baseLimit = 1000;
-	if (store.diff === 'extreme') baseLimit = 700;
-	const minLimit = store.diff === 'extreme' ? 420 : (store.diff === 'overclocked' ? 600 : 850);
-	stroopTimeLimit = Math.max(minLimit, baseLimit - Math.min(currentRun.streak * 20, 500));
+	// Scale time limit by difficulty, level, and streak
+	let baseLimit = Math.max(750, 1500 - (currentRun.level - 1) * 90);
+	if (store.diff === 'overclocked') baseLimit = Math.max(550, 1150 - (currentRun.level - 1) * 80);
+	if (store.diff === 'extreme') baseLimit = Math.max(400, 850 - (currentRun.level - 1) * 60);
+
+	const minLimit = store.diff === 'extreme' ? 380 : (store.diff === 'overclocked' ? 520 : 700);
+	stroopTimeLimit = Math.max(minLimit, baseLimit - Math.min(currentRun.streak * 15, 350));
 
 	stroopRoundStart = performance.now();
 	roundStartTime = stroopRoundStart;
@@ -937,18 +1126,31 @@ function handleStroopChoice(selectedColorName, isTimeout = false) {
 	const rt = performance.now() - stroopRoundStart;
 	currentRun.latencies.push(rt);
 
-	if (!isTimeout && selectedColorName === stroopCurrentInk.name) {
+	const targetColorName = stroopCurrentRule === 'word' ? stroopCurrentWord.name : stroopCurrentInk.name;
+
+	if (!isTimeout && selectedColorName === targetColorName) {
 		// Correct
 		audio.playLaser();
 		currentRun.hits++;
 		currentRun.streak++;
 		if (currentRun.streak > currentRun.maxStreak) currentRun.maxStreak = currentRun.streak;
 		currentRun.roundsCompleted++;
-		currentRun.span = Math.floor(currentRun.streak / 5) + 1;
+		currentRun.levelRoundsCleared++;
+		currentRun.span = currentRun.level;
 
-		if (currentRun.streak % 10 === 0) {
+		if (currentRun.streak % 8 === 0) {
 			showToast(`STREAK: ${currentRun.streak}!`, 700);
 			audio.playMilestone();
+		}
+
+		// Check level progression
+		if (currentRun.levelRoundsCleared >= currentRun.levelRoundsRequired) {
+			currentRun.levelRoundsRequired = Math.min(10, 5 + currentRun.level);
+			let perk = 'Reaction latency overclocked';
+			if (currentRun.level + 1 === 2) perk = '4-color matrix active';
+			else if (currentRun.level + 1 === 3) perk = '6-color spectrum unlocked';
+			else if (currentRun.level + 1 === 4) perk = 'Rule inversion active';
+			triggerLevelUp('STROOP DUEL', perk);
 		}
 
 		burstFx(window.innerWidth / 2, window.innerHeight / 2, 12, 185);
@@ -990,12 +1192,18 @@ function startSpatialRound() {
 	gameState = 'memorize';
 	spatialPlayerStep = 0;
 	spatialIsPlayingSeq = true;
-	elSpatialStatus.textContent = store.spanDir === 'reversed' ? 'MEMORIZE SEQUENCE (REVERSE ORDER)' : 'MEMORIZE NEURAL SEQUENCE';
-	elPlayHint.textContent = 'Watch each illuminated node and tone';
 
-	// Build 3x3 grid
+	const cols = currentRun.level >= 7 ? 5 : (currentRun.level >= 4 ? 4 : 3);
+	elSpatialGrid.dataset.cols = cols;
+	const totalNodes = cols * cols;
+
+	elSpatialStatus.textContent = store.spanDir === 'reversed' ? 'MEMORIZE SEQUENCE (REVERSE ORDER)' : 'MEMORIZE NEURAL SEQUENCE';
+	elSpatialStepBadge.textContent = `SPAN ${currentRun.span} NODES`;
+	elPlayHint.textContent = `Watch each illuminated node on ${cols}x${cols} grid`;
+
+	// Build isometric grid
 	elSpatialGrid.innerHTML = '';
-	for (let i = 0; i < 9; i++) {
+	for (let i = 0; i < totalNodes; i++) {
 		const node = document.createElement('div');
 		node.className = 'spatial-node';
 		node.dataset.idx = i;
@@ -1004,7 +1212,8 @@ function startSpatialRound() {
 
 	// Generate sequence of current span length
 	spatialSequence = [];
-	const nodeIndices = [0, 1, 2, 3, 4, 5, 6, 7, 8];
+	const nodeIndices = [];
+	for (let i = 0; i < totalNodes; i++) nodeIndices.push(i);
 	let last = -1;
 	for (let i = 0; i < currentRun.span; i++) {
 		const candidates = nodeIndices.filter(n => n !== last);
@@ -1018,7 +1227,7 @@ function startSpatialRound() {
 
 function playSpatialSequence() {
 	let idx = 0;
-	const interval = store.diff === 'extreme' ? 520 : (store.diff === 'overclocked' ? 720 : 960);
+	const interval = store.diff === 'extreme' ? 480 : (store.diff === 'overclocked' ? 680 : 900);
 	const litDuration = interval * 0.68;
 
 	function step() {
@@ -1029,6 +1238,7 @@ function playSpatialSequence() {
 			elSpatialStatus.textContent = store.spanDir === 'reversed' ?
 				'REPRODUCE SEQUENCE IN REVERSED ORDER' :
 				'REPRODUCE SEQUENCE IN FORWARD ORDER';
+			elSpatialStepBadge.textContent = `STEP 0 / ${spatialSequence.length}`;
 			elPlayHint.textContent = 'Click nodes in order';
 			return;
 		}
@@ -1037,7 +1247,7 @@ function playSpatialSequence() {
 		const nodeEl = elSpatialGrid.children[nodeIndex];
 		if (nodeEl) {
 			nodeEl.classList.add('lit');
-			audio.playResonance(200 + nodeIndex * 45);
+			audio.playResonance(190 + nodeIndex * 35);
 			setTimeout(() => {
 				nodeEl.classList.remove('lit');
 			}, litDuration);
@@ -1047,7 +1257,7 @@ function playSpatialSequence() {
 		setTimeout(step, interval);
 	}
 
-	setTimeout(step, 800);
+	setTimeout(step, 750);
 }
 
 elSpatialGrid.addEventListener('click', (e) => {
@@ -1073,13 +1283,25 @@ elSpatialGrid.addEventListener('click', (e) => {
 		currentRun.hits++;
 		currentRun.streak++;
 		if (currentRun.streak > currentRun.maxStreak) currentRun.maxStreak = currentRun.streak;
+		elSpatialStepBadge.textContent = `STEP ${spatialPlayerStep} / ${spatialSequence.length}`;
 
 		if (spatialPlayerStep >= spatialSequence.length) {
 			// Completed span!
 			currentRun.roundsCompleted++;
+			currentRun.levelRoundsCleared++;
 			currentRun.span++;
-			showToast(`SPAN: ${currentRun.span} NODES!`, 800);
 			audio.playMilestone();
+
+			// Check Level Progression
+			if (currentRun.levelRoundsCleared >= currentRun.levelRoundsRequired) {
+				currentRun.levelRoundsRequired = 2;
+				const nextCols = (currentRun.level + 1) >= 7 ? 5 : ((currentRun.level + 1) >= 4 ? 4 : 3);
+				const currentCols = currentRun.level >= 7 ? 5 : (currentRun.level >= 4 ? 4 : 3);
+				const perk = nextCols > currentCols ? `Grid expanded to ${nextCols}x${nextCols} isometric` : 'Sequence buffer expanded';
+				triggerLevelUp('SPATIAL SPAN', perk);
+			}
+
+			showToast(`SPAN: ${currentRun.span} NODES!`, 800);
 			gameState = 'idle';
 			setTimeout(startSpatialRound, 800);
 		}
@@ -1114,7 +1336,15 @@ const GLYPH_PATHS = [
 	'M12 2L2 22h20Z',
 	'M12 2l8 8-8 8-8-8Z',
 	'M6 6h12v12H6Z',
-	'M4 12a8 8 0 0 1 16 0'
+	'M4 12a8 8 0 0 1 16 0',
+	'M12 2a10 10 0 1 0 10 10A10 10 0 0 0 12 2zm0 14a4 4 0 1 1 4-4 4 4 0 0 1-4 4z',
+	'M12 2L15 9H22L16 14L18 21L12 17L6 21L8 14L2 9H9Z',
+	'M3 12h18M12 3l9 9-9 9',
+	'M12 2v20M5 7l7-5 7 5M5 17l7 5 7-5',
+	'M2 12c5-8 15-8 20 0-5 8-15 8-20 0z',
+	'M4 4h16L4 20h16',
+	'M12 2a5 5 0 0 1 5 5c0 4-5 8-5 8s-5-4-5-8a5 5 0 0 1 5-5z',
+	'M6 2L18 22M18 2L6 22'
 ];
 
 let blindnessInterval = null;
@@ -1123,17 +1353,20 @@ let blindnessFlickerFrame = 0; // 0: Frame A, 1: Mask, 2: Frame B, 3: Mask
 let blindnessStartTime = 0;
 
 function startBlindnessRound() {
-	if (currentRun.roundsCompleted >= 6 || currentRun.misses >= 3) {
+	if (currentRun.misses >= 3) {
 		endCurrentRun(true);
 		return;
 	}
 
 	gameState = 'input';
-	elBlindnessStatus.textContent = 'SPOT THE ALTERED NODE';
+	const cols = currentRun.level >= 9 ? 6 : (currentRun.level >= 6 ? 5 : (currentRun.level >= 3 ? 4 : 3));
+	elBlindnessGrid.dataset.cols = cols;
+	const size = cols * cols;
+
+	elBlindnessStatus.textContent = `SPOT THE ALTERED NODE (${cols}x${cols})`;
 	elPlayHint.textContent = 'Find and click the subtle difference across flickers';
 	elBlindnessGrid.innerHTML = '';
 
-	const size = 16;
 	blindnessTargetIndex = Math.floor(Math.random() * size);
 	const tilesData = [];
 
@@ -1142,15 +1375,19 @@ function startBlindnessRound() {
 		const rotA = Math.floor(Math.random() * 4) * 90;
 		const colorA = i % 2 === 0 ? 'var(--accent)' : 'var(--accent-2)';
 
-		// If target, alter rotation or symbol in Frame B
+		// If target, alter rotation, color, or glyph in Frame B
 		let rotB = rotA;
 		let colorB = colorA;
 		let glyphB = glyph;
 
 		if (i === blindnessTargetIndex) {
-			rotB = (rotA + 90) % 360;
-			if (Math.random() > 0.5) {
+			const changeType = Math.random();
+			if (changeType < 0.4) {
+				rotB = (rotA + 90) % 360;
+			} else if (changeType < 0.7) {
 				colorB = colorA === 'var(--accent)' ? 'var(--warn)' : 'var(--accent)';
+			} else {
+				glyphB = GLYPH_PATHS[(i + 3) % GLYPH_PATHS.length];
 			}
 		}
 
@@ -1171,7 +1408,7 @@ function startBlindnessRound() {
 
 	if (blindnessInterval) clearInterval(blindnessInterval);
 
-	const frameDuration = store.diff === 'extreme' ? 180 : (store.diff === 'overclocked' ? 210 : 250);
+	const frameDuration = store.diff === 'extreme' ? 170 : (store.diff === 'overclocked' ? 200 : 240);
 	const maskDuration = 80;
 
 	function runFlicker() {
@@ -1242,7 +1479,17 @@ elBlindnessGrid.addEventListener('click', (e) => {
 		currentRun.streak++;
 		if (currentRun.streak > currentRun.maxStreak) currentRun.maxStreak = currentRun.streak;
 		currentRun.roundsCompleted++;
-		currentRun.span = currentRun.roundsCompleted;
+		currentRun.levelRoundsCleared++;
+		currentRun.span = currentRun.level;
+
+		// Check Level Progression
+		if (currentRun.levelRoundsCleared >= currentRun.levelRoundsRequired) {
+			currentRun.levelRoundsRequired = 2;
+			const nextCols = (currentRun.level + 1) >= 9 ? 6 : ((currentRun.level + 1) >= 6 ? 5 : ((currentRun.level + 1) >= 3 ? 4 : 3));
+			const currentCols = currentRun.level >= 9 ? 6 : (currentRun.level >= 6 ? 5 : (currentRun.level >= 3 ? 4 : 3));
+			const perk = nextCols > currentCols ? `Visual field expanded to ${nextCols}x${nextCols}` : 'Search resolution increased';
+			triggerLevelUp('CHANGE BLINDNESS', perk);
+		}
 
 		showToast('TARGET DETECTED!', 600);
 		gameState = 'idle';
@@ -1270,24 +1517,23 @@ elBlindnessGrid.addEventListener('click', (e) => {
 let matrixActiveIndices = new Set();
 let matrixFoundIndices = new Set();
 let matrixFlashTimeout = null;
+let matrixTimerRaf = null;
 
 function startVisualMatrixRound() {
 	gameState = 'memorize';
 	matrixActiveIndices.clear();
 	matrixFoundIndices.clear();
-	elMatrixStatus.textContent = 'MEMORIZE THE PATTERN';
-	elPlayHint.textContent = 'Watch for the flashing neon tiles';
-	elMatrixGrid.innerHTML = '';
 
 	const count = currentRun.span;
-	let dim = 3;
-	if (count >= 12) dim = 6;
-	else if (count >= 8) dim = 5;
-	else if (count >= 5) dim = 4;
-	else dim = 3;
-
+	let dim = currentRun.level >= 11 ? 7 : (currentRun.level >= 9 ? 6 : (currentRun.level >= 6 ? 5 : (currentRun.level >= 3 ? 4 : 3)));
 	const totalCells = dim * dim;
+
 	elMatrixGrid.style.setProperty('--cols', dim);
+	elMatrixGrid.innerHTML = '';
+	elMatrixStatus.textContent = 'MEMORIZE THE PATTERN';
+	elMatrixCounter.textContent = `TILES: 0 / ${count}`;
+	elPlayHint.textContent = `Observe flashing pattern on ${dim}x${dim} matrix`;
+	elMatrixTimerBar.style.transform = 'scaleX(1)';
 
 	const indices = [];
 	for (let i = 0; i < totalCells; i++) indices.push(i);
@@ -1309,13 +1555,29 @@ function startVisualMatrixRound() {
 		elMatrixGrid.appendChild(tile);
 	}
 
-	const flashDuration = store.diff === 'extreme' ? 600 : (store.diff === 'overclocked' ? 800 : 1100);
+	let flashDuration = store.diff === 'extreme' ? 650 : (store.diff === 'overclocked' ? 850 : 1150);
+	flashDuration = Math.max(450, flashDuration - (currentRun.level - 1) * 40);
+
+	const flashStart = performance.now();
+	if (matrixTimerRaf) cancelAnimationFrame(matrixTimerRaf);
+
+	function updateMatrixBar() {
+		if (gameState !== 'memorize') return;
+		const elapsed = performance.now() - flashStart;
+		const progress = Math.max(0, 1 - elapsed / flashDuration);
+		elMatrixTimerBar.style.transform = `scaleX(${progress})`;
+		if (progress > 0) {
+			matrixTimerRaf = requestAnimationFrame(updateMatrixBar);
+		}
+	}
+	matrixTimerRaf = requestAnimationFrame(updateMatrixBar);
 
 	if (matrixFlashTimeout) clearTimeout(matrixFlashTimeout);
 	matrixFlashTimeout = setTimeout(() => {
 		if (gameState !== 'memorize') return;
 		gameState = 'input';
 		roundStartTime = performance.now();
+		elMatrixTimerBar.style.transform = 'scaleX(0)';
 		elMatrixStatus.textContent = `RECALL ${count} ACTIVE TILES`;
 		elPlayHint.textContent = 'Click all tiles from visual memory';
 
@@ -1342,15 +1604,27 @@ elMatrixGrid.addEventListener('click', (e) => {
 		currentRun.hits++;
 		currentRun.streak++;
 		if (currentRun.streak > currentRun.maxStreak) currentRun.maxStreak = currentRun.streak;
+		elMatrixCounter.textContent = `TILES: ${matrixFoundIndices.size} / ${matrixActiveIndices.size}`;
 
 		burstFx(tile.getBoundingClientRect().left + 20, tile.getBoundingClientRect().top + 20, 8);
 
 		if (matrixFoundIndices.size === matrixActiveIndices.size) {
 			// All found!
 			currentRun.roundsCompleted++;
+			currentRun.levelRoundsCleared++;
 			currentRun.span++;
-			showToast(`SPAN: ${currentRun.span} TILES!`, 750);
 			audio.playMilestone();
+
+			// Check Level Progression
+			if (currentRun.levelRoundsCleared >= currentRun.levelRoundsRequired) {
+				currentRun.levelRoundsRequired = 2;
+				const nextDim = (currentRun.level + 1) >= 11 ? 7 : ((currentRun.level + 1) >= 9 ? 6 : ((currentRun.level + 1) >= 6 ? 5 : ((currentRun.level + 1) >= 3 ? 4 : 3)));
+				const currentDim = currentRun.level >= 11 ? 7 : (currentRun.level >= 9 ? 6 : (currentRun.level >= 6 ? 5 : (currentRun.level >= 3 ? 4 : 3)));
+				const perk = nextDim > currentDim ? `Matrix expanded to ${nextDim}x${nextDim}` : 'Pattern density increased';
+				triggerLevelUp('VISUAL MATRIX', perk);
+			}
+
+			showToast(`SPAN: ${currentRun.span} TILES!`, 750);
 			gameState = 'idle';
 			setTimeout(startVisualMatrixRound, 800);
 		}
@@ -1386,7 +1660,7 @@ const NBACK_SYMBOLS = ['▲', '■', '●', '◆', '✦', '⬟'];
 let nbackHistory = [];
 let nbackTimerTimeout = null;
 let nbackCurrentTrial = 0;
-const NBACK_MAX_TRIALS = 25;
+const NBACK_MAX_TRIALS = 40;
 let nbackHasAnswered = false;
 
 function startNBackRound() {
@@ -1404,8 +1678,12 @@ function runNextNBackTrial() {
 	gameState = 'input';
 	nbackHasAnswered = false;
 	nbackCurrentTrial++;
-	const N = currentRun.span;
-	elNBackBadge.textContent = `${N}-BACK`;
+
+	// Determine N-back degree from level (Level 1-2: 1-back, Level 3-4: 2-back, Level 5-6: 3-back, Level 7+: 4-back)
+	const N = Math.min(4, Math.floor((currentRun.level - 1) / 2) + 1);
+	currentRun.span = N;
+
+	elNBackBadge.textContent = `${N}-BACK · LVL ${currentRun.level}`;
 	elNBackStatus.textContent = nbackHistory.length >= N ? `MATCH ITEM ${N} STEPS AGO?` : 'MEMORIZE SEQUENCE...';
 	elPlayHint.textContent = 'Space: MATCH · Enter / Click: PASS';
 
@@ -1430,6 +1708,20 @@ function runNextNBackTrial() {
 	const currentItem = { pos, symbol, isMatch };
 	nbackHistory.push(currentItem);
 
+	// Update visual history trail buffer
+	elNBackTrail.innerHTML = '';
+	const trailItems = nbackHistory.slice(-5);
+	trailItems.forEach((item, idx) => {
+		const node = document.createElement('div');
+		node.className = 'nback-trail-node';
+		node.textContent = item.symbol;
+		if (trailItems.length - 1 - idx === N) {
+			node.classList.add('target-step');
+			node.title = `${N} steps ago target`;
+		}
+		elNBackTrail.appendChild(node);
+	});
+
 	elNBackGrid.innerHTML = '';
 	for (let i = 0; i < 9; i++) {
 		const cell = document.createElement('div');
@@ -1438,10 +1730,11 @@ function runNextNBackTrial() {
 		elNBackGrid.appendChild(cell);
 	}
 	elNBackSymbol.textContent = symbol;
-	audio.playBlip(400 + pos * 50);
+	audio.playBlip(380 + pos * 45);
 
 	roundStartTime = performance.now();
-	const trialDuration = store.diff === 'extreme' ? 1200 : (store.diff === 'overclocked' ? 1500 : 1800);
+	let trialDuration = store.diff === 'extreme' ? 1200 : (store.diff === 'overclocked' ? 1500 : 1800);
+	trialDuration = Math.max(900, trialDuration - (currentRun.level - 1) * 80);
 
 	if (nbackTimerTimeout) clearTimeout(nbackTimerTimeout);
 	nbackTimerTimeout = setTimeout(() => {
@@ -1451,9 +1744,19 @@ function runNextNBackTrial() {
 		} else if (!nbackHasAnswered) {
 			currentRun.hits++;
 			currentRun.roundsCompleted++;
+			currentRun.levelRoundsCleared++;
+			checkNBackLevelProgression();
 			runNextNBackTrial();
 		}
 	}, trialDuration);
+}
+
+function checkNBackLevelProgression() {
+	if (currentRun.levelRoundsCleared >= currentRun.levelRoundsRequired) {
+		currentRun.levelRoundsRequired = 10;
+		const nextN = Math.min(4, Math.floor(currentRun.level / 2) + 1);
+		triggerLevelUp('N-BACK FLUX', `${nextN}-Back cognitive buffer updating`);
+	}
 }
 
 function handleNBackResponse(userSaidMatch, isAutoTimeout = false) {
@@ -1473,12 +1776,9 @@ function handleNBackResponse(userSaidMatch, isAutoTimeout = false) {
 		currentRun.streak++;
 		if (currentRun.streak > currentRun.maxStreak) currentRun.maxStreak = currentRun.streak;
 		currentRun.roundsCompleted++;
+		currentRun.levelRoundsCleared++;
 
-		if (currentRun.streak > 0 && currentRun.streak % 8 === 0 && currentRun.span < 3) {
-			currentRun.span++;
-			showToast(`${currentRun.span}-BACK UNLOCKED!`, 750);
-			audio.playMilestone();
-		}
+		checkNBackLevelProgression();
 
 		burstFx(window.innerWidth / 2, window.innerHeight / 2, 8);
 		setTimeout(runNextNBackTrial, 350);
@@ -1513,28 +1813,52 @@ function startNeuralLinkRound() {
 	gameState = 'input';
 	trailStep = 0;
 	trailPrevNode = null;
-	elTrailStatus.textContent = 'LINK: 1 → A → 2 → B...';
-	elPlayHint.textContent = 'Click alternating numbers and letters';
 	elTrailSvg.innerHTML = '';
 	elTrailNodes.innerHTML = '';
 
-	const totalItems = Math.min(16, currentRun.span);
 	trailSequence = [];
-	const letters = 'ABCDEFGH';
-	for (let i = 0; i < totalItems / 2; i++) {
-		trailSequence.push({ label: `${i + 1}`, val: i + 1, type: 'num' });
-		trailSequence.push({ label: letters[i], val: letters[i], type: 'let' });
+	const letters = 'ABCDEFGHJKLMNPQRSTUVWXYZ';
+
+	// Level-specific Trail Configuration
+	if (currentRun.level === 1) {
+		// Numbers only (1 to 8)
+		elTrailStatus.textContent = 'LINK: 1 → 2 → 3 → 4...';
+		for (let i = 1; i <= 8; i++) trailSequence.push({ label: `${i}`, val: i, type: 'num' });
+	} else if (currentRun.level === 2) {
+		// Numbers only (1 to 12)
+		elTrailStatus.textContent = 'LINK: 1 → 2 → 3 → 4...';
+		for (let i = 1; i <= 12; i++) trailSequence.push({ label: `${i}`, val: i, type: 'num' });
+	} else if (currentRun.level >= 7 && currentRun.level <= 8) {
+		// Reverse Alternating: 1 → Z → 2 → Y...
+		const count = currentRun.level === 7 ? 8 : 12;
+		elTrailStatus.textContent = 'REVERSE LINK: 1 → Z → 2 → Y...';
+		for (let i = 0; i < count / 2; i++) {
+			trailSequence.push({ label: `${i + 1}`, val: i + 1, type: 'num' });
+			const revLetter = letters[letters.length - 1 - i];
+			trailSequence.push({ label: revLetter, val: revLetter, type: 'let' });
+		}
+	} else {
+		// Alternating 1 → A → 2 → B...
+		const count = Math.min(24, 6 + currentRun.level * 2);
+		elTrailStatus.textContent = 'LINK: 1 → A → 2 → B...';
+		for (let i = 0; i < count / 2; i++) {
+			trailSequence.push({ label: `${i + 1}`, val: i + 1, type: 'num' });
+			trailSequence.push({ label: letters[i], val: letters[i], type: 'let' });
+		}
 	}
 
+	currentRun.span = trailSequence.length;
+	elPlayHint.textContent = `Connect sequence in order (${trailSequence.length} nodes)`;
+
 	const positions = [];
-	const minDistance = 55;
-	const padX = 25;
-	const padY = 25;
+	const minDistance = currentRun.level >= 6 ? 42 : 52;
+	const padX = 18;
+	const padY = 18;
 
 	trailSequence.forEach((item, idx) => {
 		let attempts = 0;
 		let x = 50, y = 50;
-		while (attempts < 150) {
+		while (attempts < 200) {
 			x = padX + Math.random() * (100 - padX * 2);
 			y = padY + Math.random() * (100 - padY * 2);
 			let tooClose = false;
@@ -1595,6 +1919,8 @@ elTrailNodes.addEventListener('click', (e) => {
 			line.setAttribute('x2', x2);
 			line.setAttribute('y2', y2);
 			elTrailSvg.appendChild(line);
+
+			burstFx(curRect.left + curRect.width / 2, curRect.top + curRect.height / 2, 6, 185);
 		}
 		trailPrevNode = nodeEl;
 		trailStep++;
@@ -1608,9 +1934,19 @@ elTrailNodes.addEventListener('click', (e) => {
 			elTrailStatus.textContent = `NEXT: ${trailSequence[trailStep].label}`;
 		} else {
 			currentRun.roundsCompleted++;
-			currentRun.span = Math.min(16, currentRun.span + 2);
-			showToast('SEQUENCE LINKED!', 750);
+			currentRun.levelRoundsCleared++;
 			audio.playMilestone();
+
+			// Check Level Progression
+			if (currentRun.levelRoundsCleared >= currentRun.levelRoundsRequired) {
+				currentRun.levelRoundsRequired = 2;
+				let perk = 'Trail sequence expanded';
+				if (currentRun.level + 1 === 3) perk = 'Alphanumeric switching active';
+				else if (currentRun.level + 1 === 7) perk = 'Reverse alphanumeric switching active';
+				triggerLevelUp('NEURAL LINK', perk);
+			}
+
+			showToast('SEQUENCE LINKED!', 750);
 			gameState = 'idle';
 			setTimeout(startNeuralLinkRound, 800);
 		}
@@ -1632,9 +1968,11 @@ function endCurrentRun(save = true) {
 	gameState = 'ended';
 	if (runTimerInterval) clearInterval(runTimerInterval);
 	if (chimpMaskTimeout) clearTimeout(chimpMaskTimeout);
+	if (chimpTimerRaf) cancelAnimationFrame(chimpTimerRaf);
 	if (stroopTimerRaf) cancelAnimationFrame(stroopTimerRaf);
 	if (blindnessInterval) clearTimeout(blindnessInterval);
 	if (matrixFlashTimeout) clearTimeout(matrixFlashTimeout);
+	if (matrixTimerRaf) cancelAnimationFrame(matrixTimerRaf);
 	if (nbackTimerTimeout) clearTimeout(nbackTimerTimeout);
 
 	if (!currentRun) {
@@ -1657,6 +1995,9 @@ function endCurrentRun(save = true) {
 		if (isPb) {
 			store.best[modeKey] = compareVal;
 		}
+
+		if (!store.bestLevels) store.bestLevels = {};
+		store.bestLevels[modeKey] = Math.max(store.bestLevels[modeKey] || 1, currentRun.level);
 		saveStore();
 
 		// Populate Results Screen
@@ -1665,6 +2006,7 @@ function endCurrentRun(save = true) {
 		elRUnit.textContent = MODE_CONFIGS[modeKey].unit;
 		elRPb.hidden = !isPb;
 
+		elRKpiLevel.textContent = currentRun.level;
 		elRKpiSpan.textContent = currentRun.span;
 		const meanLat = currentRun.latencies.length > 0 ?
 			Math.round(currentRun.latencies.reduce((a, b) => a + b, 0) / currentRun.latencies.length) : 0;
@@ -1742,12 +2084,14 @@ function renderStatsScreen() {
 	elSTotalRuns.textContent = runs.length;
 
 	let maxCps = 0;
+	let maxLevel = 1;
 	let maxSpan = 0;
 	let totalLat = 0;
 	let countLat = 0;
 
 	runs.forEach(r => {
 		if (r.score > maxCps) maxCps = r.score;
+		if (r.level && r.level > maxLevel) maxLevel = r.level;
 		if (r.span > maxSpan) maxSpan = r.span;
 		if (r.latencies && r.latencies.length > 0) {
 			totalLat += r.latencies.reduce((a, b) => a + b, 0);
@@ -1756,18 +2100,20 @@ function renderStatsScreen() {
 	});
 
 	elSHighCps.textContent = maxCps;
+	elSMaxLevel.textContent = maxLevel;
 	elSMaxSpan.textContent = maxSpan;
 	elSAvgLatency.textContent = countLat > 0 ? `${Math.round(totalLat / countLat)}ms` : '0ms';
 
-	// Personal records for all 7 modes
+	// Personal records and highest levels for all 7 modes
+	const bl = store.bestLevels || {};
 	elSBestList.innerHTML = `
-		<li><span>Chimp Matrix Max Span</span><b>${store.best.chimp || 0} items</b></li>
-		<li><span>Stroop Duel Peak CPS</span><b>${store.best.stroop || 0} CPS</b></li>
-		<li><span>Spatial Span Max Nodes</span><b>${store.best.spatial || 0} nodes</b></li>
-		<li><span>Change Blindness Peak CPS</span><b>${store.best.blindness || 0} CPS</b></li>
-		<li><span>Visual Matrix Max Tiles</span><b>${store.best.matrix || 0} tiles</b></li>
-		<li><span>N-Back Flux Peak CPS</span><b>${store.best.nback || 0} CPS</b></li>
-		<li><span>Neural Link Peak CPS</span><b>${store.best.trail || 0} CPS</b></li>
+		<li><span>Chimp Matrix</span><b>${store.best.chimp || 0} items · LVL ${bl.chimp || 1}</b></li>
+		<li><span>Stroop Duel</span><b>${store.best.stroop || 0} CPS · LVL ${bl.stroop || 1}</b></li>
+		<li><span>Spatial Span</span><b>${store.best.spatial || 0} nodes · LVL ${bl.spatial || 1}</b></li>
+		<li><span>Change Blindness</span><b>${store.best.blindness || 0} CPS · LVL ${bl.blindness || 1}</b></li>
+		<li><span>Visual Matrix</span><b>${store.best.matrix || 0} tiles · LVL ${bl.matrix || 1}</b></li>
+		<li><span>N-Back Flux</span><b>${store.best.nback || 0} CPS · LVL ${bl.nback || 1}</b></li>
+		<li><span>Neural Link</span><b>${store.best.trail || 0} CPS · LVL ${bl.trail || 1}</b></li>
 	`;
 
 	// Span history chart (last 30 runs)
@@ -1788,13 +2134,14 @@ function renderStatsScreen() {
 		const meanLat = r.latencies && r.latencies.length > 0 ?
 			Math.round(r.latencies.reduce((a, b) => a + b, 0) / r.latencies.length) : 0;
 		const totalAtt = r.hits + r.misses;
-		const acc = totalAtt > 0 ? Math.round((r.hits / totalAtt) * 100) : 100;
+		const acc = totalAtt > 0 ? Math.round((currentRun ? r.hits / totalAtt : 1) * 100) : 100;
 		const d = new Date(r.date);
 		const dateStr = `${d.getMonth() + 1}/${d.getDate()} ${d.getHours()}:${String(d.getMinutes()).padStart(2, '0')}`;
 
 		tr.innerHTML = `
 			<td>${MODE_CONFIGS[r.mode].name}</td>
 			<td>${r.diff}</td>
+			<td><b>LVL ${r.level || 1}</b></td>
 			<td><b>${r.score}</b></td>
 			<td>${r.span}</td>
 			<td>${meanLat}ms</td>
@@ -1833,11 +2180,18 @@ window.addEventListener('keydown', (e) => {
 			endCurrentRun(!!hasProgress);
 		} else if (key === 'r') {
 			launchRun(activeMode);
+		} else if (activeMode === 'chimp' && gameState === 'memorize') {
+			if (key === '1' || key === ' ') {
+				e.preventDefault();
+				engageChimpMask(true);
+			}
 		} else if (activeMode === 'stroop' && gameState === 'input') {
 			if (key === 'a' || key === '1') handleStroopChoice('RED');
 			if (key === 's' || key === '2') handleStroopChoice('CYAN');
 			if (key === 'd' || key === '3') handleStroopChoice('YELLOW');
 			if (key === 'f' || key === '4') handleStroopChoice('PURPLE');
+			if (key === 'g' || key === '5') handleStroopChoice('GREEN');
+			if (key === 'h' || key === '6') handleStroopChoice('ORANGE');
 		} else if (activeMode === 'nback' && gameState === 'input') {
 			if (key === ' ' || key === 'spacebar') {
 				e.preventDefault();

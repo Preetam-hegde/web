@@ -10,6 +10,7 @@
 	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
 	<link rel="stylesheet" href="styles.css">
 	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
+	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body data-screen="menu">
 	<canvas id="fx" aria-hidden="true"></canvas>
@@ -121,11 +122,23 @@
 			<!-- ── Play Screen ──────────────────────────────────────── -->
 			<section class="screen" id="play">
 				<div class="hud">
-					<div><b id="hTime">0.0s</b><small>timer</small></div>
-					<div><b id="hCps">0</b><small>CPS index</small></div>
+					<div><b id="hLevel">1</b><small id="hLevelLabel">level</small></div>
 					<div><b id="hSpan">5</b><small id="hSpanLabel">span</small></div>
 					<div><b id="hStreak">0</b><small>streak</small></div>
 					<div><b id="hAcc">100%</b><small>acc</small></div>
+					<div><b id="hCps">0</b><small>CPS index</small></div>
+					<div><b id="hTime">0.0s</b><small>timer</small></div>
+				</div>
+
+				<div class="level-bar-wrap" id="levelBarWrap" title="Progress to next level">
+					<div class="level-bar" id="levelBar"></div>
+				</div>
+
+				<!-- Level Up Celebration Banner -->
+				<div class="level-up-banner" id="levelUpBanner" hidden>
+					<span class="level-up-tag">SYNAPTIC LEVEL UNLOCKED</span>
+					<b class="level-up-title" id="levelUpTitle">LEVEL 2</b>
+					<p class="level-up-desc" id="levelUpDesc">Grid expanded to 5x5</p>
 				</div>
 
 				<!-- Game Containers -->
@@ -133,7 +146,10 @@
 					<!-- Chimp Matrix Arena -->
 					<div class="arena-view" id="arenaChimp" hidden>
 						<div class="chimp-status" id="chimpStatus">MEMORIZE THE NUMBERS</div>
-						<div class="chimp-grid" id="chimpGrid"></div>
+						<div class="memo-timer-wrap" id="chimpTimerWrap">
+							<div class="memo-timer-bar" id="chimpTimerBar"></div>
+						</div>
+						<div class="chimp-grid" id="chimpGrid" data-cols="5"></div>
 					</div>
 
 					<!-- Stroop Duel Arena -->
@@ -141,9 +157,11 @@
 						<div class="stroop-timer-bar-wrap">
 							<div class="stroop-timer-bar" id="stroopTimerBar"></div>
 						</div>
-						<div class="stroop-instruction">CHOOSE INK COLOR (IGNORE WORD)</div>
+						<div class="stroop-instruction">
+							<span class="stroop-rule-badge" id="stroopRuleBadge">MATCH INK COLOR</span>
+						</div>
 						<div class="stroop-word" id="stroopWord">RED</div>
-						<div class="stroop-options" id="stroopOptions">
+						<div class="stroop-options" id="stroopOptions" data-count="4">
 							<button type="button" class="stroop-btn" data-color="red" style="--c:#ff4d6d">
 								<span class="btn-key">A</span>
 								<span class="btn-name">RED</span>
@@ -160,26 +178,39 @@
 								<span class="btn-key">F</span>
 								<span class="btn-name">PURPLE</span>
 							</button>
+							<button type="button" class="stroop-btn stroop-extra" data-color="green" style="--c:#00ff88" hidden>
+								<span class="btn-key">G</span>
+								<span class="btn-name">GREEN</span>
+							</button>
+							<button type="button" class="stroop-btn stroop-extra" data-color="orange" style="--c:#ff8800" hidden>
+								<span class="btn-key">H</span>
+								<span class="btn-name">ORANGE</span>
+							</button>
 						</div>
 					</div>
 
 					<!-- Spatial Span Arena -->
 					<div class="arena-view" id="arenaSpatial" hidden>
 						<div class="spatial-status" id="spatialStatus">WATCH NEURAL SEQUENCE</div>
+						<div class="spatial-step-badge" id="spatialStepBadge">STEP 0 / 3</div>
 						<div class="spatial-stage">
-							<div class="spatial-grid" id="spatialGrid"></div>
+							<div class="spatial-grid" id="spatialGrid" data-cols="3"></div>
 						</div>
 					</div>
 
 					<!-- Change Blindness Arena -->
 					<div class="arena-view" id="arenaBlindness" hidden>
 						<div class="blindness-status" id="blindnessStatus">SPOT THE ALTERED NODE</div>
-						<div class="blindness-grid" id="blindnessGrid"></div>
+						<div class="blindness-grid" id="blindnessGrid" data-cols="4"></div>
 					</div>
 
 					<!-- Visual Matrix Arena -->
 					<div class="arena-view" id="arenaVisualMatrix" hidden>
 						<div class="matrix-status" id="matrixStatus">MEMORIZE THE PATTERN</div>
+						<div class="memo-timer-wrap" id="matrixTimerWrap">
+							<div class="memo-timer-bar" id="matrixTimerBar"></div>
+						</div>
+						<div class="matrix-counter" id="matrixCounter">TILES: 0 / 3</div>
 						<div class="matrix-grid" id="matrixGrid"></div>
 					</div>
 
@@ -189,6 +220,7 @@
 							<span class="nback-badge" id="nbackBadge">1-BACK</span>
 							<div class="nback-status" id="nbackStatus">MATCH 1 STEP AGO?</div>
 						</div>
+						<div class="nback-trail" id="nbackTrail" aria-label="Recent history buffer"></div>
 						<div class="nback-stage">
 							<div class="nback-grid" id="nbackGrid"></div>
 							<div class="nback-symbol" id="nbackSymbol">▲</div>
@@ -228,6 +260,7 @@
 				</div>
 
 				<div class="kpis" id="rKpis">
+					<div><b id="rKpiLevel">1</b><small>level reached</small></div>
 					<div><b id="rKpiSpan">0</b><small>max span</small></div>
 					<div><b id="rKpiLatency">0ms</b><small>mean latency</small></div>
 					<div><b id="rKpiStreak">0</b><small>peak streak</small></div>
@@ -250,6 +283,7 @@
 				<h2>Cognitive Telemetry & Span History</h2>
 				<div class="kpis" id="sKpis">
 					<div><b id="sHighCps">0</b><small>peak CPS</small></div>
+					<div><b id="sMaxLevel">1</b><small>max level reached</small></div>
 					<div><b id="sMaxSpan">0</b><small>max span retained</small></div>
 					<div><b id="sAvgLatency">0ms</b><small>avg reaction time</small></div>
 					<div><b id="sTotalRuns">0</b><small>sessions completed</small></div>
@@ -279,6 +313,7 @@
 								<tr>
 									<th>Mode</th>
 									<th>Difficulty</th>
+									<th>Level</th>
 									<th>Score</th>
 									<th>Span</th>
 									<th>Latency</th>

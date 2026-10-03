@@ -468,12 +468,120 @@ body[data-screen='stats'] #stats {
 	color: var(--accent);
 }
 
+#hLevel {
+	color: var(--warn);
+}
+
 #hSpan {
 	color: var(--accent-2);
 }
 
 #hStreak {
 	color: var(--warn);
+}
+
+/* Level Progress Bar */
+.level-bar-wrap {
+	width: 100%;
+	max-width: 480px;
+	height: 4px;
+	background: rgba(255, 255, 255, 0.06);
+	border-radius: 999px;
+	overflow: hidden;
+	margin: -16px auto 28px;
+	position: relative;
+}
+
+.level-bar {
+	width: 100%;
+	height: 100%;
+	background: linear-gradient(90deg, var(--accent), var(--warn));
+	box-shadow: 0 0 12px var(--accent);
+	transform-origin: left center;
+	transform: scaleX(0);
+	transition: transform 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+}
+
+/* Level Up Celebration Banner */
+.level-up-banner {
+	position: absolute;
+	top: 50%;
+	left: 50%;
+	transform: translate(-50%, -50%);
+	z-index: 10;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	padding: 24px 36px;
+	background: rgba(6, 6, 11, 0.94);
+	border: 2px solid var(--accent);
+	border-radius: 20px;
+	box-shadow: 0 0 50px rgba(0, 240, 255, 0.4), inset 0 0 30px rgba(0, 240, 255, 0.15);
+	backdrop-filter: blur(20px);
+	-webkit-backdrop-filter: blur(20px);
+	animation: levelUpPopup 0.5s cubic-bezier(0.2, 1.4, 0.3, 1) both;
+	pointer-events: none;
+	text-align: center;
+}
+
+.level-up-banner[hidden] {
+	display: none !important;
+}
+
+.level-up-tag {
+	font: 700 0.75rem var(--mono);
+	letter-spacing: 0.22em;
+	color: var(--warn);
+	text-transform: uppercase;
+	margin-bottom: 6px;
+}
+
+.level-up-title {
+	font: 700 clamp(2rem, 6vw, 3.2rem) var(--sans);
+	color: var(--accent);
+	letter-spacing: -0.02em;
+	line-height: 1.1;
+	text-shadow: 0 0 25px var(--accent);
+}
+
+.level-up-desc {
+	margin: 8px 0 0;
+	font: 500 0.9rem var(--mono);
+	color: var(--text);
+}
+
+@keyframes levelUpPopup {
+	0% {
+		opacity: 0;
+		transform: translate(-50%, -40%) scale(0.8);
+		filter: blur(8px);
+	}
+	100% {
+		opacity: 1;
+		transform: translate(-50%, -50%) scale(1);
+		filter: blur(0);
+	}
+}
+
+/* Memorization Countdown Bar */
+.memo-timer-wrap {
+	width: 100%;
+	max-width: 440px;
+	height: 5px;
+	background: rgba(255, 255, 255, 0.07);
+	border-radius: 999px;
+	overflow: hidden;
+	margin: -6px auto 16px;
+}
+
+.memo-timer-bar {
+	width: 100%;
+	height: 100%;
+	background: var(--accent-2);
+	box-shadow: 0 0 12px var(--accent-2);
+	transform-origin: left center;
+	transform: scaleX(1);
 }
 
 .game-arena {
@@ -529,12 +637,36 @@ body[data-screen='stats'] #stats {
 	aspect-ratio: 1;
 }
 
+.chimp-grid[data-cols="4"] {
+	grid-template-columns: repeat(4, 1fr);
+	max-width: 380px;
+	gap: 14px;
+}
+
+.chimp-grid[data-cols="5"] {
+	grid-template-columns: repeat(5, 1fr);
+	max-width: 440px;
+	gap: 12px;
+}
+
+.chimp-grid[data-cols="6"] {
+	grid-template-columns: repeat(6, 1fr);
+	max-width: 490px;
+	gap: 10px;
+}
+
+.chimp-grid[data-cols="7"] {
+	grid-template-columns: repeat(7, 1fr);
+	max-width: 530px;
+	gap: 8px;
+}
+
 .chimp-tile {
 	aspect-ratio: 1;
 	background: rgba(255, 255, 255, 0.04);
 	border: 1px solid var(--line);
 	border-radius: 14px;
-	font: 700 clamp(1.3rem, 3.5vw, 2rem) var(--mono);
+	font: 700 clamp(1.1rem, 3.2vw, 1.9rem) var(--mono);
 	display: flex;
 	align-items: center;
 	justify-content: center;
@@ -543,6 +675,12 @@ body[data-screen='stats'] #stats {
 	color: var(--text);
 	transition: transform 0.15s, background 0.2s, border-color 0.2s, box-shadow 0.2s;
 	position: relative;
+}
+
+.chimp-grid[data-cols="6"] .chimp-tile,
+.chimp-grid[data-cols="7"] .chimp-tile {
+	border-radius: 10px;
+	font-size: clamp(0.95rem, 2.6vw, 1.4rem);
 }
 
 .chimp-tile.blank-idle {
@@ -599,7 +737,7 @@ body[data-screen='stats'] #stats {
 	background: rgba(255, 255, 255, 0.08);
 	border-radius: 999px;
 	overflow: hidden;
-	margin-bottom: 24px;
+	margin-bottom: 20px;
 }
 
 .stroop-timer-bar {
@@ -610,10 +748,31 @@ body[data-screen='stats'] #stats {
 	transform-origin: left center;
 }
 
+.stroop-rule-badge {
+	display: inline-block;
+	padding: 5px 16px;
+	border-radius: 999px;
+	background: rgba(0, 240, 255, 0.12);
+	border: 1px solid var(--accent);
+	color: var(--accent);
+	font: 700 0.82rem var(--mono);
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	box-shadow: 0 0 14px rgba(0, 240, 255, 0.3);
+	transition: all 0.25s ease;
+}
+
+.stroop-rule-badge.rule-inverted {
+	background: rgba(255, 230, 0, 0.15);
+	border-color: var(--warn);
+	color: var(--warn);
+	box-shadow: 0 0 18px rgba(255, 230, 0, 0.4);
+}
+
 .stroop-word {
 	font: 700 clamp(3.5rem, 10vw, 6.2rem) / 1.1 var(--sans);
 	letter-spacing: -0.03em;
-	margin: 16px 0 32px;
+	margin: 14px 0 28px;
 	user-select: none;
 	transition: transform 0.1s;
 }
@@ -624,6 +783,18 @@ body[data-screen='stats'] #stats {
 	gap: 14px;
 	width: 100%;
 	max-width: 480px;
+}
+
+.stroop-options[data-count="6"] {
+	grid-template-columns: repeat(3, 1fr);
+	max-width: 560px;
+	gap: 10px;
+}
+
+@media (max-width: 520px) {
+	.stroop-options[data-count="6"] {
+		grid-template-columns: repeat(2, 1fr);
+	}
 }
 
 .stroop-btn {
@@ -659,6 +830,18 @@ body[data-screen='stats'] #stats {
 }
 
 /* ── 3. Spatial Span View ───────────────────────────────── */
+.spatial-step-badge, .matrix-counter {
+	display: inline-block;
+	font: 700 0.8rem var(--mono);
+	padding: 3px 12px;
+	border-radius: 999px;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid var(--line);
+	color: var(--accent);
+	margin-bottom: 12px;
+	letter-spacing: 0.1em;
+}
+
 .spatial-stage {
 	perspective: 900px;
 	width: 100%;
@@ -676,6 +859,16 @@ body[data-screen='stats'] #stats {
 	transition: transform 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
 }
 
+.spatial-grid[data-cols="4"] {
+	grid-template-columns: repeat(4, 1fr);
+	gap: 14px;
+}
+
+.spatial-grid[data-cols="5"] {
+	grid-template-columns: repeat(5, 1fr);
+	gap: 10px;
+}
+
 .spatial-node {
 	width: clamp(68px, 16vw, 92px);
 	aspect-ratio: 1;
@@ -687,6 +880,16 @@ body[data-screen='stats'] #stats {
 	transform-style: preserve-3d;
 	transition: all 0.2s cubic-bezier(0.2, 0.8, 0.2, 1);
 	box-shadow: 0 12px 24px rgba(0, 0, 0, 0.5);
+}
+
+.spatial-grid[data-cols="4"] .spatial-node {
+	width: clamp(52px, 12vw, 74px);
+	border-radius: 14px;
+}
+
+.spatial-grid[data-cols="5"] .spatial-node {
+	width: clamp(40px, 9.5vw, 58px);
+	border-radius: 10px;
 }
 
 .spatial-node:hover {
@@ -726,6 +929,30 @@ body[data-screen='stats'] #stats {
 	aspect-ratio: 1;
 }
 
+.blindness-grid[data-cols="3"] {
+	grid-template-columns: repeat(3, 1fr);
+	max-width: 360px;
+	gap: 16px;
+}
+
+.blindness-grid[data-cols="4"] {
+	grid-template-columns: repeat(4, 1fr);
+	max-width: 440px;
+	gap: 14px;
+}
+
+.blindness-grid[data-cols="5"] {
+	grid-template-columns: repeat(5, 1fr);
+	max-width: 480px;
+	gap: 10px;
+}
+
+.blindness-grid[data-cols="6"] {
+	grid-template-columns: repeat(6, 1fr);
+	max-width: 520px;
+	gap: 8px;
+}
+
 .blindness-tile {
 	background: rgba(255, 255, 255, 0.04);
 	border: 1px solid var(--line);
@@ -737,6 +964,12 @@ body[data-screen='stats'] #stats {
 	position: relative;
 	transition: border-color 0.2s, transform 0.15s, background 0.2s;
 	padding: 12px;
+}
+
+.blindness-grid[data-cols="5"] .blindness-tile,
+.blindness-grid[data-cols="6"] .blindness-tile {
+	padding: 8px;
+	border-radius: 10px;
 }
 
 .blindness-tile:hover {
@@ -781,7 +1014,7 @@ body[data-screen='stats'] #stats {
 	font: 700 0.85rem var(--mono);
 	letter-spacing: 0.16em;
 	color: var(--dim);
-	margin-bottom: 18px;
+	margin-bottom: 14px;
 	text-transform: uppercase;
 }
 
@@ -790,7 +1023,7 @@ body[data-screen='stats'] #stats {
 	grid-template-columns: repeat(var(--cols, 3), 1fr);
 	gap: 10px;
 	width: 100%;
-	max-width: 420px;
+	max-width: 440px;
 	aspect-ratio: 1;
 }
 
@@ -833,7 +1066,7 @@ body[data-screen='stats'] #stats {
 	display: flex;
 	align-items: center;
 	gap: 12px;
-	margin-bottom: 24px;
+	margin-bottom: 16px;
 }
 
 .nback-badge {
@@ -851,6 +1084,36 @@ body[data-screen='stats'] #stats {
 	letter-spacing: 0.14em;
 	color: var(--dim);
 	text-transform: uppercase;
+}
+
+.nback-trail {
+	display: flex;
+	gap: 8px;
+	align-items: center;
+	justify-content: center;
+	min-height: 32px;
+	margin-bottom: 14px;
+}
+
+.nback-trail-node {
+	width: 28px;
+	height: 28px;
+	border-radius: 6px;
+	background: rgba(255, 255, 255, 0.05);
+	border: 1px solid var(--line);
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font: 700 0.85rem var(--mono);
+	color: var(--dim);
+	transition: all 0.2s;
+}
+
+.nback-trail-node.target-step {
+	border-color: var(--accent);
+	color: var(--accent);
+	background: rgba(0, 240, 255, 0.12);
+	box-shadow: 0 0 10px rgba(0, 240, 255, 0.3);
 }
 
 .nback-stage {
