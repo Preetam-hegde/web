@@ -20,7 +20,7 @@ Maintainer workflow details live in [PROJECT_PLAYBOOK.md](PROJECT_PLAYBOOK.md).
 | Bharatvarsha | Strategy simulation set in the Vedic era with economy, events, and progression | [Open](https://preetamhegde.in/apps/bharatvarsha/index.html) |
 | Reflex Arena | Browser FPS aim trainer with accuracy and session metrics | [Open](https://preetamhegde.in/apps/aim-trainer/index.html) |
 | Keystorm | Typing game with five modes, combo-driven effects, and a per-key analytics dashboard | [Open](https://preetamhegde.in/apps/keystorm/index.html) |
-| Faceoff | Couple-friendly games for two on one phone (Hangman Duel, Rock Paper Scissors, Tic-Tac-Toe, Memory Match, Green Flag Red Flag) with stats, dares and a shareable result card | [Open](https://preetamhegde.in/apps/faceoff/index.html) |
+| Faceoff | Two players, one phone: timing duels, cut-in-half, Hangman Duel and couple games, split-screen or pass-and-play, with stats, dares and a shareable result card | [Open](https://preetamhegde.in/apps/faceoff/index.html) |
 | DevPulse: Live Telemetry Matrix | Over-engineered real-time developer and systems telemetry matrix | [Open](https://preetamhegde.in/apps/live-analytics-dashboard/index.html) |
 | Game of Life | Interactive Conway simulation with pattern experimentation | [Open](https://preetamhegde.in/apps/cellular-automata/index.html) |
 | Nine Dimension | Physics and vector playground with multiple interactive panels | [Open](https://preetamhegde.in/apps/nine-dimension/index.html) |

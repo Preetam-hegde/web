@@ -334,3 +334,14 @@ hr { width: 60%; border: 0; border-top: 1px solid var(--line); margin: 2px 0; }
 .mem.up { background: rgba(255, 255, 255, 0.08); }
 .mem.got { opacity: 0.45; }
 .mem svg { width: 62%; height: 62%; }
+
+/* timing and cut games */
+.stage.wait { background: #5c1624; }
+.stage.go { background: #16813f; }
+.stage.dark { background: #05040b; }
+.readout { font: 700 clamp(40px, min(14vw, 11vh), 84px) / 1 var(--mono); font-variant-numeric: tabular-nums; }
+.track { position: relative; width: min(86%, 380px); height: 14px; border-radius: 8px; background: #2a2548; }
+.zone { position: absolute; left: 50%; top: -9px; bottom: -9px; width: 6px; margin-left: -3px; border-radius: 3px; background: var(--win); }
+.dot { position: absolute; top: 50%; left: 0; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: var(--c); }
+canvas { touch-action: none; border-radius: 12px; background: rgba(255, 255, 255, 0.03); }
+.faint { color: #3b3659; font-size: 22px; letter-spacing: 0.3em; }

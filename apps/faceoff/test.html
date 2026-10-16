@@ -10,6 +10,8 @@
 	<script src="js/extras.js"></script>
 	<script src="js/words.js"></script>
 	<script src="js/games/couple.js"></script>
+	<script src="js/games/cut.js"></script>
+	<script src="js/games/quiz.js"></script>
 	<script>
 	'use strict';
 	(async () => {
@@ -44,7 +46,17 @@
 		eq('player 0 in a corner is not a win', tttWinner([0, null, null, null, null, null, null, null, null]), null);
 		eq('mixed row is not a win', tttWinner([0, 1, 0, 1, 0, 1, 1, 0, 1]), null);
 
+		// cut in half: unit square, vertical cut through the middle / off-centre / missing the shape
+		const sq = [[0, 0], [1, 0], [1, 1], [0, 1]];
+		eq('square, centre cut', cutSplit(sq, [0.5, -1], [0.5, 2]).err, 0);
+		eq('square, cut at x=.25', cutSplit(sq, [0.25, -1], [0.25, 2]).err, 50);
+		eq('square, line misses', cutSplit(sq, [2, -1], [2, 2]).err, 100);
+		eq('square, diagonal is half', cutSplit(sq, [0, 0], [1, 1]).err, 0);
+		eq('L shape, cut at the notch', Math.round(cutSplit(L_SHAPE, [0, 0.55], [1, 0.55]).err * 1e3), Math.round((0.045 / 0.255) * 100 * 1e3));
+		SHAPES.forEach(([name, make]) => eq(`${name} has area`, polyArea(make()) > 0.01, true));
+
 		// content
+		eq('quiz pairs are pairs', QUIZ.every((q) => q.length === 2 && q[0] !== q[1]), true);
 		eq('shuffle keeps the cards', shuffle([0, 1, 2, 3, 4, 5]).sort().join(''), '012345');
 		eq('flag statements are unique', new Set(FLAGS).size, FLAGS.length);
 		eq('dares only use the {w} placeholder', DARES.every((d) => !/\{(?!w\})/.test(d)), true);
