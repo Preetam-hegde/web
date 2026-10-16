@@ -98,7 +98,41 @@ $('#quit').onclick = (e) => {
 	quitTimer = setTimeout(() => { btn.classList.remove('sure'); btn.textContent = 'Quit'; }, 2000);
 };
 
+/* Stats: totals, a row per game, and the last matches, all from this device's history. */
+function renderStats() {
+	const h = store.history;
+	const wins = [0, 1].map((p) => h.filter((x) => x.c === p).length);
+	const tile = (n, label, c = '') => `<div class="tile"${c ? ` style="--c:${c}"` : ''}><b>${n}</b><small>${label}</small></div>`;
+	const byGame = GAMES.map((g) => {
+		const mine = h.filter((x) => x.g === g.id);
+		return `<div class="srow"><b>${g.icon} ${g.name}</b><span>${store.plays[g.id] || 0}×</span><span>${[0, 1].map((p) => mine.filter((x) => x.c === p).length).join(' – ')}</span></div>`;
+	}).join('');
+	const recent = h.slice(-8).reverse().map((x) => {
+		const g = GAMES.find((y) => y.id === x.g);
+		const when = new Date(x.t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
+		return `<div class="srow"><b>${g ? g.icon : ''} ${esc(x.n[0])} ${x.p[0]} – ${x.p[1]} ${esc(x.n[1])}</b><span>${x.c < 0 ? 'draw' : `${esc(x.n[x.c])} won`}</span><span>${when}</span></div>`;
+	}).join('');
+	$('#statsBody').innerHTML = h.length || Object.keys(store.plays).length
+		? `<div class="tiles">${tile(h.length, 'matches')}${tile(wins[0], `${esc(nameOf(0))} wins`, 'var(--p0)')}${tile(wins[1], `${esc(nameOf(1))} wins`, 'var(--p1)')}${tile(h.filter((x) => x.c < 0).length, 'draws')}</div>
+			<div class="stat-list"><h3>By game · played · wins (${esc(nameOf(0))} – ${esc(nameOf(1))})</h3>${byGame}</div>
+			${recent ? `<div class="stat-list"><h3>Recent matches</h3>${recent}</div>` : ''}`
+		: '<p class="empty">No matches yet. Play one and it shows up here.</p>';
+}
+$('#statsBtn').onclick = () => { document.body.dataset.screen = 'stats'; window.scrollTo(0, 0); renderStats(); };
+$('#statsBack').onclick = quit;
+$('#statsReset').onclick = () => {
+	if (!confirm('Clear all match history and played counts on this device?')) return;
+	store.history = [];
+	store.plays = {};
+	store.series = [0, 0];
+	save();
+	renderStats();
+};
+
 $('#share').onclick = shareResult;
+
+/* Offline and repeat visits: the service worker keeps the app and word lists cached. */
+if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* private mode or http: it just loads from the network */ }));
 
 document.addEventListener('contextmenu', (e) => e.preventDefault()); // long-press must not open menus mid-game
 

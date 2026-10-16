@@ -19,7 +19,7 @@
 	<main id="hub" class="screen">
 		<header class="topbar">
 			<span class="brand">faceoff</span>
-			<nav aria-label="Primary"><a href="../../index.html">Portfolio ↗</a></nav>
+			<nav aria-label="Primary"><button type="button" id="statsBtn">Stats</button><a href="../../index.html">Portfolio ↗</a></nav>
 		</header>
 
 		<h1 class="logo" aria-label="Faceoff">
@@ -47,6 +47,15 @@
 
 		<p class="hint">Pick a game to start · you can quit any match from the pill at the top</p>
 		<div class="menu-watermark">Made with <span class="watermark-heart">❤️</span> by <strong>Preetam Ptwo</strong></div>
+	</main>
+
+	<main id="stats" class="screen">
+		<header class="topbar">
+			<button type="button" class="brand" id="statsBack">← faceoff</button>
+			<nav aria-label="Stats"><button type="button" id="statsReset">Reset stats</button></nav>
+		</header>
+		<h2 class="stats-title">Stats</h2>
+		<div id="statsBody"></div>
 	</main>
 
 	<main id="match" class="screen">

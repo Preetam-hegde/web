@@ -33,15 +33,18 @@ button { cursor: pointer; touch-action: manipulation; }
 :focus-visible { outline: 2px solid var(--p1); outline-offset: 3px; border-radius: 6px; }
 
 .screen { display: none; }
-body[data-screen='hub'] #hub { display: flex; }
+body[data-screen='hub'] #hub,
+body[data-screen='stats'] #stats { display: flex; }
 body[data-screen='match'] { overflow: hidden; }
 body[data-screen='match'] #match { display: flex; }
 
 /* ── hub: a Keystorm-style menu in the two player colours ── */
 #fx { display: none; position: fixed; inset: 0; width: 100%; height: 100%; z-index: 0; pointer-events: none; }
-body[data-screen='hub'] #fx { display: block; }
+body[data-screen='hub'] #fx,
+body[data-screen='stats'] #fx { display: block; }
 
-#hub {
+#hub,
+#stats {
 	position: relative;
 	z-index: 1;
 	flex-direction: column;
@@ -58,9 +61,11 @@ body[data-screen='hub'] #fx { display: block; }
 }
 
 .topbar { align-self: stretch; display: flex; justify-content: space-between; align-items: center; padding: max(16px, env(safe-area-inset-top)) 0 8px; }
-.brand { font: 700 1rem var(--mono); letter-spacing: 0.08em; background: linear-gradient(90deg, var(--p0), var(--p1)); -webkit-background-clip: text; background-clip: text; color: transparent; }
-.topbar nav a { padding: 8px 12px; border-radius: 10px; color: var(--mute); text-decoration: none; font-size: 0.9rem; transition: color 0.2s, background 0.2s; }
-.topbar nav a:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
+.brand { border: 0; padding: 0; background-color: transparent; font: 700 1rem var(--mono); letter-spacing: 0.08em; background: linear-gradient(90deg, var(--p0), var(--p1)); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.topbar nav a,
+.topbar nav button { padding: 8px 12px; border-radius: 10px; color: var(--mute); text-decoration: none; font-size: 0.9rem; transition: color 0.2s, background 0.2s; }
+.topbar nav a:hover,
+.topbar nav button:hover { color: var(--ink); background: rgba(255, 255, 255, 0.06); }
 
 .logo { display: flex; justify-content: center; margin: clamp(8px, 3vh, 28px) 0 0; font: 700 clamp(3rem, 14vw, 7.5rem) / 1 var(--sans); letter-spacing: -0.05em; }
 .logo span {
@@ -170,6 +175,21 @@ body[data-screen='hub'] #fx { display: block; }
 	#hub, .logo span, .watermark-heart { animation: none; }
 	.card { transition: border-color 0.3s; transform: none; }
 }
+
+/* stats */
+.stats-title { margin: clamp(8px, 3vh, 24px) 0 18px; font: 700 clamp(2rem, 8vw, 3.2rem) / 1 var(--sans); letter-spacing: -0.04em; }
+#statsBody { width: 100%; display: grid; gap: 22px; }
+.tiles { display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px; }
+@media (min-width: 640px) { .tiles { grid-template-columns: repeat(4, 1fr); } }
+.tile { padding: 16px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255, 255, 255, 0.035); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.tile b { display: block; font: 700 clamp(1.8rem, 6vw, 2.4rem) / 1 var(--mono); color: var(--c, var(--ink)); }
+.tile small { display: block; margin-top: 6px; color: var(--mute); font-size: 0.75rem; letter-spacing: 0.1em; text-transform: uppercase; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.stat-list { display: grid; gap: 6px; }
+.stat-list h3 { margin: 0 0 6px; font: 500 0.75rem var(--mono); letter-spacing: 0.18em; text-transform: uppercase; color: var(--mute); }
+.srow { display: grid; grid-template-columns: 1fr auto auto; gap: 6px 14px; align-items: center; padding: 10px 14px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.03); font-size: 0.9rem; }
+.srow span { color: var(--mute); font: 500 0.8rem var(--mono); }
+.srow b:first-child { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.empty { color: var(--mute); text-align: center; padding: 24px 0; }
 
 /* ── match ───────────────────────────────────────────── */
 #match {

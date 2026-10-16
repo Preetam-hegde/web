@@ -5,6 +5,7 @@
 const fx = (() => {
 	const cv = $('#fx');
 	const g = cv.getContext('2d');
+	const MENUS = ['hub', 'stats'];
 	const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 	const HUES = [14, 174, 285]; // player 1 orange, player 2 teal, and a violet to blend them
 	const stars = Array.from({ length: 60 }, (_, i) => ({ x: Math.random(), y: Math.random(), z: 0.2 + Math.random() * 0.8, h: HUES[i % 2] }));
@@ -42,7 +43,7 @@ const fx = (() => {
 	}
 
 	function frame(now) {
-		if (document.body.dataset.screen !== 'hub') { running = false; return; } // a match started: stop until the hub is back
+		if (!MENUS.includes(document.body.dataset.screen)) { running = false; return; } // a match started: stop until a menu is back
 		const dt = Math.min(0.05, (now - last) / 1000);
 		last = now;
 		draw(now, dt);
@@ -50,7 +51,7 @@ const fx = (() => {
 	}
 
 	addEventListener('resize', () => {
-		if (document.body.dataset.screen !== 'hub') return;
+		if (!MENUS.includes(document.body.dataset.screen)) return;
 		resize();
 		if (reduce) draw(0, 0);
 	});
