@@ -80,7 +80,7 @@ function focus(p) {
 function head(p) {
 	const el = pane(p);
 	$('.pname', el).textContent = nameOf(p);
-	$('.ppts', el).textContent = m.pts[p];
+	$('.ppts', el).textContent = m.game.headScore ? m.game.headScore(m.pts[p], m.round) : m.pts[p];
 	$('.prnd', el).textContent = `Round ${m.round + 1}/${m.rounds}${m.pass ? ` · ${nameOf(1 - p)}: ${m.pts[1 - p]}` : ''}`;
 }
 
@@ -157,8 +157,8 @@ function countdown(go, panes = [0, 1]) {
 
 function startRound() {
 	m.res = [null, null];
+	if (m.game.duel) { focus(0); return begin(); } // turn-based games start at once; the countdown is for reflex games
 	if (!m.pass) return countdown(begin);
-	if (m.game.duel) return countdown(begin, [0]);
 	seatPlay(0);
 }
 
@@ -258,7 +258,8 @@ function reveal() {
 		m.round++;
 		m.cfg = m.game.config(m.round);
 		both(head);
-		showReady((p) => `${result(p)}<hr>${introHtml()}`, 'Ready', startRound);
+		const next = m.game.quickNext ? `<div class="gname">${gameIcon(m.game.id)} ${m.game.name}</div><div class="lbl">Round <b>${m.round + 1}</b> of ${m.rounds}</div>` : introHtml();
+		showReady((p) => `${result(p)}<hr>${next}`, 'Next', startRound);
 		return;
 	}
 

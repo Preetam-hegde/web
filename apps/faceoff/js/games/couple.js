@@ -149,7 +149,7 @@ const FLAG_NAMES = ['Green flag', 'Red flag'];
 let flagPool = [];
 
 GAMES.push({
-	id: 'flags', name: 'Green Flag, Red Flag', icon: '🚩', group: 'Couple', lowerIsBetter: false, duel: true,
+	id: 'flags', name: 'Green Flag, Red Flag', icon: '🚩', group: 'Couple', lowerIsBetter: false, duel: true, quickNext: true,
 	blurb: 'Rate it in secret, then guess how your partner rated it.',
 	config(i) {
 		if (!i) flagPool = shuffle(FLAGS); // a new match gets a new order, and no statement repeats within it

@@ -8,7 +8,7 @@
 function agreeGame(o) {
 	let pool = [];
 	GAMES.push({
-		id: o.id, name: o.name, icon: o.icon, group: 'Couple', lowerIsBetter: false, duel: true, coop: true, rounds: o.rounds,
+		id: o.id, name: o.name, icon: o.icon, group: 'Couple', lowerIsBetter: false, duel: true, coop: true, quickNext: true, rounds: o.rounds,
 		blurb: o.blurb,
 		config(i) {
 			if (!i) pool = shuffle(o.deck); // a new match gets a new order, and nothing repeats within it
@@ -108,7 +108,7 @@ const RATHER = [
 let ratherPool = [];
 
 GAMES.push({
-	id: 'rather', name: 'Would You Rather', icon: '🤔', group: 'Couple', lowerIsBetter: false, duel: true,
+	id: 'rather', name: 'Would You Rather', icon: '🤔', group: 'Couple', lowerIsBetter: false, duel: true, quickNext: true,
 	blurb: 'Pick yours, then guess your partner\'s pick. Who knows who better?',
 	config(i) {
 		if (!i) ratherPool = shuffle(RATHER);
@@ -204,6 +204,7 @@ GAMES.push({
 
 /* ── Sync Tap: tap the same beat together ────────────── */
 const SYNC_TAPS = 4;
+const SYNC_LEAD_MS = 900; // a moment to get thumbs ready before the first beat
 const SYNC_MISS_MS = 500; // a missing tap counts as this far off
 
 GAMES.push({
@@ -212,6 +213,7 @@ GAMES.push({
 	config: (i) => ({ beat: [640, 520, 420][i % 3] }),
 	intro: () => 'Watch the four beats, then both tap four more <b>in the same rhythm</b><br><small>Tap on your own half. The closer your taps land, the higher the score.</small>',
 	verdict: (score) => ['win', `${score}% in sync`],
+	headScore: (total, done) => (done ? `${Math.round(total / done)}%` : '–'),
 	summary: (t, n) => ({ title: `${Math.round(t / n)}% in sync`, sub: 'average across the rounds' }),
 	play(c0, c1) {
 		const cs = [c0, c1];
@@ -219,7 +221,7 @@ GAMES.push({
 		const taps = [[], []];
 		let open = false;
 		let finished = false;
-		cs.forEach((c) => { c.stage.innerHTML = '<div class="beat"></div><div class="lbl">Watch the beat…</div>'; });
+		cs.forEach((c) => { c.stage.innerHTML = '<div class="beat"></div><div class="lbl">Get ready, then watch the beat…</div>'; });
 
 		const pulse = (c) => {
 			const d = $('.beat', c.stage);
@@ -227,8 +229,8 @@ GAMES.push({
 			d.classList.add('on');
 			setTimeout(() => d.classList.remove('on'), 140);
 		};
-		for (let k = 0; k < 4; k++) c0.after(k * T, () => { cs.forEach(pulse); sfx.tick(); });
-		c0.after(4 * T - 80, () => {
+		for (let k = 0; k < 4; k++) c0.after(SYNC_LEAD_MS + k * T, () => { cs.forEach(pulse); sfx.tick(); });
+		c0.after(SYNC_LEAD_MS + 4 * T - 80, () => {
 			open = true;
 			cs.forEach((c) => { $('.lbl', c.stage).innerHTML = 'Now <b>tap</b> the beat'; });
 		});
@@ -251,6 +253,6 @@ GAMES.push({
 				if (taps[0].length >= SYNC_TAPS && taps[1].length >= SYNC_TAPS) finish();
 			};
 		});
-		c0.after(8 * T + 2500, finish);
+		c0.after(SYNC_LEAD_MS + 8 * T + 2500, finish);
 	},
 });

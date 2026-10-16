@@ -365,3 +365,8 @@ canvas { touch-action: none; border-radius: 12px; background: rgba(255, 255, 255
 .custom textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.05); color: var(--ink); font: 400 0.9rem var(--sans); resize: vertical; -webkit-user-select: text; user-select: text; }
 .custom textarea:focus { outline: 0; border-color: var(--p1); }
 .custom .note { margin-top: 10px; text-align: left; }
+
+/* reveal */
+.res.win { animation: pop 0.5s cubic-bezier(0.2, 1.4, 0.4, 1); }
+.rows { font-size: 16px; gap: 4px; }
+.row b { font-size: 1.05em; }

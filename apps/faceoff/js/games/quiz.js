@@ -17,7 +17,7 @@ const QUIZ = [
 let quizPool = [];
 
 GAMES.push({
-	id: 'know', name: 'This or That', icon: '💞', group: 'Couple', lowerIsBetter: false, duel: true,
+	id: 'know', name: 'This or That', icon: '💞', group: 'Couple', lowerIsBetter: false, duel: true, quickNext: true,
 	blurb: 'Pick yours, then guess your partner\'s pick. Who knows who better?',
 	config(i) {
 		if (!i) quizPool = shuffle(QUIZ); // a new match gets a new order, and no question repeats within it
