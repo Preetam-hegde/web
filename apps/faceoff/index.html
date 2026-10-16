@@ -5,7 +5,7 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 	<meta name="theme-color" content="#0d0b1a">
 	<title>Faceoff — Two Players, One Phone</title>
-	<meta name="description" content="Pass-and-play duels for two on one phone: stop the timer, cut it in half, beat the green light, and more. No sign-up, no network.">
+	<meta name="description" content="Duels for two on one phone, split screen or pass-and-play: stop the timer, cut it in half, word games, couple quizzes and more. No sign-up.">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
@@ -25,8 +25,11 @@
 			<label class="who" style="--c: var(--p1)"><i></i><input id="n1" maxlength="14" placeholder="Player 2" autocomplete="off" aria-label="Player 2 name"></label>
 			<div class="series" id="series" hidden></div>
 			<div class="opts">
-				<div class="seg" id="roundsSeg" role="group" aria-label="Rounds"><span>Rounds</span></div>
+				<div class="seg" id="modeSeg" role="group" aria-label="Play mode"><span>Play</span></div>
 				<div class="seg" id="seatSeg" role="group" aria-label="Seating"><span>Seats</span></div>
+				<div class="seg" id="roundsSeg" role="group" aria-label="Rounds"><span>Rounds</span></div>
+				<div class="seg" id="soundSeg" role="group" aria-label="Sound"><span>Sound</span></div>
+				<div class="seg" id="dareSeg" role="group" aria-label="Loser dares"><span>Loser dares</span></div>
 			</div>
 			<p class="note" id="seatNote"></p>
 		</section>
@@ -41,7 +44,7 @@
 			<div class="phead"><b class="pname"></b><span class="prnd"></span><span class="ppts">0</span></div>
 			<div class="stage"></div>
 		</section>
-		<div class="mid"><button id="quit" type="button">Quit</button></div>
+		<div class="mid"><button id="share" type="button" hidden>Share</button><button id="quit" type="button">Quit</button></div>
 		<section class="pane" id="pane0">
 			<div class="phead"><b class="pname"></b><span class="prnd"></span><span class="ppts">0</span></div>
 			<div class="stage"></div>
@@ -49,9 +52,17 @@
 	</main>
 
 	<script src="js/core.js"></script>
+	<script src="js/extras.js"></script>
+	<script src="js/words.js"></script>
+	<script src="js/kb.js"></script>
 	<script src="js/games/timer.js"></script>
 	<script src="js/games/reaction.js"></script>
 	<script src="js/games/cut.js"></script>
+	<script src="js/games/wordle.js"></script>
+	<script src="js/games/anagram.js"></script>
+	<script src="js/games/bomb.js"></script>
+	<script src="js/games/hangman.js"></script>
+	<script src="js/games/quiz.js"></script>
 	<script src="js/main.js"></script>
 </body>
 </html>

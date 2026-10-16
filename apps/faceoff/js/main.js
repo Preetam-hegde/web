@@ -2,7 +2,11 @@
 
 /* Hub: names, options, series tally and the game list. */
 
-const SEATS = {
+const MODE_NOTES = {
+	split: 'Both of you play at the same time, each on your own half of the screen.',
+	pass: 'One player at a time on the full screen. Play, then pass the phone.',
+};
+const SEAT_NOTES = {
 	true: 'Phone flat between you: the top player\'s half is turned to face them.',
 	false: 'Everyone reads the screen the same way up.',
 };
@@ -19,13 +23,20 @@ function seg(el, options, current, onPick) {
 	});
 }
 
+const ON_OFF = [[true, 'On'], [false, 'Off']];
+
 function renderHub() {
 	document.body.dataset.flip = store.flip ? '1' : '0';
+	document.body.dataset.mode = store.mode;
 	[0, 1].forEach((p) => { $(`#n${p}`).value = store.names[p]; });
 
-	seg($('#roundsSeg'), [[3, '3'], [5, '5'], [7, '7']], store.rounds, (v) => (store.rounds = v));
+	seg($('#modeSeg'), [['split', 'Split screen'], ['pass', 'Pass & play']], store.mode, (v) => (store.mode = v));
 	seg($('#seatSeg'), [[true, 'Face to face'], [false, 'Side by side']], store.flip, (v) => (store.flip = v));
-	$('#seatNote').textContent = SEATS[store.flip];
+	seg($('#roundsSeg'), [[3, '3'], [5, '5'], [7, '7']], store.rounds, (v) => (store.rounds = v));
+	seg($('#soundSeg'), ON_OFF, store.sound, (v) => (store.sound = v));
+	seg($('#dareSeg'), ON_OFF, store.dares, (v) => (store.dares = v));
+	$('#seatSeg').hidden = store.mode === 'pass'; // seating only matters when two halves share the screen
+	$('#seatNote').textContent = `${MODE_NOTES[store.mode]} ${store.mode === 'split' ? SEAT_NOTES[store.flip] : ''}`.trim();
 
 	const [a, b] = store.series;
 	const series = $('#series');
@@ -60,6 +71,8 @@ $('#quit').onclick = (e) => {
 	btn.textContent = 'Sure?';
 	quitTimer = setTimeout(() => { btn.classList.remove('sure'); btn.textContent = 'Quit'; }, 2000);
 };
+
+$('#share').onclick = shareResult;
 
 document.addEventListener('contextmenu', (e) => e.preventDefault()); // long-press must not open menus mid-game
 

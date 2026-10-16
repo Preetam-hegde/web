@@ -5,45 +5,93 @@
 	<title>Faceoff — logic checks</title>
 </head>
 <body style="font: 14px ui-monospace, monospace; background: #0d0b1a; color: #f4f1ff; padding: 16px">
-	<pre id="out"></pre>
+	<pre id="out">running…</pre>
 	<script src="js/core.js"></script>
+	<script src="js/extras.js"></script>
+	<script src="js/words.js"></script>
+	<script src="js/kb.js"></script>
 	<script src="js/games/cut.js"></script>
+	<script src="js/games/wordle.js"></script>
+	<script src="js/games/anagram.js"></script>
+	<script src="js/games/quiz.js"></script>
 	<script>
 	'use strict';
-	const out = [];
-	let fails = 0;
-	const eq = (name, got, want, tol = 1e-6) => {
-		const ok = typeof want === 'number' ? Math.abs(got - want) <= tol : got === want;
-		if (!ok) fails++;
-		out.push(`${ok ? 'PASS' : 'FAIL'}  ${name}  (got ${got}, want ${want})`);
-	};
+	(async () => {
+		const out = [];
+		let fails = 0;
+		const eq = (name, got, want, tol = 1e-6) => {
+			const ok = typeof want === 'number' ? Math.abs(got - want) <= tol : got === want;
+			if (!ok) fails++;
+			out.push(`${ok ? 'PASS' : 'FAIL'}  ${name}  (got ${got}, want ${want})`);
+		};
 
-	// judge: 0/1 = winner index, -1 = tie
-	eq('lower wins (p0)', judge(100, 200, true), 0);
-	eq('lower wins (p1)', judge(200, 100, true), 1);
-	eq('equal is a tie', judge(5, 5, true), -1);
-	eq('both failed is a tie', judge(Infinity, Infinity, true), -1);
-	eq('a miss loses to a score', judge(Infinity, 3, true), 1);
-	eq('higher wins', judge(30, 20, false), 0);
-	eq('failed tap game loses', judge(-Infinity, 5, false), 1);
+		// judge: 0/1 = winner index, -1 = tie
+		eq('lower wins (p0)', judge(100, 200, true), 0);
+		eq('lower wins (p1)', judge(200, 100, true), 1);
+		eq('equal is a tie', judge(5, 5, true), -1);
+		eq('both failed is a tie', judge(Infinity, Infinity, true), -1);
+		eq('a miss loses to a score', judge(Infinity, 3, true), 1);
+		eq('higher wins', judge(30, 20, false), 0);
+		eq('failed tap game loses', judge(-Infinity, 5, false), 1);
 
-	// cut: unit square, vertical cut through the middle / off-centre / missing the shape
-	const sq = [[0, 0], [1, 0], [1, 1], [0, 1]];
-	eq('square, centre cut', cutSplit(sq, [0.5, -1], [0.5, 2]).err, 0);
-	eq('square, cut at x=.25', cutSplit(sq, [0.25, -1], [0.25, 2]).err, 50);
-	eq('square, line misses', cutSplit(sq, [2, -1], [2, 2]).err, 100);
-	eq('square, diagonal is half', cutSplit(sq, [0, 0], [1, 1]).err, 0);
-	eq('split shares', cutSplit(sq, [0.25, -1], [0.25, 2]).share.map((n) => n.toFixed(0)).join(':'), '25:75');
-	// concave L: top block .3x.35 = .105, bottom block .6x.25 = .15; horizontal cut at y=.55
-	eq('L shape, cut at the notch', cutSplit(L_SHAPE, [0, 0.55], [1, 0.55]).err, (0.045 / 0.255) * 100, 1e-4);
-	// both directions of the same line agree
-	eq('direction does not matter', cutSplit(sq, [0.25, 2], [0.25, -1]).err, 50);
-	// every shape has a positive area
-	SHAPES.forEach(([name, make]) => eq(`${name} has area`, polyArea(make()) > 0.01, true));
+		// cut: unit square, vertical cut through the middle / off-centre / missing the shape
+		const sq = [[0, 0], [1, 0], [1, 1], [0, 1]];
+		eq('square, centre cut', cutSplit(sq, [0.5, -1], [0.5, 2]).err, 0);
+		eq('square, cut at x=.25', cutSplit(sq, [0.25, -1], [0.25, 2]).err, 50);
+		eq('square, line misses', cutSplit(sq, [2, -1], [2, 2]).err, 100);
+		eq('square, diagonal is half', cutSplit(sq, [0, 0], [1, 1]).err, 0);
+		eq('split shares', cutSplit(sq, [0.25, -1], [0.25, 2]).share.map((n) => n.toFixed(0)).join(':'), '25:75');
+		// concave L: top block .3x.35 = .105, bottom block .6x.25 = .15; horizontal cut at y=.55
+		eq('L shape, cut at the notch', cutSplit(L_SHAPE, [0, 0.55], [1, 0.55]).err, (0.045 / 0.255) * 100, 1e-4);
+		eq('direction does not matter', cutSplit(sq, [0.25, 2], [0.25, -1]).err, 50);
+		SHAPES.forEach(([name, make]) => eq(`${name} has area`, polyArea(make()) > 0.01, true));
 
-	out.push('', fails ? `${fails} FAILED` : 'ALL PASSED');
-	document.getElementById('out').textContent = out.join('\n');
-	document.title = fails ? 'FAIL' : 'PASS';
+		// wordle marks, including repeated letters
+		eq('marks: abbey vs babes', wordleMarks('babes', 'abbey').join(''), 'yyggx');
+		eq('marks: exact', wordleMarks('crane', 'crane').join(''), 'ggggg');
+		eq('marks: speed vs abide', wordleMarks('speed', 'abide').join(''), 'xxyxy');
+		eq('marks: only one e in the answer', wordleMarks('eerie', 'tower').join(''), 'yxyxx');
+
+		// anagram points, shuffle, typing
+		eq('points: 2 letters', anagramPoints(2), 0);
+		eq('points: 3 letters', anagramPoints(3), 1);
+		eq('points: 7 letters', anagramPoints(7), 10);
+		eq('points: 9 letters', anagramPoints(9), 0);
+		eq('shuffle keeps letters', shuffle([...'balance']).sort().join(''), [...'balance'].sort().join(''));
+		eq('type a letter', typeKey('ab', 'c'), 'abc');
+		eq('type back', typeKey('abc', 'back'), 'ab');
+		eq('type back on empty', typeKey('', 'back'), '');
+		eq('type ignores enter', typeKey('ab', 'enter'), 'ab');
+		eq('type respects max', typeKey('abcde', 'f', 5), 'abcde');
+
+		// quiz and dares content
+		eq('quiz pairs are pairs', QUIZ.every((q) => q.length === 2 && q[0] !== q[1]), true);
+		eq('quiz has no duplicates', new Set(QUIZ.map((q) => q.join('|'))).size, QUIZ.length);
+		eq('dares are short strings', DARES.every((d) => typeof d === 'string' && d.length < 120), true);
+		eq('dares only use the {w} placeholder', DARES.every((d) => !/\{(?!w\})/.test(d)), true);
+
+		// the word data
+		await loadWords();
+		eq('word list loaded', WORDS.valid.size > 100000, true);
+		eq('answers: plenty', WORDS.answers.length > 1000, true);
+		eq('answers: all valid 5-letter words', WORDS.answers.every((w) => /^[a-z]{5}$/.test(w) && isWord(w)), true);
+		eq('answers: no duplicates', new Set(WORDS.answers).size, WORDS.answers.length);
+		eq('racks: plenty', WORDS.racks.length > 300, true);
+		eq('racks: all valid 7-letter words', WORDS.racks.every((w) => /^[a-z]{7}$/.test(w) && isWord(w)), true);
+		const canMake = (w, rack) => { const c = {}; [...rack].forEach((l) => (c[l] = (c[l] || 0) + 1)); return [...w].every((l) => c[l]-- > 0); };
+		const sample = WORDS.racks.filter((_, i) => i % 25 === 0);
+		const yields = sample.map((r) => [...WORDS.valid].filter((w) => w.length >= 3 && w.length <= 7 && canMake(w, r)).length);
+		eq(`racks: sampled ${sample.length}, each hides 35+ words`, yields.every((n) => n >= 35), true);
+		eq('frags: counts descend and clear the floor', WORDS.frags.every(([, n], i, a) => n >= 120 && (!i || n <= a[i - 1][1])), true);
+		const [f, n] = WORDS.frags[Math.floor(WORDS.frags.length / 2)];
+		eq(`frags: count of "${f}" matches the list`, [...WORDS.valid].filter((w) => w.includes(f)).length, n);
+		eq('isWord: real word', isWord('planet'), true);
+		eq('isWord: nonsense', isWord('zzxqv'), false);
+
+		out.push('', fails ? `${fails} FAILED` : 'ALL PASSED');
+		document.getElementById('out').textContent = out.join('\n');
+		document.title = fails ? 'FAIL' : 'PASS';
+	})().catch((e) => { document.getElementById('out').textContent = `ERROR ${e.stack || e}`; document.title = 'ERROR'; });
 	</script>
 </body>
 </html>
