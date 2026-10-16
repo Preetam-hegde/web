@@ -66,7 +66,7 @@ const both = (fn) => [0, 1].forEach(fn);
 
 function paint(p, html, cls = '') {
 	const s = stageOf(p);
-	s.onpointerdown = s.onpointerup = s.onpointercancel = null;
+	s.onpointerdown = s.onpointerup = s.onpointercancel = s.onclick = null;
 	s.className = `stage ${cls}`.trim();
 	s.innerHTML = html;
 	return s;
@@ -87,9 +87,9 @@ function head(p) {
 const introHtml = () => `<div class="gname">${gameIcon(m.game.id)} ${m.game.name}</div><div class="lbl">${m.game.intro(m.cfg)}</div>`;
 
 function startMatch(game, rounds = store.rounds) {
-	const mine = (m = { game, rounds, round: 0, pts: [0, 0], token: ++epoch, cfg: null, res: [null, null], ready: [false, false], final: null, pass: store.mode === 'pass' });
+	const mine = (m = { game, rounds, round: 0, pts: [0, 0], token: ++epoch, cfg: null, res: [null, null], ready: [false, false], final: null, pass: store.mode === 'pass' || !!game.passOnly });
 	document.body.dataset.screen = 'match';
-	document.body.dataset.mode = store.mode;
+	document.body.dataset.mode = mine.pass ? 'pass' : 'split'; // phone-keyboard games are always pass-and-play
 	$('#share').hidden = true;
 	window.scrollTo(0, 0);
 	focus(0);
