@@ -45,6 +45,14 @@ const projects = [
     tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "SVG Charts", "Game Design"]
   },
   {
+    name: "Faceoff",
+    category: "games",
+    icon: "swords",
+    link: "apps/faceoff/index.html",
+    description: "Two players, one phone — split-screen duels where both of you play at once: Stop the Timer, Liar Clock, Feel the Time, Hold It, Dead Centre, Tap Frenzy, Green Light, and Cut in Half. Mobile-first, no sign-up.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Touch Input", "Game Design"]
+  },
+  {
     name: "Synapse",
     category: "games",
     icon: "brain",
@@ -184,6 +192,7 @@ const projectIcons = {
   'notebook-pen': '<path d="M13.4 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-7.4"/> <path d="M2 6h4"/> <path d="M2 10h4"/> <path d="M2 14h4"/> <path d="M2 18h4"/> <path d="M21.378 5.626a1 1 0 1 0-3.004-3.004l-5.01 5.012a2 2 0 0 0-.506.854l-.837 2.87a.5.5 0 0 0 .62.62l2.87-.837a2 2 0 0 0 .854-.506z"/>',
   'brain': '<path d="M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z"/> <path d="M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z"/> <path d="M12 5v13"/> <path d="M12 13a4.5 4.5 0 0 1-3-4"/> <path d="M12 13a4.5 4.5 0 0 0 3-4"/>',
   'zap': '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
+  'swords': '<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/> <line x1="13" x2="19" y1="19" y2="13"/> <line x1="16" x2="20" y1="16" y2="20"/> <line x1="19" x2="21" y1="21" y2="19"/> <polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/> <line x1="5" x2="9" y1="14" y2="18"/> <line x1="7" x2="4" y1="17" y2="20"/> <line x1="3" x2="5" y1="19" y2="21"/>',
 };
 
 function projectIcon(name) {

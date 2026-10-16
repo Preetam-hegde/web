@@ -6,6 +6,7 @@ function getGameProjects() {
   const gameSlugs = [
     'apps/aim-trainer/index.html',
     'apps/keystorm/index.html',
+    'apps/faceoff/index.html',
     'apps/vectordrift/index.html',
     'apps/synapse/index.html',
     'apps/dreamscape/index.html',
@@ -184,7 +185,7 @@ function setupInteractiveShell() {
     '/': ['home/', 'projects/', 'games/', 'experience/', 'resume/', 'contact/', 'README.md'],
     '/home': ['about_me.txt', 'skills.json', 'resume.md', 'whoami.txt'],
     '/projects': ['featured.list', 'open <name-or-index>'],
-    '/games': ['aim-trainer', 'keystorm', 'vectordrift', 'synapse', 'dreamscape', 'bharatvarsha', 'cellular-automata', 'natural-selection-sim'],
+    '/games': ['aim-trainer', 'keystorm', 'faceoff', 'vectordrift', 'synapse', 'dreamscape', 'bharatvarsha', 'cellular-automata', 'natural-selection-sim'],
     '/experience': ['career.log'],
     '/resume': ['summary.txt', 'skills.list', 'experience.list', 'highlights.list', 'resume.pdf'],
     '/contact': ['contact.txt', 'resume.md', 'resume.pdf']
