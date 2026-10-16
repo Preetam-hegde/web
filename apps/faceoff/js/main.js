@@ -53,7 +53,7 @@ function renderGames() {
 	GAMES.forEach((g) => (groups[g.group] ||= []).push(g));
 	const played = (g) => (store.plays[g.id] ? `played <b>${store.plays[g.id]}</b>×` : 'not played yet');
 	$('#games').innerHTML = Object.entries(groups)
-		.map(([name, list]) => `<h2>${name}</h2><div class="grid">${list.map((g) => `<button class="card" type="button" data-game="${g.id}"><span class="ic">${g.icon}</span><h3>${g.name}</h3><p>${g.blurb}</p><span class="best">${played(g)}</span></button>`).join('')}</div>`)
+		.map(([name, list]) => `<h2>${name}</h2><div class="grid">${list.map((g) => `<button class="card" type="button" data-game="${g.id}"><span class="ic">${gameIcon(g.id)}</span><h3>${g.name}</h3><p>${g.blurb}</p><span class="best">${played(g)}</span></button>`).join('')}</div>`)
 		.join('');
 }
 
@@ -105,12 +105,12 @@ function renderStats() {
 	const tile = (n, label, c = '') => `<div class="tile"${c ? ` style="--c:${c}"` : ''}><b>${n}</b><small>${label}</small></div>`;
 	const byGame = GAMES.map((g) => {
 		const mine = h.filter((x) => x.g === g.id);
-		return `<div class="srow"><b>${g.icon} ${g.name}</b><span>${store.plays[g.id] || 0}×</span><span>${[0, 1].map((p) => mine.filter((x) => x.c === p).length).join(' – ')}</span></div>`;
+		return `<div class="srow"><b>${gameIcon(g.id)} ${g.name}</b><span>${store.plays[g.id] || 0}×</span><span>${[0, 1].map((p) => mine.filter((x) => x.c === p).length).join(' – ')}</span></div>`;
 	}).join('');
 	const recent = h.slice(-8).reverse().map((x) => {
 		const g = GAMES.find((y) => y.id === x.g);
 		const when = new Date(x.t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-		return `<div class="srow"><b>${g ? g.icon : ''} ${esc(x.n[0])} ${x.p[0]} – ${x.p[1]} ${esc(x.n[1])}</b><span>${x.c < 0 ? 'draw' : `${esc(x.n[x.c])} won`}</span><span>${when}</span></div>`;
+		return `<div class="srow"><b>${g ? gameIcon(g.id) : ''} ${esc(x.n[0])} ${x.p[0]} – ${x.p[1]} ${esc(x.n[1])}</b><span>${x.c < 0 ? 'draw' : `${esc(x.n[x.c])} won`}</span><span>${when}</span></div>`;
 	}).join('');
 	$('#statsBody').innerHTML = h.length || Object.keys(store.plays).length
 		? `<div class="tiles">${tile(h.length, 'matches')}${tile(wins[0], `${esc(nameOf(0))} wins`, 'var(--p0)')}${tile(wins[1], `${esc(nameOf(1))} wins`, 'var(--p1)')}${tile(h.filter((x) => x.c < 0).length, 'draws')}</div>

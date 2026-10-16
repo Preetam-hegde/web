@@ -84,7 +84,7 @@ function head(p) {
 	$('.prnd', el).textContent = `Round ${m.round + 1}/${m.rounds}${m.pass ? ` · ${nameOf(1 - p)}: ${m.pts[1 - p]}` : ''}`;
 }
 
-const introHtml = () => `<div class="gname">${m.game.icon} ${m.game.name}</div><div class="lbl">${m.game.intro(m.cfg)}</div>`;
+const introHtml = () => `<div class="gname">${gameIcon(m.game.id)} ${m.game.name}</div><div class="lbl">${m.game.intro(m.cfg)}</div>`;
 
 function startMatch(game, rounds = store.rounds) {
 	const mine = (m = { game, rounds, round: 0, pts: [0, 0], token: ++epoch, cfg: null, res: [null, null], ready: [false, false], final: null, pass: store.mode === 'pass' });

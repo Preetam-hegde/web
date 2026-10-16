@@ -4,7 +4,7 @@
    origin (including the 1.4 MB word list) is stored the first time it's fetched. Pages are served from the
    cache and refreshed in the background, so an update shows up on the next visit.
    Bump CACHE when a release must replace everything at once. */
-const CACHE = 'faceoff-v1';
+const CACHE = 'faceoff-v2';
 const SHELL = [
 	'./', 'index.html', 'styles.css',
 	'js/core.js', 'js/extras.js', 'js/words.js', 'js/kb.js', 'js/fx.js', 'js/main.js',
