@@ -49,7 +49,7 @@ const projects = [
     category: "games",
     icon: "swords",
     link: "apps/faceoff/index.html",
-    description: "Two players, one phone — split-screen or pass-and-play. Timing duels (Stop the Timer, Liar Clock, Dead Centre), Cut in Half, Hangman Duel on your phone keyboard, and couple games (Rock Paper Scissors, Tic-Tac-Toe, Memory Match, Green Flag Red Flag, This or That), with loser dares, stats, offline caching and a shareable result card. Mobile-first, no sign-up.",
+    description: "Two players, one phone — split-screen or pass-and-play. Timing duels (Stop the Timer, Liar Clock, Dead Centre), Cut in Half, Hangman Duel on your phone keyboard, and couple games (Tic-Tac-Toe, Memory Match, Green Flag Red Flag, This or That), with loser dares, stats, offline caching and a shareable result card. Mobile-first, no sign-up.",
     tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Web Audio API", "Touch Input", "Game Design"]
   },
   {

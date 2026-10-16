@@ -32,13 +32,6 @@
 		eq('higher wins', judge(30, 20, false), 0);
 		eq('0 vs 0 is a tie', judge(0, 0, false), -1);
 
-		// rock paper scissors
-		eq('paper beats rock', rpsBeats(1, 0), true);
-		eq('rock beats scissors', rpsBeats(0, 2), true);
-		eq('scissors beat paper', rpsBeats(2, 1), true);
-		eq('rock does not beat paper', rpsBeats(0, 1), false);
-		eq('same throw is no win', rpsBeats(1, 1), false);
-
 		// tic-tac-toe
 		eq('empty board: no winner', tttWinner(Array(9).fill(null)), null);
 		eq('top row', tttWinner([0, 0, 0, null, 1, 1, null, null, null]).p, 0);

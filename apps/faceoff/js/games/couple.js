@@ -3,38 +3,6 @@
 /* Couple-friendly classics, all tap-only. Each works split-screen (both halves show the same game, the
    player whose turn it is can tap) and pass-and-play (the phone goes to whoever's turn it is). */
 
-/* ── Rock Paper Scissors ─────────────────────────────── */
-const RPS = ['Rock', 'Paper', 'Scissors'];
-const rpsBeats = (a, b) => (a + 2) % 3 === b; // rock 0 beats scissors 2, paper 1 beats rock 0, scissors 2 beats paper 1
-
-GAMES.push({
-	id: 'rps', name: 'Rock Paper Scissors', icon: '✊', group: 'Couple', lowerIsBetter: false, duel: true,
-	blurb: 'The classic way to settle it. Pick in secret, reveal together.',
-	config: () => ({}),
-	intro: () => 'Pick rock, paper or scissors in secret<br><small>Paper covers rock, rock breaks scissors, scissors cut paper.</small>',
-	play(c0, c1) {
-		const cs = [c0, c1];
-		const pick = [null, null];
-		turns((p, next) => {
-			const st = cs[p].stage;
-			st.innerHTML = `<div class="gname">${esc(nameOf(p))}</div><div class="lbl">Your throw</div>
-				<div class="choices">${RPS.map((r, i) => `<button class="choice" type="button" data-i="${i}">${gameIcon(`rps-${r.toLowerCase()}`)} ${r}</button>`).join('')}</div>`;
-			$$('.choice', st).forEach((b) => {
-				b.onclick = () => {
-					if (pick[p] !== null) return;
-					pick[p] = +b.dataset.i;
-					sfx.lock();
-					st.innerHTML = `<div class="res tie">Locked in ✓</div><div class="hint">Waiting for ${esc(nameOf(1 - p))}…</div>`;
-					next();
-				};
-			});
-		}, () => {
-			const [a, b] = pick;
-			[0, 1].forEach((p) => cs[p].done(rpsBeats(pick[p], pick[1 - p]) ? 1 : 0, `${RPS[pick[p]]} vs ${RPS[pick[1 - p]]}`)); // a draw scores 0 for both
-		});
-	},
-});
-
 /* ── Tic-Tac-Toe ─────────────────────────────────────── */
 const TTT_LINES = [[0, 1, 2], [3, 4, 5], [6, 7, 8], [0, 3, 6], [1, 4, 7], [2, 5, 8], [0, 4, 8], [2, 4, 6]];
 /* Board cells hold null or the index of the player who played there. Returns the winner and the line, or null. */

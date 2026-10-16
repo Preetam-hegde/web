@@ -4,12 +4,12 @@
    origin (including the 1.4 MB word list) is stored the first time it's fetched. Pages are served from the
    cache and refreshed in the background, so an update shows up on the next visit.
    Bump CACHE when a release must replace everything at once. */
-const CACHE = 'faceoff-v5';
+const CACHE = 'faceoff-v6';
 const SHELL = [
-	'./', 'index.html', 'styles.css?v=5',
-	'js/core.js?v=5', 'js/extras.js?v=5', 'js/words.js?v=5', 'js/fx.js?v=5', 'js/main.js?v=5',
-	'js/games/timer.js?v=5', 'js/games/reaction.js?v=5', 'js/games/cut.js?v=5',
-	'js/games/hangman.js?v=5', 'js/games/couple.js?v=5', 'js/games/quiz.js?v=5',
+	'./', 'index.html', 'styles.css?v=6',
+	'js/core.js?v=6', 'js/extras.js?v=6', 'js/words.js?v=6', 'js/fx.js?v=6', 'js/main.js?v=6',
+	'js/games/timer.js?v=6', 'js/games/reaction.js?v=6', 'js/games/cut.js?v=6',
+	'js/games/hangman.js?v=6', 'js/games/couple.js?v=6', 'js/games/quiz.js?v=6',
 ];
 
 self.addEventListener('install', (e) => {
