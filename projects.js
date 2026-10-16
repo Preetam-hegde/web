@@ -49,8 +49,8 @@ const projects = [
     category: "games",
     icon: "swords",
     link: "apps/faceoff/index.html",
-    description: "Two players, one phone — split-screen duels where both of you play at once: Stop the Timer, Liar Clock, Feel the Time, Hold It, Dead Centre, Tap Frenzy, Green Light, and Cut in Half. Mobile-first, no sign-up.",
-    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Touch Input", "Game Design"]
+    description: "Two players, one phone — play split-screen or pass-and-play. Fourteen duels across timing (Stop the Timer, Liar Clock, Dead Centre), Cut in Half, word games (Word Duel, Word Bomb, Hangman Duel, Anagram Race, Word Chain) and a couple quiz, with loser dares and a shareable result card. Mobile-first, no sign-up.",
+    tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Web Audio API", "Touch Input", "Game Design"]
   },
   {
     name: "Synapse",
