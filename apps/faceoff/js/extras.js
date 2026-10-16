@@ -213,6 +213,10 @@ const GAME_ICONS = {
 	'ttt-x': '<path d="M18 6 6 18"/><path d="m6 6 12 12"/>',
 	'ttt-o': '<circle cx="12" cy="12" r="8"/>',
 	memory: '<rect width="8" height="8" x="3" y="3" rx="1.5"/><rect width="8" height="8" x="13" y="13" rx="1.5"/><path d="M17 3v4"/><path d="M15 5h4"/><path d="M5 17v4"/><path d="M3 19h4"/>',
+	tropes: '<rect width="20" height="15" x="2" y="7" rx="2" ry="2"/><polyline points="17 2 12 7 7 2"/>',
+	answers: '<path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"/>',
+	poker: '<circle cx="12" cy="12" r="10"/><line x1="8" x2="16" y1="15" y2="15"/><line x1="9" x2="9.01" y1="9" y2="9"/><line x1="15" x2="15.01" y1="9" y2="9"/>',
+	mix: '<polygon points="12 2 2 7 12 12 22 7 12 2"/><polyline points="2 17 12 22 22 17"/><polyline points="2 12 12 17 22 12"/>',
 	flags: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
 };
 const gameIcon = (id) => `<svg class="gi" viewBox="0 0 24 24" aria-hidden="true">${GAME_ICONS[id] || ''}</svg>`;

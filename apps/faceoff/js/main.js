@@ -59,12 +59,15 @@ function renderGames() {
 	const played = (g) => (store.plays[g.id] ? `played <b>${store.plays[g.id]}</b>×` : 'not played yet');
 	$('#games').innerHTML = Object.entries(groups)
 		.map(([name, list]) => `<h2>${name}</h2><div class="grid">${list.map((g) => `<button class="card" type="button" data-game="${g.id}"><span class="ic">${gameIcon(g.id)}</span><h3>${g.name}</h3><p>${g.blurb}</p><span class="best">${played(g)}</span></button>`).join('')}</div>`)
-		.join('');
+		.join('')
+		+ `<h2>Party · 2 or more players</h2><div class="grid">${PARTY.map((g) => `<button class="card" type="button" data-party="${g.id}"><span class="ic">${gameIcon(g.id)}</span><h3>${g.name}</h3><p>${g.blurb}</p><span class="best">${played(g)}</span></button>`).join('')}</div>`;
 }
 
 $('#games').onclick = (e) => {
 	const card = e.target.closest('[data-game]');
 	if (card) startMatch(GAMES.find((g) => g.id === card.dataset.game));
+	const party = e.target.closest('[data-party]');
+	if (party) startParty(party.dataset.party);
 };
 
 /* Cards tilt toward the pointer and a soft spotlight follows it, as on Keystorm's menu. */
