@@ -49,6 +49,8 @@ function renderHub() {
 		if (document.activeElement !== $(`#${id}`)) $(`#${id}`).value = store.custom[key].join('\n');
 	});
 
+	$('#settingsChip').textContent = `${store.mode === 'pass' ? 'Pass & play' : 'Split screen'} · ${store.rounds} rounds · Settings ⚙`;
+
 	renderGames(); // refreshes each card's played count after a match
 	fx.start();
 }
@@ -60,7 +62,7 @@ function renderGames() {
 	$('#games').innerHTML = Object.entries(groups)
 		.map(([name, list]) => `<h2>${name}</h2><div class="grid">${list.map((g) => `<button class="card" type="button" data-game="${g.id}"><span class="ic">${gameIcon(g.id)}</span><h3>${g.name}</h3><p>${g.blurb}</p><span class="best">${played(g)}</span></button>`).join('')}</div>`)
 		.join('')
-		+ `<h2>Party · 2 or more players</h2><div class="grid">${PARTY.map((g) => `<button class="card" type="button" data-party="${g.id}"><span class="ic">${gameIcon(g.id)}</span><h3>${g.name}</h3><p>${g.blurb}</p><span class="best">${played(g)}</span></button>`).join('')}</div>`;
+		+ `<h2 id="partyGames">Party · 2 or more players</h2><div class="grid">${PARTY.map((g) => `<button class="card" type="button" data-party="${g.id}"><span class="ic">${gameIcon(g.id)}</span><h3>${g.name}</h3><p>${g.blurb}</p><span class="best">${played(g)}</span></button>`).join('')}</div>`;
 }
 
 $('#games').onclick = (e) => {
@@ -128,6 +130,12 @@ function renderStats() {
 }
 $('#statsBtn').onclick = () => { document.body.dataset.screen = 'stats'; window.scrollTo(0, 0); renderStats(); };
 $('#statsBack').onclick = quit;
+
+/* Settings: every option lives on this page; changes save as you tap. */
+const openSettings = () => { document.body.dataset.screen = 'settings'; window.scrollTo(0, 0); renderHub(); };
+$('#settingsBtn').onclick = openSettings;
+$('#settingsChip').onclick = openSettings;
+$('#settingsBack').onclick = quit;
 $('#statsReset').onclick = () => {
 	if (!confirm('Clear all match history and played counts on this device?')) return;
 	store.history = [];

@@ -19,13 +19,14 @@
 	<main id="hub" class="screen">
 		<header class="topbar">
 			<span class="brand">faceoff</span>
-			<nav aria-label="Primary"><button type="button" id="statsBtn">Stats</button><a href="../../index.html">Portfolio ↗</a></nav>
+			<nav aria-label="Primary"><button type="button" id="settingsBtn">Settings</button><button type="button" id="statsBtn">Stats</button><a href="../../index.html">Portfolio ↗</a></nav>
 		</header>
 
 		<h1 class="logo" aria-label="Faceoff">
 			<span style="--i:0">F</span><span style="--i:1">A</span><span style="--i:2">C</span><span style="--i:3">E</span><span style="--i:4">O</span><span style="--i:5">F</span><span style="--i:6">F</span>
 		</h1>
 		<p class="tag">Two players. One phone. Settle it.</p>
+		<a class="jump" href="#partyGames">Group of 3 or more? Party games ↓</a>
 
 		<section class="setup" aria-label="Players and options">
 			<div class="names">
@@ -33,26 +34,10 @@
 				<label class="who" style="--c: var(--p1)"><i></i><input id="n1" maxlength="14" placeholder="Player 2" autocomplete="off" aria-label="Player 2 name"></label>
 			</div>
 			<div class="series" id="series" hidden></div>
-			<div class="opts">
-				<div class="seg" id="modeSeg" role="group" aria-label="Play mode"><span>Play</span></div>
-				<div class="seg" id="seatSeg" role="group" aria-label="Seating"><span>Seats</span></div>
-				<div class="seg" id="roundsSeg" role="group" aria-label="Rounds"><span>Rounds</span></div>
-				<div class="seg" id="soundSeg" role="group" aria-label="Sound"><span>Sound</span></div>
-				<div class="seg" id="dareSeg" role="group" aria-label="Loser dares"><span>Loser dares</span></div>
-			</div>
-			<p class="note" id="seatNote"></p>
+			<button type="button" class="chipbtn" id="settingsChip" aria-label="Open settings"></button>
 		</section>
 
 		<section id="games" aria-label="Games"></section>
-
-		<details class="custom" id="custom">
-			<summary>Your own dares and truths</summary>
-			<label>Dares <small>one per line · use {w} for the other person's name</small>
-				<textarea id="cDares" rows="4" maxlength="3000" placeholder="Give {w} a 30-second hug" aria-label="Your own dares"></textarea></label>
-			<label>Truths <small>one per line · asked in Truth or Dare</small>
-				<textarea id="cTruths" rows="4" maxlength="3000" placeholder="What is your favourite memory of us?" aria-label="Your own truths"></textarea></label>
-			<p class="note">Saved on this device. Dares also appear as loser dares.</p>
-		</details>
 
 		<p class="hint">Pick a game to start · you can quit any match from the pill at the top</p>
 		<div class="menu-watermark">Made with <span class="watermark-heart">❤️</span> by <strong>Preetam Ptwo</strong></div>
@@ -65,6 +50,40 @@
 		</header>
 		<h2 class="stats-title">Stats</h2>
 		<div id="statsBody"></div>
+	</main>
+
+	<main id="settings" class="screen">
+		<header class="topbar">
+			<button type="button" class="brand" id="settingsBack">← faceoff</button>
+			<span></span>
+		</header>
+		<h2 class="stats-title">Settings</h2>
+		<div id="settingsBody">
+			<section class="panel">
+				<h3>How you play</h3>
+				<div class="opts">
+					<div class="seg" id="modeSeg" role="group" aria-label="Play mode"><span>Play</span></div>
+					<div class="seg" id="seatSeg" role="group" aria-label="Seating"><span>Seats</span></div>
+				</div>
+				<p class="note" id="seatNote"></p>
+			</section>
+			<section class="panel">
+				<h3>Matches</h3>
+				<div class="opts">
+					<div class="seg" id="roundsSeg" role="group" aria-label="Rounds"><span>Rounds</span></div>
+					<div class="seg" id="dareSeg" role="group" aria-label="Loser dares"><span>Loser dares</span></div>
+					<div class="seg" id="soundSeg" role="group" aria-label="Sound"><span>Sound</span></div>
+				</div>
+			</section>
+			<section class="panel custom" id="custom">
+				<h3>Your own dares and truths</h3>
+				<label>Dares <small>one per line · use {w} for the other person's name</small>
+					<textarea id="cDares" rows="4" maxlength="3000" placeholder="Give {w} a 30-second hug" aria-label="Your own dares"></textarea></label>
+				<label>Truths <small>one per line · asked in Truth or Dare</small>
+					<textarea id="cTruths" rows="4" maxlength="3000" placeholder="What is your favourite memory of us?" aria-label="Your own truths"></textarea></label>
+				<p class="note">Saved on this device. Dares also appear as loser dares.</p>
+			</section>
+		</div>
 	</main>
 
 	<main id="party" class="screen">
