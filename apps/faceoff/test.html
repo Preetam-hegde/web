@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<title>Faceoff — logic checks</title>
+</head>
+<body style="font: 14px ui-monospace, monospace; background: #0d0b1a; color: #f4f1ff; padding: 16px">
+	<pre id="out"></pre>
+	<script src="js/core.js"></script>
+	<script src="js/games/cut.js"></script>
+	<script>
+	'use strict';
+	const out = [];
+	let fails = 0;
+	const eq = (name, got, want, tol = 1e-6) => {
+		const ok = typeof want === 'number' ? Math.abs(got - want) <= tol : got === want;
+		if (!ok) fails++;
+		out.push(`${ok ? 'PASS' : 'FAIL'}  ${name}  (got ${got}, want ${want})`);
+	};
+
+	// judge: 0/1 = winner index, -1 = tie
+	eq('lower wins (p0)', judge(100, 200, true), 0);
+	eq('lower wins (p1)', judge(200, 100, true), 1);
+	eq('equal is a tie', judge(5, 5, true), -1);
+	eq('both failed is a tie', judge(Infinity, Infinity, true), -1);
+	eq('a miss loses to a score', judge(Infinity, 3, true), 1);
+	eq('higher wins', judge(30, 20, false), 0);
+	eq('failed tap game loses', judge(-Infinity, 5, false), 1);
+
+	// cut: unit square, vertical cut through the middle / off-centre / missing the shape
+	const sq = [[0, 0], [1, 0], [1, 1], [0, 1]];
+	eq('square, centre cut', cutSplit(sq, [0.5, -1], [0.5, 2]).err, 0);
+	eq('square, cut at x=.25', cutSplit(sq, [0.25, -1], [0.25, 2]).err, 50);
+	eq('square, line misses', cutSplit(sq, [2, -1], [2, 2]).err, 100);
+	eq('square, diagonal is half', cutSplit(sq, [0, 0], [1, 1]).err, 0);
+	eq('split shares', cutSplit(sq, [0.25, -1], [0.25, 2]).share.map((n) => n.toFixed(0)).join(':'), '25:75');
+	// concave L: top block .3x.35 = .105, bottom block .6x.25 = .15; horizontal cut at y=.55
+	eq('L shape, cut at the notch', cutSplit(L_SHAPE, [0, 0.55], [1, 0.55]).err, (0.045 / 0.255) * 100, 1e-4);
+	// both directions of the same line agree
+	eq('direction does not matter', cutSplit(sq, [0.25, 2], [0.25, -1]).err, 50);
+	// every shape has a positive area
+	SHAPES.forEach(([name, make]) => eq(`${name} has area`, polyArea(make()) > 0.01, true));
+
+	out.push('', fails ? `${fails} FAILED` : 'ALL PASSED');
+	document.getElementById('out').textContent = out.join('\n');
+	document.title = fails ? 'FAIL' : 'PASS';
+	</script>
+</body>
+</html>
