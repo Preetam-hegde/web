@@ -4,12 +4,12 @@
    origin (including the 1.4 MB word list) is stored the first time it's fetched. Scripts and styles are served from the
    cache and refreshed in the background (the version in their URL forces a new copy when a release changes them); the page itself is network first.
    Bump CACHE when a release must replace everything at once. */
-const CACHE = 'faceoff-v10';
+const CACHE = 'faceoff-v11';
 const SHELL = [
-	'./', 'index.html', 'styles.css?v=10',
-	'js/core.js?v=10', 'js/extras.js?v=10', 'js/words.js?v=10', 'js/fx.js?v=10', 'js/main.js?v=10',
-	'js/games/timer.js?v=10', 'js/games/reaction.js?v=10', 'js/games/cut.js?v=10',
-	'js/games/hangman.js?v=10', 'js/games/couple.js?v=10', 'js/games/quiz.js?v=10', 'js/games/duo.js?v=10', 'js/party.js?v=10',
+	'./', 'index.html', 'styles.css?v=11',
+	'js/core.js?v=11', 'js/extras.js?v=11', 'js/words.js?v=11', 'js/fx.js?v=11', 'js/main.js?v=11',
+	'js/games/timer.js?v=11', 'js/games/reaction.js?v=11', 'js/games/cut.js?v=11',
+	'js/games/hangman.js?v=11', 'js/games/couple.js?v=11', 'js/games/quiz.js?v=11', 'js/games/duo.js?v=11', 'js/party.js?v=11', 'js/spy.js?v=11',
 ];
 
 self.addEventListener('install', (e) => {

@@ -5,7 +5,7 @@
 const fx = (() => {
 	const cv = $('#fx');
 	const g = cv.getContext('2d');
-	const MENUS = ['hub', 'stats'];
+	const MENUS = ['hub', 'stats', 'settings', 'party'];
 	const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
 	const HUES = [14, 174, 285]; // player 1 orange, player 2 teal, and a violet to blend them
 	const stars = Array.from({ length: 60 }, (_, i) => ({ x: Math.random(), y: Math.random(), z: 0.2 + Math.random() * 0.8, h: HUES[i % 2] }));
