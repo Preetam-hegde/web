@@ -43,13 +43,17 @@ function renderHub() {
 	series.hidden = !(a + b);
 	series.innerHTML = `<span style="color:var(--p0)"><b>${esc(nameOf(0))} ${a}</b></span> – <span style="color:var(--p1)"><b>${b} ${esc(nameOf(1))}</b></span><button type="button">reset</button>`;
 	$('button', series).onclick = () => { store.series = [0, 0]; save(); renderHub(); };
+
+	renderGames(); // refreshes each card's played count after a match
+	fx.start();
 }
 
 function renderGames() {
 	const groups = {};
 	GAMES.forEach((g) => (groups[g.group] ||= []).push(g));
+	const played = (g) => (store.plays[g.id] ? `played <b>${store.plays[g.id]}</b>×` : 'not played yet');
 	$('#games').innerHTML = Object.entries(groups)
-		.map(([name, list]) => `<h2>${name}</h2><div class="grid">${list.map((g) => `<button class="card" type="button" data-game="${g.id}"><span class="ic">${g.icon}</span><b>${g.name}</b><small>${g.blurb}</small></button>`).join('')}</div>`)
+		.map(([name, list]) => `<h2>${name}</h2><div class="grid">${list.map((g) => `<button class="card" type="button" data-game="${g.id}"><span class="ic">${g.icon}</span><h3>${g.name}</h3><p>${g.blurb}</p><span class="best">${played(g)}</span></button>`).join('')}</div>`)
 		.join('');
 }
 
@@ -57,6 +61,28 @@ $('#games').onclick = (e) => {
 	const card = e.target.closest('[data-game]');
 	if (card) startMatch(GAMES.find((g) => g.id === card.dataset.game));
 };
+
+/* Cards tilt toward the pointer and a soft spotlight follows it, as on Keystorm's menu. */
+const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
+$('#games').addEventListener('pointermove', (e) => {
+	const c = e.target.closest('.card');
+	if (!c) return;
+	const r = c.getBoundingClientRect();
+	const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
+	c.style.setProperty('--mx', `${x * 100}%`);
+	c.style.setProperty('--my', `${y * 100}%`);
+	if (!calm) {
+		c.style.setProperty('--rx', `${(0.5 - y) * 10}deg`);
+		c.style.setProperty('--ry', `${(x - 0.5) * 12}deg`);
+	}
+});
+$('#games').addEventListener('pointerout', (e) => {
+	const c = e.target.closest('.card');
+	if (c && !c.contains(e.relatedTarget)) {
+		c.style.setProperty('--rx', '0deg');
+		c.style.setProperty('--ry', '0deg');
+	}
+});
 
 [0, 1].forEach((p) => {
 	$(`#n${p}`).oninput = (e) => { store.names[p] = e.target.value; save(); };
@@ -76,5 +102,4 @@ $('#share').onclick = shareResult;
 
 document.addEventListener('contextmenu', (e) => e.preventDefault()); // long-press must not open menus mid-game
 
-renderGames();
 renderHub();

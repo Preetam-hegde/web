@@ -40,7 +40,7 @@ const tsOf = (e) => (Math.abs(e.timeStamp - performance.now()) < 1000 ? e.timeSt
 /* ── settings ────────────────────────────────────────── */
 const STORE_KEY = 'faceoff:v1';
 const store = (() => {
-	const d = { names: ['', ''], rounds: 5, mode: 'split', flip: true, series: [0, 0], sound: true, dares: true };
+	const d = { names: ['', ''], rounds: 5, mode: 'split', flip: true, series: [0, 0], sound: true, dares: true, plays: {} };
 	try { return { ...d, ...JSON.parse(localStorage.getItem(STORE_KEY)) }; } catch { return d; }
 })();
 const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { /* private mode: play works, settings just won't persist */ } };
@@ -257,7 +257,9 @@ function reveal() {
 
 	both(head);
 	const champ = m.pts[0] === m.pts[1] ? -1 : m.pts[0] > m.pts[1] ? 0 : 1;
-	if (champ >= 0) { store.series[champ]++; save(); }
+	if (champ >= 0) store.series[champ]++;
+	store.plays[m.game.id] = (store.plays[m.game.id] || 0) + 1;
+	save();
 	const dare = champ >= 0 && store.dares ? choice(DARES).replace('{w}', nameOf(champ)) : '';
 	m.final = { champ, dare };
 	m.final.card = renderCard(); // built now so the Share tap can hand it straight to the share sheet
