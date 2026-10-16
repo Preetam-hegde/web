@@ -44,6 +44,11 @@ function renderHub() {
 	series.innerHTML = `<span style="color:var(--p0)"><b>${esc(nameOf(0))} ${a}</b></span> – <span style="color:var(--p1)"><b>${b} ${esc(nameOf(1))}</b></span><button type="button">reset</button>`;
 	$('button', series).onclick = () => { store.series = [0, 0]; save(); renderHub(); };
 
+	// The text boxes are only rewritten when not being typed in, so the cursor never jumps.
+	[['cDares', 'dares'], ['cTruths', 'truths']].forEach(([id, key]) => {
+		if (document.activeElement !== $(`#${id}`)) $(`#${id}`).value = store.custom[key].join('\n');
+	});
+
 	renderGames(); // refreshes each card's played count after a match
 	fx.start();
 }
@@ -110,10 +115,10 @@ function renderStats() {
 	const recent = h.slice(-8).reverse().map((x) => {
 		const g = GAMES.find((y) => y.id === x.g);
 		const when = new Date(x.t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-		return `<div class="srow"><b>${g ? gameIcon(g.id) : ''} ${esc(x.n[0])} ${x.p[0]} – ${x.p[1]} ${esc(x.n[1])}</b><span>${x.c < 0 ? 'draw' : `${esc(x.n[x.c])} won`}</span><span>${when}</span></div>`;
+		return `<div class="srow"><b>${g ? gameIcon(g.id) : ''} ${x.c === -2 ? `${esc(x.n[0])} &amp; ${esc(x.n[1])}` : `${esc(x.n[0])} ${x.p[0]} – ${x.p[1]} ${esc(x.n[1])}`}</b><span>${x.c === -2 ? esc(x.s || 'together') : x.c === -1 ? 'draw' : `${esc(x.n[x.c])} won`}</span><span>${when}</span></div>`;
 	}).join('');
 	$('#statsBody').innerHTML = h.length || Object.keys(store.plays).length
-		? `<div class="tiles">${tile(h.length, 'matches')}${tile(wins[0], `${esc(nameOf(0))} wins`, 'var(--p0)')}${tile(wins[1], `${esc(nameOf(1))} wins`, 'var(--p1)')}${tile(h.filter((x) => x.c < 0).length, 'draws')}</div>
+		? `<div class="tiles">${tile(h.length, 'matches')}${tile(wins[0], `${esc(nameOf(0))} wins`, 'var(--p0)')}${tile(wins[1], `${esc(nameOf(1))} wins`, 'var(--p1)')}${tile(h.filter((x) => x.c === -1).length, 'draws')}</div>
 			<div class="stat-list"><h3>By game · played · wins (${esc(nameOf(0))} – ${esc(nameOf(1))})</h3>${byGame}</div>
 			${recent ? `<div class="stat-list"><h3>Recent matches</h3>${recent}</div>` : ''}`
 		: '<p class="empty">No matches yet. Play one and it shows up here.</p>';
@@ -128,6 +133,12 @@ $('#statsReset').onclick = () => {
 	save();
 	renderStats();
 };
+
+/* One line per entry, trimmed and capped, so a pasted essay can't bloat storage. */
+const toLines = (text) => text.split('\n').map((l) => l.trim().slice(0, 140)).filter(Boolean).slice(0, 30);
+[['cDares', 'dares'], ['cTruths', 'truths']].forEach(([id, key]) => {
+	$(`#${id}`).oninput = (e) => { store.custom[key] = toLines(e.target.value); save(); };
+});
 
 $('#share').onclick = shareResult;
 

@@ -12,6 +12,7 @@
 	<script src="js/games/couple.js"></script>
 	<script src="js/games/cut.js"></script>
 	<script src="js/games/quiz.js"></script>
+	<script src="js/games/duo.js"></script>
 	<script>
 	'use strict';
 	(async () => {
@@ -48,7 +49,27 @@
 		eq('L shape, cut at the notch', Math.round(cutSplit(L_SHAPE, [0, 0.55], [1, 0.55]).err * 1e3), Math.round((0.045 / 0.255) * 100 * 1e3));
 		SHAPES.forEach(([name, make]) => eq(`${name} has area`, polyArea(make()) > 0.01, true));
 
+		// connect 4
+		const empty = () => Array(42).fill(null);
+		const put = (b, cells, p) => cells.forEach(([r, c]) => (b[r * 7 + c] = p));
+		eq('c4: empty board', c4Winner(empty()), null);
+		let b = empty(); put(b, [[5, 0], [5, 1], [5, 2], [5, 3]], 0);
+		eq('c4: horizontal four', c4Winner(b).p, 0);
+		b = empty(); put(b, [[2, 4], [3, 4], [4, 4], [5, 4]], 1);
+		eq('c4: vertical four', c4Winner(b).p, 1);
+		b = empty(); put(b, [[5, 0], [4, 1], [3, 2], [2, 3]], 0);
+		eq('c4: diagonal up', c4Winner(b).p, 0);
+		b = empty(); put(b, [[2, 0], [3, 1], [4, 2], [5, 3]], 1);
+		eq('c4: diagonal down', c4Winner(b).p, 1);
+		b = empty(); put(b, [[5, 0], [5, 1], [5, 2]], 0);
+		eq('c4: three is not four', c4Winner(b), null);
+		b = empty(); put(b, [[5, 0], [5, 1], [5, 2]], 0); put(b, [[5, 3]], 1);
+		eq('c4: a break stops the line', c4Winner(b), null);
+
 		// content
+		eq('together games have a summary', GAMES.filter((g) => g.coop).every((g) => typeof g.summary === 'function' && typeof g.verdict === 'function'), true);
+		eq('prompt lists have no duplicates', [MORE_LIKELY, NEVER_EVER, TRUTHS].every((l) => new Set(l).size === l.length), true);
+		eq('would-you-rather pairs are pairs', RATHER.every((q) => q.length === 2 && q[0] !== q[1]), true);
 		eq('quiz pairs are pairs', QUIZ.every((q) => q.length === 2 && q[0] !== q[1]), true);
 		eq('shuffle keeps the cards', shuffle([0, 1, 2, 3, 4, 5]).sort().join(''), '012345');
 		eq('flag statements are unique', new Set(FLAGS).size, FLAGS.length);

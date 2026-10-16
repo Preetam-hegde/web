@@ -345,3 +345,23 @@ hr { width: 60%; border: 0; border-top: 1px solid var(--line); margin: 2px 0; }
 .dot { position: absolute; top: 50%; left: 0; width: 26px; height: 26px; margin: -13px 0 0 -13px; border-radius: 50%; background: var(--c); }
 canvas { touch-action: none; border-radius: 12px; background: rgba(255, 255, 255, 0.03); }
 .faint { color: #3b3659; font-size: 22px; letter-spacing: 0.3em; }
+
+/* together games and Connect 4 */
+.spin { font: 700 clamp(2.4rem, 12vw, 4rem) / 1 var(--mono); color: var(--c); letter-spacing: 0.06em; }
+.beat { width: 96px; height: 96px; border-radius: 50%; background: rgba(255, 255, 255, 0.1); transition: background 0.06s, box-shadow 0.06s; }
+.beat.on { background: var(--c); box-shadow: 0 0 44px var(--c); }
+.c4 { display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; width: min(100%, 330px, 44vh); padding: 6px; border-radius: 12px; background: rgba(255, 255, 255, 0.06); touch-action: manipulation; }
+.col { display: grid; gap: 4px; padding: 0; border: 0; background: none; }
+.disc { aspect-ratio: 1; border-radius: 50%; background: rgba(0, 0, 0, 0.35); }
+.disc.p0 { background: var(--p0); }
+.disc.p1 { background: var(--p1); }
+.disc.win { box-shadow: 0 0 0 3px #fff; }
+
+/* hub: your own dares and truths */
+.custom { width: 100%; margin-top: 28px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 16px; background: rgba(255, 255, 255, 0.035); -webkit-backdrop-filter: blur(14px); backdrop-filter: blur(14px); }
+.custom summary { cursor: pointer; font-weight: 500; }
+.custom label { display: grid; gap: 6px; margin-top: 14px; font-size: 0.9rem; }
+.custom label small { color: var(--mute); font-size: 0.75rem; }
+.custom textarea { width: 100%; padding: 10px 12px; border: 1px solid var(--line); border-radius: 12px; background: rgba(255, 255, 255, 0.05); color: var(--ink); font: 400 0.9rem var(--sans); resize: vertical; -webkit-user-select: text; user-select: text; }
+.custom textarea:focus { outline: 0; border-color: var(--p1); }
+.custom .note { margin-top: 10px; text-align: left; }

@@ -188,3 +188,75 @@ GAMES.push({
 		);
 	},
 });
+
+/* ── Connect 4 ───────────────────────────────────────── */
+const C4_COLS = 7, C4_ROWS = 6;
+/* Board is a flat array, row 0 at the top; cells hold null or the index of the player who dropped there.
+   Returns the winner and the four cells, or null. */
+function c4Winner(board) {
+	const at = (r, c) => (r >= 0 && r < C4_ROWS && c >= 0 && c < C4_COLS ? board[r * C4_COLS + c] : undefined);
+	for (let r = 0; r < C4_ROWS; r++) {
+		for (let c = 0; c < C4_COLS; c++) {
+			const v = at(r, c);
+			if (v === null || v === undefined) continue;
+			for (const [dr, dc] of [[0, 1], [1, 0], [1, 1], [1, -1]]) {
+				const cells = [0, 1, 2, 3].map((k) => [r + dr * k, c + dc * k]);
+				if (cells.every(([rr, cc]) => at(rr, cc) === v)) return { p: v, cells: cells.map(([rr, cc]) => rr * C4_COLS + cc) };
+			}
+		}
+	}
+	return null;
+}
+
+GAMES.push({
+	id: 'connect4', name: 'Connect 4', icon: '🔴', group: 'Couple', lowerIsBetter: false, duel: true,
+	blurb: 'Drop discs, line up four. The starter swaps every round.',
+	config: (i) => ({ first: i % 2 }),
+	intro: (c) => `Line up four discs<br><small>${esc(nameOf(c.first))} drops first this round. Tap a column.</small>`,
+	play(c0, c1) {
+		const cs = [c0, c1];
+		const board = Array(C4_COLS * C4_ROWS).fill(null);
+		let turn = c0.cfg.first;
+		let over = false;
+
+		function render() {
+			const win = c4Winner(board);
+			const full = board.every((v) => v !== null);
+			cs.forEach((c) => {
+				const status = over ? (win ? `<b>${esc(nameOf(win.p))}</b> wins!` : 'A draw') : turn === c.p ? `<b>${esc(nameOf(c.p))}</b>, drop a disc` : `${esc(nameOf(turn))} is up…`;
+				const cols = Array.from({ length: C4_COLS }, (_, col) => `<button class="col" type="button" data-c="${col}" aria-label="Column ${col + 1}">${Array.from({ length: C4_ROWS }, (__, row) => {
+					const i = row * C4_COLS + col, v = board[i];
+					return `<span class="disc${v === null ? '' : ` p${v}`}${win && win.cells.includes(i) ? ' win' : ''}"></span>`;
+				}).join('')}</button>`).join('');
+				c.stage.innerHTML = `<div class="dhead">${status}</div><div class="c4">${cols}</div>`;
+				c.stage.onclick = (e) => {
+					const b = e.target.closest('.col');
+					if (b) drop(c.p, +b.dataset.c);
+				};
+			});
+			return { win, full };
+		}
+		function drop(p, col) {
+			if (over || p !== turn) return;
+			let row = C4_ROWS - 1;
+			while (row >= 0 && board[row * C4_COLS + col] !== null) row--;
+			if (row < 0) return; // column is full
+			board[row * C4_COLS + col] = p;
+			sfx.key();
+			const { win, full } = render();
+			if (win || full) {
+				over = true;
+				render();
+				sfx.lock();
+				cs[0].after(1200, () => cs.forEach((c) => c.done(win && win.p === c.p ? 1 : 0, win ? (win.p === c.p ? 'Four in a row' : 'Beaten') : 'Draw')));
+				return;
+			}
+			turn = 1 - p;
+			render();
+			focus(turn);
+		}
+
+		render();
+		focus(turn);
+	},
+});

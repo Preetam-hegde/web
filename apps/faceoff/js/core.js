@@ -40,7 +40,7 @@ const tsOf = (e) => (Math.abs(e.timeStamp - performance.now()) < 1000 ? e.timeSt
 /* ── settings ────────────────────────────────────────── */
 const STORE_KEY = 'faceoff:v1';
 const store = (() => {
-	const d = { names: ['', ''], rounds: 5, mode: 'split', flip: true, series: [0, 0], sound: true, dares: true, plays: {}, history: [] };
+	const d = { names: ['', ''], rounds: 5, mode: 'split', flip: true, series: [0, 0], sound: true, dares: true, plays: {}, history: [], custom: { dares: [], truths: [] } };
 	try { return { ...d, ...JSON.parse(localStorage.getItem(STORE_KEY)) }; } catch { return d; }
 })();
 const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { /* private mode: play works, settings just won't persist */ } };
@@ -87,9 +87,10 @@ function head(p) {
 const introHtml = () => `<div class="gname">${gameIcon(m.game.id)} ${m.game.name}</div><div class="lbl">${m.game.intro(m.cfg)}</div>`;
 
 function startMatch(game, rounds = store.rounds) {
-	const mine = (m = { game, rounds, round: 0, pts: [0, 0], token: ++epoch, cfg: null, res: [null, null], ready: [false, false], final: null, pass: store.mode === 'pass' || !!game.passOnly });
+	rounds = game.rounds || rounds; // some games fix their own length
+	const mine = (m = { game, rounds, round: 0, pts: [0, 0], token: ++epoch, cfg: null, res: [null, null], ready: [false, false], final: null, pass: !game.splitOnly && (store.mode === 'pass' || !!game.passOnly) });
 	document.body.dataset.screen = 'match';
-	document.body.dataset.mode = mine.pass ? 'pass' : 'split'; // phone-keyboard games are always pass-and-play
+	document.body.dataset.mode = mine.pass ? 'pass' : 'split'; // phone-keyboard games are always pass-and-play, sync games always split
 	$('#share').hidden = true;
 	window.scrollTo(0, 0);
 	focus(0);
@@ -237,11 +238,17 @@ function makeCtx(p) {
 
 function reveal() {
 	bump();
-	const w = judge(m.res[0].score, m.res[1].score, m.game.lowerIsBetter);
-	if (w >= 0) { m.pts[w]++; sfx.win(); }
+	// "Together" games (coop: true) score the pair as a team: both players get the same score and nobody loses.
+	const coop = !!m.game.coop;
+	const w = coop ? -1 : judge(m.res[0].score, m.res[1].score, m.game.lowerIsBetter);
+	if (coop) {
+		m.pts[0] += m.res[0].score;
+		m.pts[1] = m.pts[0];
+		if (m.res[0].score) sfx.win();
+	} else if (w >= 0) { m.pts[w]++; sfx.win(); }
 	const pass = m.pass;
 	// Split screen speaks to each player ("You win"); a shared screen names people instead.
-	const verdict = (p) => (w < 0 ? ['tie', 'Draw'] : pass ? ['win', `${esc(nameOf(w))} takes it`] : w === p ? ['win', 'You win the round'] : ['lose', `${esc(nameOf(w))} takes it`]);
+	const verdict = (p) => (coop ? m.game.verdict(m.res[0].score) : w < 0 ? ['tie', 'Draw'] : pass ? ['win', `${esc(nameOf(w))} takes it`] : w === p ? ['win', 'You win the round'] : ['lose', `${esc(nameOf(w))} takes it`]);
 	const rows = (p) => (pass
 		? [0, 1].map((q) => `<div class="row"><span>${esc(nameOf(q))}</span><b style="color:var(--p${q})">${m.res[q].label}</b></div>`).join('')
 		: `<div class="row me"><span>You</span><b>${m.res[p].label}</b></div><div class="row"><span>${esc(nameOf(1 - p))}</span><b>${m.res[1 - p].label}</b></div>`);
@@ -256,23 +263,25 @@ function reveal() {
 	}
 
 	both(head);
-	const champ = m.pts[0] === m.pts[1] ? -1 : m.pts[0] > m.pts[1] ? 0 : 1;
+	const champ = coop ? -2 : m.pts[0] === m.pts[1] ? -1 : m.pts[0] > m.pts[1] ? 0 : 1; // -1 draw, -2 together
+	const sum = coop ? m.game.summary(m.pts[0], m.rounds) : null;
 	if (champ >= 0) store.series[champ]++;
 	store.plays[m.game.id] = (store.plays[m.game.id] || 0) + 1;
-	store.history = [...store.history.slice(-99), { g: m.game.id, t: Date.now(), n: [nameOf(0), nameOf(1)], p: [...m.pts], c: champ }]; // last 100 matches, for the stats screen
+	store.history = [...store.history.slice(-99), { g: m.game.id, t: Date.now(), n: [nameOf(0), nameOf(1)], p: [...m.pts], c: champ, s: sum ? sum.title : '' }]; // last 100 matches, for the stats screen
 	save();
-	const dare = champ >= 0 && store.dares ? choice(DARES).replace('{w}', nameOf(champ)) : '';
-	m.final = { champ, dare };
+	const dare = champ >= 0 && store.dares ? choice(allDares()).replace('{w}', nameOf(champ)) : '';
+	m.final = { champ, dare, coop: sum };
 	m.final.card = renderCard(); // built now so the Share tap can hand it straight to the share sheet
 	$('#share').hidden = false;
 	focus(0);
 	(pass ? [0] : [0, 1]).forEach((p) => {
-		const title = champ < 0 ? 'Match drawn' : pass ? `🏆 ${esc(nameOf(champ))} wins the match` : champ === p ? '🏆 You win the match' : `${esc(nameOf(champ))} wins the match`;
-		const score = pass ? `${esc(nameOf(0))} · ${m.pts[0]} – ${m.pts[1]} · ${esc(nameOf(1))}` : `${m.pts[p]} – ${m.pts[1 - p]}`;
+		const title = coop ? `💞 ${esc(sum.title)}` : champ < 0 ? 'Match drawn' : pass ? `🏆 ${esc(nameOf(champ))} wins the match` : champ === p ? '🏆 You win the match' : `${esc(nameOf(champ))} wins the match`;
+		const score = coop ? esc(sum.sub) : pass ? `${esc(nameOf(0))} · ${m.pts[0]} – ${m.pts[1]} · ${esc(nameOf(1))}` : `${m.pts[p]} – ${m.pts[1 - p]}`;
+		const again = champ === -1 ? 'sudden' : 'again';
 		const s = paint(p, `<div class="hint">${verdict(p)[1]}</div>
-			<div class="res ${champ === p || (pass && champ >= 0) ? 'win' : 'tie'}">${title}</div><div class="hint">${score}</div>
+			<div class="res ${champ === p || (pass && champ >= 0) || coop ? 'win' : 'tie'}">${title}</div><div class="hint">${score}</div>
 			${dare ? `<div class="dare"><b>Dare</b> ${esc(dare)}</div>` : ''}
-			<div class="btns"><button class="btn" type="button" data-act="${champ < 0 ? 'sudden' : 'again'}">${champ < 0 ? 'Sudden death' : 'Rematch'}</button><button class="btn ghost" type="button" data-act="hub">Hub</button></div>`);
+			<div class="btns"><button class="btn" type="button" data-act="${again}">${champ === -1 ? 'Sudden death' : 'Rematch'}</button><button class="btn ghost" type="button" data-act="hub">Hub</button></div>`);
 		$$('button', s).forEach((b) => (b.onclick = () => FINAL[b.dataset.act]()));
 	});
 }

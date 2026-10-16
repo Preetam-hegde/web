@@ -31,7 +31,7 @@ const sfx = {
 	boom: () => beep(90, 450, { type: 'sawtooth', gain: 0.12 }),
 };
 
-/* ── loser dares: {w} becomes the winner's name ──────── */
+/* ── loser dares: {w} becomes the winner's name (or the partner's, in Truth or Dare) ── */
 const DARES = [
 	'Give {w} a 60-second shoulder rub.',
 	'Tell {w} one thing you admire about them. Out loud, no jokes.',
@@ -72,7 +72,7 @@ const wrapText = (g, text, maxW) => {
 };
 
 async function renderCard() {
-	const { champ, dare } = m.final;
+	const { champ, dare, coop } = m.final; // champ: 0/1 winner, -1 draw, -2 played together
 	await document.fonts?.ready;
 	const W = 1080, H = 1920;
 	const cv = document.createElement('canvas');
@@ -113,8 +113,8 @@ async function renderCard() {
 
 	g.font = '200px serif';
 	g.fillStyle = '#fff';
-	g.fillText(champ < 0 ? '🤝' : '🏆', W / 2, 720);
-	const heading = champ < 0 ? 'Draw' : nameOf(champ);
+	g.fillText(coop ? '💞' : champ < 0 ? '🤝' : '🏆', W / 2, 720);
+	const heading = coop ? coop.title : champ < 0 ? 'Draw' : nameOf(champ);
 	let size = 120;
 	g.font = `700 ${size}px ${sans}`;
 	while (g.measureText(heading).width > W - 140 && size > 50) g.font = `700 ${(size -= 6)}px ${sans}`;
@@ -122,22 +122,31 @@ async function renderCard() {
 	g.fillText(heading, W / 2, 890);
 	g.fillStyle = '#9a93c4';
 	g.font = `500 56px ${sans}`;
-	g.fillText(champ < 0 ? 'Nobody blinked' : 'wins the match', W / 2, 970);
+	g.fillText(coop ? coop.sub : champ < 0 ? 'Nobody blinked' : 'wins the match', W / 2, 970);
 
-	[0, 1].forEach((p) => {
-		const x = p ? 790 : 290;
-		g.fillStyle = P[p];
-		g.font = `700 260px ${mono}`;
-		g.fillText(String(m.pts[p]), x, 1290);
-		let ns = 52;
-		g.font = `500 ${ns}px ${sans}`;
-		while (g.measureText(nameOf(p)).width > 440 && ns > 28) g.font = `500 ${(ns -= 3)}px ${sans}`;
+	if (coop) {
+		let ns = 72;
+		const names = `${nameOf(0)} & ${nameOf(1)}`;
+		g.font = `700 ${ns}px ${sans}`;
+		while (g.measureText(names).width > W - 160 && ns > 30) g.font = `700 ${(ns -= 4)}px ${sans}`;
 		g.fillStyle = '#f4f1ff';
-		g.fillText(nameOf(p), x, 1370);
-	});
-	g.fillStyle = '#4a4470';
-	g.font = `700 160px ${mono}`;
-	g.fillText('–', W / 2, 1270);
+		g.fillText(names, W / 2, 1280);
+	} else {
+		[0, 1].forEach((p) => {
+			const x = p ? 790 : 290;
+			g.fillStyle = P[p];
+			g.font = `700 260px ${mono}`;
+			g.fillText(String(m.pts[p]), x, 1290);
+			let ns = 52;
+			g.font = `500 ${ns}px ${sans}`;
+			while (g.measureText(nameOf(p)).width > 440 && ns > 28) g.font = `500 ${(ns -= 3)}px ${sans}`;
+			g.fillStyle = '#f4f1ff';
+			g.fillText(nameOf(p), x, 1370);
+		});
+		g.fillStyle = '#4a4470';
+		g.font = `700 160px ${mono}`;
+		g.fillText('–', W / 2, 1270);
+	}
 
 	if (dare) {
 		g.font = `500 46px ${sans}`;
@@ -183,6 +192,13 @@ async function shareResult() {
 
 /* ── game icons: Lucide line icons (ISC, https://lucide.dev), drawn in currentColor ── */
 const GAME_ICONS = {
+	likely: '<path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/><path d="M16 3.13a4 4 0 0 1 0 7.75"/>',
+	never: '<path d="M7.9 20A9 9 0 1 0 4 16.1L2 22Z"/>',
+	compat: '<line x1="19" x2="5" y1="5" y2="19"/><circle cx="6.5" cy="6.5" r="2.5"/><circle cx="17.5" cy="17.5" r="2.5"/>',
+	rather: '<circle cx="12" cy="12" r="10"/><path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"/><path d="M12 17h.01"/>',
+	roulette: '<rect width="18" height="18" x="3" y="3" rx="2" ry="2"/><path d="M16 8h.01"/><path d="M8 8h.01"/><path d="M8 16h.01"/><path d="M16 16h.01"/><path d="M12 12h.01"/>',
+	connect4: '<rect x="3" y="3" width="18" height="18" rx="3"/><circle cx="8.5" cy="8.5" r="1.5"/><circle cx="15.5" cy="8.5" r="1.5"/><circle cx="8.5" cy="15.5" r="1.5"/><circle cx="15.5" cy="15.5" r="1.5"/>',
+	sync: '<path d="M9 18V5l12-2v13"/><circle cx="6" cy="18" r="3"/><circle cx="18" cy="16" r="3"/>',
 	stop: '<line x1="10" x2="14" y1="2" y2="2"/><line x1="12" x2="15" y1="14" y2="11"/><circle cx="12" cy="14" r="8"/>',
 	liar: '<circle cx="12" cy="12" r="10"/><polyline points="12 6 12 12 16 14"/>',
 	feel: '<path d="M10.733 5.076a10.744 10.744 0 0 1 11.205 6.575 1 1 0 0 1 0 .696 10.747 10.747 0 0 1-1.444 2.49"/><path d="M14.084 14.158a3 3 0 0 1-4.242-4.242"/><path d="M17.479 17.499a10.75 10.75 0 0 1-15.417-5.151 1 1 0 0 1 0-.696 10.75 10.75 0 0 1 4.446-5.143"/><path d="m2 2 20 20"/>',
@@ -200,3 +216,6 @@ const GAME_ICONS = {
 	flags: '<path d="M4 15s1-1 4-1 5 2 8 2 4-1 4-1V3s-1 1-4 1-5-2-8-2-4 1-4 1z"/><line x1="4" x2="4" y1="22" y2="15"/>',
 };
 const gameIcon = (id) => `<svg class="gi" viewBox="0 0 24 24" aria-hidden="true">${GAME_ICONS[id] || ''}</svg>`;
+
+/* The built-in dares plus any the players typed in on the menu. */
+const allDares = () => [...DARES, ...store.custom.dares];
