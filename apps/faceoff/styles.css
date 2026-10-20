@@ -395,6 +395,8 @@ canvas { touch-action: none; border-radius: 12px; background: rgba(255, 255, 255
 #party[data-game='poker'] { --ga: #f7c948; --gb: #ff7a59; }
 #party[data-game='mix'] { --ga: #b794f6; --gb: #ff8fb1; }
 #party[data-game='spy'] { --ga: #6ec1ff; --gb: #b794f6; }
+#party[data-game='odd'] { --ga: #7cf29a; --gb: #35d6c8; }
+#party[data-game='cover'] { --ga: #ffa94d; --gb: #ff5d73; }
 
 .phd { display: grid; grid-template-columns: 44px 1fr 44px; align-items: center; gap: 8px; padding: 10px 12px 6px; }
 .ibtn { width: 44px; height: 44px; display: grid; place-items: center; padding: 0; border: 1px solid var(--line); border-radius: 50%; background: rgba(255, 255, 255, 0.06); color: var(--ink); }
