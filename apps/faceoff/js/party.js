@@ -85,7 +85,7 @@ function startParty(id) {
 	$('#party').dataset.game = id;
 	$('#partyTitle').innerHTML = `${gameIcon(id)} ${ps.game.name}`;
 	document.body.dataset.screen = 'party';
-	showRules(() => roster(), 'Got it, pick players');
+	showRules(() => (ps.game.table ? pickMode() : roster()), ps.game.table ? 'Got it' : 'Got it, pick players'); // table games (table.js) can also be played on separate phones
 }
 
 /* Roster: a name, an icon and a colour for each player. Tap an avatar to change its look. */
@@ -503,7 +503,7 @@ PARTY.push({
 
 /* ── wiring ── */
 $('#partyBack').onclick = () => {
-	if (ps?.playing && !confirm('Leave this game? The scores are lost.')) return;
+	if (ps?.playing && !ps.table && !confirm('Leave this game? The scores are lost.')) return; // an own-phone table is saved, so leaving costs nothing
 	leaveParty();
 };
 $('#partyRules').onclick = () => {

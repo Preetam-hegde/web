@@ -20,14 +20,26 @@ const GAMES = [];
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
 const rand = (a, b) => a + Math.random() * (b - a);
-const choice = (list) => list[Math.floor(Math.random() * list.length)];
-const shuffle = (list) => {
+const choice = (list, r = Math.random) => list[Math.floor(r() * list.length)];
+const shuffle = (list, r = Math.random) => {
 	const a = [...list];
 	for (let i = a.length - 1; i > 0; i--) {
-		const j = Math.floor(Math.random() * (i + 1));
+		const j = Math.floor(r() * (i + 1));
 		[a[i], a[j]] = [a[j], a[i]];
 	}
 	return a;
+};
+/* A seedable stand-in for Math.random: the same text gives the same sequence on every device (FNV-1a hash into mulberry32).
+   The own-phone spy games deal from it, so each phone can work out the whole table without a server. */
+const seeded = (s) => {
+	let h = 2166136261;
+	for (let i = 0; i < s.length; i++) h = Math.imul(h ^ s.charCodeAt(i), 16777619);
+	return () => {
+		h = (h + 0x6d2b79f5) | 0;
+		let t = Math.imul(h ^ (h >>> 15), 1 | h);
+		t = (t + Math.imul(t ^ (t >>> 7), 61 | t)) ^ t;
+		return ((t ^ (t >>> 14)) >>> 0) / 4294967296;
+	};
 };
 const secs = (ms, d = 2) => (ms / 1000).toFixed(d);
 const buzz = (ms = 15) => { if (navigator.userActivation?.isActive) navigator.vibrate?.(ms); }; // browsers block vibrate without a recent tap
