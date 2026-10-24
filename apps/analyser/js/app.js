@@ -7,8 +7,7 @@
 	const esc = DSA.util.esc;
 
 	const el = {
-		groups: $('groups'),
-		algos: $('algos'),
+		nav: $('nav'),
 		controls: $('controls'),
 		title: $('stage-title'),
 		legend: $('legend'),
@@ -27,7 +26,8 @@
 		infoBlurb: $('info-blurb'),
 		complexity: $('complexity'),
 		code: $('code'),
-		eli5: $('eli5')
+		eli5: $('eli5'),
+		real: $('real')
 	};
 
 	const SPEEDS = [0.25, 0.5, 0.75, 1, 1.5, 2, 4, 8, 16];
@@ -62,31 +62,36 @@
 	}
 
 	function renderNav() {
-		el.groups.innerHTML = '';
+		el.nav.innerHTML = '';
 		DSA.groups.forEach(function (g) {
-			if (!groupAlgos(g.id).length) {
+			const list = groupAlgos(g.id);
+			if (!list.length) {
 				return;
 			}
-			const b = document.createElement('button');
-			b.type = 'button';
-			b.className = 'tab' + (app.algo && app.algo.group === g.id ? ' active' : '');
-			b.textContent = g.label;
-			b.title = g.hint;
-			b.addEventListener('click', function () {
-				selectAlgo(groupAlgos(g.id)[0]);
+			const open = app.algo.group === g.id;
+			const head = document.createElement('button');
+			head.type = 'button';
+			head.className = 'nav-group' + (open ? ' open' : '');
+			head.innerHTML = '<span>' + esc(g.label) + '</span><small>' + esc(g.hint) + '</small>';
+			head.addEventListener('click', function () {
+				selectAlgo(list[0]);
 			});
-			el.groups.appendChild(b);
-		});
-		el.algos.innerHTML = '';
-		groupAlgos(app.algo.group).forEach(function (a) {
-			const b = document.createElement('button');
-			b.type = 'button';
-			b.className = 'pill' + (a === app.algo ? ' active' : '');
-			b.textContent = a.name;
-			b.addEventListener('click', function () {
-				selectAlgo(a);
-			});
-			el.algos.appendChild(b);
+			el.nav.appendChild(head);
+			if (open) {
+				const box = document.createElement('div');
+				box.className = 'nav-algos';
+				list.forEach(function (a) {
+					const b = document.createElement('button');
+					b.type = 'button';
+					b.className = 'nav-algo' + (a === app.algo ? ' active' : '');
+					b.textContent = a.name;
+					b.addEventListener('click', function () {
+						selectAlgo(a);
+					});
+					box.appendChild(b);
+				});
+				el.nav.appendChild(box);
+			}
 		});
 	}
 
@@ -247,6 +252,9 @@
 		el.code.innerHTML = a.code.map(function (line, i) {
 			return '<li data-i="' + i + '"><code>' + highlight(line) + '</code></li>';
 		}).join('');
+		el.real.innerHTML = (DSA.real[a.id] || []).map(function (r) {
+			return '<div class="real-item"><b>' + esc(r[0]) + '</b><p>' + esc(r[1]) + '</p></div>';
+		}).join('');
 		const kid = DSA.eli5[a.id];
 		el.eli5.hidden = !kid;
 		if (kid) {
@@ -304,7 +312,7 @@
 		el.narration.textContent = f.msg || '';
 		el.narration.classList.toggle('warn', !!f.warn);
 		el.scrub.value = i;
-		el.scrub.style.background = 'linear-gradient(90deg, var(--accent) ' + (n > 1 ? i / (n - 1) * 100 : 100) + '%, rgba(148,163,184,.25) 0)';
+		el.scrub.style.background = 'linear-gradient(90deg, var(--sakura) ' + (n > 1 ? i / (n - 1) * 100 : 100) + '%, #f3e7d3 0)';
 		el.step.textContent = (i + 1) + ' / ' + n;
 		const stats = f.stats || {};
 		el.stats.innerHTML = Object.keys(stats).map(function (key) {
@@ -447,6 +455,18 @@
 	const wanted = DSA.algos.filter(function (a) {
 		return a.id === location.hash.slice(1);
 	})[0];
+	$('info-tabs').addEventListener('click', function (ev) {
+		const tab = ev.target.dataset && ev.target.dataset.tab;
+		if (!tab) {
+			return;
+		}
+		Array.prototype.forEach.call($('info-tabs').children, function (b) {
+			b.classList.toggle('on', b.dataset.tab === tab);
+		});
+		Array.prototype.forEach.call(document.querySelectorAll('.pane'), function (p) {
+			p.hidden = p.dataset.pane !== tab;
+		});
+	});
 	el.speed.max = SPEEDS.length - 1;
 	el.speed.value = 3;
 	el.speedLabel.textContent = '1×';

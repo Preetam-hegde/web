@@ -120,6 +120,30 @@ body {
 	border-bottom-color: var(--gold);
 }
 
+.room-name {
+	display: none;
+	white-space: nowrap;
+}
+
+.room-btn[aria-current='true'] .room-name {
+	display: inline;
+}
+
+.room-btn small {
+	font-size: 0.78rem;
+}
+
+.panel-title {
+	margin: 4px 0 12px;
+	padding-top: 12px;
+	border-top: 1px solid var(--line);
+	font-size: 0.68rem;
+	font-weight: 600;
+	letter-spacing: 0.18em;
+	text-transform: uppercase;
+	color: var(--gold);
+}
+
 .bar-actions {
 	display: flex;
 	gap: 6px;

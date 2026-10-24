@@ -1,0 +1,362 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>ComicClash — Retro Comic Gacha & Rogues Gallery</title>
+		<meta
+			name="description"
+			content="A retro comic-book gacha game with authentic Ben-Day halftone visuals, foil booster pack tearing, 16 collectible superheroes, and tactical comic strip turn-based combat."
+		/>
+		<link rel="stylesheet" href="styles.css" />
+		<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg" />
+		<script
+			data-goatcounter="https://ptwo.goatcounter.com/count"
+			async
+			src="//gc.zgo.at/count.js"
+		></script>
+	</head>
+	<body>
+		<!-- ── Top Comic Header & Real-Time HUD ──────────────────────────────── -->
+		<header class="comic-header">
+			<div class="brand-wrapper">
+				<h1 class="brand-title">💥 COMIC CLASH</h1>
+				<span class="brand-tagline">ISSUE #1: FIRST PRINTING</span>
+			</div>
+			<div class="comic-hud">
+				<div
+					class="hud-pill coins"
+					title="Comic Coins (Used to open booster packs)"
+				>
+					<span>🪙</span> <span id="hud-coins">0</span>
+				</div>
+				<div class="hud-pill ink" title="Ink Essence (Used to level up heroes)">
+					<span>🧪</span> <span id="hud-ink">0</span>
+				</div>
+				<div
+					class="hud-pill pity"
+					title="Pulls until guaranteed 5★ Mythic hero"
+				>
+					<span>✦ PITY:</span> <span id="hud-pity">40</span>
+				</div>
+				<button
+					type="button"
+					id="btn-mute"
+					class="btn-mute"
+					title="Toggle Sound FX"
+				>
+					🔊 SFX ON
+				</button>
+			</div>
+		</header>
+
+		<!-- ── Navigation Bar ────────────────────────────────────────────────── -->
+		<nav class="comic-nav" aria-label="Game Navigation">
+			<button type="button" class="nav-tab active" data-view="summon">
+				📦 SUMMON PACKS
+			</button>
+			<button type="button" class="nav-tab" data-view="campaign">
+				📖 COMIC ISSUES
+			</button>
+			<button type="button" class="nav-tab" data-view="battle">
+				🥊 ACTIVE BATTLE
+			</button>
+			<button type="button" class="nav-tab" data-view="roster">
+				🦸 SQUAD & ROSTER
+			</button>
+			<button type="button" class="nav-tab" data-view="rewards">
+				🎁 DAILY LOOT <span id="loot-dot" class="nav-dot" hidden>!</span>
+			</button>
+		</nav>
+
+		<!-- ── View 1: Gacha Booster Pack Summon ─────────────────────────────── -->
+		<main id="view-summon" class="comic-view active">
+			<div class="gacha-stage">
+				<div class="gacha-marquee">
+					<h2>SERIES 1: MULTIVERSE HEROES</h2>
+					<p>
+						16 VINTAGE HEROES · 5★ MYTHICS GUARANTEED EVERY 40 PULLS · 4★+ ON
+						10-PULLS
+					</p>
+				</div>
+
+				<div class="summon-meters">
+					<div class="pity-meter">
+						<div class="pity-label">
+							<span>✦ MYTHIC PITY</span><span id="pity5-text">0/40</span>
+						</div>
+						<div class="meter-bar pity5"><div class="fill" id="pity5-fill"></div></div>
+					</div>
+					<div class="pity-meter">
+						<div class="pity-label">
+							<span>★ SUPER RARE PITY</span><span id="pity4-text">0/10</span>
+						</div>
+						<div class="meter-bar pity4"><div class="fill" id="pity4-fill"></div></div>
+					</div>
+					<div class="pity-meter">
+						<div class="pity-label">
+							<span>📚 COLLECTION</span><span id="collection-text">3/16</span>
+						</div>
+						<div class="meter-bar collect"><div class="fill" id="collection-fill"></div></div>
+					</div>
+				</div>
+
+				<div class="booster-pack-wrapper">
+					<div
+						id="booster-pack"
+						class="booster-pack"
+						title="Click or drag to rip open!"
+					>
+						<div id="tear-strip" class="pack-tear-strip">
+							✂ CLICK OR TAP TO RIP OPEN ✂
+						</div>
+						<div class="pack-body">
+							<div class="pack-series">ISSUE #1 COLLECTOR'S FOIL</div>
+							<div class="pack-art">⚡💥⚡</div>
+							<div class="pack-footer">CONTAINS 1 RARE HERO OR BETTER</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="summon-actions">
+					<button type="button" id="btn-pull-1" class="comic-btn">
+						<span>OPEN 1 PACK</span> (100 🪙)
+					</button>
+					<button type="button" id="btn-pull-10" class="comic-btn btn-10x">
+						<span>OPEN 10 PACKS</span> (900 🪙)
+					</button>
+				</div>
+
+				<div class="summon-footer">
+					<button type="button" id="btn-odds" class="link-btn">DROP RATES</button>
+					<span>·</span>
+					<button type="button" id="btn-history" class="link-btn">
+						PULL HISTORY
+					</button>
+				</div>
+				<div id="summon-info" class="summon-info" hidden></div>
+			</div>
+		</main>
+
+		<!-- ── View 2: Campaign / Comic Issues ───────────────────────────────── -->
+		<section id="view-campaign" class="comic-view">
+			<div class="issues-marquee">
+				<h2>THE ROGUES GALLERY CAMPAIGN</h2>
+				<p>
+					Select an issue, assemble your 3-hero squad, and defeat the villain
+					syndicates across multiple waves! Earn up to 3 stars per issue.
+				</p>
+			</div>
+			<div id="campaign-squad" class="campaign-squad"></div>
+			<div id="issues-list" class="issues-container"></div>
+		</section>
+
+		<!-- ── View 3: Comic Strip Battle Arena ──────────────────────────────── -->
+		<section id="view-battle" class="comic-view">
+			<div id="battle-empty" class="battle-empty">
+				<h2>NO ACTIVE BATTLE</h2>
+				<p>Pick an issue from the campaign to start fighting!</p>
+				<button type="button" id="btn-go-campaign" class="comic-btn">
+					OPEN COMIC ISSUES
+				</button>
+			</div>
+
+			<div id="battle-live" class="combat-strip" hidden>
+				<div id="ultimate-splash" class="ultimate-splash">
+					<div class="ult-name">SUPERNOVA REQUIEM</div>
+					<div class="ult-quote">"BY THE LIGHT OF A THOUSAND SUNS!"</div>
+				</div>
+				<div id="boss-banner" class="boss-banner">
+					<span id="boss-banner-text">⚠ BOSS MOVE!</span>
+				</div>
+
+				<div class="battle-topbar">
+					<div class="battle-title">
+						<span id="battle-issue">ISSUE #1</span>
+						<span id="battle-wave" class="battle-chip">WAVE 1/2</span>
+						<span id="battle-turn" class="battle-chip">TURN 1</span>
+						<span id="battle-combo" class="battle-chip combo" hidden>COMBO x1</span>
+					</div>
+					<div class="battle-tools">
+						<button type="button" id="btn-auto" class="tool-btn" title="Auto-battle (A)">
+							🤖 AUTO: OFF
+						</button>
+						<button type="button" id="btn-fast" class="tool-btn" title="Faster animations (F)">
+							⏩ FAST: OFF
+						</button>
+						<button type="button" id="btn-retreat" class="tool-btn danger" title="Leave the battle">
+							🏳 RETREAT
+						</button>
+					</div>
+				</div>
+
+				<div id="comic-arena" class="comic-arena">
+					<!-- Hero Squad Panel -->
+					<div class="combat-squad">
+						<div class="squad-title">HERO SQUAD (YOU)</div>
+						<div id="combat-heroes"></div>
+					</div>
+
+					<!-- Rogue Villains Panel -->
+					<div class="combat-squad">
+						<div class="squad-title villain-title">
+							VILLAIN SYNDICATE <small>(tap to target)</small>
+						</div>
+						<div id="combat-villains"></div>
+					</div>
+				</div>
+
+				<!-- Dynamic Turn Actions -->
+				<div class="combat-actions-bar">
+					<button type="button" id="act-basic" class="comic-btn act-btn">
+						BASIC ATTACK (+30 NRG)
+					</button>
+					<button type="button" id="act-skill" class="comic-btn act-btn">
+						SPECIAL SKILL
+					</button>
+					<button type="button" id="act-ult" class="comic-btn act-btn">
+						★ ULTIMATE BURST
+					</button>
+				</div>
+				<div class="hotkey-hint">HOTKEYS: 1 BASIC · 2 SKILL · 3 ULTIMATE · A AUTO · F FAST</div>
+
+				<!-- Live Comic Caption Log -->
+				<div id="combat-log-text" class="combat-log-bar">
+					Issue Ready: Choose your move to engage the villains!
+				</div>
+			</div>
+		</section>
+
+		<!-- ── View 4: Roster & Team Builder ─────────────────────────────────── -->
+		<section id="view-roster" class="comic-view">
+			<h2 class="roster-section-title">ACTIVE SQUAD (3 HEROES)</h2>
+			<p class="roster-hint">
+				Tap a squad slot to select it, then press ASSIGN on any hero to swap them in.
+			</p>
+			<div id="synergy-banner" class="synergy-banner"></div>
+			<div id="active-team-slots" class="team-builder-bar"></div>
+
+			<h2 class="roster-section-title" style="margin-top: 2rem">
+				HERO COLLECTION & UPGRADES
+				<small id="roster-count" class="count-chip"></small>
+			</h2>
+			<div class="roster-filters" id="roster-filters">
+				<div class="filter-group" data-filter="rarity">
+					<button type="button" class="chip active" data-value="all">ALL</button>
+					<button type="button" class="chip" data-value="5">5★</button>
+					<button type="button" class="chip" data-value="4">4★</button>
+					<button type="button" class="chip" data-value="3">3★</button>
+					<button type="button" class="chip" data-value="2">2★</button>
+				</div>
+				<div class="filter-group" data-filter="affinity">
+					<button type="button" class="chip active" data-value="all">ANY</button>
+					<button type="button" class="chip" data-value="Cosmic">✦ COSMIC</button>
+					<button type="button" class="chip" data-value="Tech">⚙ TECH</button>
+					<button type="button" class="chip" data-value="Brawler">✊ BRAWLER</button>
+					<button type="button" class="chip" data-value="Mystic">👁 MYSTIC</button>
+				</div>
+				<label class="chip toggle"
+					><input type="checkbox" id="filter-locked" checked /> SHOW LOCKED</label
+				>
+			</div>
+			<div id="roster-grid" class="roster-grid"></div>
+		</section>
+
+		<!-- ── View 5: Daily Loot & Quests ───────────────────────────────────── -->
+		<section id="view-rewards" class="comic-view">
+			<div class="daily-card">
+				<h2>DAILY COMIC SHIPMENT</h2>
+				<p id="daily-status" class="daily-status">
+					Your daily reader allowance is ready to claim!
+				</p>
+				<div id="streak-track" class="streak-track"></div>
+				<button type="button" id="btn-claim-daily" class="comic-btn btn-10x">
+					CLAIM DAILY LOOT
+				</button>
+			</div>
+
+			<div class="daily-card quests-card">
+				<h2>DAILY MISSIONS</h2>
+				<p class="daily-status">Fresh missions every day. Claim the loot when you're done!</p>
+				<div id="quest-list" class="quest-list"></div>
+			</div>
+
+			<div class="daily-card stats-card">
+				<h2>HALL OF FAME</h2>
+				<div id="stats-grid" class="stats-grid"></div>
+				<button type="button" id="btn-reset" class="link-btn dark">RESET SAVE DATA</button>
+			</div>
+		</section>
+
+		<!-- ── Summon Reveal Modal ───────────────────────────────────────────── -->
+		<div
+			id="summon-modal"
+			class="modal-overlay"
+			role="dialog"
+			aria-modal="true"
+			aria-label="Booster Pack Reveal"
+		>
+			<div class="modal-content">
+				<div id="mythic-banner" class="mythic-banner">
+					★ MAXIMUM THRILL: 5★ MYTHIC DRAWN! ★
+				</div>
+				<div id="revealed-cards" class="revealed-grid"></div>
+				<div class="modal-actions">
+					<button type="button" id="btn-reveal-all" class="comic-btn">
+						FLIP ALL
+					</button>
+					<button type="button" id="btn-close-summon" class="comic-btn">
+						CONTINUE TO SQUAD
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<!-- ── Hero Detail Modal ─────────────────────────────────────────────── -->
+		<div
+			id="hero-modal"
+			class="modal-overlay"
+			role="dialog"
+			aria-modal="true"
+			aria-label="Hero Details"
+		>
+			<div class="modal-content hero-detail">
+				<div id="hero-detail-body"></div>
+				<button type="button" id="btn-close-hero" class="comic-btn">CLOSE</button>
+			</div>
+		</div>
+
+		<!-- ── Battle End Modal ──────────────────────────────────────────────── -->
+		<div
+			id="battle-end-modal"
+			class="modal-overlay"
+			role="dialog"
+			aria-modal="true"
+			aria-label="Battle Outcome"
+		>
+			<div class="modal-content end-content">
+				<h2 class="end-title">VICTORY!</h2>
+				<div class="end-stars"></div>
+				<p class="end-msg"></p>
+				<div class="end-details"></div>
+				<div class="end-reward"></div>
+				<div class="modal-actions">
+					<button type="button" class="btn-retry-end comic-btn">TRY AGAIN</button>
+					<button type="button" class="btn-close-end comic-btn">
+						RETURN TO ISSUES
+					</button>
+				</div>
+			</div>
+		</div>
+
+		<div id="toast-stack" class="toast-stack" aria-live="polite"></div>
+
+		<!-- ── Game Scripts ──────────────────────────────────────────────────── -->
+		<script src="js/audio.js"></script>
+		<script src="js/heroes.js"></script>
+		<script src="js/kits.js"></script>
+		<script src="js/gacha.js"></script>
+		<script src="js/combat.js"></script>
+		<script src="js/game.js"></script>
+	</body>
+</html>

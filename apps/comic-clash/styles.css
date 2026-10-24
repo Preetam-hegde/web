@@ -1,0 +1,985 @@
+/* ── ComicClash Retro Comic Design System ─────────────────────────────── */
+@import url("https://fonts.googleapis.com/css2?family=Bangers&family=JetBrains+Mono:wght@500;700&display=swap");
+
+:root {
+	--ink-black: #0b0b12;
+	--paper-cream: #faf4e8;
+	--comic-yellow: #ffe600;
+	--comic-cyan: #00f0ff;
+	--comic-magenta: #ff0077;
+	--comic-orange: #ff8800;
+	--comic-purple: #9d4edd;
+	--border-heavy: 3.5px solid var(--ink-black);
+	--shadow-comic: 5px 5px 0px var(--ink-black);
+	--shadow-comic-lg: 8px 8px 0px var(--ink-black);
+	--font-comic: "Bangers", cursive, Impact, sans-serif;
+	--font-mono: "JetBrains Mono", monospace;
+}
+
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+	-webkit-tap-highlight-color: transparent;
+}
+
+body {
+	font-family: var(--font-comic);
+	background-color: #121019;
+	background-image:
+		radial-gradient(rgba(255, 230, 0, 0.12) 15%, transparent 16%),
+		radial-gradient(rgba(0, 240, 255, 0.12) 15%, transparent 16%);
+	background-size: 24px 24px;
+	background-position:
+		0 0,
+		12px 12px;
+	color: var(--paper-cream);
+	min-height: 100vh;
+	display: flex;
+	flex-direction: column;
+	overflow-x: hidden;
+	letter-spacing: 1px;
+}
+
+/* ── Top Comic Header & HUD ────────────────────────────────────────────── */
+.comic-header {
+	background: var(--comic-yellow);
+	color: var(--ink-black);
+	border-bottom: var(--border-heavy);
+	box-shadow: 0 4px 0 var(--ink-black);
+	padding: 0.6rem 1.2rem;
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	position: sticky;
+	top: 0;
+	z-index: 100;
+}
+
+.brand-wrapper {
+	display: flex;
+	align-items: center;
+	gap: 0.8rem;
+}
+
+.brand-title {
+	font-size: 1.9rem;
+	text-transform: uppercase;
+	text-shadow: 2px 2px 0 #fff;
+	letter-spacing: 2px;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+}
+
+.brand-tagline {
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	background: var(--ink-black);
+	color: var(--comic-yellow);
+	padding: 2px 6px;
+	border-radius: 3px;
+}
+
+.comic-hud {
+	display: flex;
+	align-items: center;
+	gap: 1.2rem;
+}
+
+.hud-pill {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	background: #fff;
+	border: 2px solid var(--ink-black);
+	padding: 0.2rem 0.6rem;
+	border-radius: 4px;
+	box-shadow: 2px 2px 0 var(--ink-black);
+	font-size: 1.1rem;
+}
+
+.hud-pill.coins {
+	color: #d48b00;
+}
+.hud-pill.ink {
+	color: #0088cc;
+}
+.hud-pill.pity {
+	color: var(--comic-magenta);
+	font-size: 0.95rem;
+}
+
+.btn-mute {
+	background: var(--ink-black);
+	color: #fff;
+	border: 2px solid var(--ink-black);
+	padding: 0.3rem 0.7rem;
+	cursor: pointer;
+	font-family: var(--font-comic);
+	font-size: 1rem;
+	box-shadow: 2px 2px 0 #fff;
+	transition: transform 0.1s;
+}
+
+.btn-mute:active {
+	transform: translate(2px, 2px);
+	box-shadow: none;
+}
+
+/* ── Navigation Tabs ───────────────────────────────────────────────────── */
+.comic-nav {
+	display: flex;
+	justify-content: center;
+	background: #1c1829;
+	border-bottom: var(--border-heavy);
+	padding: 0.5rem;
+	gap: 0.8rem;
+	flex-wrap: wrap;
+}
+
+.nav-tab {
+	background: #2b253d;
+	color: #fff;
+	border: var(--border-heavy);
+	padding: 0.5rem 1.4rem;
+	font-size: 1.25rem;
+	font-family: var(--font-comic);
+	cursor: pointer;
+	box-shadow: 3px 3px 0 var(--ink-black);
+	transition:
+		transform 0.1s,
+		background 0.2s;
+	text-transform: uppercase;
+}
+
+.nav-tab:hover {
+	background: #3c3454;
+}
+
+.nav-tab.active {
+	background: var(--comic-magenta);
+	color: #fff;
+	transform: translate(-2px, -2px);
+	box-shadow: 5px 5px 0 var(--ink-black);
+}
+
+/* ── Main View Container ───────────────────────────────────────────────── */
+.comic-view {
+	display: none;
+	padding: 2rem 1.5rem;
+	max-width: 1200px;
+	margin: 0 auto;
+	width: 100%;
+	flex: 1;
+}
+
+.comic-view.active {
+	display: block;
+	animation: panelPop 0.25s ease-out;
+}
+
+@keyframes panelPop {
+	0% {
+		opacity: 0;
+		transform: scale(0.97);
+	}
+	100% {
+		opacity: 1;
+		transform: scale(1);
+	}
+}
+
+/* ── Gacha Summon View ──────────────────────────────────────────────────── */
+.gacha-stage {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	text-align: center;
+	gap: 1.5rem;
+}
+
+.gacha-marquee {
+	background: var(--comic-cyan);
+	color: var(--ink-black);
+	border: var(--border-heavy);
+	box-shadow: var(--shadow-comic);
+	padding: 0.8rem 2rem;
+	transform: rotate(-1deg);
+}
+
+.gacha-marquee h2 {
+	font-size: 2.4rem;
+	text-shadow: 2px 2px 0 #fff;
+}
+
+.gacha-marquee p {
+	font-family: var(--font-mono);
+	font-size: 0.85rem;
+	font-weight: 700;
+}
+
+/* ── Foil Booster Pack Component ───────────────────────────────────────── */
+.booster-pack-wrapper {
+	position: relative;
+	perspective: 1000px;
+	margin: 1rem auto;
+}
+
+.booster-pack {
+	width: 290px;
+	height: 420px;
+	background: linear-gradient(
+		135deg,
+		#1c0f2b,
+		#4a154b,
+		#ff0077,
+		#ffe600,
+		#00f0ff
+	);
+	background-size: 300% 300%;
+	animation: foilSheen 6s ease infinite;
+	border: 5px solid var(--ink-black);
+	border-radius: 12px;
+	box-shadow:
+		var(--shadow-comic-lg),
+		0 0 25px rgba(255, 0, 119, 0.4);
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	position: relative;
+	cursor: pointer;
+	transition: transform 0.2s;
+}
+
+.booster-pack:hover {
+	transform: translateY(-6px) scale(1.02);
+}
+
+@keyframes foilSheen {
+	0% {
+		background-position: 0% 50%;
+	}
+	50% {
+		background-position: 100% 50%;
+	}
+	100% {
+		background-position: 0% 50%;
+	}
+}
+
+.pack-tear-strip {
+	background: repeating-linear-gradient(
+		45deg,
+		#ffe600,
+		#ffe600 12px,
+		var(--ink-black) 12px,
+		var(--ink-black) 24px
+	);
+	padding: 0.7rem;
+	border-bottom: 4px dashed var(--ink-black);
+	color: var(--ink-black);
+	font-weight: bold;
+	font-size: 1.1rem;
+	text-align: center;
+	cursor: pointer;
+	user-select: none;
+	animation: pulseStripe 1.5s infinite;
+}
+
+@keyframes pulseStripe {
+	0%,
+	100% {
+		filter: brightness(1);
+	}
+	50% {
+		filter: brightness(1.2);
+	}
+}
+
+.pack-body {
+	flex: 1;
+	padding: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	align-items: center;
+	background: radial-gradient(
+		circle,
+		rgba(0, 0, 0, 0.4) 0%,
+		rgba(0, 0, 0, 0.85) 100%
+	);
+}
+
+.pack-series {
+	font-size: 1.8rem;
+	color: var(--comic-yellow);
+	text-shadow: 2px 2px 0 var(--ink-black);
+}
+
+.pack-art {
+	font-size: 4rem;
+	filter: drop-shadow(4px 4px 0 #000);
+}
+
+.pack-footer {
+	font-size: 1rem;
+	background: var(--ink-black);
+	color: var(--comic-cyan);
+	padding: 0.3rem 0.8rem;
+	border-radius: 4px;
+	border: 2px solid var(--comic-cyan);
+}
+
+/* Ripping Animation */
+.booster-pack.ripping {
+	animation: packRip 0.6s forwards;
+}
+
+@keyframes packRip {
+	0% {
+		transform: scale(1);
+		filter: contrast(1);
+	}
+	40% {
+		transform: scale(1.1) rotate(2deg);
+		filter: contrast(1.5) brightness(1.3);
+	}
+	70% {
+		transform: scale(0.9) rotate(-3deg);
+		opacity: 0.7;
+	}
+	100% {
+		transform: scale(0.5);
+		opacity: 0;
+	}
+}
+
+/* ── Summon Buttons ────────────────────────────────────────────────────── */
+.summon-actions {
+	display: flex;
+	gap: 1.5rem;
+	margin-top: 1rem;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.comic-btn {
+	background: var(--comic-yellow);
+	color: var(--ink-black);
+	border: var(--border-heavy);
+	padding: 0.8rem 1.8rem;
+	font-size: 1.35rem;
+	font-family: var(--font-comic);
+	cursor: pointer;
+	box-shadow: var(--shadow-comic);
+	transition: all 0.1s;
+	display: inline-flex;
+	align-items: center;
+	gap: 0.5rem;
+	text-transform: uppercase;
+}
+
+.comic-btn:hover {
+	transform: translate(-2px, -2px);
+	box-shadow: var(--shadow-comic-lg);
+}
+
+.comic-btn:active {
+	transform: translate(3px, 3px);
+	box-shadow: none;
+}
+
+.comic-btn.btn-10x {
+	background: var(--comic-magenta);
+	color: #fff;
+	text-shadow: 1px 1px 0 var(--ink-black);
+}
+
+/* ── Hero Card Component ───────────────────────────────────────────────── */
+.comic-card {
+	width: 200px;
+	height: 290px;
+	background: var(--paper-cream);
+	color: var(--ink-black);
+	border: 4px solid var(--ink-black);
+	border-radius: 8px;
+	box-shadow: 5px 5px 0 var(--ink-black);
+	display: flex;
+	flex-direction: column;
+	padding: 0.5rem;
+	position: relative;
+	transition: transform 0.15s ease-out;
+	transform-style: preserve-3d;
+	cursor: pointer;
+}
+
+.comic-card.rarity-5 {
+	border-color: #ffd700;
+	box-shadow:
+		6px 6px 0 var(--ink-black),
+		0 0 16px rgba(255, 215, 0, 0.6);
+	background: linear-gradient(135deg, #fef9e7, #fffde7);
+}
+
+.card-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	font-size: 0.85rem;
+	border-bottom: 2px solid var(--ink-black);
+	padding-bottom: 2px;
+	margin-bottom: 4px;
+}
+
+.card-rarity {
+	font-family: var(--font-mono);
+	font-weight: 700;
+	font-size: 0.75rem;
+}
+
+.card-art-box {
+	height: 120px;
+	background: var(--card-bg, #222);
+	border: 2px solid var(--ink-black);
+	border-radius: 4px;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	position: relative;
+	overflow: hidden;
+}
+
+.hero-svg {
+	width: 85%;
+	height: 85%;
+	filter: drop-shadow(2px 2px 0 var(--ink-black));
+}
+
+.new-stamp,
+.shard-stamp {
+	position: absolute;
+	top: 4px;
+	right: 4px;
+	background: var(--comic-magenta);
+	color: #fff;
+	font-size: 0.8rem;
+	padding: 2px 6px;
+	border: 1.5px solid var(--ink-black);
+	transform: rotate(8deg);
+	box-shadow: 2px 2px 0 #000;
+}
+
+.shard-stamp {
+	background: var(--comic-cyan);
+	color: var(--ink-black);
+	font-family: var(--font-mono);
+	font-size: 0.7rem;
+}
+
+.card-info {
+	padding: 4px 0;
+	text-align: center;
+}
+
+.hero-name {
+	font-size: 1.15rem;
+	line-height: 1.1;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.hero-alias {
+	font-family: var(--font-mono);
+	font-size: 0.65rem;
+	color: #555;
+	white-space: nowrap;
+	overflow: hidden;
+	text-overflow: ellipsis;
+}
+
+.hero-rank {
+	color: #ff9900;
+	font-size: 0.9rem;
+	letter-spacing: 2px;
+}
+
+.card-stats {
+	display: flex;
+	justify-content: space-between;
+	font-family: var(--font-mono);
+	font-size: 0.7rem;
+	font-weight: bold;
+	background: #eee;
+	padding: 3px 5px;
+	border: 1.5px solid var(--ink-black);
+	margin-top: auto;
+}
+
+/* ── Summon Modal ──────────────────────────────────────────────────────── */
+.modal-overlay {
+	display: none;
+	position: fixed;
+	top: 0;
+	left: 0;
+	width: 100vw;
+	height: 100vh;
+	background: rgba(11, 11, 18, 0.92);
+	z-index: 200;
+	justify-content: center;
+	align-items: center;
+	padding: 1.5rem;
+}
+
+.modal-overlay.open {
+	display: flex;
+}
+
+.modal-content {
+	background: #1b1627;
+	border: var(--border-heavy);
+	box-shadow: var(--shadow-comic-lg);
+	max-width: 1050px;
+	width: 100%;
+	max-height: 90vh;
+	overflow-y: auto;
+	padding: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 1.2rem;
+}
+
+.mythic-banner {
+	display: none;
+	background: var(--comic-magenta);
+	color: #fff;
+	padding: 0.5rem 1.5rem;
+	border: 3px solid #ffe600;
+	font-size: 1.6rem;
+	animation: shakeBanner 0.4s infinite alternate;
+}
+
+.mythic-banner.active {
+	display: block;
+}
+
+@keyframes shakeBanner {
+	0% {
+		transform: rotate(-2deg);
+	}
+	100% {
+		transform: rotate(2deg);
+	}
+}
+
+.revealed-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.2rem;
+	justify-content: center;
+}
+
+/* ── Campaign / Issues View ────────────────────────────────────────────── */
+.issues-container {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+	gap: 1.5rem;
+}
+
+.issue-cover-card {
+	background: var(--paper-cream);
+	color: var(--ink-black);
+	border: var(--border-heavy);
+	box-shadow: var(--shadow-comic);
+	border-radius: 6px;
+	padding: 1rem;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	transition: transform 0.15s;
+}
+
+.issue-cover-card:hover {
+	transform: translateY(-4px);
+}
+
+.issue-badge {
+	position: absolute;
+	top: -12px;
+	left: -8px;
+	background: var(--comic-magenta);
+	color: #fff;
+	border: 2px solid var(--ink-black);
+	padding: 2px 10px;
+	font-size: 1.3rem;
+	transform: rotate(-8deg);
+	box-shadow: 2px 2px 0 var(--ink-black);
+}
+
+.issue-cover-art {
+	height: 140px;
+	background: #251c38;
+	border: 2px solid var(--ink-black);
+	margin-top: 0.5rem;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	justify-content: center;
+	color: #fff;
+	position: relative;
+}
+
+.comic-burst {
+	position: absolute;
+	top: 8px;
+	right: 8px;
+	background: var(--comic-yellow);
+	color: var(--ink-black);
+	padding: 4px 8px;
+	border: 2px solid var(--ink-black);
+	font-size: 1.1rem;
+	transform: rotate(12deg);
+}
+
+.boss-preview {
+	font-size: 1.4rem;
+	color: var(--comic-cyan);
+}
+
+.issue-details {
+	margin-top: 0.8rem;
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	gap: 0.5rem;
+}
+
+.issue-details h3 {
+	font-size: 1.5rem;
+}
+.issue-details p {
+	font-family: var(--font-mono);
+	font-size: 0.8rem;
+	color: #444;
+	flex: 1;
+}
+
+.issue-rewards {
+	font-family: var(--font-mono);
+	font-size: 0.85rem;
+	font-weight: bold;
+	display: flex;
+	gap: 1rem;
+}
+
+/* ── Comic Strip Combat Arena ──────────────────────────────────────────── */
+.combat-strip {
+	background: #181424;
+	border: var(--border-heavy);
+	box-shadow: var(--shadow-comic-lg);
+	padding: 1.5rem;
+	display: flex;
+	flex-direction: column;
+	gap: 1.2rem;
+	position: relative;
+}
+
+.comic-arena {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 1.5rem;
+	min-height: 280px;
+	position: relative;
+}
+
+.combat-squad {
+	display: flex;
+	flex-direction: column;
+	gap: 0.8rem;
+}
+
+.squad-title {
+	font-size: 1.4rem;
+	border-bottom: 2px solid var(--comic-cyan);
+	padding-bottom: 2px;
+}
+
+.squad-title.villain-title {
+	border-color: var(--comic-magenta);
+	text-align: right;
+}
+
+.fighter-panel {
+	background: var(--paper-cream);
+	color: var(--ink-black);
+	border: 3px solid var(--ink-black);
+	box-shadow: 3px 3px 0 var(--ink-black);
+	padding: 0.6rem;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	transition: all 0.2s;
+	cursor: pointer;
+}
+
+.fighter-panel.active-turn {
+	border-color: var(--comic-yellow);
+	box-shadow:
+		0 0 14px var(--comic-yellow),
+		4px 4px 0 var(--ink-black);
+	transform: translateX(6px);
+}
+
+.fighter-panel.fainted {
+	opacity: 0.35;
+	filter: grayscale(1);
+	pointer-events: none;
+}
+
+.fighter-panel.selected-target {
+	border-color: var(--comic-magenta);
+	box-shadow: 0 0 12px var(--comic-magenta);
+}
+
+.fighter-header {
+	display: flex;
+	justify-content: space-between;
+	font-size: 1.15rem;
+}
+
+.fighter-hp-num {
+	font-family: var(--font-mono);
+	font-size: 0.75rem;
+	font-weight: bold;
+}
+
+.meter-bar {
+	height: 10px;
+	background: #ccc;
+	border: 1.5px solid var(--ink-black);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+.meter-bar.hp .fill {
+	background: #00e676;
+	height: 100%;
+	transition: width 0.25s;
+}
+.meter-bar.hp.villain-hp .fill {
+	background: #ff1744;
+}
+.meter-bar.nrg .fill {
+	background: var(--comic-cyan);
+	height: 100%;
+	transition: width 0.25s;
+}
+
+.combat-actions-bar {
+	display: flex;
+	gap: 1rem;
+	justify-content: center;
+	border-top: 2px solid #333;
+	padding-top: 1rem;
+	flex-wrap: wrap;
+}
+
+.act-btn {
+	background: var(--comic-yellow);
+	border: var(--border-heavy);
+	padding: 0.7rem 1.4rem;
+	font-size: 1.25rem;
+	font-family: var(--font-comic);
+	cursor: pointer;
+	box-shadow: 3px 3px 0 var(--ink-black);
+}
+
+.act-btn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+.act-btn.pulse-ult {
+	background: var(--comic-magenta);
+	color: #fff;
+	animation: pulseStripe 1s infinite;
+}
+
+.combat-log-bar {
+	font-family: var(--font-mono);
+	font-size: 0.85rem;
+	background: var(--ink-black);
+	color: var(--comic-yellow);
+	padding: 0.5rem 1rem;
+	border: 2px solid #444;
+	text-align: center;
+}
+
+/* Floating Onomatopoeia */
+.onomatopoeia-bubble {
+	position: absolute;
+	background: var(--comic-yellow);
+	color: var(--ink-black);
+	border: 3px solid var(--ink-black);
+	padding: 0.4rem 1rem;
+	font-size: 2.2rem;
+	font-family: var(--font-comic);
+	box-shadow: 4px 4px 0 var(--ink-black);
+	pointer-events: none;
+	animation: popOut 0.75s forwards;
+	z-index: 50;
+}
+
+.onomatopoeia-bubble.crit {
+	background: var(--comic-magenta);
+	color: #fff;
+	font-size: 2.8rem;
+}
+
+@keyframes popOut {
+	0% {
+		transform: scale(0.3) rotate(0deg);
+		opacity: 0;
+	}
+	40% {
+		transform: scale(1.3) rotate(8deg);
+		opacity: 1;
+	}
+	100% {
+		transform: scale(1.6) translateY(-30px);
+		opacity: 0;
+	}
+}
+
+/* Ultimate Splash Screen */
+.ultimate-splash {
+	display: none;
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	background: rgba(255, 0, 119, 0.95);
+	z-index: 80;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	color: #fff;
+	text-align: center;
+	padding: 2rem;
+}
+
+.ultimate-splash.visible {
+	display: flex;
+	animation: splashFade 1.4s forwards;
+}
+
+.ult-name {
+	font-size: 3.5rem;
+	text-shadow: 4px 4px 0 #000;
+	color: var(--comic-yellow);
+}
+.ult-quote {
+	font-size: 2rem;
+	text-shadow: 2px 2px 0 #000;
+	margin-top: 0.5rem;
+}
+
+@keyframes splashFade {
+	0% {
+		opacity: 0;
+		transform: scale(0.9);
+	}
+	20% {
+		opacity: 1;
+		transform: scale(1.05);
+	}
+	80% {
+		opacity: 1;
+		transform: scale(1);
+	}
+	100% {
+		opacity: 0;
+	}
+}
+
+/* ── Roster & Team Builder ─────────────────────────────────────────────── */
+.roster-section-title {
+	font-size: 2rem;
+	margin-bottom: 1rem;
+	color: var(--comic-yellow);
+	border-bottom: 3px solid var(--comic-yellow);
+	padding-bottom: 4px;
+}
+
+.team-builder-bar {
+	display: flex;
+	gap: 1.5rem;
+	margin-bottom: 2rem;
+	flex-wrap: wrap;
+	justify-content: center;
+}
+
+.roster-grid {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 1.5rem;
+	justify-content: center;
+}
+
+.roster-item {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.6rem;
+}
+
+.roster-actions {
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+	width: 100%;
+}
+
+.roster-actions .comic-btn {
+	font-size: 0.9rem;
+	padding: 0.4rem 0.6rem;
+	justify-content: center;
+}
+
+.roster-actions .comic-btn.glow {
+	background: var(--comic-cyan);
+}
+
+/* ── Responsive Mobile Rules ───────────────────────────────────────────── */
+@media (max-width: 768px) {
+	.brand-title {
+		font-size: 1.4rem;
+	}
+	.brand-tagline {
+		display: none;
+	}
+	.hud-pill {
+		font-size: 0.9rem;
+		padding: 2px 4px;
+	}
+	.comic-arena {
+		grid-template-columns: 1fr;
+	}
+	.nav-tab {
+		font-size: 1rem;
+		padding: 0.4rem 0.8rem;
+	}
+	.booster-pack {
+		width: 240px;
+		height: 350px;
+	}
+	.comic-card {
+		width: 160px;
+		height: 250px;
+	}
+	.card-art-box {
+		height: 90px;
+	}
+}

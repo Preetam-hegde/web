@@ -115,6 +115,27 @@
 				</button>
 				<button
 					class="icon-btn"
+					id="btnHelp"
+					title="Explanations &amp; Field Guide"
+					aria-label="Open Explanations Guide"
+				>
+					<svg
+						viewBox="0 0 24 24"
+						width="18"
+						height="18"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+					>
+						<circle cx="12" cy="12" r="10"></circle>
+						<path d="M9.09 9a3 3 0 0 1 5.83 1c0 2-3 3-3 3"></path>
+						<line x1="12" y1="17" x2="12.01" y2="17"></line>
+					</svg>
+				</button>
+				<button
+					class="icon-btn"
 					id="btnTogglePanels"
 					title="Toggle Controls Overlay"
 					aria-label="Toggle Controls Overlay"
@@ -371,6 +392,247 @@
 				</button>
 			</div>
 		</footer>
+
+		<!-- Explanations & Field Guide Modal -->
+		<div
+			class="guide-modal-backdrop"
+			id="guideModalBackdrop"
+			aria-hidden="true"
+		>
+			<div
+				class="guide-modal"
+				role="dialog"
+				aria-labelledby="guideTitle"
+				aria-modal="true"
+			>
+				<header class="guide-header">
+					<div class="guide-title-wrap">
+						<span class="badge">Field Guide</span>
+						<h2 id="guideTitle">Emergence &amp; Physics Explanations</h2>
+					</div>
+					<button class="icon-btn" id="btnCloseGuide" aria-label="Close Guide">
+						<svg
+							viewBox="0 0 24 24"
+							width="18"
+							height="18"
+							fill="none"
+							stroke="currentColor"
+							stroke-width="2"
+						>
+							<line x1="18" y1="6" x2="6" y2="18"></line>
+							<line x1="6" y1="6" x2="18" y2="18"></line>
+						</svg>
+					</button>
+				</header>
+
+				<nav class="guide-tabs" role="tablist">
+					<button class="guide-tab-btn active" data-tab="concept">
+						Emergence
+					</button>
+					<button class="guide-tab-btn" data-tab="math">
+						Physics &amp; Math
+					</button>
+					<button class="guide-tab-btn" data-tab="presets">Biomes Guide</button>
+					<button class="guide-tab-btn" data-tab="controls">Controls</button>
+				</nav>
+
+				<div class="guide-content">
+					<!-- Section 1: Concept -->
+					<div class="guide-panel active" id="tab-concept">
+						<h3>What is Particle Life?</h3>
+						<p>
+							Particle Life is a continuous multi-agent artificial life (A-Life)
+							simulation first popularized by researchers like Jeffrey
+							Ventrella. Unlike cellular automata which operate on a rigid
+							discrete grid, particles here move freely in continuous space
+							under simple Newtonian-like attraction and repulsion forces.
+						</p>
+						<div class="callout-card">
+							<h4>✦ How Emergence Happens</h4>
+							<p>
+								There are no hardcoded instructions telling particles to create
+								"cells", "hunters", or "rotating spirals". Instead, complex
+								macroscopic structures spontaneously self-organize from
+								microscopic local interactions. Simple local rules compound into
+								life-like behavior.
+							</p>
+						</div>
+						<h4>Breaking Newton's Third Law</h4>
+						<p>
+							In standard physics, every action has an equal and opposite
+							reaction (<em>F<sub>AB</sub> = -F<sub>BA</sub></em
+							>). In Particle Life, forces are intentionally
+							<strong>asymmetric</strong>: Species A can be strongly attracted
+							to Species B, while Species B is fiercely repelled by Species A.
+						</p>
+						<p>
+							This creates an eternal pursuit: Species A chases Species B across
+							the canvas, while Species B flees, generating continuous kinetic
+							propulsion and perpetual organic movement without external energy
+							injection.
+						</p>
+					</div>
+
+					<!-- Section 2: Math -->
+					<div class="guide-panel" id="tab-math">
+						<h3>The Physics &amp; Mathematics</h3>
+						<p>
+							For any two particles separated by distance <em>d</em>, the net
+							force <em>F(d)</em> is determined by two critical distance
+							thresholds and the interaction matrix
+							<strong>A<sub>i,j</sub></strong
+							>:
+						</p>
+
+						<div class="formula-box">
+							<div class="formula-row">
+								<span class="cond">0 &lt; d &lt; r<sub>min</sub></span>
+								<span class="eq"
+									>F(d) = -1.2 &times; (1 - d / r<sub>min</sub>)</span
+								>
+								<span class="desc">Core Repulsion (prevents collapse)</span>
+							</div>
+							<div class="formula-row">
+								<span class="cond"
+									>r<sub>min</sub> &le; d &le; r<sub>max</sub></span
+								>
+								<span class="eq"
+									>F(d) = A<sub>i,j</sub> &times; (1 - |2d - (r<sub>max</sub> +
+									r<sub>min</sub>)| / (r<sub>max</sub> - r<sub>min</sub>))</span
+								>
+								<span class="desc">Inter-Species Force Ramp</span>
+							</div>
+							<div class="formula-row">
+								<span class="cond">d &gt; r<sub>max</sub></span>
+								<span class="eq">F(d) = 0</span>
+								<span class="desc">Out of interaction range</span>
+							</div>
+						</div>
+
+						<h4>Key Parameters:</h4>
+						<ul class="guide-list">
+							<li>
+								<strong>r<sub>min</sub> (Core Repulsion Radius):</strong>
+								Short-range repulsive force acting like an atomic Pauli
+								exclusion principle. It prevents particles from condensing into
+								an infinitely dense point.
+							</li>
+							<li>
+								<strong>r<sub>max</sub> (Maximum Influence Radius):</strong> The
+								perceptual boundary. Particles outside this radius exert zero
+								force on each other.
+							</li>
+							<li>
+								<strong>Viscosity / Friction (&mu;):</strong> Applied to
+								velocity every frame:
+								<em
+									>v<sub>t+1</sub> = (v<sub>t</sub> + a &middot; &Delta;t)
+									&times; &mu;</em
+								>. Damps kinetic chaos and allows stable equilibrium structures
+								to crystallize.
+							</li>
+							<li>
+								<strong>Spatial Hash Partitioning:</strong> The simulation space
+								is divided into bins of size <em>r<sub>max</sub></em
+								>. Particles only query their 9 immediate neighboring buckets,
+								turning an otherwise sluggish
+								<em>O(N<sup>2</sup>)</em> algorithm into blazing
+								<em>O(N)</em> running 60 FPS for thousands of particles.
+							</li>
+						</ul>
+					</div>
+
+					<!-- Section 3: Presets -->
+					<div class="guide-panel" id="tab-presets">
+						<h3>Curated Biomes Field Guide</h3>
+						<div class="biome-card">
+							<h4>🧬 Cellular Mitosis</h4>
+							<p>
+								Species form outer protective membrane shells with high mutual
+								surface tension that enclose inner nucleus cores. When
+								perturbations occur, the outer membrane stretches and pinches,
+								mimicking biological cell division (mitosis).
+							</p>
+						</div>
+						<div class="biome-card">
+							<h4>⚔️ Predator &amp; Prey</h4>
+							<p>
+								An asymmetric food chain cycle: Ruby fiercely pursues Teal, Teal
+								evades Ruby while hunting Amber, and Amber circles back around.
+								The population dynamic produces pulsating migratory waves and
+								pack hunting.
+							</p>
+						</div>
+						<div class="biome-card">
+							<h4>🌌 Spiral Disk (Galaxies)</h4>
+							<p>
+								Configured with angular force asymmetries that convert radial
+								attraction into orbital angular momentum. Forms rotating
+								galactic disks with distinct spiraling arms and a super-dense
+								core.
+							</p>
+						</div>
+						<div class="biome-card">
+							<h4>🐍 Serpent Chains</h4>
+							<p>
+								A specialized non-commutative matrix where each species is
+								exclusively attracted to the subsequent species in a ring (1
+								&rarr; 2 &rarr; 3 &rarr; 4 &rarr; 5 &rarr; 6 &rarr; 1). Forms
+								long, flexible, self-steering serpentine filaments.
+							</p>
+						</div>
+						<div class="biome-card">
+							<h4>❄️ Crystal Net</h4>
+							<p>
+								Symmetric matrices with strong positive self-attraction and
+								balanced inter-species repulsion produce static, perfectly
+								spaced crystallographic lattices and molecular lattices.
+							</p>
+						</div>
+					</div>
+
+					<!-- Section 4: Controls -->
+					<div class="guide-panel" id="tab-controls">
+						<h3>Controls &amp; Hotkeys</h3>
+						<div class="controls-grid">
+							<div class="ctrl-row">
+								<kbd>Left Click (Matrix)</kbd
+								><span>Step attraction strength up (+0.25)</span>
+							</div>
+							<div class="ctrl-row">
+								<kbd>Right Click (Matrix)</kbd
+								><span>Step attraction strength down (-0.25)</span>
+							</div>
+							<div class="ctrl-row">
+								<kbd>Click &amp; Drag (Canvas)</kbd
+								><span
+									>Cast active cursor force field (Attract, Repel, Vortex, or
+									Inject)</span
+								>
+							</div>
+							<div class="ctrl-row">
+								<kbd>Scroll Wheel</kbd><span>Smooth zoom in / zoom out</span>
+							</div>
+							<div class="ctrl-row">
+								<kbd>Middle Click / Shift + Drag</kbd
+								><span>Pan viewport camera across space</span>
+							</div>
+							<div class="ctrl-row">
+								<kbd>Double Click (Canvas)</kbd
+								><span>Reset camera zoom and pan back to origin</span>
+							</div>
+							<div class="ctrl-row">
+								<kbd>Sonification Button</kbd
+								><span
+									>Activates Web Audio synthesizer modulated by swarm kinetic
+									energy</span
+								>
+							</div>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<div id="toast" class="toast" aria-live="polite"></div>
 

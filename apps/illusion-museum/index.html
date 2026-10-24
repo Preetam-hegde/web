@@ -4,7 +4,7 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<title>Illusion Museum</title>
-	<meta name="description" content="A walk-through museum of five canvas illusions: bouncing, dividing and shattering balls, a gravity vortex, and a nine-dimension starfield.">
+	<meta name="description" content="Nine interactive canvas exhibits: living orbs, a 3D starfield, and classic optical illusions from hypno spirals to rotating snakes.">
 	<link rel="stylesheet" href="styles.css">
 	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
@@ -37,19 +37,21 @@
 			<label for="palette-select"><span class="lbl">Dimension (palette)</span></label>
 			<select id="palette-select"></select>
 		</div>
-		<div id="controls-body"></div>
-		<div class="control-group control-check" id="shooting-row">
-			<label for="shooting-toggle">
-				<input type="checkbox" id="shooting-toggle" checked>
-				<span class="lbl">Shooting stars</span>
-			</label>
+		<div class="control-group">
+			<label for="speed-input"><span class="lbl">Animation speed</span><output id="speed-out">1.0x</output></label>
+			<input type="range" id="speed-input" min="0.1" max="2" step="0.1" value="1">
 		</div>
+		<h2 class="panel-title">This exhibit</h2>
+		<div id="controls-body"></div>
 	</aside>
 
 	<footer id="footer">
 		-- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" title="Heart animation" allowfullscreen></iframe> By Preetam Ptwo --
 	</footer>
 
+	<script src="js/orbs.js"></script>
+	<script src="js/space.js"></script>
+	<script src="js/illusions.js"></script>
 	<script src="script.js"></script>
 </body>
 </html>

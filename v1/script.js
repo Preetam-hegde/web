@@ -565,17 +565,25 @@ function setupLoomMotion() {
 	const sleeper = new IntersectionObserver((entries) => entries.forEach((entry) => entry.target.classList.toggle('is-off', !entry.isIntersecting)), { rootMargin: '120px 0px' });
 	document.querySelectorAll('.loom-hero, .loom-marquee, .loom-craft, .loom-experience, .loom-work, .loom-terminal, .loom-contact').forEach((section) => sleeper.observe(section));
 	const clamp = (value) => Math.min(1, Math.max(0, value));
+	const nearSet = new Set();
+	let nearItems = [];
+	const nearWatch = new IntersectionObserver((entries) => {
+		entries.forEach((entry) => entry.isIntersecting ? nearSet.add(entry.target) : nearSet.delete(entry.target));
+		nearItems = [...nearSet];
+		requestUpdate();
+	}, { rootMargin: '40% 0px' });
+	scrollItems.forEach((item) => nearWatch.observe(item));
 	let frame;
 	const update = () => {
 		frame = undefined;
 		const viewport = window.innerHeight;
 		const heroTop = hero ? hero.getBoundingClientRect().top : 0;
 		const heroHeight = hero ? hero.offsetHeight : 1;
-		const rects = scrollItems.map((item) => item.getBoundingClientRect());
+		const rects = nearItems.map((item) => item.getBoundingClientRect());
 		const scrollable = Math.max(document.documentElement.scrollHeight - viewport, 1);
 		if (heroMedia && heroTop > -heroHeight) heroMedia.style.transform = `translate3d(0, ${clamp(-heroTop / Math.max(heroHeight, 1)) * 11}%, 0)`;
 		document.documentElement.style.setProperty('--sp', clamp(window.scrollY / scrollable).toFixed(4));
-		scrollItems.forEach((item, index) => {
+		nearItems.forEach((item, index) => {
 			const rect = rects[index];
 			if (rect.bottom < -viewport * .3 || rect.top > viewport * 1.3) return;
 			item.style.setProperty('--p', clamp((viewport * .72 - rect.top) / Math.max(rect.height, 1)).toFixed(3));

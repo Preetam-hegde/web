@@ -12,7 +12,8 @@ function getGameProjects() {
     'apps/dreamscape/index.html',
     'apps/bharatvarsha/index.html',
     'apps/particle-life/index.html',
-    'apps/natural-selection-sim/index.html'
+    'apps/natural-selection-sim/index.html',
+    'apps/comic-clash/index.html'
   ];
   return sharedProjects.filter(p => {
     return gameSlugs.includes(p.link) ||

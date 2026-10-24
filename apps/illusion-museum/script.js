@@ -6,9 +6,9 @@ document.addEventListener('DOMContentLoaded', () => {
 
 	const roomsNav = document.getElementById('rooms');
 	const paletteSelect = document.getElementById('palette-select');
+	const speedInput = document.getElementById('speed-input');
+	const speedOut = document.getElementById('speed-out');
 	const controlsBody = document.getElementById('controls-body');
-	const shootingRow = document.getElementById('shooting-row');
-	const shootingToggle = document.getElementById('shooting-toggle');
 	const panel = document.getElementById('panel');
 	const panelBtn = document.getElementById('panel-btn');
 	const tourBtn = document.getElementById('tour-btn');
@@ -16,8 +16,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	const placard = document.getElementById('placard');
 
 	const NINE = 9;
-	const MAX_BALLS = 900;
-	const BASE_RADIUS = 10;
 	const TOUR_MS = 15000;
 	const ROMAN = ['I', 'II', 'III', 'IV', 'V', 'VI', 'VII', 'VIII', 'IX'];
 
@@ -37,521 +35,143 @@ document.addEventListener('DOMContentLoaded', () => {
 		p.rgb = p.colors.map((c) => [parseInt(c.slice(1, 3), 16), parseInt(c.slice(3, 5), 16), parseInt(c.slice(5, 7), 16)]);
 	});
 
-	// ── Exhibits ────────────────────────────────────────────────────────
-	const ROOMS = [
-		{
-			name: 'Bouncy Balls',
-			blurb: 'Warp-drifting spheres paint glowing trails. Where the trails cross, colour blooms into shapes that were never drawn.',
-			hint: 'Move to push the balls away · press and hold to pull them in.',
-			fade: [0, 0, 0],
-			count: { label: 'Number of balls', min: 10, max: 200, step: 10, value: 60 }
-		},
-		{
-			name: 'Cell Culture',
-			blurb: 'Every sphere divides like a living cell, shrinking with each generation until it dissolves. The culture never repeats.',
-			hint: 'Your cursor shoves cells around · hold to gather them.',
-			fade: [0, 0, 0],
-			count: { label: 'Founding cells', min: 5, max: 60, step: 5, value: 20 }
-		},
-		{
-			name: 'Shatter',
-			blurb: 'Each wall strike splits a ball in two. Watch one sphere cascade into a shimmering rain of fragments.',
-			hint: 'Herd the balls toward the walls to keep the storm going.',
-			fade: [0, 0, 0],
-			count: { label: 'Number of balls', min: 10, max: 120, step: 5, value: 30 }
-		},
-		{
-			name: 'Gravity Well',
-			blurb: 'Everything is pulled toward the centre and swirled into an orbital vortex. Static dots, moving spiral.',
-			hint: 'The well follows your cursor · hold to deepen it.',
-			fade: [0, 0, 0],
-			count: { label: 'Number of balls', min: 10, max: 200, step: 10, value: 80 }
-		},
-		{
-			name: 'Nine Dimensions',
-			blurb: 'A starfield painted in nine-tone palettes. Planets orbit wherever you point, and the sky leans away from you.',
-			hint: 'Steer with your cursor · switch palettes to change dimension.',
-			fade: [2, 3, 18],
-			count: { label: 'Stars', min: 100, max: 1000, step: 50, value: 300 }
-		}
-	];
-	const STAR_ROOM = 4;
-
-	const CONTROLS = [
-		{ id: 'speed', label: 'Animation speed', min: 0.1, max: 2, step: 0.1, value: 1, fmt: (v) => v.toFixed(1) + 'x' },
-		{ id: 'count', label: 'Count' },
-		{ id: 'maxSpeed', label: 'Max speed limit', rooms: [0, 1, 2, 3], min: 1, max: 10, step: 0.5, value: 5, fmt: (v) => v.toFixed(1) },
-		{ id: 'trail', label: 'Trail length', rooms: [0, 1, 2, 3], min: 1, max: 10, step: 1, value: 9, fmt: (v) => String(v) },
-		{ id: 'twinkle', label: 'Twinkle intensity', rooms: [STAR_ROOM], min: 0, max: 1, step: 0.1, value: 0.5, fmt: (v) => v.toFixed(1) },
-		{ id: 'planets', label: 'Planet count', rooms: [STAR_ROOM], min: 0, max: 20, step: 1, value: 5, fmt: (v) => String(v) },
-		{ id: 'orbit', label: 'Orbit speed', rooms: [STAR_ROOM], min: 0.1, max: 1, step: 0.1, value: 0.3, fmt: (v) => v.toFixed(1) + 'x' },
-		{ id: 'planetSize', label: 'Planet size', rooms: [STAR_ROOM], min: 1, max: 5, step: 0.5, value: 2.5, fmt: (v) => v.toFixed(1) },
-		{ id: 'nebula', label: 'Nebula density', rooms: [STAR_ROOM], min: 0, max: 0.5, step: 0.05, value: 0.2, fmt: (v) => v.toFixed(2) }
-	];
-
-	const state = {
-		room: 0,
+	// ── Shared context handed to every exhibit ──────────────────────────
+	const M = {
+		ctx,
+		W: 0,
+		H: 0,
+		dpr: 1,
+		time: 0,
+		speed: 1,
 		palette: 'rainbow',
-		paused: false,
-		tour: false,
-		shooting: true,
-		values: {},
-		counts: ROOMS.map((r) => r.count.value)
+		pointer: { x: 0, y: 0, active: false, down: false },
+		focus: { x: 0, y: 0 },
+
+		// Palette colour for a seed in [0,1); the rainbow palette drifts through hues over time
+		color(seed, alpha) {
+			const p = PALETTES[this.palette];
+			const a = alpha === undefined ? 1 : alpha;
+			if (p.cycle) return `hsla(${(seed * 360 + this.time * 0.2 * this.speed) % 360},100%,58%,${a})`;
+			const c = p.rgb[Math.floor(seed * NINE) % NINE];
+			return `rgba(${c[0]},${c[1]},${c[2]},${a})`;
+		},
+		// Fixed palette tone (0–8): never drifts, safe for illusions that need stable colours
+		toneRgb(i) {
+			return PALETTES[this.palette].rgb[((i % NINE) + NINE) % NINE];
+		},
+		tone(i, alpha) {
+			return this.css(this.toneRgb(i), alpha);
+		},
+		css(rgb, alpha) {
+			return `rgba(${Math.round(rgb[0])},${Math.round(rgb[1])},${Math.round(rgb[2])},${alpha === undefined ? 1 : alpha})`;
+		},
+		mix(a, b, t) {
+			return [a[0] + (b[0] - a[0]) * t, a[1] + (b[1] - a[1]) * t, a[2] + (b[2] - a[2]) * t];
+		},
+		fill(rgb, alpha) {
+			ctx.fillStyle = this.css(rgb, alpha);
+			ctx.fillRect(0, 0, this.W, this.H);
+		}
 	};
-	CONTROLS.forEach((c) => {
-		if (c.value !== undefined) state.values[c.id] = c.value;
+
+	const exhibits = Museum.exhibits.slice().sort((a, b) => a.order - b.order);
+	const values = exhibits.map((ex) => {
+		const v = {};
+		ex.controls.forEach((c) => {
+			v[c.id] = c.value;
+		});
+		return v;
 	});
 
-	let W = 0;
-	let H = 0;
-	let time = 0;
+	const state = { room: 0, paused: false, tour: false };
 	let tourTimer = null;
 
-	const pointer = { x: 0, y: 0, active: false, down: false };
-	const focus = { x: 0, y: 0 };
-
-	let balls = [];
-	let stars = [];
-	let planets = [];
-	let comets = [];
-	let clouds = [];
-
-	// ── Helpers ─────────────────────────────────────────────────────────
-	function colorOf(seed, alpha) {
-		const p = PALETTES[state.palette];
-		if (p.cycle) {
-			return `hsla(${(seed * 360 + time * 0.2 * state.values.speed) % 360},100%,58%,${alpha})`;
-		}
-		const c = p.rgb[Math.floor(seed * NINE) % NINE];
-		return `rgba(${c[0]},${c[1]},${c[2]},${alpha})`;
-	}
-
-	function fillBackground(alpha) {
-		const f = ROOMS[state.room].fade;
-		ctx.fillStyle = `rgba(${f[0]},${f[1]},${f[2]},${alpha})`;
-		ctx.fillRect(0, 0, W, H);
+	function current() {
+		return exhibits[state.room];
 	}
 
 	function resizeCanvas() {
-		const dpr = Math.min(window.devicePixelRatio || 1, 2);
-		W = window.innerWidth;
-		H = window.innerHeight;
-		canvas.width = Math.round(W * dpr);
-		canvas.height = Math.round(H * dpr);
-		ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
-		fillBackground(1);
-		if (!pointer.active) {
-			focus.x = W / 2;
-			focus.y = H / 2;
+		M.dpr = Math.min(window.devicePixelRatio || 1, 2);
+		M.W = window.innerWidth;
+		M.H = window.innerHeight;
+		canvas.width = Math.round(M.W * M.dpr);
+		canvas.height = Math.round(M.H * M.dpr);
+		ctx.setTransform(M.dpr, 0, 0, M.dpr, 0, 0);
+		if (!M.pointer.active) {
+			M.focus.x = M.W / 2;
+			M.focus.y = M.H / 2;
 		}
+		M.fill([0, 0, 0], 1);
+		const ex = current();
+		if (ex) (ex.resize || ex.init)(M, values[state.room]);
 	}
 
-	// ── Ball rooms ──────────────────────────────────────────────────────
-	class Ball {
-		constructor(x, y, r, vx, vy, gen) {
-			this.x = x;
-			this.y = y;
-			this.r = r;
-			this.vx = vx;
-			this.vy = vy;
-			this.gen = gen || 0;
-			this.seed = Math.random();
-			this.life = 100;
-			this.terminal = false;
-			this.ttl = 0;
-			this.dead = false;
-		}
+	// ── Exhibit controls (rebuilt per exhibit) ──────────────────────────
+	function buildControls() {
+		controlsBody.innerHTML = '';
+		const ex = current();
+		const v = values[state.room];
+		ex.controls.forEach((c) => {
+			const row = document.createElement('div');
+			row.className = 'control-group';
+			const id = `ctl-${c.id}`;
 
-		retire() {
-			this.terminal = true;
-			this.ttl = 300 + Math.random() * 500;
-		}
-
-		update(dt) {
-			const room = state.room;
-			const v = state.values;
-			const sp = v.speed * dt;
-
-			// Subtle warp keeps the paths from ever being straight lines
-			this.x += this.vx * sp + Math.sin(time * 0.02 * v.speed + this.y * 0.01) * 0.5 * sp;
-			this.y += this.vy * sp + Math.cos(time * 0.03 * v.speed + this.x * 0.01) * 0.5 * sp;
-
-			if (room === 3) {
-				const tx = pointer.active ? pointer.x : W / 2;
-				const ty = pointer.active ? pointer.y : H / 2;
-				const dx = tx - this.x;
-				const dy = ty - this.y;
-				const d = Math.hypot(dx, dy) || 1;
-				const pull = (pointer.down ? 0.05 : 0.014) * sp;
-				const swirl = 0.006 * sp;
-				this.vx += (dx / d) * pull - (dy / d) * swirl;
-				this.vy += (dy / d) * pull + (dx / d) * swirl;
-			} else if (pointer.active) {
-				const dx = this.x - pointer.x;
-				const dy = this.y - pointer.y;
-				const d = Math.hypot(dx, dy) || 1;
-				if (pointer.down) {
-					if (d < 320) {
-						const f = 0.12 * (1 - d / 320) * sp;
-						this.vx -= (dx / d) * f;
-						this.vy -= (dy / d) * f;
-					}
-				} else if (d < 130) {
-					const f = 0.45 * (1 - d / 130) * sp;
-					this.vx += (dx / d) * f;
-					this.vy += (dy / d) * f;
-				}
+			if (c.type === 'checkbox') {
+				row.classList.add('control-check');
+				row.innerHTML = `<label for="${id}"><input type="checkbox" id="${id}"><span class="lbl">${c.label}</span></label>`;
+				const input = row.querySelector('input');
+				input.checked = Boolean(v[c.id]);
+				input.addEventListener('change', () => changed(c, input.checked));
+			} else if (c.type === 'select') {
+				row.innerHTML = `<label for="${id}"><span class="lbl">${c.label}</span></label><select id="${id}"></select>`;
+				const select = row.querySelector('select');
+				c.options.forEach(([val, text]) => {
+					const opt = document.createElement('option');
+					opt.value = val;
+					opt.textContent = text;
+					select.appendChild(opt);
+				});
+				select.value = v[c.id];
+				select.addEventListener('change', () => changed(c, select.value));
+			} else {
+				row.innerHTML = `<label for="${id}"><span class="lbl">${c.label}</span><output></output></label>` +
+					`<input type="range" id="${id}" min="${c.min}" max="${c.max}" step="${c.step}">`;
+				const input = row.querySelector('input');
+				const out = row.querySelector('output');
+				input.value = v[c.id];
+				out.textContent = v[c.id];
+				input.addEventListener('input', () => {
+					const val = parseFloat(input.value);
+					out.textContent = val;
+					changed(c, val);
+				});
 			}
-
-			let hit = false;
-			if (this.x < this.r) {
-				this.x = this.r;
-				this.vx = Math.abs(this.vx);
-				hit = true;
-			} else if (this.x > W - this.r) {
-				this.x = W - this.r;
-				this.vx = -Math.abs(this.vx);
-				hit = true;
-			}
-			if (this.y < this.r) {
-				this.y = this.r;
-				this.vy = Math.abs(this.vy);
-				hit = true;
-			} else if (this.y > H - this.r) {
-				this.y = H - this.r;
-				this.vy = -Math.abs(this.vy);
-				hit = true;
-			}
-
-			const speed = Math.hypot(this.vx, this.vy);
-			if (speed > v.maxSpeed) {
-				const k = v.maxSpeed / speed;
-				this.vx *= k;
-				this.vy *= k;
-			}
-
-			if (room === 1 && !this.terminal) {
-				this.life -= dt;
-				if (this.life <= 0) {
-					if (this.r > 3.2 && balls.length < MAX_BALLS) this.divide();
-					this.life = 100;
-				}
-				if (this.r <= 3.2) this.retire();
-			} else if (room === 2 && hit && !this.terminal) {
-				if (this.r > 3.5 && balls.length < MAX_BALLS) {
-					this.shatter();
-					this.dead = true;
-				} else {
-					this.retire();
-				}
-			}
-
-			if (this.terminal) {
-				this.ttl -= dt;
-				if (this.ttl < 60) this.r *= 0.97;
-				if (this.ttl <= 0 || this.r < 0.6) this.dead = true;
-			}
-		}
-
-		divide() {
-			for (let i = 0; i < 2; i++) {
-				const angle = Math.random() * Math.PI * 2;
-				const speed = Math.random() * 2 + 1;
-				const kid = new Ball(this.x, this.y, this.r * 0.6, this.vx + Math.cos(angle) * speed, this.vy + Math.sin(angle) * speed, this.gen + 1);
-				if (kid.r <= 3.2) kid.retire();
-				balls.push(kid);
-			}
-			this.r *= 0.7;
-		}
-
-		shatter() {
-			for (let i = 0; i < 2; i++) {
-				const angle = Math.random() * Math.PI * 2;
-				const speed = Math.random() * 3 + 2;
-				const kid = new Ball(this.x, this.y, this.r * 0.72, Math.cos(angle) * speed, Math.sin(angle) * speed, this.gen + 1);
-				if (kid.r <= 3.5) kid.retire();
-				balls.push(kid);
-			}
-		}
-
-		draw() {
-			ctx.beginPath();
-			ctx.arc(this.x, this.y, this.r, 0, Math.PI * 2);
-			ctx.fillStyle = colorOf(this.seed, 1);
-			ctx.fill();
-		}
-	}
-
-	function spawnBall() {
-		const r = BASE_RADIUS * (Math.random() * 0.5 + 0.7);
-		const x = Math.random() * (W - r * 2) + r;
-		const y = Math.random() * (H - r * 2) + r;
-		balls.push(new Ball(x, y, r, (Math.random() - 0.5) * 2, (Math.random() - 0.5) * 2, 0));
-	}
-
-	function initBalls() {
-		balls = [];
-		for (let i = 0; i < state.counts[state.room]; i++) spawnBall();
-	}
-
-	function stepBalls(dt) {
-		fillBackground(0.32 - state.values.trail * 0.03);
-
-		const room = state.room;
-		const target = state.counts[room];
-		if (Math.random() < 0.15 * dt) {
-			if ((room === 1 && balls.length < target) || (room === 2 && balls.length < target * 3)) spawnBall();
-		}
-
-		const n = balls.length;
-		for (let i = 0; i < n; i++) balls[i].update(dt);
-		balls = balls.filter((b) => !b.dead);
-		balls.forEach((b) => b.draw());
-	}
-
-	// ── Starfield room ──────────────────────────────────────────────────
-	class Star {
-		constructor() {
-			this.x = Math.random() * W;
-			this.y = Math.random() * H;
-			this.size = Math.random() * 2 + 0.5;
-			this.speed = Math.random() * 0.5 + 0.1;
-			this.layer = Math.random();
-			this.base = Math.random() * 0.8 + 0.2;
-			this.seed = Math.random();
-			this.phase = Math.random() * Math.PI * 2;
-			this.b = this.base;
-		}
-
-		update(dt) {
-			const v = state.values;
-			const sp = v.speed * dt;
-			this.x += this.speed * sp;
-			this.y += this.speed * 0.5 * sp;
-
-			// Parallax: the sky leans away from the focus point
-			const dx = (focus.x - W / 2) / W;
-			const dy = (focus.y - H / 2) / H;
-			this.x -= dx * this.layer * 8 * sp;
-			this.y -= dy * this.layer * 8 * sp;
-
-			if (this.x > W) this.x -= W;
-			else if (this.x < 0) this.x += W;
-			if (this.y > H) this.y -= H;
-			else if (this.y < 0) this.y += H;
-
-			const b = this.base + Math.sin(time * 0.01 + this.phase) * v.twinkle * 0.3;
-			this.b = Math.min(1, Math.max(0.05, b));
-		}
-
-		draw() {
-			if (this.size > 1.5) {
-				ctx.fillStyle = colorOf(this.seed, this.b * 0.16);
-				ctx.beginPath();
-				ctx.arc(this.x, this.y, this.size * 3.2, 0, Math.PI * 2);
-				ctx.fill();
-			}
-			ctx.fillStyle = colorOf(this.seed, this.b);
-			ctx.beginPath();
-			ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-			ctx.fill();
-		}
-	}
-
-	class Planet {
-		constructor() {
-			this.angle = Math.random() * Math.PI * 2;
-			this.orbit = 100 + Math.random() * 200;
-			this.seed = Math.random();
-			this.phase = Math.random() * Math.PI * 2;
-			this.ring = Math.random() > 0.6;
-			this.tilt = Math.random() * Math.PI;
-			this.x = focus.x;
-			this.y = focus.y;
-			this.b = 1;
-		}
-
-		update(dt) {
-			this.angle += state.values.orbit * 0.02 * dt;
-			this.x = focus.x + Math.cos(this.angle) * this.orbit;
-			this.y = focus.y + Math.sin(this.angle) * this.orbit;
-			this.b = 0.8 + Math.sin(time * 0.005 + this.phase) * 0.2;
-		}
-
-		draw() {
-			const size = state.values.planetSize;
-			const color = colorOf(this.seed, this.b);
-			ctx.save();
-			ctx.shadowColor = color;
-			ctx.shadowBlur = size * 5;
-			ctx.fillStyle = color;
-			ctx.beginPath();
-			ctx.arc(this.x, this.y, size * 3, 0, Math.PI * 2);
-			ctx.fill();
-			if (this.ring) {
-				ctx.shadowBlur = 0;
-				ctx.strokeStyle = colorOf(this.seed, this.b * 0.7);
-				ctx.lineWidth = 1.2;
-				ctx.beginPath();
-				ctx.ellipse(this.x, this.y, size * 5.2, size * 1.6, this.tilt, 0, Math.PI * 2);
-				ctx.stroke();
-			}
-			ctx.restore();
-		}
-	}
-
-	class Comet {
-		constructor() {
-			this.x = Math.random() * W * 0.8;
-			this.y = Math.random() * H * 0.5;
-			this.vx = 9 + Math.random() * 6;
-			this.vy = 3 + Math.random() * 3;
-			this.life = 1;
-			this.tail = 8 + Math.random() * 6;
-		}
-
-		update(dt) {
-			this.x += this.vx * dt;
-			this.y += this.vy * dt;
-			this.life -= 0.012 * dt;
-		}
-
-		draw() {
-			const tx = this.x - this.vx * this.tail;
-			const ty = this.y - this.vy * this.tail;
-			const g = ctx.createLinearGradient(this.x, this.y, tx, ty);
-			g.addColorStop(0, `rgba(255,255,255,${Math.max(0, this.life)})`);
-			g.addColorStop(1, 'rgba(255,255,255,0)');
-			ctx.strokeStyle = g;
-			ctx.lineWidth = 2;
-			ctx.lineCap = 'round';
-			ctx.beginPath();
-			ctx.moveTo(this.x, this.y);
-			ctx.lineTo(tx, ty);
-			ctx.stroke();
-		}
-	}
-
-	function initStars() {
-		stars = [];
-		for (let i = 0; i < state.counts[STAR_ROOM]; i++) stars.push(new Star());
-	}
-
-	function initPlanets() {
-		planets = [];
-		for (let i = 0; i < state.values.planets; i++) planets.push(new Planet());
-	}
-
-	function initClouds() {
-		clouds = [];
-		for (let i = 0; i < 6; i++) {
-			clouds.push({
-				x: Math.random() * W,
-				y: Math.random() * H,
-				r: (0.18 + Math.random() * 0.18) * Math.max(W, H),
-				vx: (Math.random() - 0.5) * 0.12,
-				vy: (Math.random() - 0.5) * 0.12,
-				seed: Math.random(),
-				phase: Math.random() * Math.PI * 2
-			});
-		}
-	}
-
-	function stepStars(dt) {
-		const v = state.values;
-		fillBackground(0.14);
-
-		const tx = pointer.active ? pointer.x : W / 2;
-		const ty = pointer.active ? pointer.y : H / 2;
-		focus.x += (tx - focus.x) * Math.min(1, 0.06 * dt);
-		focus.y += (ty - focus.y) * Math.min(1, 0.06 * dt);
-
-		if (v.nebula > 0) {
-			clouds.forEach((c) => {
-				c.x += c.vx * v.speed * dt;
-				c.y += c.vy * v.speed * dt;
-				if (c.x < -c.r) c.x = W + c.r;
-				else if (c.x > W + c.r) c.x = -c.r;
-				if (c.y < -c.r) c.y = H + c.r;
-				else if (c.y > H + c.r) c.y = -c.r;
-				const r = c.r * (1 + Math.sin(time * 0.004 + c.phase) * 0.12);
-				const g = ctx.createRadialGradient(c.x, c.y, 0, c.x, c.y, r);
-				g.addColorStop(0, colorOf(c.seed, v.nebula * 0.25));
-				g.addColorStop(1, colorOf(c.seed, 0));
-				ctx.fillStyle = g;
-				ctx.fillRect(c.x - r, c.y - r, r * 2, r * 2);
-			});
-		}
-
-		stars.forEach((s) => {
-			s.update(dt);
-			s.draw();
+			controlsBody.appendChild(row);
 		});
-		planets.forEach((p) => {
-			p.update(dt);
-			p.draw();
-		});
+	}
 
-		if (state.shooting) {
-			if (comets.length < 4 && Math.random() < 0.012 * dt) comets.push(new Comet());
+	function changed(control, val) {
+		const v = values[state.room];
+		v[control.id] = val;
+		const ex = current();
+		if (control.rebuild) {
+			M.fill([0, 0, 0], 1);
+			ex.init(M, v);
 		}
-		comets.forEach((c) => {
-			c.update(dt);
-			c.draw();
-		});
-		comets = comets.filter((c) => c.life > 0 && c.x < W + 200 && c.y < H + 200);
+		if (ex.onChange) ex.onChange(control.id, M, v);
 	}
 
 	// ── Room management ─────────────────────────────────────────────────
-	function rebuildRoom() {
-		if (state.room === STAR_ROOM) {
-			balls = [];
-			comets = [];
-			initStars();
-			initPlanets();
-			initClouds();
-		} else {
-			stars = [];
-			planets = [];
-			comets = [];
-			clouds = [];
-			initBalls();
-		}
-		fillBackground(1);
-	}
-
 	function updatePlacard() {
-		const room = ROOMS[state.room];
-		document.getElementById('placard-no').textContent = `Exhibit ${String(state.room + 1).padStart(2, '0')} / ${String(ROOMS.length).padStart(2, '0')}`;
-		document.getElementById('placard-title').textContent = room.name;
-		document.getElementById('placard-blurb').textContent = room.blurb;
-		document.getElementById('placard-hint').textContent = room.hint;
+		const ex = current();
+		const pad = (n) => String(n).padStart(2, '0');
+		document.getElementById('placard-no').textContent = `Exhibit ${pad(state.room + 1)} / ${pad(exhibits.length)}`;
+		document.getElementById('placard-title').textContent = ex.name;
+		document.getElementById('placard-blurb').textContent = ex.blurb;
+		document.getElementById('placard-hint').textContent = ex.hint;
 		placard.classList.remove('swap');
 		void placard.offsetWidth;
 		placard.classList.add('swap');
-	}
-
-	function syncControls() {
-		const room = state.room;
-		CONTROLS.forEach((c) => {
-			const row = document.querySelector(`[data-control="${c.id}"]`);
-			const input = document.getElementById(`ctl-${c.id}`);
-			const out = document.getElementById(`out-${c.id}`);
-			row.hidden = Boolean(c.rooms) && !c.rooms.includes(room);
-			if (c.id === 'count') {
-				const cfg = ROOMS[room].count;
-				row.querySelector('.lbl').textContent = cfg.label;
-				input.min = cfg.min;
-				input.max = cfg.max;
-				input.step = cfg.step;
-				input.value = state.counts[room];
-				out.textContent = state.counts[room];
-			} else {
-				input.value = state.values[c.id];
-				out.textContent = c.fmt(state.values[c.id]);
-			}
-		});
-		shootingRow.hidden = room !== STAR_ROOM;
 	}
 
 	function restartTour() {
@@ -561,9 +181,12 @@ document.addEventListener('DOMContentLoaded', () => {
 	}
 
 	function setRoom(index) {
-		state.room = (index + ROOMS.length) % ROOMS.length;
-		rebuildRoom();
-		syncControls();
+		state.room = (index + exhibits.length) % exhibits.length;
+		M.fill([0, 0, 0], 1);
+		M.focus.x = M.W / 2;
+		M.focus.y = M.H / 2;
+		current().init(M, values[state.room]);
+		buildControls();
 		updatePlacard();
 		roomsNav.querySelectorAll('.room-btn').forEach((btn, i) => {
 			btn.setAttribute('aria-current', String(i === state.room));
@@ -593,13 +216,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		panelBtn.setAttribute('aria-expanded', String(open));
 	}
 
-	// ── UI wiring ───────────────────────────────────────────────────────
+	// ── Static UI wiring ────────────────────────────────────────────────
 	function buildUI() {
-		ROOMS.forEach((room, i) => {
+		exhibits.forEach((ex, i) => {
 			const btn = document.createElement('button');
 			btn.type = 'button';
 			btn.className = 'room-btn';
-			btn.innerHTML = `<small>${String(i + 1).padStart(2, '0')}</small>${room.name}`;
+			btn.title = ex.name;
+			btn.setAttribute('aria-label', ex.name);
+			btn.innerHTML = `<small>${String(i + 1).padStart(2, '0')}</small><span class="room-name">${ex.name}</span>`;
 			btn.addEventListener('click', () => setRoom(i));
 			roomsNav.appendChild(btn);
 		});
@@ -611,34 +236,14 @@ document.addEventListener('DOMContentLoaded', () => {
 			paletteSelect.appendChild(opt);
 		});
 		paletteSelect.addEventListener('change', () => {
-			state.palette = paletteSelect.value;
+			M.palette = paletteSelect.value;
+			const ex = current();
+			if (ex.onPalette) ex.onPalette(M, values[state.room]);
 		});
 
-		CONTROLS.forEach((c) => {
-			const row = document.createElement('div');
-			row.className = 'control-group';
-			row.dataset.control = c.id;
-			row.innerHTML = `<label for="ctl-${c.id}"><span class="lbl">${c.label}</span><output id="out-${c.id}"></output></label>` +
-				`<input type="range" id="ctl-${c.id}" min="${c.min ?? 0}" max="${c.max ?? 1}" step="${c.step ?? 1}" value="${c.value ?? 0}">`;
-			controlsBody.appendChild(row);
-
-			row.querySelector('input').addEventListener('input', (e) => {
-				const val = parseFloat(e.target.value);
-				const out = document.getElementById(`out-${c.id}`);
-				if (c.id === 'count') {
-					state.counts[state.room] = val;
-					out.textContent = val;
-					rebuildRoom();
-					return;
-				}
-				state.values[c.id] = val;
-				out.textContent = c.fmt(val);
-				if (c.id === 'planets') initPlanets();
-			});
-		});
-
-		shootingToggle.addEventListener('change', () => {
-			state.shooting = shootingToggle.checked;
+		speedInput.addEventListener('input', () => {
+			M.speed = parseFloat(speedInput.value);
+			speedOut.textContent = M.speed.toFixed(1) + 'x';
 		});
 
 		tourBtn.addEventListener('click', () => setTour(!state.tour));
@@ -646,6 +251,7 @@ document.addEventListener('DOMContentLoaded', () => {
 		panelBtn.addEventListener('click', () => setPanelOpen(panel.hidden));
 	}
 
+	const pointer = M.pointer;
 	canvas.addEventListener('pointermove', (e) => {
 		pointer.x = e.clientX;
 		pointer.y = e.clientY;
@@ -664,17 +270,18 @@ document.addEventListener('DOMContentLoaded', () => {
 	};
 	canvas.addEventListener('pointerup', releasePointer);
 	canvas.addEventListener('pointercancel', releasePointer);
-	canvas.addEventListener('pointerleave', (e) => {
+	canvas.addEventListener('pointerleave', () => {
 		if (!pointer.down) pointer.active = false;
 	});
 
 	window.addEventListener('keydown', (e) => {
 		if (e.ctrlKey || e.metaKey || e.altKey) return;
-		if (/^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(e.target.tagName) && e.key === ' ') return;
+		const typing = /^(INPUT|SELECT|TEXTAREA|BUTTON)$/.test(e.target.tagName);
+		if (typing && e.key === ' ') return;
 		const n = parseInt(e.key, 10);
-		if (n >= 1 && n <= ROOMS.length) setRoom(n - 1);
-		else if (e.key === 'ArrowRight') setRoom(state.room + 1);
-		else if (e.key === 'ArrowLeft') setRoom(state.room - 1);
+		if (n >= 1 && n <= exhibits.length) setRoom(n - 1);
+		else if (e.key === 'ArrowRight' && !typing) setRoom(state.room + 1);
+		else if (e.key === 'ArrowLeft' && !typing) setRoom(state.room - 1);
 		else if (e.key === ' ') {
 			e.preventDefault();
 			setPaused(!state.paused);
@@ -690,9 +297,15 @@ document.addEventListener('DOMContentLoaded', () => {
 		const dt = Math.min((now - last) / 16.667, 3);
 		last = now;
 		if (!state.paused) {
-			time += dt;
-			if (state.room === STAR_ROOM) stepStars(dt);
-			else stepBalls(dt);
+			M.time += dt;
+			const tx = pointer.active ? pointer.x : M.W / 2;
+			const ty = pointer.active ? pointer.y : M.H / 2;
+			const k = Math.min(1, 0.06 * dt);
+			M.focus.x += (tx - M.focus.x) * k;
+			M.focus.y += (ty - M.focus.y) * k;
+			ctx.save();
+			current().step(M, dt, values[state.room]);
+			ctx.restore();
 		}
 		requestAnimationFrame(frame);
 	}
@@ -701,6 +314,6 @@ document.addEventListener('DOMContentLoaded', () => {
 	resizeCanvas();
 	setPanelOpen(window.innerWidth > 760);
 	const fromHash = parseInt(window.location.hash.slice(1), 10);
-	setRoom(fromHash >= 1 && fromHash <= ROOMS.length ? fromHash - 1 : 0);
+	setRoom(fromHash >= 1 && fromHash <= exhibits.length ? fromHash - 1 : 0);
 	requestAnimationFrame(frame);
 });

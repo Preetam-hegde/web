@@ -30,6 +30,22 @@ const projects = [
 
 	// ── Games & Simulations ──────────────────────────────────────────────────
 	{
+		name: "ComicClash",
+		category: "games",
+		icon: "sparkles",
+		link: "apps/comic-clash/index.html",
+		description:
+			"A retro comic-book gacha game with authentic Ben-Day halftone visuals, foil booster pack tearing, 16 collectible superheroes, and tactical comic strip turn-based combat.",
+		tech: [
+			"HTML5",
+			"CSS3",
+			"JavaScript",
+			"Web Audio API",
+			"Game Design",
+			"SVG Art",
+		],
+	},
+	{
 		name: "VectorDrift",
 		category: "games",
 		icon: "zap",
@@ -168,7 +184,7 @@ const projects = [
 		icon: "atom",
 		link: "apps/illusion-museum/index.html",
 		description:
-			"A walk-through museum of five canvas illusions — bouncing, dividing and shattering balls, a gravity vortex, and a nine-dimension starfield — with an auto-tour, nine palettes, and cursor interaction.",
+			"Nine interactive exhibits in one museum — living orbs that bounce, divide, shatter or fall into a gravity well, a 3D warp-speed starfield, and classic optical illusions from hypno spirals to rotating snakes — with nine palettes and an auto-tour.",
 		tech: ["HTML5", "CSS3", "JavaScript", "Canvas API", "Physics", "Animation"],
 	},
 

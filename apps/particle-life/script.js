@@ -821,6 +821,50 @@ document.addEventListener("DOMContentLoaded", () => {
 				showToast("Snapshot Saved");
 			});
 
+		// Explanations Guide Modal
+		const btnHelp = document.getElementById("btnHelp");
+		const btnCloseGuide = document.getElementById("btnCloseGuide");
+		const guideModalBackdrop = document.getElementById("guideModalBackdrop");
+		const guideTabs = document.querySelectorAll(".guide-tab-btn");
+		const guidePanels = document.querySelectorAll(".guide-panel");
+
+		if (btnHelp && guideModalBackdrop) {
+			const openGuide = () => {
+				guideModalBackdrop.classList.add("open");
+				guideModalBackdrop.setAttribute("aria-hidden", "false");
+			};
+			const closeGuide = () => {
+				guideModalBackdrop.classList.remove("open");
+				guideModalBackdrop.setAttribute("aria-hidden", "true");
+			};
+
+			btnHelp.addEventListener("click", openGuide);
+			if (btnCloseGuide) btnCloseGuide.addEventListener("click", closeGuide);
+
+			guideModalBackdrop.addEventListener("click", (e) => {
+				if (e.target === guideModalBackdrop) closeGuide();
+			});
+
+			window.addEventListener("keydown", (e) => {
+				if (
+					e.key === "Escape" &&
+					guideModalBackdrop.classList.contains("open")
+				) {
+					closeGuide();
+				}
+			});
+
+			guideTabs.forEach((tab) => {
+				tab.addEventListener("click", () => {
+					guideTabs.forEach((t) => t.classList.remove("active"));
+					guidePanels.forEach((p) => p.classList.remove("active"));
+					tab.classList.add("active");
+					const targetPanel = document.getElementById(`tab-${tab.dataset.tab}`);
+					if (targetPanel) targetPanel.classList.add("active");
+				});
+			});
+		}
+
 		// Canvas Pointer Events
 		canvas.addEventListener("pointerdown", (e) => {
 			if (e.button === 1 || e.shiftKey) {

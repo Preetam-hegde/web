@@ -1,7 +1,10 @@
 import { BharatGame } from './game.js';
 import { GameUI } from './ui.js';
+import { initFx } from './fx.js';
 
 const TOAST_TONES = new Set(['red', 'orange', 'purple', 'green']);
+
+initFx();
 
 const game = new BharatGame();
 const ui = new GameUI(game);

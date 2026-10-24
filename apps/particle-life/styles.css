@@ -691,3 +691,244 @@ input[type="range"]::-webkit-slider-thumb:hover {
 		display: none;
 	}
 }
+
+/* Explanations & Field Guide Modal */
+.guide-modal-backdrop {
+	position: fixed;
+	inset: 0;
+	background: rgba(4, 5, 8, 0.75);
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	z-index: 100;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	padding: 20px;
+	opacity: 0;
+	pointer-events: none;
+	transition: opacity 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.guide-modal-backdrop.open {
+	opacity: 1;
+	pointer-events: auto;
+}
+
+.guide-modal {
+	background: var(--bg-panel-solid);
+	border: 1px solid var(--border-focus);
+	box-shadow:
+		0 24px 64px rgba(0, 0, 0, 0.8),
+		0 0 24px rgba(0, 245, 212, 0.15);
+	border-radius: var(--radius-lg);
+	width: 100%;
+	max-width: 680px;
+	max-height: 85vh;
+	display: flex;
+	flex-direction: column;
+	overflow: hidden;
+	transform: scale(0.96) translateY(12px);
+	transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.guide-modal-backdrop.open .guide-modal {
+	transform: scale(1) translateY(0);
+}
+
+.guide-header {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 16px 20px;
+	border-bottom: 1px solid var(--border-subtle);
+}
+
+.guide-title-wrap {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+}
+
+.guide-title-wrap h2 {
+	font-size: 1.05rem;
+	font-weight: 700;
+	letter-spacing: -0.01em;
+}
+
+.guide-tabs {
+	display: flex;
+	gap: 4px;
+	padding: 8px 16px;
+	background: rgba(255, 255, 255, 0.02);
+	border-bottom: 1px solid var(--border-subtle);
+	overflow-x: auto;
+}
+
+.guide-tab-btn {
+	background: none;
+	border: 1px solid transparent;
+	color: var(--text-secondary);
+	font-family: var(--font-display);
+	font-size: 0.82rem;
+	font-weight: 500;
+	padding: 6px 14px;
+	border-radius: var(--radius-sm);
+	cursor: pointer;
+	white-space: nowrap;
+	transition: var(--transition-quick);
+}
+
+.guide-tab-btn:hover {
+	color: var(--text-primary);
+	background: rgba(255, 255, 255, 0.05);
+}
+
+.guide-tab-btn.active {
+	color: #07080c;
+	background: var(--accent-cyan);
+	font-weight: 600;
+	box-shadow: 0 0 10px rgba(0, 245, 212, 0.3);
+}
+
+.guide-content {
+	padding: 20px;
+	overflow-y: auto;
+	scrollbar-width: thin;
+	scrollbar-color: var(--border-subtle) transparent;
+}
+
+.guide-panel {
+	display: none;
+	flex-direction: column;
+	gap: 14px;
+	line-height: 1.6;
+	color: var(--text-secondary);
+	font-size: 0.88rem;
+}
+
+.guide-panel.active {
+	display: flex;
+}
+
+.guide-panel h3 {
+	color: var(--text-primary);
+	font-size: 1.1rem;
+	font-weight: 600;
+}
+
+.guide-panel h4 {
+	color: var(--text-primary);
+	font-size: 0.95rem;
+	font-weight: 600;
+	margin-top: 4px;
+}
+
+.callout-card {
+	background: rgba(0, 245, 212, 0.06);
+	border-left: 3px solid var(--accent-cyan);
+	padding: 12px 14px;
+	border-radius: 0 var(--radius-sm) var(--radius-sm) 0;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.callout-card h4 {
+	color: var(--accent-cyan);
+	font-size: 0.85rem;
+	text-transform: uppercase;
+	letter-spacing: 0.05em;
+}
+
+.formula-box {
+	background: rgba(0, 0, 0, 0.4);
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-md);
+	padding: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+	font-family: var(--font-mono);
+}
+
+.formula-row {
+	display: flex;
+	flex-direction: column;
+	gap: 2px;
+	padding-bottom: 6px;
+	border-bottom: 1px solid rgba(255, 255, 255, 0.04);
+}
+
+.formula-row:last-child {
+	border-bottom: none;
+	padding-bottom: 0;
+}
+
+.formula-row .cond {
+	font-size: 0.74rem;
+	color: var(--accent-amber);
+	font-weight: 600;
+}
+
+.formula-row .eq {
+	font-size: 0.82rem;
+	color: var(--text-primary);
+}
+
+.formula-row .desc {
+	font-size: 0.72rem;
+	color: var(--text-dim);
+}
+
+.guide-list {
+	padding-left: 18px;
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.guide-list li strong {
+	color: var(--text-primary);
+}
+
+.biome-card {
+	background: rgba(255, 255, 255, 0.03);
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-md);
+	padding: 12px;
+	display: flex;
+	flex-direction: column;
+	gap: 4px;
+}
+
+.biome-card h4 {
+	color: var(--text-primary);
+	font-size: 0.92rem;
+}
+
+.controls-grid {
+	display: flex;
+	flex-direction: column;
+	gap: 8px;
+}
+
+.ctrl-row {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 8px 12px;
+	background: rgba(255, 255, 255, 0.02);
+	border: 1px solid var(--border-subtle);
+	border-radius: var(--radius-sm);
+	font-size: 0.82rem;
+}
+
+.ctrl-row kbd {
+	font-family: var(--font-mono);
+	background: rgba(255, 255, 255, 0.08);
+	border: 1px solid var(--border-focus);
+	padding: 3px 8px;
+	border-radius: 4px;
+	color: var(--accent-cyan);
+	font-size: 0.75rem;
+}

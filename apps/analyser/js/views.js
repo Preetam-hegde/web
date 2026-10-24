@@ -476,7 +476,7 @@
 				ctx.roundRect(x, y, cell - gap, cell - gap, radius);
 				ctx.fill();
 				ctx.lineWidth = 1.5;
-				ctx.strokeStyle = fill === col.empty ? col.line : '#111111';
+				ctx.strokeStyle = fill === col.empty ? col.line : '#2a2745';
 				ctx.stroke();
 			};
 			for (let idx = 0; idx < G.rows * G.cols; idx++) {
@@ -497,7 +497,7 @@
 			}
 			draw(G.start, col.start);
 			draw(G.end, col.end);
-			ctx.fillStyle = '#111111';
+			ctx.fillStyle = '#2a2745';
 			[[G.start, 'S'], [G.end, 'E']].forEach(function (pair) {
 				ctx.font = '700 ' + Math.round(cell * 0.5) + 'px Inter, sans-serif';
 				ctx.textAlign = 'center';
