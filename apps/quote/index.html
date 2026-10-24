@@ -1,59 +1,881 @@
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Dynamic Quote Display</title>
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" type="text/css" href="style.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
-    <link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
-	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-</head>
-<body>
-    <div class="app-shell">
-        <header class="topbar">
-            <div class="brand">
-                <i class="fas fa-quote-left"></i>
-                <span>Orbit Quotes</span>
-            </div>
-            <div class="status-pill" id="statusPill">
-                <i class="fas fa-sparkles"></i>
-                <span id="statusText">Finding inspiration</span>
-            </div>
-        </header>
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>The Daily Ink • Paper Comic Quote Engine</title>
+		<meta
+			name="description"
+			content="A vintage paper comic and bento-styled quote generator with speech bubbles, expressive ink avatars, audio read-aloud, and downloadable comic cards."
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Bangers&family=Bricolage+Grotesque:opsz,wght@12..96,400..800&family=Permanent+Marker&display=swap"
+			rel="stylesheet"
+		/>
+		<link
+			rel="stylesheet"
+			href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css"
+		/>
+		<link rel="stylesheet" type="text/css" href="style.css" />
+		<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg" />
+		<script
+			data-goatcounter="https://ptwo.goatcounter.com/count"
+			async
+			src="//gc.zgo.at/count.js"
+		></script>
+	</head>
+	<body data-theme="sunday" data-bubble="balloon">
+		<div class="paper-texture-overlay" aria-hidden="true"></div>
+		<div class="comic-dust-overlay" aria-hidden="true"></div>
 
-        <main class="quote-stage">
-            <div class="quote-card loading" id="quoteCard">
-                <div class="quote-mark quote-mark--left">“</div>
-                <div class="quote-body">
-                    <p class="quote-text" id="quote-container">Loading a thoughtful quote...</p>
-                    <p class="quote-author" id="author">— Author</p>
-                </div>
-                <div class="quote-mark quote-mark--right">”</div>
-                <div class="quote-noise"></div>
-            </div>
-        </main>
+		<div class="app-wrapper">
+			<!-- Comic Masthead -->
+			<header class="comic-masthead">
+				<div class="masthead-topline">
+					<div class="masthead-meta">
+						<span class="meta-tag">VOL. XXIV</span>
+						<span class="meta-divider">•</span>
+						<span class="meta-tag" id="current-date">SUNDAY EDITION</span>
+						<span class="meta-divider">•</span>
+						<span class="meta-tag issue-tag" id="issue-badge">ISSUE #1042</span>
+					</div>
+					<div class="masthead-registration" aria-hidden="true">
+						<span class="cmyk cmyk--c"></span>
+						<span class="cmyk cmyk--m"></span>
+						<span class="cmyk cmyk--y"></span>
+						<span class="cmyk cmyk--k"></span>
+						<span class="crosshair">+</span>
+					</div>
+				</div>
 
-        <footer class="controls">
-            <button class="control-btn" id="refresh-btn" title="Get New Quote">
-                <span class="control-icon">
-                    <i class="fas fa-arrows-rotate"></i>
-                </span>
-                <span class="control-label">New Quote</span>
-            </button>
-            <button class="control-btn secondary" id="copy-btn" title="Copy Quote">
-                <span class="control-icon">
-                    <i class="fas fa-copy"></i>
-                </span>
-                <span class="control-label">Copy</span>
-            </button>
-            <button class="control-btn tertiary" id="share-btn" title="Share">
-                <span class="control-icon">
-                    <i class="fas fa-share-alt"></i>
-                </span>
-                <span class="control-label">Share</span>
-            </button>
-        </footer>
-    </div>
-    <script type="text/javascript" src="script.js"></script>
-</body>
+				<div class="masthead-main">
+					<div class="masthead-brand">
+						<div class="brand-badge">EXTRA! EXTRA!</div>
+						<h1 class="brand-title">THE DAILY INK</h1>
+						<p class="brand-subtitle">
+							The Illustrated Paper Comic &amp; Bento Wisdom Gazette
+						</p>
+					</div>
+
+					<div class="masthead-actions">
+						<!-- Comics Code Seal -->
+						<div class="comic-code-badge" title="Certified Pure Inspiration">
+							<span class="code-top">APPROVED BY THE</span>
+							<span class="code-mid">COMICS</span>
+							<span class="code-sub">CODE</span>
+							<span class="code-bottom">AUTHORITY</span>
+						</div>
+
+						<!-- Audio Toggle -->
+						<button
+							class="stamp-btn"
+							id="sound-toggle-btn"
+							title="Toggle Comic Sound FX"
+							aria-label="Toggle Comic Sound FX"
+						>
+							<i class="fas fa-volume-high" id="sound-icon"></i>
+							<span class="btn-text">SFX: ON</span>
+						</button>
+
+						<!-- Scrapbook Drawer Button -->
+						<button
+							class="stamp-btn stamp-btn--accent"
+							id="open-scrapbook-btn"
+							title="Open Saved Scrapbook"
+							aria-label="Open Saved Scrapbook"
+						>
+							<i class="fas fa-bookmark"></i>
+							<span class="btn-text">SCRAPBOOK</span>
+							<span class="badge-count" id="scrap-count">0</span>
+						</button>
+					</div>
+				</div>
+
+				<!-- Theme Bar & View Mode Toggle -->
+				<div class="masthead-toolbar">
+					<div
+						class="theme-picker"
+						role="radiogroup"
+						aria-label="Comic Color Palette"
+					>
+						<span class="toolbar-label"
+							><i class="fas fa-palette"></i> PALETTE:</span
+						>
+						<button
+							class="theme-pill active"
+							data-theme="sunday"
+							title="Sunday Strip (Classic Newsprint)"
+						>
+							<span class="theme-swatch sunday-swatch"></span> Sunday Strip
+						</button>
+						<button
+							class="theme-pill"
+							data-theme="golden"
+							title="Golden Age Pop (High Energy)"
+						>
+							<span class="theme-swatch golden-swatch"></span> Golden Age
+						</button>
+						<button
+							class="theme-pill"
+							data-theme="noir"
+							title="Noir Manga (Ink Screentone)"
+						>
+							<span class="theme-swatch noir-swatch"></span> Noir Manga
+						</button>
+						<button
+							class="theme-pill"
+							data-theme="cyber"
+							title="Cyber Pulp (Night Issue)"
+						>
+							<span class="theme-swatch cyber-swatch"></span> Cyber Pulp
+						</button>
+					</div>
+
+					<div class="view-mode-switch">
+						<span class="toolbar-label"
+							><i class="fas fa-table-columns"></i> LAYOUT:</span
+						>
+						<button
+							class="mode-pill active"
+							id="mode-single-btn"
+							data-mode="single"
+						>
+							<i class="fas fa-square"></i> Hero Bento
+						</button>
+						<button class="mode-pill" id="mode-strip-btn" data-mode="strip">
+							<i class="fas fa-table-cells"></i> 3-Panel Strip
+						</button>
+					</div>
+				</div>
+			</header>
+
+			<!-- Main Hero Bento View -->
+			<main class="comic-bento-grid" id="single-view">
+				<!-- Panel 1: Hero Speech Bubble Quote (Large Bento Cell) -->
+				<section
+					class="bento-card bento-hero"
+					aria-label="Featured Comic Quote"
+				>
+					<div class="panel-header-strip">
+						<div class="panel-tag-group">
+							<span class="panel-number">PANEL #1</span>
+							<span class="genre-stamp" id="quote-genre-tag">#WISDOM</span>
+						</div>
+						<div class="panel-status-group">
+							<span class="reading-time" id="reading-time-pill"
+								><i class="far fa-clock"></i> Quick Thought</span
+							>
+							<span class="source-stamp" id="quote-source-tag"
+								>ARCHIVE INK</span
+							>
+						</div>
+					</div>
+
+					<!-- Floating Action Burst Sticker -->
+					<div class="action-burst-wrapper">
+						<div class="action-burst" id="action-burst" aria-hidden="true">
+							POW!
+						</div>
+					</div>
+
+					<!-- Speech Bubble Canvas Frame -->
+					<div class="speech-bubble-wrapper">
+						<div class="speech-bubble" id="speech-bubble">
+							<div class="speech-cloud-dots" aria-hidden="true">
+								<span class="cloud-dot dot-1"></span>
+								<span class="cloud-dot dot-2"></span>
+								<span class="cloud-dot dot-3"></span>
+							</div>
+							<div class="quote-content-box">
+								<span class="ink-quote-mark ink-quote-left">“</span>
+								<p class="quote-text" id="quote-text">
+									Loading fresh ink from the printing press...
+								</p>
+								<span class="ink-quote-mark ink-quote-right">”</span>
+							</div>
+
+							<div class="quote-attribution">
+								<div class="author-ink-line">
+									<span class="author-dash">—</span>
+									<h2 class="quote-author" id="quote-author">Loading Author</h2>
+								</div>
+								<p class="author-role" id="author-role">
+									Philosopher &amp; Visionary
+								</p>
+							</div>
+
+							<!-- Speech tail pointer -->
+							<div class="bubble-tail" aria-hidden="true"></div>
+						</div>
+					</div>
+
+					<!-- Comic Panel Footer Bar inside Hero Card -->
+					<div class="hero-card-footer">
+						<div
+							class="audio-wave-box"
+							id="audio-wave-box"
+							hidden
+							aria-hidden="true"
+						>
+							<span class="audio-bar"></span>
+							<span class="audio-bar"></span>
+							<span class="audio-bar"></span>
+							<span class="audio-bar"></span>
+							<span class="audio-wave-label">Narrating Quote...</span>
+						</div>
+
+						<div class="hero-actions">
+							<button
+								class="comic-btn comic-btn--star"
+								id="favorite-btn"
+								title="Save to Scrapbook"
+								aria-label="Save to Scrapbook"
+							>
+								<i class="far fa-star" id="star-icon"></i>
+								<span class="btn-caption">SAVE</span>
+							</button>
+							<button
+								class="comic-btn comic-btn--voice"
+								id="voice-btn"
+								title="Read Aloud in Comic Voice"
+								aria-label="Read Aloud in Comic Voice"
+							>
+								<i class="fas fa-volume-up" id="voice-icon"></i>
+								<span class="btn-caption">READ</span>
+							</button>
+							<button
+								class="comic-btn comic-btn--copy"
+								id="copy-btn"
+								title="Copy Quote to Clipboard"
+								aria-label="Copy Quote to Clipboard"
+							>
+								<i class="fas fa-copy" id="copy-icon"></i>
+								<span class="btn-caption">COPY</span>
+							</button>
+							<button
+								class="comic-btn comic-btn--share"
+								id="share-btn"
+								title="Share Quote"
+								aria-label="Share Quote"
+							>
+								<i class="fas fa-share-nodes"></i>
+								<span class="btn-caption">SHARE</span>
+							</button>
+							<button
+								class="comic-btn comic-btn--card"
+								id="export-card-btn"
+								title="Download Printable Comic Card (PNG)"
+								aria-label="Download Printable Comic Card"
+							>
+								<i class="fas fa-file-image"></i>
+								<span class="btn-caption">PNG CARD</span>
+							</button>
+						</div>
+					</div>
+				</section>
+
+				<!-- Panel 2: The Ink Mascot & Emotion Companion -->
+				<section
+					class="bento-card bento-mascot"
+					aria-label="Comic Mascot Companion"
+				>
+					<div class="card-title-bar">
+						<span class="title-text">MASCOT COURIER</span>
+						<span class="mascot-mood-pill" id="mascot-mood-label"
+							>THINKING</span
+						>
+					</div>
+
+					<div class="mascot-stage">
+						<div class="halftone-circle" aria-hidden="true"></div>
+						<!-- Vector Reactive Ink Mascot Avatar -->
+						<div
+							class="mascot-svg-wrap"
+							id="mascot-avatar"
+							aria-label="Illustrated Comic Character Mascot"
+						>
+							<svg
+								class="mascot-svg"
+								viewBox="0 0 160 160"
+								fill="none"
+								xmlns="http://www.w3.org/2000/svg"
+							>
+								<!-- Character Head / Silhouette -->
+								<ellipse
+									cx="80"
+									cy="85"
+									rx="55"
+									ry="50"
+									fill="var(--paper-card)"
+									stroke="var(--ink-black)"
+									stroke-width="4.5"
+								/>
+								<!-- Ears -->
+								<ellipse
+									cx="25"
+									cy="85"
+									rx="10"
+									ry="14"
+									fill="var(--accent-warm)"
+									stroke="var(--ink-black)"
+									stroke-width="4"
+								/>
+								<ellipse
+									cx="135"
+									cy="85"
+									rx="10"
+									ry="14"
+									fill="var(--accent-warm)"
+									stroke="var(--ink-black)"
+									stroke-width="4"
+								/>
+								<!-- Hair / Beret Cap -->
+								<path
+									d="M26 65 C35 30, 125 30, 134 65 C120 45, 40 45, 26 65 Z"
+									fill="var(--ink-black)"
+									stroke="var(--ink-black)"
+									stroke-width="3"
+								/>
+								<circle
+									cx="80"
+									cy="30"
+									r="7"
+									fill="var(--accent-pop)"
+									stroke="var(--ink-black)"
+									stroke-width="3"
+								/>
+								<!-- Eyebrows (Dynamic Mood) -->
+								<path
+									id="mascot-brow-left"
+									class="mascot-part"
+									d="M48 65 Q60 60 70 65"
+									stroke="var(--ink-black)"
+									stroke-width="4.5"
+									stroke-linecap="round"
+									fill="none"
+								/>
+								<path
+									id="mascot-brow-right"
+									class="mascot-part"
+									d="M90 65 Q100 60 112 65"
+									stroke="var(--ink-black)"
+									stroke-width="4.5"
+									stroke-linecap="round"
+									fill="none"
+								/>
+								<!-- Glasses Frame (Classic Comic Scholar) -->
+								<circle
+									cx="58"
+									cy="82"
+									r="17"
+									fill="rgba(255,255,255,0.7)"
+									stroke="var(--ink-black)"
+									stroke-width="4.5"
+								/>
+								<circle
+									cx="102"
+									cy="82"
+									r="17"
+									fill="rgba(255,255,255,0.7)"
+									stroke="var(--ink-black)"
+									stroke-width="4.5"
+								/>
+								<path
+									d="M75 82 L85 82"
+									stroke="var(--ink-black)"
+									stroke-width="4.5"
+									stroke-linecap="round"
+								/>
+								<!-- Eyes / Pupils -->
+								<circle
+									id="mascot-eye-left"
+									class="mascot-part eye-pupil"
+									cx="58"
+									cy="82"
+									r="5.5"
+									fill="var(--ink-black)"
+								/>
+								<circle
+									id="mascot-eye-right"
+									class="mascot-part eye-pupil"
+									cx="102"
+									cy="82"
+									r="5.5"
+									fill="var(--ink-black)"
+								/>
+								<!-- Sparkle / Reflection -->
+								<circle cx="56" cy="80" r="1.8" fill="#ffffff" />
+								<circle cx="100" cy="80" r="1.8" fill="#ffffff" />
+								<!-- Nose -->
+								<path
+									d="M78 90 Q80 96 84 94"
+									stroke="var(--ink-black)"
+									stroke-width="3.5"
+									stroke-linecap="round"
+									fill="none"
+								/>
+								<!-- Mouth (Dynamic Mood) -->
+								<path
+									id="mascot-mouth"
+									class="mascot-part"
+									d="M68 112 Q80 120 92 112"
+									stroke="var(--ink-black)"
+									stroke-width="4.5"
+									stroke-linecap="round"
+									fill="none"
+								/>
+								<!-- Comic Blush -->
+								<circle
+									cx="40"
+									cy="98"
+									r="6"
+									fill="var(--accent-coral)"
+									opacity="0.5"
+								/>
+								<circle
+									cx="120"
+									cy="98"
+									r="6"
+									fill="var(--accent-coral)"
+									opacity="0.5"
+								/>
+								<!-- Idea Lightbulb / Mood Icon -->
+								<g
+									id="mascot-bulb"
+									class="mascot-bulb"
+									transform="translate(112, 16)"
+								>
+									<path
+										d="M12 0 C6 0 2 5 2 10 C2 14 5 17 6 20 L18 20 C19 17 22 14 22 10 C22 5 18 0 12 0 Z"
+										fill="var(--accent-gold)"
+										stroke="var(--ink-black)"
+										stroke-width="2.5"
+									/>
+									<line
+										x1="8"
+										y1="23"
+										x2="16"
+										y2="23"
+										stroke="var(--ink-black)"
+										stroke-width="2.5"
+									/>
+									<line
+										x1="10"
+										y1="26"
+										x2="14"
+										y2="26"
+										stroke="var(--ink-black)"
+										stroke-width="2.5"
+									/>
+									<!-- Glow rays -->
+									<line
+										x1="12"
+										y1="-6"
+										x2="12"
+										y2="-2"
+										stroke="var(--accent-gold)"
+										stroke-width="3"
+										stroke-linecap="round"
+									/>
+									<line
+										x1="-2"
+										y1="4"
+										x2="2"
+										y2="6"
+										stroke="var(--accent-gold)"
+										stroke-width="3"
+										stroke-linecap="round"
+									/>
+									<line
+										x1="26"
+										y1="4"
+										x2="22"
+										y2="6"
+										stroke="var(--accent-gold)"
+										stroke-width="3"
+										stroke-linecap="round"
+									/>
+								</g>
+							</svg>
+						</div>
+					</div>
+
+					<div class="mascot-dialogue-box">
+						<p class="mascot-quip" id="mascot-quip">
+							“Ink meets thought. Roll the next strip!”
+						</p>
+					</div>
+				</section>
+
+				<!-- Panel 3: Comic Control Deck & Navigation -->
+				<section
+					class="bento-card bento-controls"
+					aria-label="Comic Generator Controls"
+				>
+					<div class="card-title-bar">
+						<span class="title-text">PRESS CONTROLS</span>
+						<span class="badge-mini"
+							><i class="fas fa-bolt"></i> HOT OFF THE PRESS</span
+						>
+					</div>
+
+					<div class="controls-grid">
+						<!-- Big Roll Button -->
+						<button
+							class="comic-hero-btn"
+							id="new-quote-btn"
+							title="Generate New Comic Quote (Spacebar)"
+						>
+							<span class="hero-btn-icon"><i class="fas fa-dice"></i></span>
+							<span class="hero-btn-content">
+								<strong class="btn-main-text">ROLL NEW ISSUE</strong>
+								<small class="btn-sub-text">Press [Space] to Print</small>
+							</span>
+							<span class="btn-badge-burst">WHAM!</span>
+						</button>
+
+						<!-- History Step Navigation -->
+						<div class="nav-button-group">
+							<button
+								class="nav-step-btn"
+								id="prev-quote-btn"
+								title="Previous Quote ([Left Arrow])"
+								disabled
+							>
+								<i class="fas fa-arrow-left"></i>
+								<span>PREV</span>
+							</button>
+							<button
+								class="nav-step-btn"
+								id="random-surprise-btn"
+								title="Surprise Me!"
+							>
+								<i class="fas fa-wand-magic-sparkles"></i>
+								<span>SURPRISE</span>
+							</button>
+							<button
+								class="nav-step-btn"
+								id="next-quote-btn"
+								title="Next Quote ([Right Arrow])"
+							>
+								<span>NEXT</span>
+								<i class="fas fa-arrow-right"></i>
+							</button>
+						</div>
+					</div>
+				</section>
+
+				<!-- Panel 4: Genre & Category Filter Bento -->
+				<section
+					class="bento-card bento-genres"
+					aria-label="Quote Genre Categories"
+				>
+					<div class="card-title-bar">
+						<span class="title-text">GENRE CATALOG</span>
+						<span class="filter-indicator" id="active-genre-indicator"
+							>ALL GENRES</span
+						>
+					</div>
+
+					<div
+						class="genre-pill-list"
+						role="tablist"
+						aria-label="Quote Categories"
+					>
+						<button
+							class="genre-pill active"
+							data-genre="all"
+							role="tab"
+							aria-selected="true"
+						>
+							<span class="genre-icon">📚</span>
+							<span class="genre-name">All Stories</span>
+						</button>
+						<button
+							class="genre-pill"
+							data-genre="wisdom"
+							role="tab"
+							aria-selected="false"
+						>
+							<span class="genre-icon">🧘</span>
+							<span class="genre-name">Wisdom &amp; Zen</span>
+						</button>
+						<button
+							class="genre-pill"
+							data-genre="grit"
+							role="tab"
+							aria-selected="false"
+						>
+							<span class="genre-icon">🔥</span>
+							<span class="genre-name">Grit &amp; Drive</span>
+						</button>
+						<button
+							class="genre-pill"
+							data-genre="philosophy"
+							role="tab"
+							aria-selected="false"
+						>
+							<span class="genre-icon">🏛️</span>
+							<span class="genre-name">Philosophy</span>
+						</button>
+						<button
+							class="genre-pill"
+							data-genre="humor"
+							role="tab"
+							aria-selected="false"
+						>
+							<span class="genre-icon">🎭</span>
+							<span class="genre-name">Wit &amp; Humor</span>
+						</button>
+						<button
+							class="genre-pill"
+							data-genre="creativity"
+							role="tab"
+							aria-selected="false"
+						>
+							<span class="genre-icon">🎨</span>
+							<span class="genre-name">Creativity</span>
+						</button>
+						<button
+							class="genre-pill"
+							data-genre="courage"
+							role="tab"
+							aria-selected="false"
+						>
+							<span class="genre-icon">⚡</span>
+							<span class="genre-name">Courage</span>
+						</button>
+					</div>
+				</section>
+
+				<!-- Panel 5: Speech Balloon Style Switcher -->
+				<section
+					class="bento-card bento-styles"
+					aria-label="Speech Balloon Typography"
+				>
+					<div class="card-title-bar">
+						<span class="title-text">BALLOON STYLE</span>
+						<span class="badge-mini"
+							><i class="fas fa-comment-dots"></i> DIALOGUE</span
+						>
+					</div>
+
+					<div class="style-selector-grid">
+						<button
+							class="style-choice-btn active"
+							data-style="balloon"
+							title="Standard Comic Dialogue Balloon"
+						>
+							<i class="fas fa-comment"></i>
+							<span>Dialogue</span>
+						</button>
+						<button
+							class="style-choice-btn"
+							data-style="thought"
+							title="Dreamy Thought Bubble Cloud"
+						>
+							<i class="fas fa-cloud"></i>
+							<span>Thought</span>
+						</button>
+						<button
+							class="style-choice-btn"
+							data-style="shout"
+							title="Jagged Action Shout Burst"
+						>
+							<i class="fas fa-certificate"></i>
+							<span>Shout!</span>
+						</button>
+						<button
+							class="style-choice-btn"
+							data-style="caption"
+							title="Classic Yellow Narrator Caption Box"
+						>
+							<i class="fas fa-rectangle-ad"></i>
+							<span>Caption</span>
+						</button>
+					</div>
+				</section>
+
+				<!-- Panel 6: Comic Gazette Stats & Daily Quote -->
+				<section
+					class="bento-card bento-stats"
+					aria-label="Collector Gazette Stats"
+				>
+					<div class="card-title-bar">
+						<span class="title-text">GAZETTE DISPATCH</span>
+						<span class="badge-mini"
+							><i class="fas fa-newspaper"></i> DAILY DISPATCH</span
+						>
+					</div>
+
+					<div class="stats-row">
+						<div class="stat-box">
+							<span class="stat-number" id="stats-read-count">1</span>
+							<span class="stat-caption">Strips Read</span>
+						</div>
+						<div class="stat-box">
+							<span class="stat-number" id="stats-saved-count">0</span>
+							<span class="stat-caption">Saved Scraps</span>
+						</div>
+						<div class="stat-box">
+							<button
+								class="daily-pick-btn"
+								id="daily-quote-btn"
+								title="Load Today's Curated Daily Quote"
+							>
+								<i class="fas fa-calendar-check"></i>
+								<span>Today's Daily Pick</span>
+							</button>
+						</div>
+					</div>
+				</section>
+			</main>
+
+			<!-- 3-Panel Sunday Strip Mode (Alternative View) -->
+			<section
+				class="comic-strip-view"
+				id="strip-view"
+				hidden
+				aria-label="3-Panel Comic Strip Series"
+			>
+				<div class="strip-header">
+					<div class="strip-masthead-title">
+						<h2>SUNDAY COMIC STRIP: THREE-ACT WISDOM</h2>
+						<p>
+							Panel 1: The Dilemma • Panel 2: The Reflection • Panel 3: The
+							Revelation
+						</p>
+					</div>
+					<button class="comic-btn" id="generate-strip-btn">
+						<i class="fas fa-arrows-rotate"></i>
+						<span>NEW 3-PANEL STRIP</span>
+					</button>
+				</div>
+
+				<div class="three-panels-wrapper">
+					<!-- Panel 1 -->
+					<article class="strip-panel strip-panel-1">
+						<div class="strip-panel-badge">ACT I: THE SETUP</div>
+						<div class="strip-panel-bubble">
+							<p class="strip-panel-text" id="strip-text-1">Loading Act I...</p>
+							<p class="strip-panel-author" id="strip-author-1">— Loading</p>
+						</div>
+						<div class="strip-panel-footer">
+							<span class="strip-sticker">AHA!</span>
+						</div>
+					</article>
+
+					<!-- Panel 2 -->
+					<article class="strip-panel strip-panel-2">
+						<div class="strip-panel-badge">ACT II: THE PONDER</div>
+						<div class="strip-panel-bubble thought-bubble">
+							<p class="strip-panel-text" id="strip-text-2">
+								Loading Act II...
+							</p>
+							<p class="strip-panel-author" id="strip-author-2">— Loading</p>
+						</div>
+						<div class="strip-panel-footer">
+							<span class="strip-sticker">HMM...</span>
+						</div>
+					</article>
+
+					<!-- Panel 3 -->
+					<article class="strip-panel strip-panel-3">
+						<div class="strip-panel-badge">ACT III: THE PUNCHLINE</div>
+						<div class="strip-panel-bubble shout-bubble">
+							<p class="strip-panel-text" id="strip-text-3">
+								Loading Act III...
+							</p>
+							<p class="strip-panel-author" id="strip-author-3">— Loading</p>
+						</div>
+						<div class="strip-panel-footer">
+							<span class="strip-sticker">BOOM!</span>
+						</div>
+					</article>
+				</div>
+			</section>
+
+			<!-- Footer Legend & Barcode -->
+			<footer class="comic-footer">
+				<div class="footer-keyboard-guide">
+					<span class="guide-title"
+						><i class="fas fa-keyboard"></i> SHORTCUTS:</span
+					>
+					<span class="key-pill"><kbd>Space</kbd> New Quote</span>
+					<span class="key-pill"
+						><kbd>&larr;</kbd> / <kbd>&rarr;</kbd> History</span
+					>
+					<span class="key-pill"><kbd>C</kbd> Copy</span>
+					<span class="key-pill"><kbd>S</kbd> Save</span>
+					<span class="key-pill"><kbd>V</kbd> Read Aloud</span>
+					<span class="key-pill"><kbd>D</kbd> Download Card</span>
+				</div>
+
+				<div class="footer-barcode-box" aria-hidden="true">
+					<div class="barcode-lines">
+						<span></span><span></span><span></span><span></span><span></span>
+						<span></span><span></span><span></span><span></span><span></span>
+						<span></span><span></span><span></span><span></span><span></span>
+					</div>
+					<span class="barcode-text">ISBN 0-8240-QUOTE-2026</span>
+				</div>
+			</footer>
+		</div>
+
+		<!-- Scrapbook Slide-Over Drawer Modal -->
+		<aside
+			class="scrapbook-drawer"
+			id="scrapbook-drawer"
+			aria-hidden="true"
+			role="dialog"
+			aria-modal="true"
+			aria-labelledby="scrapbook-title"
+		>
+			<div class="drawer-backdrop" id="drawer-backdrop"></div>
+			<div class="drawer-content">
+				<div class="drawer-header">
+					<div class="drawer-title-group">
+						<i class="fas fa-book-bookmark"></i>
+						<h2 id="scrapbook-title">COMIC SCRAPBOOK</h2>
+					</div>
+					<button
+						class="drawer-close-btn"
+						id="close-scrapbook-btn"
+						aria-label="Close Scrapbook"
+					>
+						<i class="fas fa-xmark"></i>
+					</button>
+				</div>
+
+				<div class="drawer-subbar">
+					<span id="scrapbook-counter-text">0 saved comic quotes</span>
+					<button class="clear-all-btn" id="clear-scraps-btn">Clear All</button>
+				</div>
+
+				<div class="drawer-body" id="scrapbook-list">
+					<!-- Saved items render here dynamically -->
+				</div>
+			</div>
+		</aside>
+
+		<!-- Offscreen Export Canvas for High-Resolution PNG Cards -->
+		<canvas
+			id="export-canvas"
+			width="1080"
+			height="1080"
+			style="display: none"
+		></canvas>
+
+		<!-- Comic Toast Notification Burst -->
+		<div class="comic-toast" id="comic-toast" role="status" aria-live="polite">
+			<span class="toast-burst" id="toast-burst">POW!</span>
+			<span class="toast-message" id="toast-message"
+				>Quote Copied to Clipboard!</span
+			>
+		</div>
+
+		<script type="text/javascript" src="script.js"></script>
+	</body>
 </html>
