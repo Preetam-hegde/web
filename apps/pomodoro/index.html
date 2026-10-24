@@ -2,250 +2,198 @@
 <html lang="en">
 
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Timer</title>
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.2.0/css/all.min.css">
-    <link rel="stylesheet" href="styles.css">
-    <link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Pomodoro Timer</title>
+	<meta name="description" content="A kitchen-timer style Pomodoro timer: a shrinking dial, a task list and a daily log.">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wdth,wght@12..96,75..100,300..800&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="styles.css">
+	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 
-<body>
-    <header>
-        <h1>Pomodoro Timer</h1>
-        <p>Stay focused and productive with timed work sessions</p>
-    </header>
+<body data-mode="focus">
+	<header class="bar">
+		<h1 class="wordmark">Pomodoro</h1>
 
-    <div class="canvas">
-        <section class="focus-area">
-            <div class="focus-header">
-                <div class="timer-mode">Pomodoro</div>
-                <button id="settings-toggle" class="btn btn-ghost" aria-haspopup="true" aria-controls="settings-panel">
-                    <i class="fas fa-sliders-h"></i>
-                    Settings
-                </button>
-            </div>
+		<div class="modes" role="tablist" aria-label="Timer mode">
+			<button class="mode" role="tab" id="mode-focus" data-mode="focus" aria-selected="true">Focus</button>
+			<button class="mode" role="tab" id="mode-short" data-mode="short" aria-selected="false">Short break</button>
+			<button class="mode" role="tab" id="mode-long" data-mode="long" aria-selected="false">Long break</button>
+		</div>
 
-            <div class="theme-switcher">
-                <div class="theme-btn theme-light active" data-theme="light" title="Light Theme"></div>
-                <div class="theme-btn theme-dark" data-theme="dark" title="Dark Theme"></div>
-                <div class="theme-btn theme-nature" data-theme="nature" title="Nature Theme"></div>
-                <div class="theme-btn theme-serene" data-theme="serene" title="Serene Theme"></div>
-                <div class="theme-btn theme-minimalist" data-theme="minimalist" title="Minimalist Theme"></div>
-            </div>
+		<div class="bar-actions">
+			<button id="solo-btn" class="text-btn" aria-pressed="false">Focus view</button>
+			<button id="settings-toggle" class="text-btn" aria-haspopup="dialog" aria-controls="settings-panel" aria-expanded="false">
+				<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 7h10M18 7h2M4 17h2M10 17h10"/><circle cx="16" cy="7" r="2"/><circle cx="8" cy="17" r="2"/></svg>
+				Settings
+			</button>
+		</div>
+	</header>
 
-            <div class="timer-surface">
-                <div class="timer-circle">
-                    <svg class="progress-ring" viewBox="0 0 320 320">
-                        <circle class="progress-ring-background" r="150" cx="160" cy="160" />
-                        <circle class="progress-ring-circle" r="150" cx="160" cy="160" stroke-dasharray="942"
-                            stroke-dashoffset="0" />
-                    </svg>
-                    <div class="timer-display-wrap">
-                        <div class="timer-display">25:00</div>
-                        <div class="timer-subcopy">Stay in the flow</div>
-                    </div>
-                </div>
+	<main class="stage">
+		<section class="timer" aria-label="Timer">
+			<div class="dial-wrap">
+				<svg id="dial" class="dial" viewBox="-200 -200 400 400" role="img" aria-label="Time remaining dial">
+					<circle class="dial-face" r="192"/>
+					<g id="dial-ticks"></g>
+					<path id="dial-wedge" class="dial-wedge" d=""/>
+					<circle class="dial-knob" r="9"/>
+				</svg>
+			</div>
 
-                <div class="mode-switch">
-                    <button id="pomodoro-btn" class="mode-pill active">Pomodoro</button>
-                    <button id="short-break-btn" class="mode-pill">Short Break</button>
-                    <button id="long-break-btn" class="mode-pill">Long Break</button>
-                </div>
+			<div class="readout-col">
+				<div id="readout" class="readout" role="timer" aria-label="25 minutes 0 seconds remaining">25:00</div>
+				<p id="status-line" class="status-line">Stay in the flow</p>
+				<p id="active-task" class="active-task">No task picked</p>
 
-                <div class="primary-actions">
-                    <button id="start-btn" class="btn btn-primary">
-                        <i class="fas fa-play"></i>
-                        Start
-                    </button>
-                    <button id="pause-btn" class="btn btn-primary" disabled>
-                        <i class="fas fa-pause"></i>
-                        Pause
-                    </button>
-                    <button id="reset-btn" class="btn btn-secondary">
-                        <i class="fas fa-redo-alt"></i>
-                        Reset
-                    </button>
-                    <button id="skip-btn" class="btn btn-outline">
-                        <i class="fas fa-forward"></i>
-                        Skip
-                    </button>
-                </div>
-            </div>
+				<div class="cycle" aria-live="polite">
+					<ol id="cycle-dots" class="cycle-dots" aria-hidden="true"></ol>
+					<span id="cycle-text" class="cycle-text"></span>
+				</div>
 
-            <div id="inspiration-container" class="inspiration-container" style="display: none;">
-                <div class="inspiration-content">
-                    <p id="inspiration-text" class="inspiration-text"></p>
-                    <p id="inspiration-author" class="inspiration-author"></p>
-                </div>
-                <div id="break-suggestions" class="break-suggestions">
-                    <span class="suggestion-label">Break Suggestion</span>
-                    <p id="break-suggestion" class="suggestion-item"></p>
-                </div>
-            </div>
-        </section>
+				<div class="controls">
+					<button id="toggle-btn" class="primary-btn">Start</button>
+					<button id="reset-btn" class="text-btn">Reset</button>
+					<button id="skip-btn" class="text-btn">Skip</button>
+				</div>
+				<div class="controls minor">
+					<button id="extend-btn" class="text-btn">Add 5 minutes</button>
+					<button id="music-quick" class="text-btn" aria-pressed="false">Play music</button>
+				</div>
 
-        <aside class="workspace">
-            <div class="progress-summary">
-                <div class="progress-card">
-                    <span class="progress-label">Focus Sessions</span>
-                    <span id="daily-pomodoros" class="progress-value">0</span>
-                    <span class="progress-subtext">completed today</span>
-                </div>
-                <div class="progress-card">
-                    <span class="progress-label">Deep Work Minutes</span>
-                    <span id="daily-focus-minutes" class="progress-value">0</span>
-                    <span class="progress-subtext">in deep focus</span>
-                </div>
-                <div class="progress-card">
-                    <span class="progress-label">Tasks Completed</span>
-                    <span id="daily-tasks-completed" class="progress-value">0</span>
-                    <span class="progress-subtext">checked off</span>
-                </div>
-            </div>
+				<div id="break-card" class="break-card" hidden>
+					<p id="break-quote" class="break-quote"></p>
+					<p id="break-author" class="break-author"></p>
+					<p id="break-tip" class="break-tip"></p>
+				</div>
+			</div>
+		</section>
 
-            <section class="task-management">
-                <div class="module-header">
-                    <h2 class="module-title">Focus List</h2>
-                    <form id="task-form" class="task-form">
-                        <input type="text" id="task-input" class="task-input" placeholder="Add a new task...">
-                        <button type="submit" class="btn btn-compact">Add</button>
-                    </form>
-                </div>
-                <ul id="task-list" class="task-list"></ul>
-            </section>
+		<aside class="sheet" aria-label="Tasks and history">
+			<dl class="today">
+				<div>
+					<dt>Sessions</dt>
+					<dd id="stat-sessions">0</dd>
+				</div>
+				<div>
+					<dt>Focus minutes</dt>
+					<dd id="stat-minutes">0</dd>
+				</div>
+				<div>
+					<dt>Tasks done</dt>
+					<dd id="stat-tasks">0</dd>
+				</div>
+			</dl>
 
-            <section class="history-section">
-                <div class="module-header">
-                    <h2 class="module-title">Session Log</h2>
-                </div>
-                <ul id="session-history" class="session-history"></ul>
-            </section>
-        </aside>
-    </div>
+			<section class="block">
+				<div class="block-head">
+					<h2>Last 7 days</h2>
+					<span id="streak" class="streak"></span>
+				</div>
+				<ol id="week" class="week" aria-label="Focus minutes per day"></ol>
+			</section>
 
-    <div id="settings-panel" class="settings-panel" aria-hidden="true">
-        <div class="settings-header">
-            <h2>Session Settings</h2>
-            <button id="settings-close" class="btn btn-ghost" aria-label="Close settings">
-                <i class="fas fa-times"></i>
-            </button>
-        </div>
+			<section class="block">
+				<div class="block-head">
+					<h2>Tasks</h2>
+					<button id="clear-done-btn" class="text-btn" hidden>Clear done</button>
+				</div>
+				<form id="task-form" class="task-form">
+					<label class="sr-only" for="task-input">New task</label>
+					<input type="text" id="task-input" class="task-input" placeholder="What are you working on?" maxlength="120" autocomplete="off">
+					<button type="submit" class="text-btn">Add task</button>
+				</form>
+				<ul id="task-list" class="task-list"></ul>
+				<p id="task-empty" class="empty">Add a task, then pick it so each session is logged against it.</p>
+			</section>
 
-        <div class="settings-scroller">
-            <div class="settings-group">
-                <h3>Durations</h3>
-                <div class="settings-grid">
-                    <label class="field">
-                        <span>Pomodoro (min)</span>
-                        <input id="pomodoro-duration" type="number" min="1" max="60" value="25">
-                    </label>
-                    <label class="field">
-                        <span>Short Break (min)</span>
-                        <input id="short-break-duration" type="number" min="1" max="30" value="5">
-                    </label>
-                    <label class="field">
-                        <span>Long Break (min)</span>
-                        <input id="long-break-duration" type="number" min="1" max="60" value="15">
-                    </label>
-                    <label class="field">
-                        <span>Long Break Interval</span>
-                        <input id="long-break-interval" type="number" min="1" max="12" value="4">
-                    </label>
-                </div>
-            </div>
+			<section class="block">
+				<h2>Today's sessions</h2>
+				<ul id="session-history" class="session-history"></ul>
+				<p id="history-empty" class="empty">Finished sessions show up here.</p>
+			</section>
+		</aside>
+	</main>
 
-            <div class="settings-group">
-                <h3>Automation</h3>
-                <label class="toggle-field">
-                    <div>
-                        <span>Auto-start Breaks</span>
-                        <small>Jump into rest after focus sessions</small>
-                    </div>
-                    <input type="checkbox" id="auto-start-break">
-                    <span class="toggle-visual" aria-hidden="true"></span>
-                </label>
-                <label class="toggle-field">
-                    <div>
-                        <span>Auto-start Focus</span>
-                        <small>Resume work when breaks end</small>
-                    </div>
-                    <input type="checkbox" id="auto-start-focus">
-                    <span class="toggle-visual" aria-hidden="true"></span>
-                </label>
-            </div>
+	<footer class="foot">
+		<p class="keys">Space start or pause &nbsp; R reset &nbsp; S skip &nbsp; F focus view</p>
+		<p>Made with <span aria-label="love">&hearts;</span> by Preetam Ptwo</p>
+	</footer>
 
-            <div class="settings-group">
-                <h3>Sounds</h3>
-                <div class="settings-stack">
-                    <label class="field">
-                        <span>Notification Sound</span>
-                        <select id="sound-selector">
-                            <option value="nature">Level Up</option>
-                            <option value="bell">Bell</option>
-                            <option value="digital">Digital</option>
-                            <option value="none">No Sound</option>
-                        </select>
-                    </label>
-                    <label class="field">
-                        <span>Sound Volume</span>
-                        <input type="range" id="volume-slider" min="0" max="100" value="50">
-                    </label>
-                    <button id="test-sound-btn" class="btn btn-outline btn-icon" aria-label="Test notification sound">
-                        <i class="fas fa-play"></i>
-                    </button>
-                </div>
-            </div>
+	<div id="settings-overlay" class="overlay" hidden></div>
+	<div id="settings-panel" class="drawer" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+		<div class="drawer-head">
+			<h2 id="settings-title">Settings</h2>
+			<button id="settings-close" class="text-btn" aria-label="Close settings">Close</button>
+		</div>
 
-            <div class="settings-group">
-                <h3>Ambient Music</h3>
-                <div class="settings-stack">
-                    <label class="field">
-                        <span>Playlist</span>
-                        <select id="music-selector">
-                            <option value="lofi">LO-FI</option>
-                            <option value="nature">Nature</option>
-                            <option value="jazz">Dream jazz Calm</option>
-                            <option value="medieval">Medieval</option>
-                        </select>
-                    </label>
-                    <label class="field">
-                        <span>Volume</span>
-                        <input type="range" id="volume-slider-m" min="0" max="100" value="50">
-                    </label>
-                    <button id="test-music-btn" class="btn btn-outline btn-icon" aria-label="Play ambient music preview">
-                        <i class="fas fa-play"></i>
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
+		<div class="drawer-body">
+			<fieldset class="group">
+				<legend>Lengths</legend>
+				<label class="field"><span>Focus (minutes)</span>
+					<input id="pomodoro-duration" type="number" min="1" max="120" value="25" inputmode="numeric"></label>
+				<label class="field"><span>Short break (minutes)</span>
+					<input id="short-break-duration" type="number" min="1" max="60" value="5" inputmode="numeric"></label>
+				<label class="field"><span>Long break (minutes)</span>
+					<input id="long-break-duration" type="number" min="1" max="120" value="15" inputmode="numeric"></label>
+				<label class="field"><span>Sessions before a long break</span>
+					<input id="long-break-interval" type="number" min="1" max="12" value="4" inputmode="numeric"></label>
+			</fieldset>
 
-    <div id="notification" class="notification" style="display: none;">
-        <div class="notification-icon">
-            <i class="fas fa-bell"></i>
-        </div>
-        <div class="notification-content">
-            <div id="notification-title" class="notification-title">Timer Complete</div>
-            <div id="notification-text" class="notification-text">Your session has ended.</div>
-        </div>
-        <button id="notification-close" class="notification-close">
-            <i class="fas fa-times"></i>
-        </button>
-    </div>
+			<fieldset class="group">
+				<legend>Automation</legend>
+				<label class="switch">
+					<span>Start breaks automatically<small>Begin the break as soon as a focus session ends</small></span>
+					<input type="checkbox" role="switch" id="auto-start-break">
+				</label>
+				<label class="switch">
+					<span>Start focus automatically<small>Begin the next session as soon as a break ends</small></span>
+					<input type="checkbox" role="switch" id="auto-start-focus">
+				</label>
+			</fieldset>
 
-    <div id="settings-overlay" class="settings-overlay" aria-hidden="true"></div>
+			<fieldset class="group">
+				<legend>Alert sound</legend>
+				<label class="field"><span>Sound</span>
+					<select id="sound-selector">
+						<option value="nature">Level up</option>
+						<option value="bell">Bell</option>
+						<option value="digital">Impact</option>
+						<option value="none">Silent</option>
+					</select></label>
+				<label class="field"><span>Volume</span>
+					<input type="range" id="sound-volume" min="0" max="100" value="50"></label>
+				<button id="test-sound-btn" class="text-btn" type="button">Play sound</button>
+			</fieldset>
 
-    <script src="script.js"></script>
+			<fieldset class="group">
+				<legend>Background music</legend>
+				<label class="field"><span>Track</span>
+					<select id="music-selector">
+						<option value="lofi">Lo-fi</option>
+						<option value="nature">Nature</option>
+						<option value="jazz">Dream jazz</option>
+						<option value="medieval">Medieval</option>
+					</select></label>
+				<label class="field"><span>Volume</span>
+					<input type="range" id="music-volume" min="0" max="100" value="50"></label>
+				<button id="music-btn" class="text-btn" type="button" aria-pressed="false">Play music</button>
+			</fieldset>
+		</div>
+	</div>
+
+	<div id="toast" class="toast" role="status" aria-live="polite" hidden>
+		<div>
+			<strong id="toast-title"></strong>
+			<span id="toast-text"></span>
+		</div>
+		<button id="toast-close" class="text-btn" aria-label="Dismiss">Dismiss</button>
+	</div>
+
+	<script src="script.js"></script>
 </body>
-
-<footer id="footer">
-    With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20"
-        style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo
-</footer>
 
 </html>
