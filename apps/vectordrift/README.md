@@ -1,79 +1,41 @@
-# 🌀 VectorDrift — Micro-Evasion & Bullet-Hell Grazing
+# VectorDrift
 
-> The mouse agility and micro-movement equivalent of Reflex Arena.
+A cursor-agility game in the vein of *Super Hexagon* and bullet-hell grazing: the closer you fly to danger without dying, the faster your score multiplier climbs.
 
-VectorDrift is a high-octane cursor agility game inspired by *Super Hexagon* and bullet-hell "grazing" mechanics. Pure spatial anticipation, liquid cursor control, and high-risk/high-reward flow state.
+## Core mechanic
 
----
+The reticle has a lethal core (3.5 px radius) and a graze aura (28 px radius). Touching a hazard with the core ends the run (or spends a shield on Cadet difficulty). Staying inside the aura without touching anything charges the graze multiplier, which grows faster the closer you are and decays once you leave the danger zone. The multiplier scales from ×1 up through ×50+ and multiplies all score.
 
-## 🎮 Core Hook & Grazing Mechanics
+## Modes
 
-- **Lethal Hitbox vs. Graze Aura**:
-  - The cursor reticle consists of an inner lethal core dot (**3.5px radius**) and an outer graze aura (**28px radius**).
-  - Touching any lethal hazard with your core causes instant disintegration (or consumes a shield in Cadet difficulty).
-  - Keeping your core within the graze aura without touching the hazard triggers **Active Graze**.
-- **Exponential Graze Multiplier**:
-  - As long as you maintain micro-proximity to hazards, your Graze Multiplier charges exponentially:
-    $$\Delta M = \Delta t \times \left(1.8 + 8.5 \times \left(\frac{R_{\text{graze}} - d}{R_{\text{graze}}}\right)^{1.8}\right)$$
-  - Multiplier climbs from `x1.0` through `x10.0`, `x25.0`, `x50.0`+, directly multiplying score accumulation.
-  - Leaving the danger zone causes the multiplier to decay gradually.
+| Key | Mode | Description |
+|---|---|---|
+| 1 | Graze Arena | Rotating blades, multi-armed stars, bouncing polyhedra and bullet spirals |
+| 2 | Vortex | Pulsing core with expanding rings and rotating gaps to thread through |
+| 3 | Laser Grid | Tripwire lasers that arm, fire and cool down; hovering in one spot for over 1.2 s triggers an orbital lock |
+| 4 | Hell Mode | Blades, vortex rings and lasers all at once |
 
----
+## Audio and visuals
 
-## 🕹️ Game Modes
+- 140 BPM acid bassline synthesised with Web Audio; the filter cutoff sweeps from 320 Hz to 4.2 kHz as the multiplier rises
+- Proximity sizzle and near-miss whoosh that rise as you approach a hazard
+- Momentum particle trails, lens-refraction rings around near misses and a velocity needle
 
-1. **Graze Arena**:
-   - Sweeping rotating geometric blades, multi-armed death stars, bouncing kinetic polyhedrons, and bullet spirals.
-   - Rewards riding the contours of moving blades and skimming ricocheting hazards.
-2. **Vortex**:
-   - Central pulsing event horizon pulling your focus inward.
-   - Expanding kinetic rings with rotating aperture gaps (Super Hexagon-style) that force the player to weave through narrow gaps while orbiting or evading.
-3. **Laser Grid**:
-   - Procedural laser tripwire network with dynamic anti-camping detection.
-   - Lasers cycle through **Arming** (predictive dotted line + audio charge), **Firing** (high-energy lethal beam with shockwave bloom), and **Cooldown**.
-   - **Anti-Camping Drone**: Hovering in a safe zone for > 1.2s triggers an immediate **Orbital Lock** crosshair directly on your cursor!
-   - Dynamic shifting grids and moving sweeping beams ensure no spot remains safe.
-4. **Hell Mode**:
-   - The ultimate crucible: simultaneous rotating blades, expanding vortex rings, and procedural laser grids all active at once!
+## Post-run telemetry
 
----
+- 64×36 movement heatmap with your trajectory overlaid (evasion, graze stretches, fatal impact)
+- Average and closest graze distance
+- Timeline of multiplier and hazard proximity across the run
+- Runs, personal bests and settings persist in `localStorage` under `vectordrift:v1`
 
-## 🔊 Audio & Visuals
+## Controls
 
-- **Procedural 140 BPM Acid Synth Bassline**:
-  - Built entirely with the browser's Web Audio API (`AudioContext`, `BiquadFilterNode`, `OscillatorNode`).
-  - Driving 16th-note acid bassline whose resonant filter cutoff dynamically sweeps from **320Hz** up to **4,200Hz** as your Graze Multiplier climbs!
-- **Graze Audio & Near-Miss Whoosh**:
-  - Frequency-modulated proximity sizzle that increases in frequency and harmonic resonance the closer your cursor is to death.
-- **Visual FX**:
-  - Liquid particle trails following cursor momentum with chromatic dispersion.
-  - Gravitational lens refraction rings around near-miss hazards.
-  - Directional vector needle indicating velocity vectors.
-
----
-
-## 📊 Analytics & Post-Run Telemetry
-
-- **Movement Efficiency Heatmap**:
-  - 64x36 2D spatial grid tracking cursor occupancy, active graze paths, and wasted wandering distance.
-  - Overlaid with the player's actual trajectory (cyan for evasive maneuvers, magenta/white for graze stretches, red marker for fatal impact).
-- **Average Graze Proximity**:
-  - Real-time Euclidean distance tracking measuring average pixels from death and the closest near-miss of the run.
-- **Survival Duration Timeline**:
-  - SVG timeline graph plotting the Graze Multiplier progression and hazard proximity across the run.
-- **Session Persistence**:
-  - All runs (including manually finished/saved runs), personal bests, and simulation settings persist in `localStorage` under `vectordrift:v1`.
-
----
-
-## ⌨️ Controls & Shortcuts
-
-| Key | Action |
+| Input | Action |
 |---|---|
-| `Mouse / Trackpad` | Guide cursor reticle |
-| `1` / `2` / `3` / `4` | Select Mode (Graze Arena / Vortex / Laser Grid / Hell Mode) |
-| `Enter` / `Space` | Launch VectorDrift / Play Again |
-| `Esc` | Pause simulation / Resume / Return to Menu |
-| `R` | Quick restart current run |
-| `Q` / `F` | Quit & Save current run telemetry |
-| `S` | Open Telemetry Stats |
+| Mouse / trackpad | Steer the reticle |
+| 1–4 | Select mode |
+| Enter / Space | Launch or play again |
+| Esc | Pause, resume or return to menu |
+| R | Restart run |
+| Q / F | Quit and save run telemetry |
+| S | Open stats |

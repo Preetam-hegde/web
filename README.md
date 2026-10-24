@@ -1,64 +1,51 @@
 # Preetam Hegde — Portfolio
 
-[Live Site](https://preetamhegde.in) · [Modern UI](https://preetamhegde.in/index.html) · [Classic UI](https://preetamhegde.in/index-classic.html)
+[Live site](https://preetamhegde.in) · [Modern UI](https://preetamhegde.in/index.html) · [Classic UI](https://preetamhegde.in/index-classic.html)
 
-This repository powers my interactive portfolio at [preetamhegde.in](https://preetamhegde.in). It includes two portfolio shells and a growing collection of self-contained mini-apps covering games, simulations, visualizers, and developer utilities.
+Source for [preetamhegde.in](https://preetamhegde.in): two portfolio front-ends (modern and terminal-style) plus a collection of self-contained mini-apps — games, simulations, visualizers and developer tools. Everything is static HTML/CSS/JS with no build step, hosted on GitHub Pages.
 
-Maintainer workflow details live in [PROJECT_PLAYBOOK.md](PROJECT_PLAYBOOK.md).
+## Featured apps
 
-## Highlights
-- Dual experience: modern interface plus terminal-inspired classic interface
-- Shared project catalog and resume content across both shells
-- Self-contained app folders under [apps](apps) for straightforward iteration
-- Static hosting on a custom domain (preetamhegde.in)
+| App | What it is |
+|---|---|
+| [Inkwell Editorial](https://inkwell.preetamhegde.in) | Full-stack editorial blog with AI-assisted writing, Supabase backend and admin analytics |
+| [System Design Prototype](https://sysdesign.preetamhegde.in) | Whiteboard for sketching distributed architectures, with diagram export |
+| [Bharatvarsha](apps/bharatvarsha/index.html) | Vedic-era strategy simulation with economy, events and progression |
+| [Reflex Arena](apps/aim-trainer/index.html) | Three.js FPS aim trainer with accuracy and session analytics |
+| [Keystorm](apps/keystorm/index.html) | Typing game with five modes and per-key analytics |
+| [Faceoff](apps/faceoff/index.html) | Two-player duels on one phone: timing, hangman, couple games, shareable result card |
+| [VectorDrift](apps/vectordrift/index.html) | Bullet-hell cursor-grazing game with post-run telemetry |
+| [DevPulse](apps/live-analytics-dashboard/index.html) | Real-time developer and systems telemetry dashboard |
+| [GeoLocation Explorer](apps/geo-location/index.html) | Geolocation, IP/phone lookup, coordinate conversion and mapping |
 
-## Featured Apps
-| App | What it is | Live |
-|---|---|---|
-| Inkwell Editorial | Full-stack editorial blog with AI-assisted writing, Supabase backend, and admin analytics | [Open](https://inkwell.preetamhegde.in) |
-| System Design Prototype | Interactive whiteboard for sketching distributed architectures with exportable diagrams | [Open](https://sysdesign.preetamhegde.in) |
-| Bharatvarsha | Strategy simulation set in the Vedic era with economy, events, and progression | [Open](https://preetamhegde.in/apps/bharatvarsha/index.html) |
-| Reflex Arena | Browser FPS aim trainer with accuracy and session metrics | [Open](https://preetamhegde.in/apps/aim-trainer/index.html) |
-| Keystorm | Typing game with five modes, combo-driven effects, and a per-key analytics dashboard | [Open](https://preetamhegde.in/apps/keystorm/index.html) |
-| Faceoff | Two players, one phone: timing duels, cut-in-half, Hangman Duel and couple games, split-screen or pass-and-play, with stats, dares and a shareable result card | [Open](https://preetamhegde.in/apps/faceoff/index.html) |
-| DevPulse: Live Telemetry Matrix | Over-engineered real-time developer and systems telemetry matrix | [Open](https://preetamhegde.in/apps/live-analytics-dashboard/index.html) |
-| Game of Life | Interactive Conway simulation with pattern experimentation | [Open](https://preetamhegde.in/apps/cellular-automata/index.html) |
-| Nine Dimension | Physics and vector playground with multiple interactive panels | [Open](https://preetamhegde.in/apps/nine-dimension/index.html) |
-| Sorting Visualizer | Step-by-step sorting algorithm visual learning tool | [Open](https://preetamhegde.in/apps/analyser/index.html) |
-| GeoLocation Explorer | Coordinate and location utility powered by Geolocation API | [Open](https://preetamhegde.in/apps/geo-location/index.html) |
-| Random Quote Generator | Quote fetch and share utility with smooth interactions | [Open](https://preetamhegde.in/apps/quote/index.html) |
+The full list, with tech tags, lives in [projects.js](projects.js).
 
-For the complete app list and metadata, see [projects.js](projects.js).
+## Repository layout
 
-## Project Layout
-- [index.html](index.html): modern portfolio shell
-- [index-classic.html](index-classic.html): terminal/classic shell
-- [projects.js](projects.js): shared app catalog for portfolio views
-- [apps](apps): individual mini-projects
-- [resource](resource): shared assets and resume content
+| Path | Purpose |
+|---|---|
+| `index.html`, `v1/` | Modern portfolio and its scripts/styles |
+| `index-classic.html`, `v0/` | Terminal-style portfolio and its scripts/styles |
+| `projects.js` | Shared project catalog and icon set used by both UIs |
+| `apps/<slug>/` | One folder per mini-app, entry point `index.html` |
+| `resource/` | Resume (`RESUME.md`, `pdf/`), parser (`resume-common.js`) and images |
 
-## Run Locally
-1. From the repository root, start a static server:
+## Run locally
+
 ```bash
 python3 -m http.server 4173
 ```
-2. Open [http://localhost:4173/index.html](http://localhost:4173/index.html)
 
-Alternative:
-```bash
-npx http-server .
-```
+Then open <http://localhost:4173/index.html>. `npx http-server .` works too.
 
-## Development Notes
-- Keep app entry points at `apps/<slug>/index.html`
-- Prefer app-local assets unless they are truly shared
-- Keep resume path references in sync across both shells
-- Use [AGENTS.md](AGENTS.md) and [PROJECT_PLAYBOOK.md](PROJECT_PLAYBOOK.md) for contributor and automation guidance
+## Adding a project
 
-## External Experiments
-- Dear Diary is intentionally external to this repository: [ptwo-diary](https://sites.google.com/view/ptwo-diary)
+1. Create `apps/<kebab-case-slug>/index.html` and keep its assets inside that folder, using relative paths.
+2. Add an entry to the `projects` array in `projects.js` (`name`, `category`, `icon`, `link`, `description`, `tech`). Both UIs read it, so no second list is needed.
+3. Open `index.html`, `index-classic.html` and the new app to check they load.
+
+See [PROJECT_PLAYBOOK.md](PROJECT_PLAYBOOK.md) for details and [AGENTS.md](AGENTS.md) for contributor conventions.
 
 ## Contact
-- Site: [preetamhegde.in](https://preetamhegde.in)
-- GitHub: [preetam-hegde](https://github.com/preetam-hegde)
-- LinkedIn: [preetam-hegde-8b53311a7](https://www.linkedin.com/in/preetam-hegde-8b53311a7/)
+
+[preetamhegde.in](https://preetamhegde.in) · [GitHub](https://github.com/preetam-hegde) · [LinkedIn](https://www.linkedin.com/in/preetam-hegde-8b53311a7/)

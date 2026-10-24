@@ -1,126 +1,79 @@
-# Project Playbook (AI + Developer Guide)
+# Project Playbook
 
-This file is the maintenance source of truth for this portfolio repository.
+Maintenance guide for this portfolio repository.
 
-## 1. Quick Architecture
+## Architecture
 
-Two portfolio UIs are served from the same root:
+- Modern UI: `index.html` + `v1/script.js`
+- Classic terminal UI: `index-classic.html` + `v0/script.js`
+- Shared project catalog: `projects.js` (loaded by both UIs)
+- Shared resume parser: `resource/resume-common.js`
+- Mini-apps: `apps/<slug>/`
 
-- Modern portfolio: `index.html` + `v1/script.js`
-- Classic terminal portfolio: `index-classic.html` + `v0/script.js`
+The site is static and served from the repository root, so keep every path relative.
 
-Both portfolios load the same project catalog:
+## Naming
 
-- `projects.js`
+App folders are lowercase kebab-case: `apps/aim-trainer`, `apps/natural-selection-sim`. Avoid `apps/NaturalSelectionSim` or `apps/vector01`.
 
-Both portfolios also load shared resume parsing logic:
+## Adding a project
 
-- `resource/resume-common.js`
+1. Create `apps/<slug>/index.html`; keep its assets in the same folder.
+2. Choose a [Lucide](https://lucide.dev/icons) icon. If it is not already in `projectIcons` at the bottom of `projects.js`, paste its inner SVG markup there.
+3. Add an object to the `projects` array in `projects.js` with:
+   - `name`, `category`, `description`
+   - `icon` — a key of `projectIcons` (colour comes from each UI's CSS; never hardcode it)
+   - `link` — usually `apps/<slug>/index.html`
+   - `tech` — array of strings
+4. Add a row to the featured table in `README.md` if the app is worth highlighting.
+5. Open `index.html`, `index-classic.html` and the new app link to confirm everything loads.
 
-All mini-project apps live under:
+## Dependency map
 
-- `apps/`
+Project catalog:
 
-## 2. Naming Convention
+- `index.html` and `index-classic.html` both load `projects.js`
+- `v1/script.js` renders `#projectContainer` from it
 
-Use lowercase kebab-case for app folders.
+Resume:
 
-Examples:
+- Markdown source: `resource/RESUME.md`
+- PDF: `resource/pdf/Preetam_resume_2026.pdf`
+- Parser: `resource/resume-common.js`
+- Used by `index.html` (PDF links), `index-classic.html` (Markdown and PDF links), `v0/script.js` (terminal file map) and `v1/script.js` (`loadResumeData('resource/RESUME.md')`)
 
-- Good: `apps/aim-trainer`, `apps/natural-selection-sim`, `apps/vector-01`
-- Avoid: `apps/NaturalSelectionSim`, `apps/vector01`, `apps/SomeProject`
+## Updating the resume
 
-## 3. Add A New Project (Required Steps)
+- **Text:** edit `resource/RESUME.md`, keeping the heading and bullet structure so the parser still reads it.
+- **PDF, same filename:** replace `resource/pdf/Preetam_resume_2026.pdf`; nothing else changes.
+- **PDF, new filename:** update every reference in `index.html`, `index-classic.html` and `v0/script.js`, and in any docs.
 
-1. Create a new app folder in `apps/`.
-2. Add entry point file at `apps/<project-slug>/index.html`.
-3. Add assets inside that app folder (prefer relative paths).
-4. Pick a Lucide icon name (https://lucide.dev/icons); if it isn't in `projectIcons` at the bottom of `projects.js`, paste its inner SVG markup there.
-5. Add a new object to `projects.js` in the `projects` array.
+## Validation
 
-Required fields in each `projects.js` item:
-
-- `name`
-- `category`
-- `icon` (a key of `projectIcons` in `projects.js`; colored by each UI's CSS, never hardcode colors)
-- `link` (usually `apps/<project-slug>/index.html`)
-- `description`
-- `tech` (array)
-
-### Important Sync Note
-
-You do not need separate project lists for modern/classic views.
-
-Why: both `index.html` and `index-classic.html` load `projects.js`, so one update in `projects.js` reflects in both portfolios.
-
-## 4. Linked Files Map (What Depends On What)
-
-Project catalog linkage:
-
-- `index.html` -> loads `projects.js`
-- `index-classic.html` -> loads `projects.js`
-- `v1/script.js` -> renders `#projectContainer` from `projects.js`
-
-Resume linkage:
-
-- Resume markdown source: `resource/RESUME.md`
-- Resume pdf source: `resource/pdf/Preetam_resume_2026.pdf`
-- Shared parser: `resource/resume-common.js`
-
-Resume is linked/used in:
-
-- `index.html` (direct pdf links)
-- `index-classic.html` (markdown + pdf links)
-- `v0/script.js` (terminal file map and loader paths)
-- `v1/script.js` (calls `resumeCommon.loadResumeData('resource/RESUME.md')`)
-
-## 5. How To Update Resume
-
-### Update markdown resume
-
-1. Edit `resource/RESUME.md`.
-2. Verify sections still parse correctly (headings + bullet structure).
-
-### Update pdf resume content only (same filename)
-
-1. Replace `resource/pdf/Preetam_resume_2026.pdf`.
-2. No path changes needed if filename remains the same.
-
-### Update pdf resume filename
-
-If the pdf filename changes, update every hardcoded reference:
-
-- `index.html`
-- `index-classic.html`
-- `v0/script.js`
-
-Also re-check any docs that mention the old filename.
-
-## 6. Optional But Recommended When Adding Projects
-
-1. Add/update project row in `README.md` project table.
-2. Open both pages and verify:
-	- `index.html`
-	- `index-classic.html`
-3. Open the new card link and confirm app loads.
-
-## 7. Validation Commands (No rg Required)
-
-Check app directories:
+List app folders:
 
 ```bash
 find apps -maxdepth 1 -mindepth 1 -type d | sort
 ```
 
-Find stale mixed-case app paths:
+Find mixed-case app paths:
 
 ```bash
-grep -RInE "apps/[A-Z]|apps/.*[A-Z]" -- *.html *.js *.md apps/**/*.html apps/**/*.js apps/**/*.md 2>/dev/null || true
+grep -RInE "apps/[A-Z]" --include=*.html --include=*.js --include=*.md .
 ```
 
-Find resume filename references:
+Check resume references:
 
 ```bash
-grep -RIn "Preetam_resume_2026.pdf|resource/RESUME.md" index.html index-classic.html v0/script.js v1/script.js
+grep -RInE "Preetam_resume_2026.pdf|resource/RESUME.md" index.html index-classic.html v0/script.js v1/script.js
 ```
 
+Formatting (tabs):
+
+```bash
+npx prettier@latest --check "**/*.{html,css,js}" --use-tabs
+```
+
+## Deployment
+
+Pushes to `main` redeploy via GitHub Pages at `preetamhegde.in` (see `CNAME`). After a deploy, hard-refresh the live site to rule out cache issues.
