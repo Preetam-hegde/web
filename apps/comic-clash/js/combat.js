@@ -59,6 +59,14 @@ class ComicCombatEngine {
 		this.wavesCleared = 0;
 		this.faintedCount = 0;
 		this.log = [];
+		this.mutator = null;
+		this.blockOn = true;
+		this.blockState = null;
+		this.timingMult = 1;
+		this.mut = { ...DEFAULT_MUT };
+		this.lastActor = null;
+		this.pairBonus = 0;
+		this.activePair = null;
 	}
 
 	get pace() {
@@ -117,7 +125,7 @@ class ComicCombatEngine {
 			hp: maxHp,
 			atk,
 			def,
-			energy: 0,
+			energy: this.mut.startEnergy || 0,
 			skillCd: 0,
 			shield: 0,
 			quote: heroData.quote,
@@ -127,14 +135,18 @@ class ComicCombatEngine {
 			colors: heroData.colors,
 			artSvg: heroData.artSvg,
 			st: freshStatus(),
+			tacticCd: { guard: 0, focus: 0 },
 			isHero: true,
 		};
 	}
 
-	buildVillain(template, scaleHp = 1) {
-		const maxHp = Math.round(template.maxHp * scaleHp);
+	buildVillain(template) {
+		const diff = this.currentIssue.diff || 1;
+		const maxHp = Math.round(template.maxHp * ENEMY_SCALE.hp * diff * this.mut.enemyHp);
 		return {
 			...template,
+			def: Math.round(template.def * this.mut.enemyDef),
+			atk: Math.round(template.atk * ENEMY_SCALE.atk * Math.sqrt(diff)),
 			uid: ++combatUid,
 			maxHp,
 			hp: maxHp,
@@ -146,8 +158,13 @@ class ComicCombatEngine {
 	}
 
 	/** Initializes a battle with the player's active squad against an issue's waves. */
-	startBattle(issueId) {
+	startBattle(issueId, opts = {}) {
 		this.session++;
+		this.mutator = opts.mutator || null;
+		this.mut = { ...DEFAULT_MUT, ...(this.mutator ? this.mutator.mods : {}) };
+		this.lastActor = null;
+		this.pairBonus = 0;
+		this.activePair = null;
 		const issue =
 			issueId === "endless"
 				? ENDLESS_ISSUE
@@ -171,7 +188,9 @@ class ComicCombatEngine {
 
 		this.logAction(
 			issue.endless
-				? `The Infinite Gauntlet begins! Survive as many waves as you can!`
+				? this.mutator
+					? `MUTATOR GAUNTLET — ${this.mutator.name}! ${this.mutator.desc}`
+					: `The Infinite Gauntlet begins! Survive as many waves as you can!`
 				: `Comic Battle Commenced! Reading Issue ${issue.issueNo}: "${issue.title}"!`,
 		);
 		this.onEvent("battle_start", {
@@ -186,7 +205,7 @@ class ComicCombatEngine {
 	spawnWave() {
 		const issue = this.currentIssue;
 		const templates = issue.endless
-			? buildEndlessWave(this.waveIndex + 1)
+			? buildEndlessWave(this.waveIndex + 1, this.mut.bossOnly)
 			: issue.waves[this.waveIndex];
 		this.villains = templates.map((t) => this.buildVillain(t));
 		this.selectedTarget = 0;
@@ -269,7 +288,14 @@ class ComicCombatEngine {
 			affinityMult *
 			(target.st.mark > 0 ? 1.25 : 1) *
 			(target.st.guard > 0 ? 0.5 : 1);
-		if (attacker.isHero) raw *= 1 + this.getComboBonus();
+		if (attacker.isHero) {
+			raw *= 1 + this.getComboBonus();
+			if (this.pairBonus) raw *= 1 + this.pairBonus;
+			raw *= this.timingMult || 1;
+			raw *= this.mut.dmgHero;
+		} else {
+			raw *= this.mut.dmgEnemy;
+		}
 
 		const dmg = Math.max(10, Math.round(raw - def * 0.35));
 		return { dmg, isCrit, weakness: affinityMult > 1.1, resisted: affinityMult < 0.9 };
@@ -404,15 +430,17 @@ class ComicCombatEngine {
 		const hits = spec.hits || 1;
 		const dmgPerHit = (spec.dmg || 0) / hits;
 		let first = true;
+		let dealt = 0;
 
 		if (dmgPerHit > 0) {
 			targets.forEach((target) => {
 				for (let i = 0; i < hits; i++) {
-					this.strike(hero, target, dmgPerHit, {
+					const r = this.strike(hero, target, dmgPerHit, {
 						forceCrit: spec.crit,
 						pierce: spec.pierce,
 						silent: !first,
 					});
+					if (r && r.dmg) dealt += r.dmg;
 					first = false;
 				}
 				this.applyDebuffs(target, spec.debuff);
@@ -428,6 +456,26 @@ class ComicCombatEngine {
 			targets.forEach((t) => this.applyDebuffs(t, spec.debuff));
 		}
 
+		if (spec.lifesteal && dealt > 0) {
+			this.healUnit(hero, Math.round(dealt * spec.lifesteal));
+		}
+		this.applySupport(hero, spec);
+	}
+
+	/** Heal / shield / energy / cleanse / buff effects shared by kits and pair combos. */
+	applySupport(hero, spec) {
+		if (spec.energy) {
+			this.pickAllies(hero, spec.energy.who).forEach((a) => {
+				a.energy = Math.min(100, a.energy + spec.energy.amt);
+				this.onEvent("energy", { unit: a, amount: spec.energy.amt });
+			});
+		}
+		if (spec.cleanse) {
+			this.pickAllies(hero, spec.cleanse.who).forEach((a) => {
+				["stun", "defDown", "atkDown", "bleed"].forEach((k) => (a.st[k] = 0));
+				this.onEvent("cleanse", { unit: a });
+			});
+		}
 		if (spec.heal) {
 			this.pickAllies(hero, spec.heal.who).forEach((a) =>
 				this.healUnit(a, Math.round(a.maxHp * spec.heal.pct)),
@@ -453,8 +501,9 @@ class ComicCombatEngine {
 		}
 	}
 
-	executeHeroAction(actionType, targetIndex = this.selectedTarget) {
+	executeHeroAction(actionType, targetIndex = this.selectedTarget, opts = {}) {
 		if (!this.isPlayerTurn || this.isGameOver) return;
+		this.timingMult = opts.timing || 1;
 		const hero = this.getActiveHero();
 		if (!hero || hero.hp <= 0) {
 			this.advanceHero();
@@ -471,6 +520,8 @@ class ComicCombatEngine {
 			hero.energy = Math.min(100, hero.energy + 30);
 			this.playSfx(hero.basic.sfx || "punch");
 			this.logAction(`${hero.name} strikes ${primary.name} with ${hero.basic.name}!`);
+			this.onEvent("move_used", { hero, kind: "basic", move: hero.basic, target: primary });
+			this.beginPairCombo(hero);
 			this.combo++;
 			this.strike(hero, primary, hero.basic.power || 1.0);
 		} else if (actionType === "skill") {
@@ -478,24 +529,116 @@ class ComicCombatEngine {
 			hero.skillCd = hero.skill.cd || 3;
 			hero.energy = Math.min(100, hero.energy + 20);
 			this.logAction(`${hero.name} uses ${hero.skill.name}!`);
+			this.onEvent("move_used", { hero, kind: "skill", move: hero.skill, target: primary });
+			this.beginPairCombo(hero);
 			this.combo++;
 			this.resolveKit(hero, kit.skill, primary, hero.skill.sfx || "laser");
 		} else if (actionType === "ultimate") {
 			if (hero.energy < 100) return;
 			hero.energy = 0;
 			this.gameState.track("ult");
-			this.onEvent("ultimate_cutin", { hero, quote: hero.quote });
+			this.onEvent("ultimate_cutin", { hero, quote: hero.quote, target: primary });
 			this.logAction(`★ ULTIMATE BURST ★ ${hero.name}: "${hero.quote}"`);
+			this.beginPairCombo(hero);
 			this.combo++;
 			this.resolveKit(hero, kit.ult, primary, "heavy", true);
 			this.onEvent("screen_shake", { big: true });
+		} else if (actionType === "guard" || actionType === "focus" || actionType === "finisher") {
+			if (!this.useTactic(actionType, hero, primary)) return;
 		} else {
 			return;
 		}
 
+		this.finishPairCombo(hero, primary);
+		this.timingMult = 1;
+		if (opts.energyBonus) hero.energy = Math.min(100, hero.energy + opts.energyBonus);
+		this.lastActor = hero;
 		this.onEvent("combo", { combo: this.combo, bonus: this.getComboBonus() });
 		this.checkBattleStatus();
 		if (!this.isGameOver && this.isPlayerTurn) this.advanceHero();
+	}
+
+	/** Detects pair combos (named duos) and affinity chain reactions for the acting hero. */
+	beginPairCombo(hero) {
+		this.pairBonus = 0;
+		this.activePair = null;
+		const prev = this.lastActor;
+		if (!prev || prev === hero) return;
+		const combo = HERO_COMBOS.find(
+			(c) => (c.a === prev.id && c.b === hero.id) || (c.b === prev.id && c.a === hero.id),
+		);
+		if (combo) {
+			this.activePair = combo;
+			this.pairBonus += combo.bonus;
+			this.gameState.markCombo(combo.id);
+			this.gameState.track("pairs");
+			this.logAction(`⚡ ${combo.name}! ${prev.name} + ${hero.name} link up!`);
+			this.onEvent("pair_combo", { combo, hero, partner: prev });
+		}
+		if (HERO_AFFINITIES[prev.affinity].beats === hero.affinity) {
+			this.pairBonus += 0.1;
+			hero.energy = Math.min(100, hero.energy + 10);
+			this.onEvent("chain", { hero, from: prev });
+		}
+	}
+
+	finishPairCombo(hero, primary) {
+		const c = this.activePair;
+		if (c) {
+			if (c.debuff && primary) this.applyDebuffs(primary, c.debuff);
+			this.applySupport(hero, c);
+		}
+		this.pairBonus = 0;
+		this.activePair = null;
+	}
+
+	/** Tactic cards: Brace Up / Focus Fire / Combo Breaker. Returns false if unavailable. */
+	canUseTactic(kind, hero = this.getActiveHero()) {
+		if (!hero) return false;
+		if (kind === "finisher") return this.combo >= 2;
+		return (hero.tacticCd[kind] || 0) === 0;
+	}
+
+	useTactic(kind, hero, primary) {
+		if (!this.canUseTactic(kind, hero)) return false;
+		const t = TACTICS[kind];
+		this.gameState.track("tactic");
+		this.onEvent("move_used", {
+			hero,
+			kind,
+			move: { name: t.name, desc: t.desc },
+			tags: t.tags.map((x) => x.text).slice(0, 2),
+			target: kind === "finisher" ? this.getFirstLivingVillain() : null,
+		});
+		if (kind === "guard") {
+			hero.tacticCd.guard = t.cd;
+			hero.shield += Math.round(hero.maxHp * 0.2);
+			hero.st.guard = Math.max(hero.st.guard, 1);
+			hero.energy = Math.min(100, hero.energy + 20);
+			this.onEvent("shield", { unit: hero });
+			ComicAudio.playCoin();
+			this.logAction(`${hero.name} braces up behind a shield!`);
+		} else if (kind === "focus") {
+			hero.tacticCd.focus = t.cd;
+			hero.energy = Math.min(100, hero.energy + 45);
+			primary.st.mark = Math.max(primary.st.mark, 1);
+			this.onEvent("energy", { unit: hero, amount: 45 });
+			ComicAudio.playLaser();
+			this.logAction(`${hero.name} calls the shot: ${primary.name} is marked!`);
+		} else {
+			const steps = this.combo;
+			this.combo = 0;
+			hero.energy = Math.min(100, hero.energy + 20);
+			this.logAction(`★ COMBO BREAKER ★ ${hero.name} cashes in a x${steps} combo!`);
+			ComicAudio.playPunch(true);
+			this.onEvent("screen_shake", { big: true });
+			const mult = 1.3 + 0.25 * steps;
+			this.getLivingVillains().forEach((v, i) =>
+				this.strike(hero, v, mult, { forceCrit: false, silent: i > 0, onom: "COMBO!" }),
+			);
+			this.combo = 1; // the finisher itself starts a fresh chain
+		}
+		return true;
 	}
 
 	/** Move to the next acting hero (skipping fainted/stunned), or hand over to villains. */
@@ -544,9 +687,14 @@ class ComicCombatEngine {
 				return;
 			}
 			const villain = queue[i];
-			if (villain.hp > 0) this.villainAct(villain);
-			if (this.isGameOver) return;
-			this.later(() => step(i + 1), villain.hp > 0 ? 700 : 0);
+			if (villain.hp <= 0) {
+				step(i + 1);
+				return;
+			}
+			this.villainAct(villain, () => {
+				if (this.isGameOver || this.inTransition) return;
+				this.later(() => step(i + 1), 600);
+			});
 		};
 		step(0);
 	}
@@ -557,7 +705,13 @@ class ComicCombatEngine {
 		});
 	}
 
-	villainAct(villain) {
+	villainAct(villain, done = () => {}) {
+		const end = () => {
+			this.tickDown(villain);
+			this.checkBattleStatus();
+			done();
+		};
+
 		// Bleed damage
 		if (villain.st.bleed > 0) {
 			villain.st.bleed--;
@@ -566,19 +720,24 @@ class ComicCombatEngine {
 			this.onEvent("dot", { unit: villain, damage: dmg });
 			this.logAction(`${villain.name} bleeds for ${dmg} damage!`);
 			this.checkBattleStatus();
-			if (this.isGameOver || villain.hp <= 0) return;
+			if (this.isGameOver || villain.hp <= 0) {
+				done();
+				return;
+			}
 		}
 
 		if (villain.st.stun > 0) {
 			villain.st.stun--;
 			this.logAction(`${villain.name} is stunned and can't move!`);
 			this.tickDown(villain);
+			done();
 			return;
 		}
 
 		const target = this.pickHeroTarget();
 		if (!target) {
 			this.checkBattleStatus();
+			done();
 			return;
 		}
 
@@ -587,21 +746,67 @@ class ComicCombatEngine {
 			if (villain.cd <= 0) {
 				villain.cd = villain.special.cd;
 				this.bossSpecial(villain, target);
-				this.tickDown(villain);
-				this.checkBattleStatus();
+				end();
 				return;
 			}
 		}
 
 		ComicAudio.playPunch(villain.isBoss);
-		const res = this.strike(villain, target, 1.0, {
-			onom: villain.isBoss ? "KRAK!" : "THUD!",
-		});
-		if (res && !res.missed) {
-			this.logAction(`${villain.name} attacked ${target.name} for ${res.dmg} DMG!`);
+		const land = (quality) => {
+			const mult = { perfect: 0.2, good: 0.5, weak: 0.85, none: 1 }[quality];
+			const res = this.strike(villain, target, mult, {
+				onom: quality === "perfect" ? "BLOCKED!" : villain.isBoss ? "KRAK!" : "THUD!",
+			});
+			if (res && !res.missed) {
+				const tag = quality === "none" ? "" : ` (${quality.toUpperCase()} BLOCK)`;
+				this.logAction(`${villain.name} attacked ${target.name} for ${res.dmg} DMG!${tag}`);
+			}
+			if (quality === "perfect" || quality === "good") {
+				target.energy = Math.min(100, target.energy + (quality === "perfect" ? 20 : 8));
+				this.onEvent("block_result", { target, quality });
+				if (quality === "perfect" && villain.hp > 0 && target.hp > 0) {
+					this.logAction(`${target.name} counters!`);
+					this.strike(target, villain, 0.5, { silent: true });
+				}
+			} else if (quality === "weak") {
+				this.onEvent("block_result", { target, quality });
+			}
+			end();
+		};
+
+		const blockable = this.blockOn && !this.auto && target.hp > 0 && target.st.evade <= 0;
+		if (blockable) this.openBlockWindow(villain, target, land);
+		else land("none");
+	}
+
+	/** Timed-block window: the UI shows a shrinking ring; pressing near impact reduces damage. */
+	openBlockWindow(villain, target, cb) {
+		const ms = 800;
+		const token = this.session;
+		this.blockState = { target, t1: performance.now() + ms, pressed: null };
+		this.onEvent("block_window", { villain, target, ms });
+		setTimeout(() => {
+			if (token !== this.session || !this.blockState) return;
+			const q = this.evalBlock();
+			this.blockState = null;
+			cb(q);
+		}, ms + 60);
+	}
+
+	block() {
+		if (this.blockState && this.blockState.pressed == null) {
+			this.blockState.pressed = performance.now();
+			this.onEvent("block_press", {});
 		}
-		this.tickDown(villain);
-		this.checkBattleStatus();
+	}
+
+	evalBlock() {
+		const st = this.blockState;
+		if (!st || st.pressed == null) return "none";
+		const d = Math.abs(st.pressed - st.t1);
+		if (d <= 130) return "perfect";
+		if (d <= 300) return "good";
+		return "weak";
 	}
 
 	bossSpecial(boss, target) {
@@ -637,12 +842,26 @@ class ComicCombatEngine {
 		if (this.isGameOver || this.inTransition) return;
 		this.turn++;
 		this.combo = 0;
+		this.lastActor = null;
 		this.onEvent("combo", { combo: 0, bonus: 0 });
 
 		this.heroes.forEach((h) => {
 			if (h.skillCd > 0) h.skillCd--;
+			Object.keys(h.tacticCd).forEach((k) => {
+				if (h.tacticCd[k] > 0) h.tacticCd[k]--;
+			});
 			this.tickDown(h);
 		});
+		if (this.mut.roundBleed) {
+			this.getLivingHeroes().forEach((h) => {
+				const dmg = Math.min(h.hp - 1, Math.round(h.maxHp * this.mut.roundBleed));
+				if (dmg > 0) {
+					h.hp -= dmg;
+					this.onEvent("dot", { unit: h, damage: dmg });
+				}
+			});
+			this.logAction("Bleed Out: your heroes lose HP!");
+		}
 
 		// First living, non-stunned hero
 		let idx = 0;
@@ -696,7 +915,9 @@ class ComicCombatEngine {
 		const woundedAlly = this.getLivingHeroes().some((h) => h.hp / h.maxHp < 0.7);
 		const supportSkill = kit.skill && (kit.skill.heal || kit.skill.shield);
 
-		if (hero.energy >= 100) this.executeHeroAction("ultimate", targetIdx);
+		if (this.canUseTactic("finisher", hero) && living.length > 1)
+			this.executeHeroAction("finisher", targetIdx);
+		else if (hero.energy >= 100) this.executeHeroAction("ultimate", targetIdx);
 		else if (hero.skillCd === 0 && (!supportSkill || woundedAlly))
 			this.executeHeroAction("skill", targetIdx);
 		else this.executeHeroAction("basic", targetIdx);
@@ -747,6 +968,7 @@ class ComicCombatEngine {
 	}
 
 	startPlayerRoundAfterWave() {
+		this.lastActor = null;
 		let idx = this.heroes.findIndex((h) => h.hp > 0 && h.st.stun <= 0);
 		if (idx === -1) idx = this.heroes.findIndex((h) => h.hp > 0);
 		this.activeHeroIndex = idx;
@@ -823,10 +1045,17 @@ class ComicCombatEngine {
 	/** Endless mode pays out for every wave cleared, win or lose. */
 	bankEndless() {
 		const waves = this.wavesCleared;
-		const coins = waves * 45 + Math.floor(waves / 5) * 150;
-		const ink = waves * 4;
-		const newBest = waves > (this.gameState.endlessBest || 0);
-		if (newBest) this.gameState.endlessBest = waves;
+		const pay = this.mut.payout || 1;
+		const coins = Math.round((waves * 45 + Math.floor(waves / 5) * 150) * pay);
+		const ink = Math.round(waves * 4 * pay);
+		let newBest = false;
+		if (this.mutator) {
+			newBest = waves > (this.gameState.mutatorBest || 0);
+			if (newBest) this.gameState.mutatorBest = waves;
+		} else {
+			newBest = waves > (this.gameState.endlessBest || 0);
+			if (newBest) this.gameState.endlessBest = waves;
+		}
 		this.gameState.coins += coins;
 		this.gameState.ink += ink;
 		this.heroes.forEach((h) =>

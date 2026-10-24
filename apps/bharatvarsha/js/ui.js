@@ -7,7 +7,11 @@ const RESOURCE_META = [
 	{ key: 'stone', label: 'Stone', icon: 'fa-mountain', className: 'tone-stone' },
 	{ key: 'vidya', label: 'Vidya', icon: 'fa-scroll', className: 'tone-vidya' }
 ];
-const ICON = Object.fromEntries(RESOURCE_META.map((resource) => [resource.key, resource.icon]));
+const WORKER_ICON = { farmer: 'hoe', woodcutter: 'axe', miner: 'pickaxe', scholar: 'book' };
+const BUILDING_ICON = { 'fa-house': 'hut', 'fa-seedling': 'farm', 'fa-warehouse': 'granary', 'fa-book-open': 'school', 'fa-fire': 'altar' };
+
+// Pixel icons from assets/icons (Raven Fantasy Icons), 32px native so they stay crisp at 16/24/32.
+const ico = (name) => `<img class="ico" src="assets/icons/${name}.png" alt="" width="32" height="32">`;
 
 // The game re-renders every tick. Writing identical markup would replace buttons mid-click
 // and drop keyboard focus, so skip the write when nothing changed.
@@ -143,7 +147,7 @@ export class GameUI {
 			return `
 				<article class="resource-card ${resource.className} ${low}">
 					<div class="resource-head">
-						<span><i class="fas ${resource.icon}"></i> ${resource.label}</span>
+						<span>${ico(resource.key)} ${resource.label}</span>
 						<strong>${amount}</strong>
 					</div>
 					<div class="resource-rate ${rateClass}">${sign}${rate.toFixed(1)}/sec</div>
@@ -160,7 +164,7 @@ export class GameUI {
 			${WORKER_TYPES.map((worker) => `
 				<article class="worker-card role-${worker.key}">
 					<header>
-						<h4><i class="fas ${worker.icon}"></i> ${worker.name}</h4>
+						<h4>${ico(WORKER_ICON[worker.key])} ${worker.name}</h4>
 						<span class="count-badge">${view.population[worker.key]}</span>
 					</header>
 					<p>${worker.desc}</p>
@@ -177,7 +181,7 @@ export class GameUI {
 		setHTML(this.el.buildings, Object.entries(view.buildings).map(([key, building]) => `
 			<article class="game-card">
 				<header>
-					<h4><i class="fas ${building.icon}"></i> ${building.name}</h4>
+					<h4>${ico(BUILDING_ICON[building.icon])} ${building.name}</h4>
 					<span class="count-badge">×${building.count}</span>
 				</header>
 				<p>${building.desc}</p>
@@ -194,7 +198,7 @@ export class GameUI {
 			return `
 				<article class="game-card ritual">
 					<header>
-						<h4><i class="fas fa-fire-flame-curved"></i> ${ritual.name}</h4>
+						<h4>${ico("altar")} ${ritual.name}</h4>
 					</header>
 					<p>${ritual.desc}</p>
 					${this.costChips(view.resources, ritual.cost)}
@@ -211,7 +215,7 @@ export class GameUI {
 			return `
 				<article class="game-card upgrade ${upgrade.applied ? 'done' : ''}">
 					<header>
-						<h4><i class="fas fa-book-open-reader"></i> ${upgrade.name}</h4>
+						<h4>${ico("scroll")} ${upgrade.name}</h4>
 						<span class="status-badge">${upgrade.applied ? 'Done' : 'Pending'}</span>
 					</header>
 					<p>${upgrade.desc}</p>
@@ -281,7 +285,7 @@ export class GameUI {
 	}
 
 	costChips(resources, cost) {
-		const chips = Object.entries(cost).map(([key, amount]) => `<span class="cost ${resources[key] >= amount ? '' : 'short'}"><i class="fas ${ICON[key]}"></i> ${amount}</span>`);
+		const chips = Object.entries(cost).map(([key, amount]) => `<span class="cost ${resources[key] >= amount ? '' : 'short'}">${ico(key)} ${amount}</span>`);
 		return `<div class="cost-line">${chips.join('')}</div>`;
 	}
 }

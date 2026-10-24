@@ -13,7 +13,8 @@ function getGameProjects() {
     'apps/bharatvarsha/index.html',
     'apps/particle-life/index.html',
     'apps/natural-selection-sim/index.html',
-    'apps/comic-clash/index.html'
+    'apps/comic-clash/index.html',
+    'apps/bag-and-blade/index.html'
   ];
   return sharedProjects.filter(p => {
     return gameSlugs.includes(p.link) ||

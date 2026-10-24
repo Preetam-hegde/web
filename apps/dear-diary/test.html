@@ -1,0 +1,282 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Dear Diary — Unit & Integration Tests (v2)</title>
+		<style>
+			:root {
+				--bg: #0f1117;
+				--card: #181b26;
+				--text: #f0f2f8;
+				--muted: #8b949e;
+				--accent: #ff85a2;
+				--pass: #34d399;
+				--fail: #f87171;
+				--border: #282f44;
+			}
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+			}
+			body {
+				font-family:
+					ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+				background: var(--bg);
+				color: var(--text);
+				padding: 24px;
+				line-height: 1.6;
+			}
+			.container {
+				max-width: 860px;
+				margin: 0 auto;
+			}
+			header {
+				border-bottom: 1px solid var(--border);
+				padding-bottom: 16px;
+				margin-bottom: 24px;
+			}
+			h1 {
+				font-size: 1.4rem;
+				color: var(--accent);
+				display: flex;
+				align-items: center;
+				gap: 10px;
+			}
+			.meta {
+				color: var(--muted);
+				font-size: 0.85rem;
+				margin-top: 4px;
+			}
+			.summary-bar {
+				display: flex;
+				gap: 16px;
+				margin-bottom: 24px;
+				background: var(--card);
+				padding: 12px 18px;
+				border-radius: 8px;
+				border: 1px solid var(--border);
+			}
+			.metric {
+				font-size: 0.9rem;
+			}
+			.metric strong {
+				font-weight: 700;
+			}
+			.metric.pass strong {
+				color: var(--pass);
+			}
+			.metric.fail strong {
+				color: var(--fail);
+			}
+			.test-list {
+				list-style: none;
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+			}
+			.test-item {
+				background: var(--card);
+				border: 1px solid var(--border);
+				border-radius: 6px;
+				padding: 10px 14px;
+				display: flex;
+				justify-content: space-between;
+				align-items: center;
+				font-size: 0.88rem;
+			}
+			.badge {
+				padding: 3px 8px;
+				border-radius: 4px;
+				font-size: 0.75rem;
+				font-weight: 700;
+				text-transform: uppercase;
+			}
+			.badge.pass {
+				background: rgba(52, 211, 153, 0.15);
+				color: var(--pass);
+			}
+			.badge.fail {
+				background: rgba(248, 113, 113, 0.15);
+				color: var(--fail);
+			}
+			.actions {
+				margin-top: 24px;
+				display: flex;
+				gap: 12px;
+			}
+			a {
+				color: var(--accent);
+				text-decoration: none;
+				font-size: 0.85rem;
+			}
+			a:hover {
+				text-decoration: underline;
+			}
+		</style>
+	</head>
+	<body>
+		<div class="container">
+			<header>
+				<h1>📖 Dear Diary — Test Suite (v2)</h1>
+				<p class="meta">
+					Automated verification of Dual-Page layout, SVG sticker catalog, URL
+					serialization, and state compression.
+				</p>
+			</header>
+
+			<div class="summary-bar">
+				<div class="metric pass">
+					Passed: <strong id="pass-count">0</strong>
+				</div>
+				<div class="metric fail">
+					Failed: <strong id="fail-count">0</strong>
+				</div>
+				<div class="metric">
+					Status: <strong id="status-text">Running...</strong>
+				</div>
+			</div>
+
+			<ul id="test-list" class="test-list"></ul>
+
+			<div class="actions">
+				<a href="index.html">← Back to Dear Diary App</a>
+				<a href="../../index.html">Portfolio Home</a>
+			</div>
+		</div>
+
+		<script src="svg-catalog.js"></script>
+		<script src="url-codec.js"></script>
+		<script>
+			"use strict";
+			document.addEventListener("DOMContentLoaded", () => {
+				const list = document.getElementById("test-list");
+				const passCountEl = document.getElementById("pass-count");
+				const failCountEl = document.getElementById("fail-count");
+				const statusTextEl = document.getElementById("status-text");
+
+				let passed = 0;
+				let failed = 0;
+
+				function record(name, isPass, detail = "") {
+					if (isPass) passed++;
+					else failed++;
+					const li = document.createElement("li");
+					li.className = "test-item";
+					li.innerHTML = `<span>${name} ${detail ? '<small style="color:var(--muted)">(' + detail + ")</small>" : ""}</span><span class="badge ${isPass ? "pass" : "fail"}">${isPass ? "PASS" : "FAIL"}</span>`;
+					list.appendChild(li);
+				}
+
+				try {
+					// 1. Basic compression
+					const s1 = "Dear Diary, today was wonderful! ✨🌸";
+					const comp1 = DiaryUrlCodec.compressToUrlSafe(s1);
+					const decomp1 = DiaryUrlCodec.decompressFromUrlSafe(comp1);
+					record(
+						"Compression round-trip with Unicode and emojis",
+						decomp1 === s1,
+					);
+					record(
+						"Compressed string is URL-safe Base64",
+						/^[A-Za-z0-9_-]+$/.test(comp1),
+					);
+
+					// 2. Default state v2
+					const def = DiaryUrlCodec.createDefaultState();
+					record("Default state schema has version 2", def.v === 2);
+					record(
+						"Default state has stickers",
+						Array.isArray(def.s) && def.s.length > 0,
+					);
+					record(
+						"Default state has task list",
+						Array.isArray(def.tasks) && def.tasks.length > 0,
+					);
+					record(
+						"Default state has habit tracker",
+						Array.isArray(def.habits) && def.habits.length > 0,
+					);
+
+					// 3. SVG Catalog
+					const waxSvg = DiarySvgCatalog.renderSvg("wax-seal", "#b91c1c", 40);
+					record(
+						"Renders wax-seal SVG from catalog",
+						waxSvg.includes("<svg") &&
+							(waxSvg.includes('viewBox="0 0 100 100"') ||
+								waxSvg.includes("wax-seal")),
+					);
+					const starSvg = DiarySvgCatalog.renderSvg("star", "#fbbf24", 24);
+					record(
+						"Renders Lucide star SVG",
+						starSvg.includes("<svg") && starSvg.includes('stroke="#fbbf24"'),
+					);
+
+					// 4. Sanitization & Dual Page
+					const clean = DiaryUrlCodec.sanitizeState({
+						v: 2,
+						t: "Dual Page Title",
+						lt: "Morning Left",
+						lb: "Left notes...",
+						b: "Right notes...",
+						s: [
+							{
+								id: "test-st",
+								type: "svg",
+								val: "heart",
+								color: "#e11d48",
+								x: 25,
+								y: 30,
+								r: 15,
+								sc: 1.2,
+							},
+						],
+					});
+					record(
+						"Sanitization retains dual page titles",
+						clean.t === "Dual Page Title" && clean.lt === "Morning Left",
+					);
+					record(
+						"Sanitized SVG sticker color and coordinates check",
+						clean.s[0].color === "#e11d48" && clean.s[0].x === 25,
+					);
+
+					// 5. Full URL State Roundtrip
+					const hash = DiaryUrlCodec.encodeStateToHash(clean);
+					record("Hash starts with #d=", hash.startsWith("#d="));
+					const restored = DiaryUrlCodec.decodeHashToState(hash);
+					record(
+						"Restored state title matches",
+						restored && restored.t === clean.t,
+					);
+					record(
+						"Restored left body matches",
+						restored && restored.lb === clean.lb,
+					);
+					record(
+						"Restored stickers match length",
+						restored && restored.s.length === 1,
+					);
+
+					// 6. Error handling
+					record(
+						"Malformed hash decoding safely returns null",
+						DiaryUrlCodec.decodeHashToState("#d=bad-data-xyz") === null,
+					);
+					record(
+						"Empty string hash decoding returns null",
+						DiaryUrlCodec.decodeHashToState("") === null,
+					);
+				} catch (err) {
+					record("Uncaught test error", false, err.message);
+				}
+
+				passCountEl.textContent = passed;
+				failCountEl.textContent = failed;
+				statusTextEl.textContent =
+					failed === 0 ? "All Tests Passed! 🎉" : "Some Tests Failed";
+				statusTextEl.style.color = failed === 0 ? "var(--pass)" : "var(--fail)";
+			});
+		</script>
+	</body>
+</html>

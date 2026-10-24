@@ -1,0 +1,95 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Bag & Blade — Parchment Guildmaster & Inventory Roguelike</title>
+		<meta
+			name="description"
+			content="A medieval parchment inventory roguelike: pack weapons, shields and potions into a Tetris-style satchel, power them up with adjacency synergies, delve dungeons, fill guild orders and solve packing puzzles."
+		/>
+		<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg" />
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;900&family=Press+Start+2P&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="styles.css" />
+		<script
+			data-goatcounter="https://ptwo.goatcounter.com/count"
+			async
+			src="//gc.zgo.at/count.js"
+		></script>
+	</head>
+	<body data-time="dawn" data-mode="delve">
+		<!-- ── Top bar ─────────────────────────────────────────────────────────── -->
+		<header class="topbar">
+			<a href="../../index.html" class="back-link" title="Return to Portfolio">← Portfolio</a>
+			<div class="brand">
+				<h1 class="brand-title">Bag &amp; Blade</h1>
+				<span class="brand-sub">The Parchment Guildmaster</span>
+			</div>
+			<div class="hud" id="hud" aria-live="polite"></div>
+			<div class="top-actions">
+				<button type="button" class="icon-btn" id="btn-help" title="How to play [?]">?</button>
+				<button type="button" class="icon-btn" id="btn-sound" title="Sound effects [M]">🔊</button>
+				<button type="button" class="icon-btn" id="btn-newrun" title="Start a new run">↺</button>
+			</div>
+		</header>
+
+		<main class="workshop">
+			<!-- ── Left: the satchel, its stats, the desk ──────────────────────── -->
+			<div class="col-left">
+				<section class="panel bag-panel" aria-label="Satchel">
+					<div class="panel-head">
+						<h2 class="panel-title">🎒 Guildmaster's Satchel</h2>
+						<span class="panel-hint">Drag to arrange · <kbd>R</kbd> or right-click to rotate</span>
+					</div>
+					<div class="bag-layout">
+						<div class="board-wrap" id="bag-board"></div>
+						<aside class="inspector" id="inspector" aria-live="polite"></aside>
+					</div>
+					<div class="stat-strip" id="stat-strip"></div>
+				</section>
+
+				<section class="panel desk-panel" aria-label="Study desk">
+					<div class="panel-head">
+						<h2 class="panel-title">
+							🪑 Study Desk <small class="desk-count" id="desk-count">0/10</small>
+						</h2>
+						<span class="panel-hint">Double-click an item to pack it</span>
+					</div>
+					<div class="desk-row">
+						<div class="desk-rack" id="desk-rack" data-drop="desk"></div>
+						<div class="sell-zone" data-drop="sell" id="sell-zone">
+							<span class="sell-ico">⚖️</span>
+							<b>Merchant's Scale</b>
+							<small>Drop to sell. Satchel items sell at their boosted value.</small>
+						</div>
+					</div>
+				</section>
+			</div>
+
+			<!-- ── Right: the four modes ───────────────────────────────────────── -->
+			<section class="col-right mode-section" aria-label="Game modes">
+				<nav class="mode-tabs" id="mode-tabs" role="tablist" aria-label="Game modes"></nav>
+				<div class="panel mode-panel" id="mode-body"></div>
+			</section>
+		</main>
+
+		<div class="toasts" id="toasts" aria-live="polite"></div>
+
+		<script src="js/audio.js"></script>
+		<script src="js/items.js"></script>
+		<script src="js/grid.js"></script>
+		<script src="js/store.js"></script>
+		<script src="js/combat.js"></script>
+		<script src="js/orders.js"></script>
+		<script src="js/market.js"></script>
+		<script src="js/puzzles.js"></script>
+		<script src="js/drag.js"></script>
+		<script src="js/ui.js"></script>
+		<script src="js/app.js"></script>
+	</body>
+</html>

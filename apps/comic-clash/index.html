@@ -6,7 +6,7 @@
 		<title>ComicClash — Retro Comic Gacha & Rogues Gallery</title>
 		<meta
 			name="description"
-			content="A retro comic-book gacha game with authentic Ben-Day halftone visuals, foil booster pack tearing, 16 collectible superheroes, and tactical comic strip turn-based combat."
+			content="A retro comic-book gacha game with authentic Ben-Day halftone visuals, foil booster pack tearing, 40 collectible superheroes, and tactical comic strip turn-based combat."
 		/>
 		<link rel="stylesheet" href="styles.css" />
 		<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg" />
@@ -28,10 +28,10 @@
 					class="hud-pill coins"
 					title="Comic Coins (Used to open booster packs)"
 				>
-					<span>🪙</span> <span id="hud-coins">0</span>
+					<img class="pix" src="assets/icons/fb131.png" alt="" /> <span id="hud-coins">0</span>
 				</div>
 				<div class="hud-pill ink" title="Ink Essence (Used to level up heroes)">
-					<span>🧪</span> <span id="hud-ink">0</span>
+					<img class="pix" src="assets/icons/fb122.png" alt="" /> <span id="hud-ink">0</span>
 				</div>
 				<div
 					class="hud-pill pity"
@@ -64,6 +64,9 @@
 			<button type="button" class="nav-tab" data-view="roster">
 				🦸 SQUAD & ROSTER
 			</button>
+			<button type="button" class="nav-tab" data-view="arcade">
+				🎮 ARCADE
+			</button>
 			<button type="button" class="nav-tab" data-view="rewards">
 				🎁 DAILY LOOT <span id="loot-dot" class="nav-dot" hidden>!</span>
 			</button>
@@ -75,7 +78,7 @@
 				<div class="gacha-marquee">
 					<h2>SERIES 1: MULTIVERSE HEROES</h2>
 					<p>
-						16 VINTAGE HEROES · 5★ MYTHICS GUARANTEED EVERY 40 PULLS · 4★+ ON
+						40 VINTAGE HEROES · 5★ MYTHICS GUARANTEED EVERY 40 PULLS · 4★+ ON
 						10-PULLS
 					</p>
 				</div>
@@ -108,8 +111,10 @@
 						title="Click or drag to rip open!"
 					>
 						<div id="tear-strip" class="pack-tear-strip">
-							✂ CLICK OR TAP TO RIP OPEN ✂
+							<div id="tear-fill" class="tear-fill"></div>
+							<span class="tear-label">✂ DRAG OR TAP TO RIP OPEN ✂</span>
 						</div>
+						<div id="pack-glow" class="pack-glow"></div>
 						<div class="pack-body">
 							<div class="pack-series">ISSUE #1 COLLECTOR'S FOIL</div>
 							<div class="pack-art">⚡💥⚡</div>
@@ -120,10 +125,10 @@
 
 				<div class="summon-actions">
 					<button type="button" id="btn-pull-1" class="comic-btn">
-						<span>OPEN 1 PACK</span> (100 🪙)
+						<span>OPEN 1 PACK</span> (100 <img class="pix" src="assets/icons/fb131.png" alt="" />)
 					</button>
 					<button type="button" id="btn-pull-10" class="comic-btn btn-10x">
-						<span>OPEN 10 PACKS</span> (900 🪙)
+						<span>OPEN 10 PACKS</span> (900 <img class="pix" src="assets/icons/fb131.png" alt="" />)
 					</button>
 				</div>
 
@@ -163,6 +168,7 @@
 
 			<div id="battle-live" class="combat-strip" hidden>
 				<div id="ultimate-splash" class="ultimate-splash">
+					<div class="ult-art"></div>
 					<div class="ult-name">SUPERNOVA REQUIEM</div>
 					<div class="ult-quote">"BY THE LIGHT OF A THOUSAND SUNS!"</div>
 				</div>
@@ -175,9 +181,16 @@
 						<span id="battle-issue">ISSUE #1</span>
 						<span id="battle-wave" class="battle-chip">WAVE 1/2</span>
 						<span id="battle-turn" class="battle-chip">TURN 1</span>
+						<span id="battle-mut" class="battle-chip mut" hidden></span>
 						<span id="battle-combo" class="battle-chip combo" hidden>COMBO x1</span>
 					</div>
 					<div class="battle-tools">
+						<button type="button" id="btn-timing" class="tool-btn" title="Timed attacks: tap when the ring hits the circle for bonus damage">
+							🎯 TIMING: ON
+						</button>
+						<button type="button" id="btn-block" class="tool-btn" title="Timed blocks: tap as enemy attacks land to cut damage and counter">
+							🛡 BLOCK: ON
+						</button>
 						<button type="button" id="btn-auto" class="tool-btn" title="Auto-battle (A)">
 							🤖 AUTO: OFF
 						</button>
@@ -190,35 +203,37 @@
 					</div>
 				</div>
 
-				<div id="comic-arena" class="comic-arena">
-					<!-- Hero Squad Panel -->
-					<div class="combat-squad">
-						<div class="squad-title">HERO SQUAD (YOU)</div>
-						<div id="combat-heroes"></div>
+				<div id="comic-arena" class="comic-arena battlefield" data-theme="alley">
+					<div class="bf-sky"></div>
+					<div class="bf-stars"></div>
+					<div class="bf-clouds">
+						<img class="bf-cloud c1" src="assets/scene/cloud_01.png" alt="" draggable="false" />
+						<img class="bf-cloud c2" src="assets/scene/cloud_02.png" alt="" draggable="false" />
+						<img class="bf-cloud c3" src="assets/scene/cloud_03.png" alt="" draggable="false" />
 					</div>
-
-					<!-- Rogue Villains Panel -->
-					<div class="combat-squad">
-						<div class="squad-title villain-title">
-							VILLAIN SYNDICATE <small>(tap to target)</small>
-						</div>
-						<div id="combat-villains"></div>
-					</div>
+					<div id="bf-far" class="bf-far"></div>
+					<div class="bf-ground"></div>
+					<div class="bf-label left">HERO SQUAD</div>
+					<div class="bf-label right">VILLAIN SYNDICATE <small>(tap to target)</small></div>
+					<div id="combat-heroes" class="bf-lane bf-heroes"></div>
+					<div id="combat-villains" class="bf-lane bf-villains"></div>
+					<div id="timing-layer" class="timing-layer"></div>
 				</div>
 
 				<!-- Dynamic Turn Actions -->
+				<div id="move-hero" class="move-hero"></div>
 				<div class="combat-actions-bar">
-					<button type="button" id="act-basic" class="comic-btn act-btn">
-						BASIC ATTACK (+30 NRG)
-					</button>
-					<button type="button" id="act-skill" class="comic-btn act-btn">
-						SPECIAL SKILL
-					</button>
-					<button type="button" id="act-ult" class="comic-btn act-btn">
-						★ ULTIMATE BURST
-					</button>
+					<button type="button" id="act-basic" class="move-card basic"></button>
+					<button type="button" id="act-skill" class="move-card skill"></button>
+					<button type="button" id="act-ult" class="move-card ult"></button>
 				</div>
-				<div class="hotkey-hint">HOTKEYS: 1 BASIC · 2 SKILL · 3 ULTIMATE · A AUTO · F FAST</div>
+				<div class="tactics-label">TACTIC CARDS <small>(use one instead of attacking)</small></div>
+				<div class="tactics-bar">
+					<button type="button" id="act-guard" class="tactic-card guard"></button>
+					<button type="button" id="act-focus" class="tactic-card focus"></button>
+					<button type="button" id="act-finisher" class="tactic-card finisher"></button>
+				</div>
+				<div class="hotkey-hint">HOTKEYS: SPACE TIMING/BLOCK · 1 BASIC · 2 SKILL · 3 ULTIMATE · 4 BRACE · 5 FOCUS · 6 COMBO BREAKER · A AUTO · F FAST</div>
 
 				<!-- Live Comic Caption Log -->
 				<div id="combat-log-text" class="combat-log-bar">
@@ -234,7 +249,18 @@
 				Tap a squad slot to select it, then press ASSIGN on any hero to swap them in.
 			</p>
 			<div id="synergy-banner" class="synergy-banner"></div>
+			<div id="combo-ready" class="combo-ready"></div>
 			<div id="active-team-slots" class="team-builder-bar"></div>
+
+			<h2 class="roster-section-title" style="margin-top: 1rem">
+				COMBO BOOK <small id="combo-count" class="count-chip"></small>
+			</h2>
+			<p class="roster-hint">
+				Squad slots act 1 → 2 → 3. Put two partners in <b>neighbouring slots</b> and the
+				second one strikes with a named combo. Following the affinity circle
+				(Cosmic → Tech → Brawler → Mystic → Cosmic) triggers a Chain Reaction too.
+			</p>
+			<div id="combo-book" class="combo-book"></div>
 
 			<h2 class="roster-section-title" style="margin-top: 2rem">
 				HERO COLLECTION & UPGRADES
@@ -260,6 +286,18 @@
 				>
 			</div>
 			<div id="roster-grid" class="roster-grid"></div>
+		</section>
+
+		<!-- ── View 6: Arcade ────────────────────────────────────────────────── -->
+		<section id="view-arcade" class="comic-view">
+			<div class="issues-marquee">
+				<h2>THE ARCADE</h2>
+				<p>
+					Mini-games and a daily mutator battle. Each mini-game pays out for its first
+					3 plays every day.
+				</p>
+			</div>
+			<div id="arcade-grid" class="arcade-grid"></div>
 		</section>
 
 		<!-- ── View 5: Daily Loot & Quests ───────────────────────────────────── -->
@@ -312,6 +350,20 @@
 			</div>
 		</div>
 
+		<!-- ── Arcade Modal ──────────────────────────────────────────────────── -->
+		<div
+			id="arcade-modal"
+			class="modal-overlay"
+			role="dialog"
+			aria-modal="true"
+			aria-label="Arcade Game"
+		>
+			<div class="modal-content arcade-content">
+				<div id="arcade-stage" class="arcade-stage"></div>
+				<button type="button" id="btn-close-arcade" class="comic-btn">LEAVE GAME</button>
+			</div>
+		</div>
+
 		<!-- ── Hero Detail Modal ─────────────────────────────────────────────── -->
 		<div
 			id="hero-modal"
@@ -349,12 +401,24 @@
 			</div>
 		</div>
 
+		<div id="pull-fx" class="pull-fx" aria-hidden="true">
+			<div class="pull-rays"></div>
+			<div class="pull-flash"></div>
+			<div id="pull-particles" class="pull-particles"></div>
+		</div>
+		<div id="bg-fx" class="bg-fx" aria-hidden="true"></div>
+		<footer class="credits">
+			Pixel art: <a href="https://pixelfrog-assets.itch.io/tiny-swords" target="_blank" rel="noopener">Tiny Swords</a> by Pixel Frog ·
+			Icons: Raven Fantasy Icons by Clockwork Raven Studios
+		</footer>
 		<div id="toast-stack" class="toast-stack" aria-live="polite"></div>
 
 		<!-- ── Game Scripts ──────────────────────────────────────────────────── -->
 		<script src="js/audio.js"></script>
 		<script src="js/heroes.js"></script>
 		<script src="js/kits.js"></script>
+		<script src="js/sprites.js"></script>
+		<script src="js/arcade.js"></script>
 		<script src="js/gacha.js"></script>
 		<script src="js/combat.js"></script>
 		<script src="js/game.js"></script>

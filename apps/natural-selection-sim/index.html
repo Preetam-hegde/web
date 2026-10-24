@@ -1,1428 +1,3729 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Evolutionary Simulator v3.0 - Enhanced</title>
-    <link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
-    <style>
-        :root {
-            --bg-color: #121212;
-            --panel-bg: rgba(20, 20, 20, 0.92);
-            --text-color: #e0e0e0;
-            --accent-color: #4caf50;
-            --danger-color: #ef5350;
-            --info-color: #29b6f6;
-            --border-color: #333;
-        }
-
-        body {
-            margin: 0;
-            padding: 0;
-            overflow: hidden;
-            font-family: 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background-color: var(--bg-color);
-            color: var(--text-color);
-            user-select: none;
-        }
-
-        canvas { display: block; }
-
-        /* UI Layout */
-        #ui-layer {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            display: flex;
-            flex-direction: column;
-        }
-
-        .panel {
-            background: var(--panel-bg);
-            padding: 14px;
-            border-radius: 8px;
-            pointer-events: auto;
-            border: 1.5px solid var(--border-color);
-            backdrop-filter: blur(10px);
-            box-shadow: 0 8px 24px rgba(0,0,0,0.6), inset 0 1px 1px rgba(255,255,255,0.05);
-            transition: all 0.3s ease;
-        }
-        
-        .panel:hover {
-            border-color: #444;
-            box-shadow: 0 8px 32px rgba(0,0,0,0.8), inset 0 1px 1px rgba(255,255,255,0.05);
-        }
-
-        /* Sidebar */
-        #sidebar {
-            position: absolute;
-            top: 10px;
-            left: 10px;
-            width: 280px;
-            max-height: calc(100vh - 20px);
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            z-index: 10;
-        }
-        
-        #sidebar::-webkit-scrollbar { width: 4px; }
-        #sidebar::-webkit-scrollbar-thumb { background: #555; border-radius: 2px; }
-
-        /* Right Side Stats */
-        #right-panel-container {
-            position: absolute;
-            top: 10px;
-            right: 10px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            width: 280px;
-            z-index: 10;
-        }
-
-        /* Bottom Graph */
-        #graph-panel {
-            position: absolute;
-            bottom: 10px;
-            left: 300px;
-            right: 260px;
-            height: 200px;
-            display: flex;
-            flex-direction: column;
-            z-index: 5;
-        }
-
-        /* Legend Box */
-        #legend-box {
-            margin-top: 5px;
-            padding: 8px;
-            background: rgba(0,0,0,0.3);
-            border-radius: 4px;
-            font-size: 11px;
-            line-height: 1.5;
-            color: #ccc;
-            border-left: 3px solid var(--info-color);
-        }
-
-        /* Typography & Elements */
-        h2 {
-            margin: 0 0 10px 0;
-            font-size: 13px;
-            text-transform: uppercase;
-            color: #aaa;
-            border-bottom: 2px solid var(--accent-color);
-            padding-bottom: 6px;
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            letter-spacing: 1px;
-            font-weight: 600;
-        }
-
-        .row { display: flex; gap: 5px; margin-bottom: 5px; }
-        
-        button {
-            background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
-            color: white;
-            border: 1.5px solid #555;
-            padding: 8px 12px;
-            border-radius: 5px;
-            cursor: pointer;
-            font-size: 11px;
-            flex: 1;
-            transition: all 0.25s;
-            font-weight: 600;
-            letter-spacing: 0.5px;
-        }
-        button:hover { 
-            background: linear-gradient(135deg, #3a3a3a 0%, #444 100%);
-            border-color: #777;
-            transform: translateY(-1px);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.3);
-        }
-        button:active { 
-            transform: translateY(0px);
-            box-shadow: inset 0 2px 8px rgba(0,0,0,0.4);
-        }
-        
-        button.primary { 
-            background: linear-gradient(135deg, var(--accent-color) 0%, #43a047 100%);
-            border-color: #2e7d32;
-            color: #fff;
-        }
-        button.primary:hover { 
-            background: linear-gradient(135deg, #43a047 0%, #388e3c 100%);
-            box-shadow: 0 6px 16px rgba(76, 175, 80, 0.4);
-        }
-        button.danger { 
-            border-color: var(--danger-color);
-            color: var(--danger-color);
-            background: rgba(239, 83, 80, 0.1);
-        }
-        button.danger:hover { 
-            background: var(--danger-color);
-            color: white;
-            box-shadow: 0 6px 16px rgba(239, 83, 80, 0.4);
-        }
-
-        /* Collapsible Accordions */
-        .accordion-btn {
-            width: 100%;
-            text-align: left;
-            background: linear-gradient(135deg, #1f1f1f 0%, #2a2a2a 100%);
-            border: 1px solid #333;
-            color: #ddd;
-            padding: 10px;
-            cursor: pointer;
-            font-size: 12px;
-            display: flex;
-            align-items: center;
-            border-radius: 5px;
-            margin-bottom: 3px;
-            font-weight: 600;
-            transition: all 0.2s;
-        }
-        .accordion-btn:hover { 
-            background: linear-gradient(135deg, #2a2a2a 0%, #333 100%);
-            border-color: #444;
-        }
-        .accordion-btn.active { 
-            background: linear-gradient(135deg, #2a3a2a 0%, #1f3a1f 100%);
-            border-color: #4caf50;
-            color: var(--accent-color);
-        }
-        .accordion-btn::after { 
-            content: '▼'; 
-            margin-left: auto; 
-            font-weight: bold;
-            font-size: 10px;
-            transition: transform 0.3s;
-        }
-        .accordion-btn.active::after { 
-            transform: rotate(180deg);
-        }
-
-        .collapsible-content {
-            max-height: 0;
-            overflow: hidden;
-            transition: max-height 0.35s ease-out;
-            background: rgba(0,0,0,0.25);
-            border: 1px solid transparent;
-            border-radius: 0 0 5px 5px;
-            margin-bottom: 5px;
-        }
-        .collapsible-content.open { 
-            max-height: 600px; 
-            transition: max-height 0.5s ease-in;
-            border: 1px solid #333;
-        }
-        .inner-pad { padding: 12px; }
-
-        /* Controls */
-        label { 
-            display: flex; 
-            justify-content: space-between; 
-            font-size: 11px; 
-            color: #999; 
-            margin-bottom: 6px; 
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-            font-weight: 600;
-        }
-        
-        input[type=range] {
-            width: 100%; 
-            height: 5px; 
-            background: linear-gradient(90deg, #222 0%, #333 50%, #222 100%);
-            outline: none; 
-            -webkit-appearance: none; 
-            border-radius: 3px; 
-            margin-bottom: 10px;
-            cursor: pointer;
-        }
-        input[type=range]::-webkit-slider-thumb {
-            -webkit-appearance: none; 
-            width: 14px; 
-            height: 14px; 
-            background: linear-gradient(135deg, #4caf50 0%, #43a047 100%);
-            border-radius: 50%; 
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.6);
-            transition: all 0.2s;
-        }
-        input[type=range]::-webkit-slider-thumb:hover {
-            box-shadow: 0 4px 12px rgba(76, 175, 80, 0.8);
-            transform: scale(1.15);
-        }
-        input[type=range]::-moz-range-thumb {
-            width: 14px; 
-            height: 14px; 
-            background: linear-gradient(135deg, #4caf50 0%, #43a047 100%);
-            border: none;
-            border-radius: 50%; 
-            cursor: pointer;
-            box-shadow: 0 2px 8px rgba(76, 175, 80, 0.6);
-        }
-        
-        select, input[type=text] {
-            width: 100%; 
-            background: linear-gradient(135deg, #1a1a1a 0%, #222 100%);
-            color: #eee; 
-            border: 1.5px solid #444;
-            padding: 8px; 
-            border-radius: 5px; 
-            margin-bottom: 10px; 
-            font-size: 11px;
-            transition: all 0.2s;
-        }
-        select:focus, input[type=text]:focus {
-            border-color: #4caf50;
-            background: linear-gradient(135deg, #1f1f1f 0%, #252525 100%);
-            box-shadow: 0 0 8px rgba(76, 175, 80, 0.3);
-        }
-
-        .stat-row { 
-            display: flex; 
-            justify-content: space-between; 
-            font-size: 12px; 
-            padding: 5px 0; 
-            border-bottom: 1px solid #2a2a2a;
-            align-items: center;
-        }
-        .stat-val { 
-            font-family: 'Courier New', monospace; 
-            font-weight: 700;
-            letter-spacing: 0.5px;
-            min-width: 50px;
-            text-align: right;
-        }
-
-        /* Modal */
-        #modal-overlay {
-            position: fixed; 
-            top: 0; 
-            left: 0; 
-            width: 100%; 
-            height: 100%;
-            background: rgba(0,0,0,0.95);
-            z-index: 100;
-            display: none;
-            align-items: center;
-            justify-content: center;
-            backdrop-filter: blur(4px);
-        }
-        #theory-modal {
-            background: linear-gradient(135deg, #1a1a1a 0%, #1f1f1f 100%);
-            width: 650px; 
-            max-width: 95%; 
-            max-height: 90vh;
-            overflow-y: auto; 
-            border-radius: 10px; 
-            padding: 30px;
-            border: 1.5px solid #444;
-            box-shadow: 0 20px 60px rgba(0,0,0,0.95), 0 0 40px rgba(76, 175, 80, 0.2);
-        }
-        #theory-modal h2 { 
-            color: var(--accent-color);
-            border-color: var(--accent-color); 
-            margin-bottom: 20px;
-        }
-        #theory-modal p { 
-            font-size: 14px; 
-            line-height: 1.7; 
-            color: #ddd; 
-            margin-bottom: 18px;
-        }
-        #theory-modal strong { 
-            color: var(--accent-color);
-            font-weight: 700;
-        }
-
-        /* Graph */
-        #graph-canvas { 
-            width: 100%; 
-            height: 100%; 
-            background: linear-gradient(135deg, #0f0f0f 0%, #1a1a1a 100%);
-            border: 1.5px solid #333;
-            border-radius: 6px; 
-            cursor: pointer;
-            display: block;
-        }
-
-        @media (max-width: 800px) {
-            #graph-panel { display: none; }
-            #right-panel-container { display: none; }
-            #sidebar { width: 240px; }
-        }
-    </style>
-	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-</head>
-<body>
-
-    <canvas id="simCanvas"></canvas>
-
-    <div id="ui-layer">
-        <!-- Left Sidebar -->
-        <div id="sidebar" class="panel">
-            <h2>
-                Simulator Controls
-                <button class="info" id="btn-theory" style="flex:0; padding:2px 8px; font-size:10px; margin-left:10px;">Theory</button>
-            </h2>
-
-            <div class="row">
-                <button id="btn-pause" class="primary">Pause</button>
-                <button id="btn-reset" class="danger">Reset</button>
-            </div>
-
-            <!-- Visualization Settings -->
-            <div style="margin-bottom: 10px;">
-                <label>View Mode</label>
-                <select id="view-mode">
-                    <option value="traits">Phenotype (Traits)</option>
-                    <option value="species">Species (Lineage)</option>
-                    <option value="energy">Metabolic Energy</option>
-                </select>
-                <div id="legend-box">
-                    <!-- Dynamic Legend Content -->
-                </div>
-            </div>
-
-            <!-- Accordion: Environment -->
-            <button class="accordion-btn" data-target="sect-env">Environment Settings</button>
-            <div id="sect-env" class="collapsible-content">
-                <div class="inner-pad">
-                    <label>Food Abundance <span><span id="val-food-rate">5</span>%</span></label>
-                    <input type="range" id="food-rate" min="0" max="50" value="5">
-                    
-                    <label>Genetic Drift (Mutation) <span><span id="val-mut-rate">10</span>%</span></label>
-                    <input type="range" id="mut-rate" min="0" max="100" value="10">
-                    
-                    <label>Food Energy Value <span id="val-food-energy">25</span></label>
-                    <input type="range" id="food-energy" min="10" max="100" value="25">
-                </div>
-            </div>
-
-            <!-- Accordion: Advanced Theory -->
-            <button class="accordion-btn" data-target="sect-theory">Metabolic Costs</button>
-            <div id="sect-theory" class="collapsible-content">
-                <div class="inner-pad">
-                    <div style="font-size:10px; color:#777; margin-bottom:8px;">Higher costs = harder survival</div>
-                    <label>Cost of Speed <span id="val-cost-speed">High</span></label>
-                    <input type="range" id="cost-speed" min="0" max="50" value="30">
-                    
-                    <label>Cost of Size <span id="val-cost-size">Medium</span></label>
-                    <input type="range" id="cost-size" min="0" max="50" value="20">
-                    
-                    <label>Cost of Senses <span id="val-cost-sense">Low</span></label>
-                    <input type="range" id="cost-sense" min="0" max="50" value="5">
-                </div>
-            </div>
-
-            <!-- Accordion: Predator Controls -->
-            <button class="accordion-btn" data-target="sect-predator">Predator Settings</button>
-            <div id="sect-predator" class="collapsible-content">
-                <div class="inner-pad">
-                    <label>Predator Cost Multiplier <span id="val-pred-cost">1.5x</span></label>
-                    <input type="range" id="pred-cost-mult" min="1" max="3" step="0.1" value="1.5">
-                    
-                    <label>Predation Range <span id="val-pred-range">15</span></label>
-                    <input type="range" id="pred-range" min="5" max="50" value="15">
-                    
-                    <label>Predation Reward <span id="val-pred-energy">80</span></label>
-                    <input type="range" id="pred-energy" min="20" max="150" value="80">
-                    
-                    <button id="btn-add-predator" class="primary" style="width:100%; margin-top:5px;">Spawn Predator</button>
-                </div>
-            </div>
-
-            <!-- Accordion: Spawner -->
-            <button class="accordion-btn" data-target="sect-spawn">Custom Organism</button>
-            <div id="sect-spawn" class="collapsible-content">
-                <div class="inner-pad">
-                    <label>Species Name</label>
-                    <input type="text" id="spawn-name" placeholder="e.g. Titanus Rex" maxlength="15">
-
-                    <label>Velocity <span id="disp-spawn-speed">4</span></label>
-                    <input type="range" id="spawn-speed" min="1" max="10" value="4" step="0.5">
-                    
-                    <label>Mass <span id="disp-spawn-size">8</span></label>
-                    <input type="range" id="spawn-size" min="4" max="25" value="8" step="0.5">
-                    
-                    <label>Sense Radius <span id="disp-spawn-sense">50</span></label>
-                    <input type="range" id="spawn-sense" min="10" max="150" value="50" step="5">
-                    
-                    <button id="btn-spawn" class="primary" style="width:100%; margin-top:5px;">Inject Organism</button>
-                </div>
-            </div>
-            
-            <div style="font-size: 10px; color: #666; margin-top:12px; text-align:center; border-top: 1px solid #333; padding-top: 8px;">
-                <strong>v3.1 Enhanced</strong> | Predator-Prey Ecology<br>
-                🖱️ Click canvas to add food | 📊 Click graph to cycle views
-            </div>
-        </div>
-
-        <!-- Right Panel Container -->
-        <div id="right-panel-container">
-            <div class="panel">
-                <h2>Live Data</h2>
-                <div class="stat-row"><span>Population</span> <span id="stat-pop" class="stat-val">0</span></div>
-                <div class="stat-row"><span>Resources</span> <span id="stat-food" class="stat-val">0</span></div>
-                <div class="stat-row"><span>Generation</span> <span id="stat-gen" class="stat-val">0</span></div>
-                <div style="margin-top:8px; border-top:1px solid #333; padding-top:5px;">
-                    <div class="stat-row" style="color:#ff6b6b"><span>Avg Speed</span> <span id="stat-avg-speed" class="stat-val">0</span></div>
-                    <div class="stat-row" style="color:#4ecdc4"><span>Avg Size</span> <span id="stat-avg-size" class="stat-val">0</span></div>
-                    <div class="stat-row" style="color:#ffe66d"><span>Avg Sense</span> <span id="stat-avg-sense" class="stat-val">0</span></div>
-                </div>
-            </div>
-            
-            <div class="panel">
-                <h2>Dominant Species</h2>
-                <div id="species-list" style="font-size:11px; min-height:40px;"></div>
-            </div>
-        </div>
-
-        <!-- Graph Panel -->
-        <div id="graph-panel" class="panel">
-            <h2 style="border:none; margin-bottom:2px;">
-                <span id="graph-title">Genetic Trends</span>
-                <span style="font-size:9px; color:#555; cursor:pointer;">(Click graph to switch)</span>
-            </h2>
-            <canvas id="graph-canvas"></canvas>
-        </div>
-    </div>
-
-    <!-- Theory Modal -->
-    <div id="modal-overlay">
-        <div id="theory-modal">
-            <h2>Theory Guide: Natural Selection v3.0</h2>
-            <p><strong>1. Variation (Phenotype):</strong><br>
-            Every blob has unique traits: <em>Speed</em>, <em>Size</em>, and <em>Sense Radius</em>. In 'Traits' view, Red blobs are fast/agile, Blue are slow/efficient. Predators appear with a dark red ring.</p>
-            
-            <p><strong>2. Inheritance (Genotype):</strong><br>
-            When a blob eats enough to replicate, it passes its 'Genes' to offspring with slight random mutations. This introduces variation into the gene pool, including predatory traits.</p>
-            
-            <p><strong>3. Selection Pressure:</strong><br>
-            Energy is life. Moving fast and being big burns energy rapidly. Blobs must eat to survive. Predators have higher metabolic costs. If they run out of energy, they die. This "culls" inefficient designs.</p>
-            
-            <p><strong>4. Predator-Prey Dynamics (NEW):</strong><br>
-            The ecosystem includes both herbivores (eating plants/food) and carnivores (hunting herbivores). Watch how populations oscillate as predators are limited by prey availability, and herbivores rebound when predator populations decline.</p>
-            
-            <p><strong>5. Ecosystem Health:</strong><br>
-            The status indicator shows the ecosystem balance. Critical warnings appear when populations become dangerously imbalanced. Total extinction forces a reset.</p>
-            
-            <p><strong>6. Speciation:</strong><br>
-            If an offspring is genetically distinct enough (>20% difference) from its parent, it receives a unique Latin name representing a new species.</p>
-            
-            <div style="text-align:right; margin-top:20px;">
-                <button class="primary" id="btn-close-modal" style="width: 100px;">Close</button>
-            </div>
-        </div>
-    </div>
-
-<script>
-/**
- * MATH & UTILS
- */
-const Vector = {
-    add: (v1, v2) => ({ x: v1.x + v2.x, y: v1.y + v2.y }),
-    sub: (v1, v2) => ({ x: v1.x - v2.x, y: v1.y - v2.y }),
-    mult: (v, n) => ({ x: v.x * n, y: v.y * n }),
-    mag: (v) => Math.sqrt(v.x * v.x + v.y * v.y),
-    dist: (v1, v2) => Math.sqrt((v1.x - v2.x) ** 2 + (v1.y - v2.y) ** 2),
-    normalize: (v) => {
-        let m = Math.sqrt(v.x * v.x + v.y * v.y);
-        return m === 0 ? { x: 0, y: 0 } : { x: v.x / m, y: v.y / m };
-    },
-    random: () => {
-        let angle = Math.random() * Math.PI * 2;
-        return { x: Math.cos(angle), y: Math.sin(angle) };
-    },
-    limit: (v, max) => {
-        let m = Math.sqrt(v.x * v.x + v.y * v.y);
-        if (m > max) {
-            return { x: (v.x / m) * max, y: (v.y / m) * max };
-        }
-        return v;
-    }
-};
-
-// Naming System
-const ROOTS = {
-    speed: { low: ["Tardus", "Lentus", "Segnis", "Quietus"], mid: ["Medius", "Vagus", "Ambul"], high: ["Velox", "Celer", "Rapidus", "Presto"] },
-    size: { low: ["Minimus", "Parvus", "Micro", "Nan"], mid: ["Modus", "Norm", "Forma"], high: ["Magnus", "Gigas", "Titan", "Coloss"] },
-    suffix: ["blob", "zoa", "form", "us", "ex", "a"]
-};
-
-function generateSpeciesName(genes) {
-    let pArr = genes.speed < 3 ? ROOTS.speed.low : (genes.speed > 6 ? ROOTS.speed.high : ROOTS.speed.mid);
-    let prefix = pArr[Math.floor(Math.random() * pArr.length)];
-    
-    let sArr = genes.size < 6 ? ROOTS.size.low : (genes.size > 12 ? ROOTS.size.high : ROOTS.size.mid);
-    let root = sArr[Math.floor(Math.random() * sArr.length)];
-    
-    // Random suffix for variety
-    let suf = ROOTS.suffix[Math.floor(Math.random() * ROOTS.suffix.length)];
-
-    return `${prefix} ${root}${suf}`;
-}
-
-/**
- * CONFIGURATION
- */
-const CONFIG = {
-    initialPop: 30,
-    initialPredators: 3,
-    maxEnergy: 200,
-    reprThreshold: 120,
-    reprCost: 60,
-    
-    foodSpawnChance: 0.05,
-    mutationRate: 0.1,
-    foodEnergy: 25,
-    
-    costSpeed: 0.005, 
-    costSize: 0.003,
-    costSense: 0.0002,
-    baseMetabolism: 0.1,
-    
-    // Predator settings
-    predationDistance: 15,
-    predationEnergy: 80,
-    predatorCostModifier: 1.5,
-    
-    // Advanced mechanics
-    sexualReproductionEnabled: true,
-    matingDistance: 50,
-    generationalEpochs: true
-};
-
-/**
- * STATE
- */
-const canvas = document.getElementById('simCanvas');
-const ctx = canvas.getContext('2d');
-let width, height;
-let agents = [];
-let food = [];
-let frameId;
-let lastTime = 0;
-let paused = false;
-let viewMode = 'traits';
-let graphMode = 'genetics';
-let historyStats = [];
-let generation = 0;
-let extinctionEvents = 0;
-let currentEpoch = 0;
-let epochChanges = 0;
-
-/**
- * CLASSES
- */
-class Agent {
-    constructor(x, y, genes, parentName, isPredator = false) {
-        this.pos = { x, y };
-        this.vel = Vector.random();
-        this.acc = { x: 0, y: 0 };
-        
-        this.genes = genes || {
-            speed: 2 + Math.random() * 4,
-            size: 5 + Math.random() * 10,
-            sense: 30 + Math.random() * 70,
-            generation: 1,
-            predatory: isPredator ? 0.8 + Math.random() * 0.2 : Math.random() * 0.3
-        };
-        
-        this.speciesName = parentName || generateSpeciesName(this.genes);
-        this.speciesColor = this.getSpeciesColor();
-        this.isPredator = isPredator || this.genes.predatory > 0.5;
-
-        this.energy = 80;
-        this.maxSpeed = this.genes.speed;
-        this.maxForce = 0.5;
-        this.dead = false;
-        this.age = 0;
-        this.mateReady = false;
-        this.particleTrail = [];
-        this.particleCounter = Math.random() * 5; // Stagger particle creation
-        
-        // Visuals
-        this.wobble = Math.random() * Math.PI * 2;
-    }
-
-    getSpeciesColor() {
-        let hash = 0;
-        for (let i = 0; i < this.speciesName.length; i++) {
-            hash = this.speciesName.charCodeAt(i) + ((hash << 5) - hash);
-        }
-        return `hsl(${Math.abs(hash) % 360}, 75%, 60%)`;
-    }
-
-    update(dt) {
-        if (this.dead) return;
-        this.wobble += dt * 5;
-        this.age += dt;
-        
-        // Update mating readiness
-        if (this.energy > CONFIG.reprThreshold + 20) this.mateReady = true;
-        if (this.energy < 100) this.mateReady = false;
-
-        // Determine feeding behavior
-        if (this.isPredator) {
-            this.handlePredation(dt);
-        } else {
-            this.forage();
-        }
-
-        // Metabolism
-        const speedCost = (this.genes.speed ** 2) * CONFIG.costSpeed;
-        const sizeCost = (this.genes.size ** 3) * CONFIG.costSize;
-        const senseCost = this.genes.sense * CONFIG.costSense;
-        const predatorCost = this.isPredator ? (speedCost + sizeCost) * (CONFIG.predatorCostModifier - 1) : 0;
-        const metabolicLoss = (CONFIG.baseMetabolism + speedCost + sizeCost + senseCost + predatorCost) * dt;
-        
-        this.energy -= metabolicLoss;
-        if (this.energy <= 0) { this.dead = true; return; }
-
-        // Behavior
-        this.move(dt);
-        this.boundaries();
-        
-        // Update particle trail - optimized with counter
-        this.particleCounter += dt;
-        if (this.particleCounter > 0.1) {
-            this.particleTrail.push({
-                x: this.pos.x,
-                y: this.pos.y,
-                age: 0,
-                maxAge: 0.5
-            });
-            this.particleCounter = 0;
-            if (this.particleTrail.length > 15) this.particleTrail.shift();
-        }
-        // Clean up old particles
-        for (let i = this.particleTrail.length - 1; i >= 0; i--) {
-            this.particleTrail[i].age += dt;
-            if (this.particleTrail[i].age > this.particleTrail[i].maxAge) {
-                this.particleTrail.splice(i, 1);
-            }
-        }
-    }
-
-    handlePredation(dt) {
-        let closest = null;
-        let minDist = this.genes.sense + 1;
-
-        // Hunt other organisms - optimized search
-        let preyCount = agents.length;
-        for (let i = 0; i < preyCount; i++) {
-            let prey = agents[i];
-            if (prey === this || prey.isPredator) continue;
-            const d = Vector.dist(this.pos, prey.pos);
-            
-            // Direct consumption
-            if (d < this.genes.size + prey.genes.size) {
-                this.energy += CONFIG.predationEnergy;
-                if (this.energy > CONFIG.maxEnergy) this.energy = CONFIG.maxEnergy;
-                prey.dead = true;
-                continue;
-            }
-            
-            // Hunting sense
-            if (d < minDist) {
-                minDist = d;
-                closest = prey;
-            }
-        }
-
-        if (closest) this.seek(closest.pos);
-        else this.wander();
-    }
-
-    forage() {
-        let closest = null;
-        let minDist = Infinity;
-
-        for (let i = food.length - 1; i >= 0; i--) {
-            const d = Vector.dist(this.pos, food[i]);
-            if (d < this.genes.size) {
-                this.energy += CONFIG.foodEnergy;
-                if (this.energy > CONFIG.maxEnergy) this.energy = CONFIG.maxEnergy;
-                food.splice(i, 1);
-                continue;
-            }
-            if (d < this.genes.sense && d < minDist) {
-                minDist = d;
-                closest = food[i];
-            }
-        }
-
-        if (closest) this.seek(closest);
-        else this.wander();
-    }
-
-    seek(target) {
-        let desired = Vector.sub(target, this.pos);
-        desired = Vector.normalize(desired);
-        desired = Vector.mult(desired, this.maxSpeed);
-        let steer = Vector.sub(desired, this.vel);
-        steer = Vector.limit(steer, this.maxForce);
-        this.acc = Vector.add(this.acc, steer);
-    }
-
-    wander() {
-        if (Math.random() < 0.05) {
-            let r = Vector.random();
-            r = Vector.mult(r, this.maxForce);
-            this.acc = Vector.add(this.acc, r);
-        }
-    }
-
-    move(dt) {
-        this.vel = Vector.add(this.vel, this.acc);
-        this.vel = Vector.limit(this.vel, this.maxSpeed);
-        let moveStep = Vector.mult(this.vel, dt * 60);
-        this.pos = Vector.add(this.pos, moveStep);
-        this.acc = { x: 0, y: 0 };
-    }
-
-    boundaries() {
-        const m = this.genes.size;
-        if (this.pos.x < m) { this.pos.x = m; this.vel.x *= -1; }
-        if (this.pos.x > width - m) { this.pos.x = width - m; this.vel.x *= -1; }
-        if (this.pos.y < m) { this.pos.y = m; this.vel.y *= -1; }
-        if (this.pos.y > height - m) { this.pos.y = height - m; this.vel.y *= -1; }
-    }
-
-    reproduce() {
-        if (this.dead) return null;
-        if (this.energy > CONFIG.reprThreshold) {
-            this.energy -= CONFIG.reprCost;
-            const mRate = CONFIG.mutationRate;
-            
-            const newGenes = {
-                speed: Math.max(1, this.genes.speed + (Math.random() * 2 - 1) * mRate * 2),
-                size: Math.max(3, this.genes.size + (Math.random() * 2 - 1) * mRate * 2),
-                sense: Math.max(10, this.genes.sense + (Math.random() * 2 - 1) * mRate * 20),
-                predatory: Math.max(0, Math.min(1, this.genes.predatory + (Math.random() * 2 - 1) * mRate * 0.1)),
-                generation: this.genes.generation + 1
-            };
-
-            let diff = Math.abs(newGenes.speed - this.genes.speed)/this.genes.speed +
-                       Math.abs(newGenes.size - this.genes.size)/this.genes.size;
-            
-            let childName = this.speciesName;
-            if (diff > 0.2) childName = generateSpeciesName(newGenes);
-
-            const isPred = newGenes.predatory > 0.5;
-            return new Agent(this.pos.x, this.pos.y, newGenes, childName, isPred);
-        }
-        return null;
-    }
-
-    draw() {
-        ctx.save();
-        
-        // Draw particle trail - optimized
-        let trailLen = this.particleTrail.length;
-        for (let i = 0; i < trailLen; i++) {
-            let p = this.particleTrail[i];
-            let alpha = Math.max(0, 1 - (p.age / p.maxAge)) * 0.3;
-            let hue = this.isPredator ? 0 : 200;
-            ctx.fillStyle = `hsla(${hue}, 100%, ${this.isPredator ? 50 : 40}%, ${alpha})`;
-            ctx.beginPath();
-            ctx.arc(p.x, p.y, this.genes.size * 0.5, 0, Math.PI * 2);
-            ctx.fill();
-        }
-        
-        ctx.translate(this.pos.x, this.pos.y);
-
-        // Determine Color - optimized
-        let fillStyle, glowColor;
-        
-        if (viewMode === 'species') {
-            fillStyle = this.speciesColor;
-            glowColor = this.speciesColor;
-        } else if (viewMode === 'energy') {
-            let e = Math.max(0, Math.min(1, this.energy / CONFIG.maxEnergy));
-            fillStyle = `rgb(${255 * (1-e)}, ${255 * e}, 0)`;
-            glowColor = fillStyle;
-        } else {
-            let speedNorm = Math.min(1, (this.genes.speed - 1) / 8);
-            if (this.isPredator) {
-                fillStyle = `rgba(${200 + speedNorm * 55}, 50, 50, 0.95)`;
-                glowColor = `rgba(255, 100, 100, 0.6)`;
-            } else {
-                let r = 40 + speedNorm * 215;
-                let b = 255 - speedNorm * 200;
-                fillStyle = `rgba(${r}, 60, ${b}, 0.9)`;
-                glowColor = `rgba(${r}, 150, ${b}, 0.4)`;
-            }
-        }
-
-        // Glow and deformation
-        ctx.shadowColor = glowColor;
-        ctx.shadowBlur = this.isPredator ? 10 : 6;
-
-        let speed = Vector.mag(this.vel);
-        let angle = Math.atan2(this.vel.y, this.vel.x);
-        ctx.rotate(angle);
-        let stretch = 1 + (speed * 0.08);
-        ctx.scale(stretch, 1 / stretch);
-
-        // Body
-        ctx.fillStyle = fillStyle;
-        ctx.beginPath();
-        ctx.arc(0, 0, this.genes.size, 0, Math.PI * 2);
-        ctx.fill();
-
-        // Predator spikes - only render if visible
-        if (this.isPredator && speed > 0.5) {
-            ctx.strokeStyle = 'rgba(255, 150, 150, 0.5)';
-            ctx.lineWidth = 1.5;
-            for (let i = 0; i < 6; i++) {
-                let ang = (i / 6) * Math.PI * 2;
-                let x1 = Math.cos(ang) * this.genes.size * 1.2;
-                let y1 = Math.sin(ang) * this.genes.size * 1.2;
-                let x2 = Math.cos(ang) * this.genes.size * 1.4;
-                let y2 = Math.sin(ang) * this.genes.size * 1.4;
-                ctx.beginPath();
-                ctx.moveTo(x1, y1);
-                ctx.lineTo(x2, y2);
-                ctx.stroke();
-            }
-        }
-
-        // Inner rings
-        ctx.strokeStyle = `rgba(255, 255, 255, ${0.1 + this.energy / CONFIG.maxEnergy * 0.15})`;
-        ctx.lineWidth = 1;
-        ctx.beginPath();
-        ctx.arc(0, 0, this.genes.size * 0.7, 0, Math.PI * 2);
-        ctx.stroke();
-
-        // Energy nucleus
-        let nSize = this.genes.size * 0.5;
-        let eRatio = this.energy / CONFIG.maxEnergy;
-        ctx.shadowColor = '#ffffff';
-        ctx.shadowBlur = 4;
-        ctx.fillStyle = `rgba(255, 255, 255, ${0.35 + eRatio * 0.5})`;
-        ctx.beginPath();
-        ctx.arc(nSize * 0.3, 0, nSize * Math.max(0.25, eRatio), 0, Math.PI * 2);
-        ctx.fill();
-        
-        ctx.shadowBlur = 0;
-        ctx.strokeStyle = `rgba(255, 255, 255, ${0.25 + eRatio * 0.5})`;
-        ctx.lineWidth = 0.8;
-        ctx.beginPath();
-        ctx.arc(nSize * 0.3, 0, nSize * Math.max(0.25, eRatio), 0, Math.PI * 2);
-        ctx.stroke();
-
-        ctx.restore();
-    }
-}
-
-/**
- * ENGINE
- */
-function init() {
-    resize();
-    agents = [];
-    food = [];
-    historyStats = [];
-    generation = 0;
-    extinctionEvents = 0;
-    currentEpoch = 0;
-    epochChanges = 0;
-    lastStatsUpdate = 0;
-    
-    // Initial herbivore population
-    for(let i=0; i<CONFIG.initialPop; i++) {
-        agents.push(new Agent(Math.random() * width, Math.random() * height, null, null, false));
-    }
-    
-    // Initial predator population
-    for(let i=0; i<CONFIG.initialPredators; i++) {
-        const genes = {
-            speed: 3 + Math.random() * 4,
-            size: 8 + Math.random() * 8,
-            sense: 50 + Math.random() * 60,
-            generation: 1,
-            predatory: 0.8 + Math.random() * 0.2
-        };
-        agents.push(new Agent(Math.random() * width, Math.random() * height, genes, "Predator Prime", true));
-    }
-    
-    for(let i=0; i<50; i++) spawnFood();
-    
-    // Initialize graph with baseline data
-    for (let i = 0; i < 5; i++) {
-        historyStats.push({
-            speed: 3.5,
-            size: 8,
-            sense: 50,
-            pop: CONFIG.initialPop,
-            food: 50,
-            herbivores: CONFIG.initialPop,
-            predators: CONFIG.initialPredators,
-            health: "Healthy"
-        });
-    }
-    
-    updateLegend();
-    lastTime = performance.now();
-    
-    // Ensure graph is ready
-    setTimeout(() => {
-        resize();
-        drawGraph();
-    }, 100);
-    
-    requestAnimationFrame(loop);
-}
-
-function spawnFood(x, y) {
-    food.push({
-        x: x || Math.random() * (width - 20) + 10,
-        y: y || Math.random() * (height - 20) + 10
-    });
-}
-
-function loop(timestamp) {
-    if (!lastTime) lastTime = timestamp;
-    let dt = (timestamp - lastTime) / 1000;
-    lastTime = timestamp;
-    if (dt > 0.1) dt = 0.1;
-
-    if (!paused) {
-        update(dt);
-        draw();
-        lastStatsUpdate += dt;
-        if (lastStatsUpdate >= STATS_UPDATE_INTERVAL) {
-            updateStats();
-            drawGraph();
-            lastStatsUpdate = 0;
-        }
-    }
-    frameId = requestAnimationFrame(loop);
-}
-
-function update(dt) {
-    ctx.fillStyle = getComputedStyle(document.documentElement).getPropertyValue('--bg-color');
-    ctx.fillRect(0, 0, width, height);
-
-    if (Math.random() < CONFIG.foodSpawnChance) spawnFood();
-
-    let herbivoreCount = 0;
-    let predatorCount = 0;
-    
-    for (let i = agents.length - 1; i >= 0; i--) {
-        let a = agents[i];
-        a.update(dt);
-        
-        if (a.isPredator) predatorCount++;
-        else herbivoreCount++;
-        
-        if (a.dead) agents.splice(i, 1);
-        else {
-            let child = a.reproduce();
-            if (child) agents.push(child);
-        }
-    }
-    
-    // Detect extinction events
-    if ((herbivoreCount === 0 && agents.length === 0) || (predatorCount === 0 && herbivoreCount > 0)) {
-        if (agents.length < CONFIG.initialPop * 0.1) {
-            extinctionEvents++;
-        }
-    }
-    
-    // Auto-respawn if extinction
-    if (agents.length === 0) {
-        init();
-    }
-}
-
-function draw() {
-    // Draw food with enhanced glow
-    for (let f of food) {
-        // Outer glow
-        ctx.shadowColor = '#66bb6a';
-        ctx.shadowBlur = 8;
-        ctx.fillStyle = 'rgba(102, 187, 106, 0.6)';
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, 4.5, 0, Math.PI * 2);
-        ctx.fill();
-        
-        // Inner bright core
-        ctx.shadowBlur = 4;
-        ctx.fillStyle = '#88dd99';
-        ctx.beginPath();
-        ctx.arc(f.x, f.y, 2.5, 0, Math.PI * 2);
-        ctx.fill();
-    }
-    ctx.shadowColor = 'transparent';
-    ctx.shadowBlur = 0;
-    
-    // Draw organisms with lighting
-    for (let a of agents) a.draw();
-    
-    // Draw ecosystem warnings with animation
-    if (agents.length < CONFIG.initialPop * 0.2) {
-        ctx.fillStyle = `rgba(239, 83, 80, ${0.25 + Math.sin(Date.now()/300) * 0.15})`;
-        ctx.fillRect(0, 0, width, 40);
-        
-        ctx.shadowColor = '#ef5350';
-        ctx.shadowBlur = 8;
-        ctx.fillStyle = '#ef5350';
-        ctx.font = 'bold 18px Arial';
-        ctx.fillText('⚠️  ECOSYSTEM COLLAPSE IMMINENT', 30, 28);
-        ctx.shadowBlur = 0;
-    }
-}
-
-let lastStatsUpdate = 0;
-const STATS_UPDATE_INTERVAL = 0.2; // Update every 200ms
-
-function updateStats() {
-    let totalSpeed = 0, totalSize = 0, totalSense = 0, maxGen = 0;
-    let speciesCounts = {};
-    let herbivoreCount = 0, predatorCount = 0;
-
-    agents.forEach(a => {
-        if (a.isPredator) {
-            predatorCount++;
-        } else {
-            herbivoreCount++;
-        }
-        totalSpeed += a.genes.speed;
-        totalSize += a.genes.size;
-        totalSense += a.genes.sense;
-        if (a.genes.generation > maxGen) maxGen = a.genes.generation;
-        if (!speciesCounts[a.speciesName]) speciesCounts[a.speciesName] = 0;
-        speciesCounts[a.speciesName]++;
-    });
-
-    let pop = agents.length;
-    if (pop > 0) {
-        document.getElementById('stat-pop').innerText = pop;
-        document.getElementById('stat-food').innerText = food.length;
-        document.getElementById('stat-gen').innerText = maxGen;
-        
-        let avgSpeed = totalSpeed / pop;
-        let avgSize = totalSize / pop;
-        let avgSense = totalSense / pop;
-
-        document.getElementById('stat-avg-speed').innerText = avgSpeed.toFixed(2);
-        document.getElementById('stat-avg-size').innerText = avgSize.toFixed(2);
-        document.getElementById('stat-avg-sense').innerText = avgSense.toFixed(1);
-
-        // Ecosystem health indicator
-        const healthDiv = document.getElementById('ecosystem-health') || createHealthIndicator();
-        let healthStatus = "Healthy";
-        let healthColor = "#66bb6a";
-        
-        if (herbivoreCount === 0) {
-            healthStatus = "Critical: No Herbivores";
-            healthColor = "#ef5350";
-        } else if (predatorCount === 0) {
-            healthStatus = "Imbalanced: No Predators";
-            healthColor = "#ff9800";
-        } else if (predatorCount > herbivoreCount * 0.5) {
-            healthStatus = "Warning: Predators Dominant";
-            healthColor = "#ff9800";
-        } else if (food.length < pop * 0.5) {
-            healthStatus = "Warning: Food Shortage";
-            healthColor = "#ff9800";
-        }
-        
-        healthDiv.innerHTML = `<span style="color:${healthColor}">⚫ ${healthStatus}</span>`;
-        healthDiv.style.color = healthColor;
-
-        // Top Species - with caching
-        let sortedSpecies = Object.entries(speciesCounts).sort((a, b) => b[1] - a[1]).slice(0, 3);
-        let html = "";
-        sortedSpecies.forEach(([name, count]) => {
-            // Check first agent found (species are consistent)
-            let sample = agents.find(a => a.speciesName === name);
-            let isPred = sample?.isPredator ? "🔴" : "🟢";
-            html += `<div style="display:flex; justify-content:space-between; margin-bottom:2px; color:#ccc; font-size:10px;">
-                        <span>${isPred} ${name}</span> <span>${count}</span>
-                     </div>`;
-        });
-        document.getElementById('species-list').innerHTML = html;
-
-        // Graph History - Update less frequently for performance
-        historyStats.push({ 
-            speed: avgSpeed, 
-            size: avgSize, 
-            sense: avgSense,
-            pop: pop, 
-            food: food.length,
-            herbivores: herbivoreCount,
-            predators: predatorCount,
-            health: healthStatus
-        });
-        if (historyStats.length > 150) historyStats.shift();
-    } else {
-        document.getElementById('stat-pop').innerText = "EXTINCT";
-    }
-}
-
-function createHealthIndicator() {
-    let div = document.createElement('div');
-    div.id = 'ecosystem-health';
-    div.style.cssText = 'font-size:11px; padding:5px; background:rgba(0,0,0,0.3); border-radius:4px; margin-top:5px;';
-    document.querySelector('.panel:nth-child(1)')?.appendChild(div) || document.body.appendChild(div);
-    return div;
-}
-
-function drawGraph() {
-    const gCanvas = document.getElementById('graph-canvas');
-    const gCtx = gCanvas.getContext('2d');
-    const w = gCanvas.width;
-    const h = gCanvas.height;
-    const padding = 35;
-    
-    gCtx.clearRect(0, 0, w, h);
-    
-    if (historyStats.length < 2) return;
-
-    // Draw grid and axes
-    gCtx.strokeStyle = '#333';
-    gCtx.lineWidth = 1;
-    
-    // Vertical grid
-    for (let i = 0; i <= 4; i++) {
-        let x = padding + (i / 4) * (w - padding - 10);
-        gCtx.beginPath();
-        gCtx.moveTo(x, padding);
-        gCtx.lineTo(x, h - padding);
-        gCtx.stroke();
-    }
-    
-    // Horizontal grid
-    for (let i = 0; i <= 4; i++) {
-        let y = padding + (i / 4) * (h - padding - 10);
-        gCtx.beginPath();
-        gCtx.moveTo(padding, y);
-        gCtx.lineTo(w - 10, y);
-        gCtx.stroke();
-    }
-    
-    // Draw axis lines
-    gCtx.strokeStyle = '#555';
-    gCtx.lineWidth = 2;
-    gCtx.beginPath();
-    gCtx.moveTo(padding, padding);
-    gCtx.lineTo(padding, h - padding);
-    gCtx.lineTo(w - 10, h - padding);
-    gCtx.stroke();
-
-    const drawLine = (fn, color, maxVal, label) => {
-        gCtx.strokeStyle = color;
-        gCtx.lineWidth = 2.5;
-        gCtx.beginPath();
-        historyStats.forEach((stat, i) => {
-            let x = padding + (i / (historyStats.length - 1)) * (w - padding - 15);
-            let val = fn(stat);
-            let normalized = Math.max(0, Math.min(1, val / maxVal));
-            let y = (h - padding) - normalized * (h - padding - 10);
-            if (i === 0) gCtx.moveTo(x, y); else gCtx.lineTo(x, y);
-        });
-        gCtx.stroke();
-        
-        // Draw label
-        gCtx.fillStyle = color;
-        gCtx.font = 'bold 10px monospace';
-        gCtx.fillText(label, w - 120, padding + 15 + (label === 'Speed' ? 0 : label === 'Size' ? 12 : 24));
-    };
-
-    if (graphMode === 'genetics') {
-        document.getElementById('graph-title').innerText = "📊 Average Phenotypes (Normalized)";
-        
-        // Normalize to 0-1
-        let maxSpeed = 12;
-        let maxSize = 25;
-        let maxSense = 150;
-        
-        drawLine(s => s.speed, '#ff6b6b', maxSpeed, 'Speed');
-        drawLine(s => s.size, '#4ecdc4', maxSize, 'Size');
-        drawLine(s => s.sense, '#ffe66d', maxSense, 'Sense');
-        
-    } else if (graphMode === 'food-chain') {
-        document.getElementById('graph-title').innerText = "🔴🟢 Predator-Prey Dynamics";
-        let maxHerbivore = Math.max(...historyStats.map(s => s.herbivores || 0)) * 1.2 || 50;
-        let maxPredator = Math.max(...historyStats.map(s => s.predators || 0)) * 1.2 || 20;
-        
-        gCtx.font = '10px monospace';
-        gCtx.fillStyle = '#888';
-        gCtx.fillText(`Herbivores (max: ${Math.round(maxHerbivore)})`, padding + 5, 15);
-        gCtx.fillText(`Predators (max: ${Math.round(maxPredator)})`, padding + 5, 28);
-        
-        drawLine(s => s.herbivores || 0, '#66bb6a', maxHerbivore, 'Herbivores');
-        drawLine(s => s.predators || 0, '#ef5350', maxPredator, 'Predators');
-        
-    } else {
-        document.getElementById('graph-title').innerText = "🌍 Population vs Resources";
-        let maxPop = Math.max(...historyStats.map(s => s.pop)) * 1.2 || 100;
-        let maxFood = Math.max(...historyStats.map(s => s.food)) * 1.2 || 100;
-        
-        gCtx.font = '10px monospace';
-        gCtx.fillStyle = '#888';
-        gCtx.fillText(`Population (max: ${Math.round(maxPop)})`, padding + 5, 15);
-        gCtx.fillText(`Resources (max: ${Math.round(maxFood)})`, padding + 5, 28);
-        
-        drawLine(s => s.pop, '#fff', maxPop, 'Population');
-        drawLine(s => s.food, '#66bb6a', maxFood, 'Food');
-    }
-}
-
-function updateLegend() {
-    const lb = document.getElementById('legend-box');
-    if (viewMode === 'traits') {
-        lb.innerHTML = `
-            <span style="color:#ff6b6b">● Redish</span> = Fast / High Metabolism<br>
-            <span style="color:#4a90e2">● Blueish</span> = Slow / Efficient<br>
-            <span style="color:#cc3333">🔴 Dark Red Ring</span> = Predator<br>
-            <span style="color:#ccc">○ Circle</span> = Size (Mass)<br>
-            <span style="color:#fff; opacity:0.5">● Nucleus</span> = Energy Reserves
-        `;
-    } else if (viewMode === 'species') {
-        lb.innerHTML = `
-            Colors represent unique <br><strong>Species Lineages</strong>.<br>
-            New color = Significant genetic drift from parent.
-        `;
-    } else if (viewMode === 'energy') {
-        lb.innerHTML = `
-            <span style="color:#66bb6a">● Green</span> = Full Energy<br>
-            <span style="color:#ef5350">● Red</span> = Starving / Dying
-        `;
-    }
-}
-
-/**
- * UI & EVENTS
- */
-function resize() {
-    width = window.innerWidth;
-    height = window.innerHeight;
-    canvas.width = width;
-    canvas.height = height;
-    let g = document.getElementById('graph-canvas');
-    if (g) {
-        let r = g.getBoundingClientRect();
-        // Set canvas resolution (not just CSS size)
-        g.width = Math.max(r.width, 1);
-        g.height = Math.max(r.height, 1);
-        g.style.width = r.width + 'px';
-        g.style.height = r.height + 'px';
-    }
-}
-window.addEventListener('resize', resize);
-window.addEventListener('load', resize); // Ensure sizing on load
-
-// Accordions
-document.querySelectorAll('.accordion-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-        btn.classList.toggle('active');
-        const content = document.getElementById(btn.dataset.target);
-        content.classList.toggle('open');
-    });
-});
-
-// Graph Toggle
-document.getElementById('graph-canvas').addEventListener('click', () => {
-    const modes = ['genetics', 'food-chain', 'population'];
-    let currentIndex = modes.indexOf(graphMode);
-    graphMode = modes[(currentIndex + 1) % modes.length];
-    drawGraph();
-});
-
-// View Mode
-document.getElementById('view-mode').addEventListener('change', (e) => {
-    viewMode = e.target.value;
-    updateLegend();
-});
-
-// Sliders
-const linkSlider = (id, scale=1) => {
-    const el = document.getElementById(id);
-    const disp = document.getElementById(`val-${id}`) || document.getElementById(`disp-${id}`);
-    el.addEventListener('input', () => {
-        let val = parseFloat(el.value);
-        if (disp) {
-            if (id === 'pred-cost-mult') {
-                disp.innerText = val.toFixed(1) + 'x';
-            } else if (id === 'pred-range') {
-                disp.innerText = Math.round(val);
-            } else {
-                disp.innerText = val;
-            }
-        }
-        if (id === 'food-rate') CONFIG.foodSpawnChance = val/100;
-        else if (id === 'mut-rate') CONFIG.mutationRate = val/100;
-        else if (id === 'cost-speed') CONFIG.costSpeed = val*0.0005;
-        else if (id === 'cost-size') CONFIG.costSize = val*0.0002;
-        else if (id === 'cost-sense') CONFIG.costSense = val*0.00005;
-        else if (id === 'food-energy') CONFIG.foodEnergy = val;
-        else if (id === 'pred-cost-mult') CONFIG.predatorCostModifier = val;
-        else if (id === 'pred-range') CONFIG.predationDistance = val;
-        else if (id === 'pred-energy') CONFIG.predationEnergy = val;
-    });
-};
-['food-rate', 'mut-rate', 'cost-speed', 'cost-size', 'cost-sense', 'food-energy', 'spawn-speed', 'spawn-size', 'spawn-sense', 'pred-cost-mult', 'pred-range', 'pred-energy'].forEach(id => linkSlider(id));
-
-// Custom Spawn
-document.getElementById('btn-spawn').onclick = () => {
-    let sp = parseFloat(document.getElementById('spawn-speed').value);
-    let sz = parseFloat(document.getElementById('spawn-size').value);
-    let se = parseFloat(document.getElementById('spawn-sense').value);
-    let name = document.getElementById('spawn-name').value || "Designatus X";
-    
-    let genes = { speed: sp, size: sz, sense: se, generation: 0, predatory: 0 };
-    let a = new Agent(Math.random()*width, Math.random()*height, genes, name, false);
-    a.energy = 150; 
-    agents.push(a);
-};
-
-// Spawn Predator
-document.getElementById('btn-add-predator').onclick = () => {
-    const genes = {
-        speed: 3 + Math.random() * 4,
-        size: 8 + Math.random() * 8,
-        sense: 50 + Math.random() * 60,
-        generation: 1,
-        predatory: 0.8 + Math.random() * 0.2
-    };
-    let p = new Agent(Math.random()*width, Math.random()*height, genes, "Apex Intruder", true);
-    p.energy = 150;
-    agents.push(p);
-};
-
-// Controls
-document.getElementById('btn-pause').onclick = (e) => {
-    paused = !paused;
-    e.target.innerText = paused ? "Resume" : "Pause";
-    e.target.classList.toggle('primary');
-};
-document.getElementById('btn-reset').onclick = init;
-
-// Modal
-const modal = document.getElementById('modal-overlay');
-document.getElementById('btn-theory').onclick = () => modal.style.display = 'flex';
-document.getElementById('btn-close-modal').onclick = () => modal.style.display = 'none';
-modal.onclick = (e) => { if(e.target === modal) modal.style.display = 'none'; };
-
-// Canvas Interaction
-canvas.addEventListener('mousedown', (e) => {
-    for(let i=0; i<10; i++) spawnFood(e.clientX + (Math.random()*40-20), e.clientY + (Math.random()*40-20));
-});
-
-init();
-</script>
-</body>
+	<head>
+		<meta charset="UTF-8" />
+		<meta
+			name="viewport"
+			content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no"
+		/>
+		<title>CRETAX Biosphere • Genome Map & Evolution Lab</title>
+		<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg" />
+		<style>
+			:root {
+				--bg-dark: #070b13;
+				--bg-card: rgba(12, 19, 32, 0.85);
+				--bg-card-hover: rgba(16, 26, 44, 0.92);
+				--border-subtle: rgba(255, 255, 255, 0.08);
+				--border-cyan: rgba(0, 212, 255, 0.4);
+				--border-green: rgba(0, 245, 155, 0.4);
+				--text-main: #f0f4fc;
+				--text-dim: #8fa0ba;
+				--text-muted: #4e617d;
+				--accent-blue: #00d4ff;
+				--accent-green: #00f59b;
+				--accent-orange: #ff9f1c;
+				--accent-red: #ff2a5f;
+				--accent-purple: #b537f2;
+				--font-sans:
+					"Segoe UI", -apple-system, BlinkMacSystemFont, Roboto, sans-serif;
+				--font-mono: "SF Mono", "Cascadia Code", "Fira Code", monospace;
+			}
+
+			* {
+				box-sizing: border-box;
+				margin: 0;
+				padding: 0;
+				-webkit-tap-highlight-color: transparent;
+			}
+
+			html,
+			body {
+				width: 100%;
+				height: 100%;
+				overflow: hidden;
+				background-color: var(--bg-dark);
+				color: var(--text-main);
+				font-family: var(--font-sans);
+				user-select: none;
+			}
+
+			/* Canvas Viewport */
+			#simCanvas {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				display: block;
+				z-index: 1;
+				cursor: crosshair;
+			}
+
+			#simCanvas.panning {
+				cursor: grab;
+			}
+
+			#simCanvas.panning:active {
+				cursor: grabbing;
+			}
+
+			/* UI Overlay Master Container */
+			#ui-layer {
+				position: absolute;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				pointer-events: none;
+				z-index: 10;
+				display: flex;
+				flex-direction: column;
+				transition: opacity 0.3s ease;
+			}
+
+			#ui-layer.hud-hidden {
+				opacity: 0;
+				pointer-events: none !important;
+			}
+
+			.interactive {
+				pointer-events: auto;
+			}
+
+			/* ==========================================================================
+			   TOP NAVIGATION BAR
+			   ========================================================================== */
+			#top-bar {
+				display: flex;
+				align-items: center;
+				justify-content: space-between;
+				padding: 8px 18px;
+				background: rgba(8, 12, 20, 0.94);
+				border-bottom: 1px solid var(--border-subtle);
+				backdrop-filter: blur(20px);
+				z-index: 30;
+				gap: 12px;
+				flex-wrap: wrap;
+			}
+
+			.brand-logo {
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				font-size: 15px;
+				font-weight: 800;
+				letter-spacing: 1.8px;
+				color: #fff;
+			}
+
+			.chromosome-icon {
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				color: var(--accent-blue);
+				font-size: 18px;
+				font-weight: 900;
+				text-shadow: 0 0 12px var(--accent-blue);
+			}
+
+			.nav-pills {
+				display: flex;
+				align-items: center;
+				gap: 3px;
+				background: rgba(0, 0, 0, 0.45);
+				padding: 3px;
+				border-radius: 8px;
+				border: 1px solid var(--border-subtle);
+			}
+
+			.nav-pill-btn {
+				background: transparent;
+				border: none;
+				color: var(--text-dim);
+				padding: 6px 13px;
+				font-size: 11px;
+				font-weight: 700;
+				letter-spacing: 0.8px;
+				text-transform: uppercase;
+				border-radius: 6px;
+				cursor: pointer;
+				transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+			}
+
+			.nav-pill-btn:hover {
+				color: var(--text-main);
+				background: rgba(255, 255, 255, 0.05);
+			}
+
+			.nav-pill-btn.active {
+				background: rgba(0, 212, 255, 0.16);
+				color: var(--accent-blue);
+				box-shadow: 0 0 12px rgba(0, 212, 255, 0.25);
+			}
+
+			.top-actions {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+			}
+
+			.search-box {
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				background: rgba(0, 0, 0, 0.5);
+				border: 1px solid var(--border-subtle);
+				padding: 5px 12px;
+				border-radius: 20px;
+				font-size: 11px;
+				color: var(--text-dim);
+			}
+
+			.search-box input {
+				background: transparent;
+				border: none;
+				outline: none;
+				color: #fff;
+				font-size: 11px;
+				width: 90px;
+			}
+
+			.btn-icon {
+				background: rgba(255, 255, 255, 0.04);
+				border: 1px solid var(--border-subtle);
+				color: var(--text-dim);
+				padding: 5px 10px;
+				border-radius: 7px;
+				font-size: 11px;
+				font-weight: 700;
+				display: inline-flex;
+				align-items: center;
+				justify-content: center;
+				gap: 5px;
+				cursor: pointer;
+				transition: all 0.2s;
+			}
+
+			.btn-icon:hover {
+				color: #fff;
+				border-color: rgba(255, 255, 255, 0.25);
+				background: rgba(255, 255, 255, 0.1);
+			}
+
+			/* ==========================================================================
+			   CARDS, PANELS & SCI-FI CONTAINERS
+			   ========================================================================== */
+			.lab-card {
+				background: var(--bg-card);
+				border: 1px solid var(--border-subtle);
+				border-radius: 12px;
+				backdrop-filter: blur(24px);
+				-webkit-backdrop-filter: blur(24px);
+				box-shadow:
+					0 16px 40px rgba(0, 0, 0, 0.8),
+					inset 0 1px 1px rgba(255, 255, 255, 0.08);
+				padding: 16px;
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				position: relative;
+				transition: border-color 0.2s;
+			}
+
+			.lab-card:hover {
+				border-color: rgba(255, 255, 255, 0.16);
+			}
+
+			.badge-tag {
+				font-size: 9px;
+				font-weight: 800;
+				letter-spacing: 0.8px;
+				text-transform: uppercase;
+				padding: 3px 8px;
+				border-radius: 4px;
+				display: inline-flex;
+				align-items: center;
+				width: fit-content;
+			}
+
+			.badge-blue {
+				background: rgba(0, 212, 255, 0.14);
+				color: var(--accent-blue);
+				border: 1px solid var(--border-cyan);
+			}
+
+			.badge-orange {
+				background: rgba(255, 159, 28, 0.14);
+				color: var(--accent-orange);
+				border: 1px solid rgba(255, 159, 28, 0.4);
+			}
+
+			.badge-green {
+				background: rgba(0, 245, 155, 0.14);
+				color: var(--accent-green);
+				border: 1px solid var(--border-green);
+			}
+
+			.badge-red {
+				background: rgba(255, 42, 95, 0.14);
+				color: var(--accent-red);
+				border: 1px solid rgba(255, 42, 95, 0.4);
+			}
+
+			.badge-purple {
+				background: rgba(181, 55, 242, 0.14);
+				color: var(--accent-purple);
+				border: 1px solid rgba(181, 55, 242, 0.4);
+			}
+
+			/* ==========================================================================
+			   FULL VIEWPORT CONTAINER (Tab Views)
+			   ========================================================================== */
+			.view-container {
+				flex: 1;
+				display: none;
+				position: relative;
+				overflow: hidden;
+			}
+
+			.view-container.active {
+				display: flex;
+			}
+
+			/* ==========================================================================
+			   VIEW 1: GENOME MAP (Match Reference Image)
+			   ========================================================================== */
+			#view-genome-lab {
+				padding: 16px 22px;
+				gap: 16px;
+				justify-content: space-between;
+			}
+
+			/* Column 1: Left Genome Identity & AI Analytics */
+			.col-genome-left {
+				width: 300px;
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				z-index: 15;
+			}
+
+			.genome-title-block h1 {
+				font-size: 24px;
+				font-weight: 800;
+				letter-spacing: 1.5px;
+				text-transform: uppercase;
+				color: #fff;
+				margin: 5px 0 2px 0;
+			}
+
+			.genome-title-block .specimen-sub {
+				font-size: 11px;
+				font-family: var(--font-mono);
+				color: var(--text-dim);
+				letter-spacing: 1px;
+			}
+
+			.metric-2x2-grid {
+				display: grid;
+				grid-template-columns: 1fr 1fr;
+				gap: 10px;
+			}
+
+			.metric-tile {
+				background: rgba(0, 0, 0, 0.45);
+				border: 1px solid rgba(255, 255, 255, 0.05);
+				border-radius: 8px;
+				padding: 10px;
+				display: flex;
+				flex-direction: column;
+				gap: 2px;
+			}
+
+			.metric-value {
+				font-size: 22px;
+				font-weight: 800;
+				color: #fff;
+			}
+
+			.metric-label {
+				font-size: 9px;
+				font-weight: 700;
+				text-transform: uppercase;
+				letter-spacing: 0.6px;
+				color: var(--text-dim);
+			}
+
+			.genome-action-btn {
+				background: rgba(0, 0, 0, 0.45);
+				border: 1px solid var(--border-subtle);
+				border-radius: 8px;
+				padding: 9px 13px;
+				display: flex;
+				align-items: center;
+				gap: 10px;
+				color: var(--text-main);
+				font-size: 11px;
+				font-weight: 700;
+				cursor: pointer;
+				transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+				text-transform: uppercase;
+				letter-spacing: 0.6px;
+			}
+
+			.genome-action-btn:hover {
+				background: rgba(0, 212, 255, 0.1);
+				border-color: var(--accent-blue);
+				transform: translateX(3px);
+				color: var(--accent-blue);
+			}
+
+			/* Column 2: Center 3D DNA Helix & Dossier */
+			.col-genome-center {
+				flex: 1;
+				display: flex;
+				flex-direction: column;
+				gap: 14px;
+				position: relative;
+				align-items: center;
+			}
+
+			/* Fossil / Specimen Info Card */
+			.fossil-dossier-card {
+				position: absolute;
+				top: 0;
+				left: 20px;
+				width: 320px;
+				background: rgba(10, 16, 26, 0.88);
+				border: 1px solid var(--border-subtle);
+				border-radius: 10px;
+				padding: 14px;
+				display: flex;
+				flex-direction: column;
+				gap: 8px;
+				z-index: 20;
+				backdrop-filter: blur(20px);
+			}
+
+			.fossil-specs-table {
+				font-size: 10px;
+				line-height: 1.6;
+				color: var(--text-dim);
+			}
+
+			.fossil-specs-table span {
+				color: #fff;
+				float: right;
+				font-family: var(--font-mono);
+			}
+
+			/* Center Canvas: 3D Holographic DNA Helix */
+			#dna-helix-canvas {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+
+			/* Gene Annotation Callouts */
+			.gene-callout {
+				position: absolute;
+				background: rgba(10, 16, 26, 0.9);
+				border: 1px solid var(--border-subtle);
+				border-radius: 6px;
+				padding: 6px 10px;
+				display: flex;
+				flex-direction: column;
+				gap: 2px;
+				font-size: 10px;
+				pointer-events: auto;
+				backdrop-filter: blur(12px);
+				box-shadow: 0 8px 24px rgba(0, 0, 0, 0.6);
+				cursor: pointer;
+				transition:
+					border-color 0.2s,
+					transform 0.2s;
+			}
+
+			.gene-callout:hover {
+				border-color: var(--accent-blue);
+				transform: scale(1.05);
+			}
+
+			.gene-callout-code {
+				font-family: var(--font-mono);
+				font-size: 9px;
+				color: var(--text-dim);
+				font-weight: 700;
+			}
+
+			.gene-callout-title {
+				font-weight: 800;
+				color: #fff;
+				text-transform: uppercase;
+				letter-spacing: 0.5px;
+			}
+
+			/* Bottom History Chart on Center Column */
+			.history-chart-card {
+				position: absolute;
+				bottom: 0;
+				left: 20px;
+				width: 400px;
+				height: 145px;
+				background: rgba(10, 16, 26, 0.9);
+				border: 1px solid var(--border-subtle);
+				border-radius: 10px;
+				padding: 12px;
+				display: flex;
+				flex-direction: column;
+				gap: 6px;
+				z-index: 20;
+				backdrop-filter: blur(20px);
+			}
+
+			/* Picture-in-Picture Specimen Tracker */
+			.pip-specimen-cam {
+				position: absolute;
+				bottom: 0;
+				right: 20px;
+				width: 170px;
+				height: 145px;
+				background: rgba(10, 16, 26, 0.9);
+				border: 1.5px solid var(--border-cyan);
+				border-radius: 10px;
+				overflow: hidden;
+				display: flex;
+				flex-direction: column;
+				z-index: 20;
+				box-shadow: 0 12px 30px rgba(0, 0, 0, 0.7);
+			}
+
+			.pip-header {
+				padding: 5px 8px;
+				background: rgba(0, 0, 0, 0.6);
+				font-size: 9px;
+				font-weight: 800;
+				color: var(--accent-blue);
+				display: flex;
+				justify-content: space-between;
+			}
+
+			#pipCanvas {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+
+			/* Column 3: Right Incubation & Genome Analytics */
+			.col-genome-right {
+				width: 320px;
+				display: flex;
+				flex-direction: column;
+				gap: 12px;
+				z-index: 15;
+			}
+
+			.ekg-box {
+				width: 100%;
+				height: 50px;
+				background: rgba(0, 0, 0, 0.5);
+				border-radius: 6px;
+				border: 1px solid rgba(255, 255, 255, 0.05);
+				overflow: hidden;
+				position: relative;
+			}
+
+			#heart-rate-canvas {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+
+			/* Sphere 3D Wireframe Canvas */
+			.sphere-preview-box {
+				width: 100%;
+				height: 100px;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				position: relative;
+			}
+
+			#sphere-canvas {
+				width: 95px;
+				height: 95px;
+				display: block;
+			}
+
+			.composition-row {
+				display: flex;
+				flex-direction: column;
+				gap: 3px;
+				font-size: 10px;
+			}
+
+			.composition-label {
+				display: flex;
+				justify-content: space-between;
+				color: var(--text-dim);
+			}
+
+			.mini-progress-bar {
+				width: 100%;
+				height: 4px;
+				background: rgba(255, 255, 255, 0.1);
+				border-radius: 2px;
+				overflow: hidden;
+			}
+
+			.mini-progress-fill {
+				height: 100%;
+				border-radius: 2px;
+			}
+
+			/* ==========================================================================
+			   VIEW 2: OVERVIEW (World Canvas & Floating Tactical HUD)
+			   ========================================================================== */
+			#view-overview {
+				padding: 14px 20px;
+			}
+
+			.tactical-hud-dock {
+				width: 320px;
+				max-height: calc(100vh - 90px);
+				display: flex;
+				flex-direction: column;
+				overflow: hidden;
+				z-index: 15;
+			}
+
+			#dock-controls {
+				position: absolute;
+				left: 20px;
+				top: 14px;
+			}
+
+			#dock-analytics {
+				position: absolute;
+				right: 20px;
+				top: 14px;
+			}
+
+			/* Floating God Tools Toolbar */
+			#god-toolbar {
+				position: absolute;
+				left: 50%;
+				transform: translateX(-50%);
+				bottom: 24px;
+				display: flex;
+				align-items: center;
+				gap: 6px;
+				padding: 6px 12px;
+				border-radius: 40px;
+				background: rgba(8, 14, 24, 0.9);
+				border: 1px solid var(--border-subtle);
+				backdrop-filter: blur(20px);
+				z-index: 20;
+				box-shadow: 0 16px 40px rgba(0, 0, 0, 0.8);
+			}
+
+			.tool-btn {
+				width: 38px;
+				height: 38px;
+				border-radius: 50%;
+				border: 1px solid rgba(255, 255, 255, 0.12);
+				background: rgba(0, 0, 0, 0.5);
+				color: #fff;
+				font-size: 16px;
+				cursor: pointer;
+				display: flex;
+				align-items: center;
+				justify-content: center;
+				transition: all 0.2s cubic-bezier(0.16, 1, 0.3, 1);
+			}
+
+			.tool-btn:hover {
+				border-color: var(--accent-blue);
+				background: rgba(0, 212, 255, 0.18);
+				transform: scale(1.1);
+			}
+
+			.tool-btn.active {
+				border-color: var(--accent-green);
+				background: rgba(0, 245, 155, 0.25);
+				box-shadow: 0 0 16px rgba(0, 245, 155, 0.4);
+				color: var(--accent-green);
+			}
+
+			/* Minimap Radar */
+			#minimap-container {
+				position: absolute;
+				bottom: 20px;
+				right: 20px;
+				width: 160px;
+				height: 120px;
+				background: rgba(6, 10, 18, 0.92);
+				border: 1.5px solid var(--border-subtle);
+				border-radius: 10px;
+				overflow: hidden;
+				z-index: 15;
+				box-shadow: 0 12px 30px rgba(0, 0, 0, 0.8);
+				cursor: pointer;
+			}
+
+			#minimapCanvas {
+				width: 100%;
+				height: 100%;
+				display: block;
+			}
+
+			.minimap-tag {
+				position: absolute;
+				top: 5px;
+				left: 8px;
+				font-size: 8px;
+				font-weight: 800;
+				color: var(--accent-blue);
+				letter-spacing: 0.8px;
+				pointer-events: none;
+			}
+
+			/* Floating Inspector Drawer */
+			#inspector-drawer {
+				position: absolute;
+				bottom: 20px;
+				left: 360px;
+				width: 320px;
+				display: none;
+				flex-direction: column;
+				gap: 10px;
+				z-index: 20;
+			}
+
+			/* Buttons & Range sliders */
+			input[type="range"] {
+				-webkit-appearance: none;
+				width: 100%;
+				height: 4px;
+				background: rgba(255, 255, 255, 0.12);
+				border-radius: 2px;
+				outline: none;
+				cursor: pointer;
+			}
+
+			input[type="range"]::-webkit-slider-thumb {
+				-webkit-appearance: none;
+				width: 13px;
+				height: 13px;
+				border-radius: 50%;
+				background: var(--accent-blue);
+				cursor: pointer;
+				box-shadow: 0 0 10px var(--accent-blue);
+				transition: transform 0.15s;
+			}
+
+			input[type="range"]::-webkit-slider-thumb:hover {
+				transform: scale(1.3);
+			}
+
+			button.primary {
+				background: linear-gradient(
+					135deg,
+					var(--accent-blue) 0%,
+					var(--accent-green) 100%
+				);
+				color: #030a12;
+				font-weight: 800;
+				border: none;
+				padding: 8px 14px;
+				border-radius: 6px;
+				cursor: pointer;
+				transition: all 0.2s;
+			}
+
+			button.primary:hover {
+				box-shadow: 0 0 16px rgba(0, 212, 255, 0.4);
+			}
+
+			button.danger {
+				background: rgba(255, 42, 95, 0.15);
+				border: 1px solid rgba(255, 42, 95, 0.4);
+				color: #ff6b8b;
+				padding: 7px 12px;
+				border-radius: 6px;
+				font-weight: 700;
+				cursor: pointer;
+				transition: all 0.2s;
+			}
+
+			button.danger:hover {
+				background: var(--accent-red);
+				color: #fff;
+			}
+
+			/* AI Bio-Analyst Log Terminal */
+			.ai-log-terminal {
+				background: rgba(0, 0, 0, 0.5);
+				border: 1px solid rgba(255, 255, 255, 0.06);
+				border-radius: 7px;
+				padding: 8px 10px;
+				font-family: var(--font-mono);
+				font-size: 10px;
+				line-height: 1.5;
+				color: var(--accent-green);
+				max-height: 80px;
+				overflow-y: auto;
+			}
+
+			/* CRISPR Modal */
+			.modal-overlay {
+				position: fixed;
+				top: 0;
+				left: 0;
+				width: 100%;
+				height: 100%;
+				background: rgba(0, 0, 0, 0.86);
+				backdrop-filter: blur(14px);
+				z-index: 100;
+				display: none;
+				align-items: center;
+				justify-content: center;
+				padding: 20px;
+			}
+
+			.modal-box {
+				background: #0a101b;
+				border: 1px solid var(--border-subtle);
+				border-radius: 14px;
+				max-width: 650px;
+				width: 100%;
+				max-height: 85vh;
+				display: flex;
+				flex-direction: column;
+				box-shadow: 0 24px 60px rgba(0, 0, 0, 0.95);
+				overflow: hidden;
+			}
+
+			@media (max-width: 1000px) {
+				.col-genome-right {
+					display: none;
+				}
+				.fossil-dossier-card {
+					width: 260px;
+				}
+				.history-chart-card {
+					width: 280px;
+				}
+			}
+		</style>
+		<script
+			data-goatcounter="https://ptwo.goatcounter.com/count"
+			async
+			src="//gc.zgo.at/count.js"
+		></script>
+	</head>
+	<body>
+		<!-- Main World Canvas -->
+		<canvas id="simCanvas"></canvas>
+
+		<!-- Master UI Layer -->
+		<div id="ui-layer">
+			<!-- Top Navigation Bar -->
+			<div id="top-bar" class="interactive">
+				<div class="brand-logo">
+					<span class="chromosome-icon">><</span>
+					<span>CRETAX</span>
+				</div>
+
+				<div class="nav-pills">
+					<button class="nav-pill-btn active" data-view="view-genome-lab">
+						Genome Map
+					</button>
+					<button class="nav-pill-btn" data-view="view-overview">
+						Overview
+					</button>
+					<button class="nav-pill-btn" data-view="view-science">
+						Science & Phase Space
+					</button>
+					<button class="nav-pill-btn" data-view="view-scenarios">
+						Scenario Lab
+					</button>
+					<button class="nav-pill-btn" data-view="view-dynasties">
+						Phylogeny
+					</button>
+				</div>
+
+				<div class="top-actions">
+					<div class="search-box">
+						<span>🔍</span>
+						<input type="text" id="search-input" placeholder="SEARCH..." />
+					</div>
+					<button
+						id="btn-crispr-splicer"
+						class="btn-icon"
+						style="
+							color: var(--accent-purple);
+							border-color: rgba(181, 55, 242, 0.4);
+						"
+						title="Open CRISPR-Cas9 Gene Splicer"
+					>
+						🧬 CRISPR
+					</button>
+					<button
+						id="btn-export-csv"
+						class="btn-icon"
+						title="Export Simulation Dataset (.CSV)"
+					>
+						📥 CSV
+					</button>
+					<button
+						id="btn-save-state"
+						class="btn-icon"
+						title="Save Biosphere Snapshot (.JSON)"
+					>
+						💾
+					</button>
+					<button id="btn-pause" class="btn-icon" title="Pause / Resume">
+						⏸️
+					</button>
+					<button
+						id="btn-cam-center"
+						class="btn-icon"
+						title="Center Viewport (C)"
+					>
+						🎯
+					</button>
+					<button id="btn-theory" class="btn-icon" title="Laboratory Manual">
+						📖
+					</button>
+					<button id="btn-toggle-hud" class="btn-icon" title="Toggle HUD (H)">
+						👁️
+					</button>
+				</div>
+			</div>
+
+			<!-- ==============================================================
+			     VIEW 1: GENOME MAP (Match Reference Image)
+			     ============================================================== -->
+			<div id="view-genome-lab" class="view-container active interactive">
+				<!-- Left Column: Genome Identity & AI Analytics -->
+				<div class="col-genome-left">
+					<div class="genome-title-block">
+						<span class="badge-tag badge-blue">ACTIVE DNA</span>
+						<h1 id="lab-specimen-taxon">Velociraptor</h1>
+						<div class="specimen-sub" id="lab-specimen-code">
+							SPECIMEN VX-323 • THEROPODA
+						</div>
+					</div>
+
+					<div class="lab-card">
+						<div
+							style="
+								display: flex;
+								justify-content: space-between;
+								align-items: center;
+							"
+						>
+							<span
+								style="
+									font-size: 11px;
+									font-weight: 800;
+									color: #fff;
+									letter-spacing: 0.8px;
+								"
+							>
+								⚙️ AI ANALYTICS
+							</span>
+							<span style="font-size: 10px; color: var(--accent-blue)"
+								>LIVE</span
+							>
+						</div>
+						<div class="metric-2x2-grid">
+							<div class="metric-tile">
+								<div
+									class="metric-value"
+									style="color: var(--accent-green)"
+									id="metric-tolerance"
+								>
+									78%
+								</div>
+								<div class="metric-label">TOLERANCE RATIO</div>
+							</div>
+							<div class="metric-tile">
+								<div
+									class="metric-value"
+									style="color: var(--accent-blue)"
+									id="metric-risk"
+								>
+									Low
+								</div>
+								<div class="metric-label">EXTINCTION RISK</div>
+							</div>
+							<div class="metric-tile">
+								<div class="metric-value" id="metric-gestation">19 d</div>
+								<div class="metric-label">GESTATION PERIOD</div>
+							</div>
+							<div class="metric-tile">
+								<div
+									class="metric-value"
+									style="color: var(--accent-orange)"
+									id="metric-viability"
+								>
+									0.92
+								</div>
+								<div class="metric-label">VIABILITY INDEX</div>
+							</div>
+						</div>
+					</div>
+
+					<!-- Real-Time AI Bio-Analyst Feed -->
+					<div class="lab-card" style="padding: 12px">
+						<div
+							style="
+								font-size: 10px;
+								font-weight: 800;
+								color: var(--text-dim);
+								text-transform: uppercase;
+								margin-bottom: 4px;
+							"
+						>
+							🤖 AI Bio-Analyst Feed
+						</div>
+						<div class="ai-log-terminal" id="ai-analyst-log">
+							[SYS] Biosphere equilibrium stable.<br />
+							[ANALYSIS] Population carrying capacity normal.
+						</div>
+					</div>
+
+					<div style="display: flex; flex-direction: column; gap: 7px">
+						<button class="genome-action-btn" id="btn-genome-compare">
+							<span>🧬</span> CRISPR Gene Splicer
+						</button>
+						<button class="genome-action-btn" id="btn-behavior-predictor">
+							<span>🧠</span> Behavior Predictor
+						</button>
+						<button class="genome-action-btn" id="btn-env-tuner">
+							<span>🌍</span> Climate Adaptability
+						</button>
+						<button class="genome-action-btn" id="btn-synthetic-inoc">
+							<span>💉</span> Synthetic Inoculation
+						</button>
+					</div>
+				</div>
+
+				<!-- Center Column: 3D Holographic DNA Helix & Dossier -->
+				<div class="col-genome-center">
+					<!-- Fossil Dossier Floating Card -->
+					<div class="fossil-dossier-card">
+						<div
+							style="
+								display: flex;
+								justify-content: space-between;
+								align-items: center;
+							"
+						>
+							<div style="display: flex; gap: 6px">
+								<span class="badge-tag badge-blue">FOSSIL DNA</span>
+								<span class="badge-tag badge-orange">YIELD: HIGH</span>
+							</div>
+							<span
+								style="font-size: 11px; color: var(--text-dim); cursor: pointer"
+								>✕</span
+							>
+						</div>
+						<div
+							style="
+								font-size: 10px;
+								font-weight: 700;
+								color: var(--accent-blue);
+								font-family: var(--font-mono);
+							"
+						>
+							TCX-323
+						</div>
+						<div
+							style="font-size: 16px; font-weight: 800; color: #fff"
+							id="dossier-taxon-name"
+						>
+							Velociraptor
+						</div>
+						<div style="display: flex; gap: 5px; flex-wrap: wrap">
+							<span
+								class="badge-tag"
+								style="background: rgba(255, 255, 255, 0.05); color: #ccc"
+								>Carnivore</span
+							>
+							<span
+								class="badge-tag"
+								style="background: rgba(255, 255, 255, 0.05); color: #ccc"
+								>Theropod</span
+							>
+							<span
+								class="badge-tag"
+								style="background: rgba(255, 255, 255, 0.05); color: #ccc"
+								>Night Vision</span
+							>
+						</div>
+						<div class="fossil-specs-table" style="margin-top: 4px">
+							<div>
+								Specimen Type <span id="spec-type">Cloned Lineage</span>
+							</div>
+							<div>Discovery Site <span id="spec-site">Gobi Basin</span></div>
+							<div>Fossil Era <span id="spec-era">Late Cretaceous</span></div>
+							<div>
+								Preservation Index <span id="spec-preservation">97%</span>
+							</div>
+							<div>DNA Quality <span id="spec-quality">1.0% viable</span></div>
+						</div>
+					</div>
+
+					<!-- 3D DNA Helix Canvas -->
+					<canvas id="dna-helix-canvas"></canvas>
+
+					<!-- Floating Callout Pins on DNA -->
+					<div
+						class="gene-callout"
+						style="top: 170px; right: 80px"
+						data-gene="diet"
+					>
+						<div class="gene-callout-code">PRD-12</div>
+						<div class="gene-callout-title">Predatory Response</div>
+						<div style="font-size: 8px; color: var(--text-dim)">
+							Aggression and hunting instinct
+						</div>
+						<span class="badge-tag badge-red" style="margin-top: 2px"
+							>Carnivorous</span
+						>
+					</div>
+
+					<div
+						class="gene-callout"
+						style="top: 310px; left: 160px"
+						data-gene="sense"
+					>
+						<div class="gene-callout-code">NEU-09</div>
+						<div class="gene-callout-title">Neural Coordination</div>
+						<div style="font-size: 8px; color: var(--text-dim)">
+							Pack sociology and vision
+						</div>
+						<span class="badge-tag badge-green" style="margin-top: 2px"
+							>Enhanced</span
+						>
+					</div>
+
+					<div
+						class="gene-callout"
+						style="bottom: 160px; right: 110px"
+						data-gene="speed"
+					>
+						<div class="gene-callout-code">TH-21</div>
+						<div class="gene-callout-title">Thermal Adaptation</div>
+						<div style="font-size: 8px; color: var(--text-dim)">
+							Metabolic thermoregulation
+						</div>
+						<span class="badge-tag badge-orange" style="margin-top: 2px"
+							>Tolerant</span
+						>
+					</div>
+
+					<!-- Bottom Bar Chart: History -->
+					<div class="history-chart-card">
+						<div
+							style="
+								display: flex;
+								justify-content: space-between;
+								align-items: center;
+							"
+						>
+							<span
+								style="
+									font-size: 11px;
+									font-weight: 800;
+									color: #fff;
+									letter-spacing: 0.8px;
+								"
+							>
+								HISTORY & GENERATIONS
+							</span>
+							<span
+								style="
+									font-size: 9px;
+									font-family: var(--font-mono);
+									color: var(--text-dim);
+								"
+							>
+								OCT - NOV
+							</span>
+						</div>
+						<div
+							style="
+								display: flex;
+								justify-content: space-between;
+								font-size: 10px;
+								margin-top: 2px;
+							"
+						>
+							<div>
+								Current Pop:
+								<strong id="hist-pop" style="color: #fff">45</strong>
+							</div>
+							<div>
+								Max Gen:
+								<strong id="hist-gen" style="color: var(--accent-blue)"
+									>18 d</strong
+								>
+							</div>
+							<div>
+								Success:
+								<strong id="hist-rate" style="color: var(--accent-green)"
+									>78%</strong
+								>
+							</div>
+						</div>
+						<div
+							style="
+								flex: 1;
+								display: flex;
+								align-items: flex-end;
+								gap: 8px;
+								padding-top: 8px;
+							"
+							id="history-bar-container"
+						>
+							<!-- Dynamic Historical Bars -->
+						</div>
+					</div>
+
+					<!-- Picture-in-Picture Live Specimen Viewport -->
+					<div class="pip-specimen-cam">
+						<div class="pip-header">
+							<span>🔴 LIVE SPECIMEN CAM</span>
+							<span id="pip-spec-name">VX-323</span>
+						</div>
+						<canvas id="pipCanvas"></canvas>
+					</div>
+				</div>
+
+				<!-- Right Column: Incubation & Analytics -->
+				<div class="col-genome-right">
+					<div class="lab-card">
+						<div
+							style="
+								display: flex;
+								justify-content: space-between;
+								align-items: center;
+							"
+						>
+							<span
+								style="
+									font-size: 11px;
+									font-weight: 800;
+									color: #fff;
+									letter-spacing: 0.8px;
+								"
+							>
+								INCUBATION STATUS
+							</span>
+							<span
+								style="
+									font-size: 9px;
+									font-family: var(--font-mono);
+									color: var(--text-muted);
+								"
+							>
+								NC-323-V8
+							</span>
+						</div>
+
+						<div
+							style="font-size: 10px; line-height: 1.6; color: var(--text-dim)"
+						>
+							<div>
+								Incubation Period
+								<span
+									style="
+										float: right;
+										color: var(--accent-blue);
+										font-weight: 700;
+									"
+									>Day 12 / 17</span
+								>
+							</div>
+							<div>
+								Chamber
+								<span style="float: right; color: #fff">B - Capsule 4</span>
+							</div>
+						</div>
+
+						<div
+							style="
+								display: flex;
+								justify-content: space-between;
+								align-items: center;
+								font-size: 10px;
+								color: var(--text-dim);
+								margin-top: 4px;
+							"
+						>
+							<span
+								>Heart Rate:
+								<strong style="color: var(--accent-green); font-size: 12px"
+									>82</strong
+								>
+								bpm</span
+							>
+							<span
+								>Temp:
+								<strong style="color: var(--accent-blue)">37.1 °C</strong></span
+							>
+						</div>
+						<div class="ekg-box">
+							<canvas id="heart-rate-canvas"></canvas>
+						</div>
+					</div>
+
+					<div class="lab-card">
+						<div
+							style="
+								display: flex;
+								justify-content: space-between;
+								align-items: center;
+							"
+						>
+							<span
+								style="
+									font-size: 11px;
+									font-weight: 800;
+									color: #fff;
+									letter-spacing: 0.8px;
+								"
+							>
+								GENOME ANALYTICS
+							</span>
+							<span style="font-size: 9px; color: var(--accent-blue)"
+								>NUCLEO-3D</span
+							>
+						</div>
+
+						<div class="sphere-preview-box">
+							<canvas id="sphere-canvas"></canvas>
+						</div>
+
+						<div
+							style="
+								font-size: 10px;
+								font-weight: 700;
+								color: #fff;
+								text-transform: uppercase;
+								letter-spacing: 0.6px;
+							"
+						>
+							COMPOSITION
+						</div>
+
+						<div class="composition-row">
+							<div class="composition-label">
+								<span>Adenine (Locomotion)</span>
+								<span id="comp-ade">78%</span>
+							</div>
+							<div class="mini-progress-bar">
+								<div
+									class="mini-progress-fill"
+									style="width: 78%; background: var(--accent-blue)"
+								></div>
+							</div>
+						</div>
+
+						<div class="composition-row">
+							<div class="composition-label">
+								<span>Thymine (Carapace Armor)</span>
+								<span id="comp-thy">62%</span>
+							</div>
+							<div class="mini-progress-bar">
+								<div
+									class="mini-progress-fill"
+									style="width: 62%; background: var(--accent-orange)"
+								></div>
+							</div>
+						</div>
+
+						<div class="composition-row">
+							<div class="composition-label">
+								<span>Cytosine (Sensory Horizon)</span>
+								<span id="comp-cyt">85%</span>
+							</div>
+							<div class="mini-progress-bar">
+								<div
+									class="mini-progress-fill"
+									style="width: 85%; background: var(--accent-green)"
+								></div>
+							</div>
+						</div>
+
+						<div class="composition-row">
+							<div class="composition-label">
+								<span>Synthetic Inoculation</span>
+								<span id="comp-syn">12%</span>
+							</div>
+							<div class="mini-progress-bar">
+								<div
+									class="mini-progress-fill"
+									style="width: 12%; background: var(--accent-purple)"
+								></div>
+							</div>
+						</div>
+
+						<button
+							class="primary"
+							style="margin-top: 6px; width: 100%; font-size: 11px"
+							id="btn-transcript"
+						>
+							VIEW FULL TRANSCRIPT
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- ==============================================================
+			     VIEW 2: OVERVIEW (World Simulation View with HUD Docks)
+			     ============================================================== -->
+			<div id="view-overview" class="view-container interactive">
+				<!-- Left HUD Controls Dock -->
+				<div class="lab-card tactical-hud-dock" id="dock-controls">
+					<div
+						style="
+							font-size: 11px;
+							font-weight: 800;
+							color: #fff;
+							letter-spacing: 0.8px;
+							display: flex;
+							justify-content: space-between;
+							border-bottom: 1px solid var(--border-subtle);
+							padding-bottom: 6px;
+						"
+					>
+						<span>🌍 WORLD & CLIMATE</span>
+						<span style="color: var(--accent-blue)">v4.0</span>
+					</div>
+					<div
+						style="
+							display: flex;
+							flex-direction: column;
+							gap: 8px;
+							overflow-y: auto;
+							padding-right: 4px;
+						"
+					>
+						<div>
+							<div
+								style="
+									display: flex;
+									justify-content: space-between;
+									font-size: 10px;
+									color: var(--text-dim);
+								"
+							>
+								<span>Flora Spawn Rate</span>
+								<span
+									id="disp-food-rate"
+									style="color: var(--accent-blue); font-weight: 700"
+									>12/s</span
+								>
+							</div>
+							<input
+								type="range"
+								id="sl-food-rate"
+								min="0"
+								max="80"
+								value="12"
+							/>
+						</div>
+						<div>
+							<div
+								style="
+									display: flex;
+									justify-content: space-between;
+									font-size: 10px;
+									color: var(--text-dim);
+								"
+							>
+								<span>Plant Energy Value</span>
+								<span
+									id="disp-food-energy"
+									style="color: var(--accent-blue); font-weight: 700"
+									>35</span
+								>
+							</div>
+							<input
+								type="range"
+								id="sl-food-energy"
+								min="10"
+								max="150"
+								value="35"
+							/>
+						</div>
+						<div>
+							<div
+								style="
+									display: flex;
+									justify-content: space-between;
+									font-size: 10px;
+									color: var(--text-dim);
+								"
+							>
+								<span>Ambient Temperature</span>
+								<span
+									id="disp-temp"
+									style="color: var(--accent-orange); font-weight: 700"
+									>22 °C</span
+								>
+							</div>
+							<input type="range" id="sl-temp" min="-20" max="60" value="22" />
+						</div>
+						<div>
+							<div
+								style="
+									display: flex;
+									justify-content: space-between;
+									font-size: 10px;
+									color: var(--text-dim);
+								"
+							>
+								<span>Mutation Velocity</span>
+								<span
+									id="disp-mut-rate"
+									style="color: var(--accent-purple); font-weight: 700"
+									>15%</span
+								>
+							</div>
+							<input
+								type="range"
+								id="sl-mut-rate"
+								min="1"
+								max="100"
+								value="15"
+							/>
+						</div>
+						<div
+							style="
+								border-top: 1px solid var(--border-subtle);
+								padding-top: 8px;
+							"
+						>
+							<span
+								style="
+									font-size: 10px;
+									font-weight: 800;
+									color: var(--text-dim);
+									text-transform: uppercase;
+								"
+								>Planetary Cataclysms</span
+							>
+							<div
+								style="
+									display: grid;
+									grid-template-columns: 1fr 1fr;
+									gap: 6px;
+									margin-top: 6px;
+								"
+							>
+								<button
+									id="btn-meteor"
+									class="danger"
+									style="font-size: 10px; padding: 5px"
+								>
+									☄️ Meteor
+								</button>
+								<button
+									id="btn-gamma"
+									class="primary"
+									style="font-size: 10px; padding: 5px"
+								>
+									🌌 Gamma
+								</button>
+								<button
+									id="btn-bloom"
+									class="primary"
+									style="font-size: 10px; padding: 5px"
+								>
+									🌸 Bloom
+								</button>
+								<button
+									id="btn-ice"
+									class="danger"
+									style="font-size: 10px; padding: 5px"
+								>
+									❄️ Ice Age
+								</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<!-- Right HUD Analytics Dock -->
+				<div class="lab-card tactical-hud-dock" id="dock-analytics">
+					<div
+						style="
+							font-size: 11px;
+							font-weight: 800;
+							color: #fff;
+							letter-spacing: 0.8px;
+							display: flex;
+							justify-content: space-between;
+							border-bottom: 1px solid var(--border-subtle);
+							padding-bottom: 6px;
+						"
+					>
+						<span>📊 ECOSYSTEM ANALYTICS</span>
+						<span style="color: var(--accent-green)">LIVE</span>
+					</div>
+					<div
+						style="
+							display: flex;
+							flex-direction: column;
+							gap: 10px;
+							overflow-y: auto;
+						"
+					>
+						<div
+							style="
+								display: flex;
+								justify-content: space-between;
+								font-size: 11px;
+							"
+						>
+							<span
+								>Population:
+								<strong id="hud-pop" style="color: #fff">0</strong></span
+							>
+							<span
+								>Flora:
+								<strong id="hud-food" style="color: var(--accent-green)"
+									>0</strong
+								></span
+							>
+							<span
+								>Gen:
+								<strong id="hud-gen" style="color: var(--accent-blue)"
+									>0</strong
+								></span
+							>
+						</div>
+						<div
+							style="
+								height: 100px;
+								background: rgba(0, 0, 0, 0.4);
+								border-radius: 6px;
+								border: 1px solid var(--border-subtle);
+								overflow: hidden;
+							"
+						>
+							<canvas
+								id="overview-chart-canvas"
+								style="width: 100%; height: 100%"
+							></canvas>
+						</div>
+						<div
+							style="
+								font-size: 10px;
+								font-weight: 800;
+								color: var(--text-dim);
+								text-transform: uppercase;
+							"
+						>
+							Top Dynasties
+						</div>
+						<div
+							id="overview-dynasties-list"
+							style="
+								display: flex;
+								flex-direction: column;
+								gap: 4px;
+								font-size: 10px;
+							"
+						>
+							<!-- Dynamic Dynasties -->
+						</div>
+					</div>
+				</div>
+
+				<!-- Floating God Tools Toolbar -->
+				<div id="god-toolbar">
+					<button
+						class="tool-btn active"
+						data-tool="inspect"
+						title="Select / Inspect [Q]"
+					>
+						🔍
+					</button>
+					<button class="tool-btn" data-tool="food" title="Seed Flora [W]">
+						🌱
+					</button>
+					<button class="tool-btn" data-tool="meat" title="Drop Carcass [E]">
+						🥩
+					</button>
+					<button class="tool-btn" data-tool="mutagen" title="Mutagen Ray [R]">
+						🧪
+					</button>
+					<button
+						class="tool-btn"
+						data-tool="attract"
+						title="Pheromone Lure [T]"
+					>
+						🧲
+					</button>
+					<button class="tool-btn" data-tool="smite" title="Smite / Cull [Y]">
+						⚡
+					</button>
+					<button
+						class="tool-btn"
+						data-tool="meteor"
+						title="Meteor Cataclysm [U]"
+					>
+						☄️
+					</button>
+				</div>
+
+				<!-- Radar Minimap -->
+				<div id="minimap-container">
+					<div class="minimap-tag">TACTICAL RADAR</div>
+					<canvas id="minimapCanvas"></canvas>
+				</div>
+
+				<!-- Floating Organism Inspector Drawer -->
+				<div id="inspector-drawer" class="lab-card">
+					<div
+						style="
+							display: flex;
+							justify-content: space-between;
+							align-items: center;
+						"
+					>
+						<strong id="insp-name" style="color: #fff; font-size: 13px"
+							>Specimen</strong
+						>
+						<button
+							id="btn-close-insp"
+							style="
+								background: transparent;
+								border: none;
+								color: var(--text-dim);
+								cursor: pointer;
+							"
+						>
+							✕
+						</button>
+					</div>
+					<div style="font-size: 10px; color: var(--accent-blue)" id="insp-tag">
+						Herbivore • Gen 1
+					</div>
+					<div
+						style="
+							display: flex;
+							justify-content: space-between;
+							font-size: 10px;
+						"
+					>
+						<span
+							>Energy:
+							<strong id="insp-energy" style="color: var(--accent-green)"
+								>120</strong
+							></span
+						>
+						<span>Age: <strong id="insp-age">15s</strong></span>
+					</div>
+					<div
+						style="
+							display: grid;
+							grid-template-columns: 1fr 1fr;
+							gap: 4px;
+							font-size: 9px;
+							background: rgba(0, 0, 0, 0.4);
+							padding: 6px;
+							border-radius: 6px;
+						"
+					>
+						<div>Speed: <strong id="insp-spd">4.5</strong></div>
+						<div>Mass: <strong id="insp-mass">12.0</strong></div>
+						<div>Sense: <strong id="insp-sens">80</strong></div>
+						<div>Armor: <strong id="insp-arm">0%</strong></div>
+					</div>
+					<div style="display: flex; gap: 6px; margin-top: 4px">
+						<button
+							class="primary"
+							style="flex: 1; font-size: 10px"
+							id="btn-insp-jump-lab"
+						>
+							Inspect DNA
+						</button>
+						<button class="danger" style="font-size: 10px" id="btn-insp-kill">
+							Cull
+						</button>
+					</div>
+				</div>
+			</div>
+
+			<!-- ==============================================================
+			     VIEW 3: SCIENCE & PHASE SPACE (Real-World Biology Models)
+			     ============================================================== -->
+			<div
+				id="view-science"
+				class="view-container interactive"
+				style="padding: 20px; gap: 16px; overflow-y: auto"
+			>
+				<!-- Lotka-Volterra Phase Space Plot -->
+				<div class="lab-card" style="flex: 1">
+					<div
+						style="
+							display: flex;
+							justify-content: space-between;
+							align-items: center;
+						"
+					>
+						<div>
+							<span class="badge-tag badge-blue">MATHEMATICAL ECOLOGY</span>
+							<h2
+								style="
+									font-size: 16px;
+									font-weight: 800;
+									color: #fff;
+									margin-top: 4px;
+								"
+							>
+								Lotka-Volterra Predator-Prey Phase Space
+							</h2>
+						</div>
+						<div
+							style="
+								font-size: 10px;
+								font-family: var(--font-mono);
+								color: var(--text-dim);
+							"
+						>
+							dx/dt = αx - βxy | dy/dt = δxy - γy
+						</div>
+					</div>
+					<div
+						style="
+							width: 100%;
+							height: 260px;
+							background: rgba(0, 0, 0, 0.5);
+							border-radius: 8px;
+							border: 1px solid var(--border-subtle);
+							position: relative;
+						"
+					>
+						<canvas
+							id="phase-space-canvas"
+							style="width: 100%; height: 100%"
+						></canvas>
+					</div>
+					<div
+						style="font-size: 11px; color: var(--text-dim); line-height: 1.5"
+					>
+						<strong>Phase Orbit Interpretation:</strong> Visualizes attractor
+						stability between Herbivores (x-axis) and Predators (y-axis). Closed
+						orbital loops indicate periodic equilibrium; decaying inward spirals
+						signify stable coexistence; crashes represent trophic extinction.
+					</div>
+				</div>
+
+				<!-- Hardy-Weinberg Allele Equilibrium Tracker -->
+				<div class="lab-card" style="width: 360px">
+					<span class="badge-tag badge-purple">POPULATION GENETICS</span>
+					<h2
+						style="
+							font-size: 15px;
+							font-weight: 800;
+							color: #fff;
+							margin-top: 4px;
+						"
+					>
+						Hardy-Weinberg Equilibrium
+					</h2>
+					<div
+						style="
+							font-size: 11px;
+							font-family: var(--font-mono);
+							color: var(--text-dim);
+						"
+					>
+						p² (Dominant) + 2pq (Heterozygous) + q² (Recessive) = 1.0
+					</div>
+					<div
+						style="
+							width: 100%;
+							height: 160px;
+							background: rgba(0, 0, 0, 0.5);
+							border-radius: 8px;
+							border: 1px solid var(--border-subtle);
+						"
+					>
+						<canvas
+							id="hardy-weinberg-canvas"
+							style="width: 100%; height: 100%"
+						></canvas>
+					</div>
+					<div
+						style="font-size: 10px; line-height: 1.6; color: var(--text-dim)"
+					>
+						<div>
+							Allele p (High Speed):
+							<strong id="hw-p" style="color: var(--accent-blue)">0.54</strong>
+						</div>
+						<div>
+							Allele q (High Armor):
+							<strong id="hw-q" style="color: var(--accent-orange)"
+								>0.46</strong
+							>
+						</div>
+						<div>
+							Shannon-Wiener H':
+							<strong id="hw-shannon" style="color: var(--accent-green)"
+								>1.84</strong
+							>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ==============================================================
+			     VIEW 4: SCENARIO LAB (Curated Real-World Scenarios)
+			     ============================================================== -->
+			<div
+				id="view-scenarios"
+				class="view-container interactive"
+				style="padding: 24px; justify-content: center; align-items: center"
+			>
+				<div class="lab-card" style="width: 700px; max-width: 95%">
+					<div
+						style="
+							border-bottom: 1px solid var(--border-subtle);
+							padding-bottom: 8px;
+						"
+					>
+						<span class="badge-tag badge-orange"
+							>EXPERIMENTAL BIOSPHERE PRESETS</span
+						>
+						<h2
+							style="
+								font-size: 18px;
+								font-weight: 800;
+								color: #fff;
+								margin-top: 4px;
+							"
+						>
+							Evolutionary Sandbox Scenarios
+						</h2>
+					</div>
+					<div
+						style="
+							display: grid;
+							grid-template-columns: 1fr 1fr;
+							gap: 10px;
+							margin-top: 6px;
+						"
+					>
+						<div class="metric-tile" style="cursor: pointer" id="scen-cambrian">
+							<strong style="color: var(--accent-blue); font-size: 13px"
+								>1. The Cambrian Explosion</strong
+							>
+							<p
+								style="font-size: 10px; color: var(--text-dim); margin-top: 4px"
+							>
+								High resources and hyper-mutation trigger massive adaptive
+								radiation and rapid morphological speciation.
+							</p>
+						</div>
+
+						<div class="metric-tile" style="cursor: pointer" id="scen-climate">
+							<strong style="color: var(--accent-orange); font-size: 13px"
+								>2. Climate Crisis (+10°C)</strong
+							>
+							<p
+								style="font-size: 10px; color: var(--text-dim); margin-top: 4px"
+							>
+								Global heatwave and severe resource scarcity test metabolic
+								resilience and thermal efficiency alleles.
+							</p>
+						</div>
+
+						<div class="metric-tile" style="cursor: pointer" id="scen-invasive">
+							<strong style="color: var(--accent-red); font-size: 13px"
+								>3. Invasive Apex Predator Shock</strong
+							>
+							<p
+								style="font-size: 10px; color: var(--text-dim); margin-top: 4px"
+							>
+								Introduction of hyper-carnivores forces herbivores to rapidly
+								evolve chitin armor or camouflage defenses.
+							</p>
+						</div>
+
+						<div class="metric-tile" style="cursor: pointer" id="scen-crispr">
+							<strong style="color: var(--accent-purple); font-size: 13px"
+								>4. CRISPR Gene Drive Inoculation</strong
+							>
+							<p
+								style="font-size: 10px; color: var(--text-dim); margin-top: 4px"
+							>
+								Deploy synthetic dominant autotroph genes to observe whether
+								genetically modified traits dominate the gene pool.
+							</p>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<!-- ==============================================================
+			     VIEW 5: DYNASTIES & PHYLOGENY
+			     ============================================================== -->
+			<div
+				id="view-dynasties"
+				class="view-container interactive"
+				style="padding: 24px; justify-content: center"
+			>
+				<div
+					class="lab-card"
+					style="width: 650px; max-width: 95%; max-height: 80vh"
+				>
+					<div
+						style="
+							font-size: 14px;
+							font-weight: 800;
+							color: #fff;
+							letter-spacing: 1px;
+							display: flex;
+							justify-content: space-between;
+							border-bottom: 1px solid var(--border-subtle);
+							padding-bottom: 8px;
+						"
+					>
+						<span>👑 PHYLOGENETIC DYNASTIES & LINEAGES</span>
+						<span style="color: var(--accent-blue)">ACTIVE LINEAGES</span>
+					</div>
+					<div
+						id="dynasties-full-list"
+						style="
+							display: flex;
+							flex-direction: column;
+							gap: 8px;
+							overflow-y: auto;
+							padding: 4px 0;
+						"
+					>
+						<!-- Dynamic Full Dynasties List -->
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ==============================================================
+		     CRISPR-CAS9 GENE SPLICER MODAL (Modern Synthetic Biology)
+		     ============================================================== -->
+		<div id="crispr-modal" class="modal-overlay interactive">
+			<div class="modal-box">
+				<div
+					style="
+						padding: 16px 20px;
+						border-bottom: 1px solid var(--border-subtle);
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+					"
+				>
+					<div>
+						<span class="badge-tag badge-purple">SYNTHETIC BIOLOGY</span>
+						<h2
+							style="
+								font-size: 16px;
+								font-weight: 800;
+								color: #fff;
+								margin-top: 4px;
+							"
+						>
+							CRISPR-Cas9 Gene Splicer & Gene Drive
+						</h2>
+					</div>
+					<button
+						id="btn-close-crispr"
+						style="
+							background: transparent;
+							border: none;
+							color: #fff;
+							cursor: pointer;
+							font-size: 16px;
+						"
+					>
+						✕
+					</button>
+				</div>
+				<div
+					style="
+						padding: 20px;
+						overflow-y: auto;
+						display: flex;
+						flex-direction: column;
+						gap: 14px;
+					"
+				>
+					<div style="font-size: 11px; color: var(--text-dim)">
+						Select an allele locus to engineer targeted mutations. Deploying via
+						<strong>Gene Drive</strong> ensures 100% inheritance dominance
+						across subsequent generations.
+					</div>
+
+					<div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px">
+						<div>
+							<label
+								style="
+									font-size: 10px;
+									font-weight: 700;
+									color: var(--text-dim);
+								"
+								>TARGET GENE LOCUS</label
+							>
+							<select
+								id="crispr-target-locus"
+								style="
+									width: 100%;
+									padding: 8px;
+									background: rgba(0, 0, 0, 0.5);
+									border: 1px solid var(--border-subtle);
+									border-radius: 6px;
+									color: #fff;
+									margin-top: 4px;
+								"
+							>
+								<option value="speed">VEL-01: Locomotion & Speed</option>
+								<option value="size">MAS-02: Body Mass & Scale</option>
+								<option value="sense">OPT-03: Sensory Horizon</option>
+								<option value="armor">CHI-04: Carapace Chitin Armor</option>
+								<option value="diet">
+									MET-05: Metabolic Autotrophy (Solar)
+								</option>
+							</select>
+						</div>
+						<div>
+							<label
+								style="
+									font-size: 10px;
+									font-weight: 700;
+									color: var(--text-dim);
+								"
+								>SPLICING METHOD</label
+							>
+							<select
+								id="crispr-method"
+								style="
+									width: 100%;
+									padding: 8px;
+									background: rgba(0, 0, 0, 0.5);
+									border: 1px solid var(--border-subtle);
+									border-radius: 6px;
+									color: #fff;
+									margin-top: 4px;
+								"
+							>
+								<option value="enhance">
+									Targeted Allele Amplification (+50%)
+								</option>
+								<option value="knockout">Gene Knockout (Silence Locus)</option>
+								<option value="synthetic">
+									Synthetic Bio Insertion (Max Tier)
+								</option>
+							</select>
+						</div>
+					</div>
+
+					<div
+						class="metric-tile"
+						style="
+							background: rgba(181, 55, 242, 0.08);
+							border-color: rgba(181, 55, 242, 0.3);
+						"
+					>
+						<div
+							style="
+								font-size: 10px;
+								font-weight: 800;
+								color: var(--accent-purple);
+							"
+						>
+							SIMULATED VIABILITY PROJECTION
+						</div>
+						<div style="font-size: 11px; color: #fff; margin-top: 4px">
+							Metabolic Burden:
+							<strong style="color: var(--accent-green)">Low (+8%)</strong> |
+							Inheritance Priority:
+							<strong style="color: var(--accent-blue)"
+								>100% (Gene Drive)</strong
+							>
+						</div>
+					</div>
+
+					<div style="display: flex; gap: 8px">
+						<button class="primary" style="flex: 2" id="btn-deploy-crispr">
+							🚀 Deploy CRISPR Gene Drive Inoculation
+						</button>
+						<button
+							class="primary"
+							style="
+								flex: 1;
+								background: rgba(255, 255, 255, 0.1);
+								border: 1px solid var(--border-subtle);
+								color: #fff;
+							"
+							id="btn-apply-selected"
+						>
+							Apply to Specimen Only
+						</button>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Sequence Transcript Modal -->
+		<div id="transcript-modal" class="modal-overlay interactive">
+			<div class="modal-box">
+				<div
+					style="
+						padding: 16px 20px;
+						border-bottom: 1px solid var(--border-subtle);
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+					"
+				>
+					<h2 style="font-size: 15px; color: var(--accent-blue)">
+						🧬 Full Genetic Transcript & Base Codons
+					</h2>
+					<button
+						id="btn-close-transcript"
+						style="
+							background: transparent;
+							border: none;
+							color: #fff;
+							cursor: pointer;
+							font-size: 14px;
+						"
+					>
+						✕
+					</button>
+				</div>
+				<div
+					style="
+						padding: 20px;
+						font-family: var(--font-mono);
+						font-size: 11px;
+						line-height: 1.8;
+						color: var(--text-dim);
+						overflow-y: auto;
+					"
+				>
+					<div style="margin-bottom: 8px; color: #fff">
+						SPECIMEN VX-323 CODON CHROMOSOME MAP:
+					</div>
+					<div
+						id="transcript-codons-box"
+						style="
+							word-break: break-all;
+							background: rgba(0, 0, 0, 0.5);
+							padding: 12px;
+							border-radius: 8px;
+							border: 1px solid var(--border-subtle);
+						"
+					>
+						<!-- Dynamic Codons -->
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- Theory Modal -->
+		<div id="theory-modal-wrap" class="modal-overlay interactive">
+			<div class="modal-box">
+				<div
+					style="
+						padding: 16px 20px;
+						border-bottom: 1px solid var(--border-subtle);
+						display: flex;
+						justify-content: space-between;
+						align-items: center;
+					"
+				>
+					<h2 style="font-size: 15px; color: var(--accent-blue)">
+						📖 CRETAX Biosphere Operational Guide
+					</h2>
+					<button
+						id="btn-modal-close"
+						style="
+							background: transparent;
+							border: none;
+							color: #fff;
+							cursor: pointer;
+							font-size: 14px;
+						"
+					>
+						✕
+					</button>
+				</div>
+				<div
+					style="
+						padding: 20px;
+						overflow-y: auto;
+						display: flex;
+						flex-direction: column;
+						gap: 12px;
+						font-size: 12px;
+						line-height: 1.6;
+						color: var(--text-dim);
+					"
+				>
+					<div>
+						<strong style="color: #fff">Modern CRISPR Gene Drive:</strong>
+						Deploy engineered alleles into living populations to test
+						evolutionary fitness and inheritance dynamics.
+					</div>
+					<div>
+						<strong style="color: #fff">Lotka-Volterra Phase Space:</strong>
+						Plots predator vs prey population densities on a phase plane to
+						visualize orbital limit cycles and ecological resilience.
+					</div>
+					<div>
+						<strong style="color: #fff">Data Export:</strong> Use the
+						<code>📥 CSV</code> button to export full historical simulation
+						timeseries for educational or computational analysis.
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<script>
+			"use strict";
+
+			/**
+			 * ============================================================================
+			 * 2D VECTOR MATH
+			 * ============================================================================
+			 */
+			const Vec = {
+				create: (x = 0, y = 0) => ({ x, y }),
+				add: (v1, v2) => ({ x: v1.x + v2.x, y: v1.y + v2.y }),
+				sub: (v1, v2) => ({ x: v1.x - v2.x, y: v1.y - v2.y }),
+				mult: (v, n) => ({ x: v.x * n, y: v.y * n }),
+				distSq: (v1, v2) => (v1.x - v2.x) ** 2 + (v1.y - v2.y) ** 2,
+				dist: (v1, v2) => Math.sqrt(Vec.distSq(v1, v2)),
+				normalize: (v) => {
+					const m = Math.sqrt(v.x * v.x + v.y * v.y);
+					return m === 0 ? { x: 0, y: 0 } : { x: v.x / m, y: v.y / m };
+				},
+				limit: (v, max) => {
+					const mSq = v.x * v.x + v.y * v.y;
+					if (mSq > max * max) {
+						const m = Math.sqrt(mSq);
+						return { x: (v.x / m) * max, y: (v.y / m) * max };
+					}
+					return v;
+				},
+				random: () => {
+					const a = Math.random() * Math.PI * 2;
+					return { x: Math.cos(a), y: Math.sin(a) };
+				},
+			};
+
+			/**
+			 * ============================================================================
+			 * SPATIAL HASH GRID (O(1) Spatial Queries)
+			 * ============================================================================
+			 */
+			class SpatialGrid {
+				constructor(width, height, cellSize = 95) {
+					this.width = width;
+					this.height = height;
+					this.cellSize = cellSize;
+					this.cols = Math.ceil(width / cellSize);
+					this.rows = Math.ceil(height / cellSize);
+					this.cells = new Array(this.cols * this.rows);
+					for (let i = 0; i < this.cells.length; i++) this.cells[i] = [];
+				}
+				clear() {
+					for (let i = 0; i < this.cells.length; i++) this.cells[i].length = 0;
+				}
+				insert(item) {
+					const col = Math.floor(item.pos.x / this.cellSize);
+					const row = Math.floor(item.pos.y / this.cellSize);
+					if (col >= 0 && col < this.cols && row >= 0 && row < this.rows) {
+						this.cells[row * this.cols + col].push(item);
+					}
+				}
+				query(x, y, radius, out = []) {
+					out.length = 0;
+					const minCol = Math.max(0, Math.floor((x - radius) / this.cellSize));
+					const maxCol = Math.min(
+						this.cols - 1,
+						Math.floor((x + radius) / this.cellSize),
+					);
+					const minRow = Math.max(0, Math.floor((y - radius) / this.cellSize));
+					const maxRow = Math.min(
+						this.rows - 1,
+						Math.floor((y + radius) / this.cellSize),
+					);
+					for (let r = minRow; r <= maxRow; r++) {
+						const offset = r * this.cols;
+						for (let c = minCol; c <= maxCol; c++) {
+							const cell = this.cells[offset + c];
+							for (let i = 0; i < cell.length; i++) out.push(cell[i]);
+						}
+					}
+					return out;
+				}
+			}
+
+			/**
+			 * ============================================================================
+			 * CONFIGURATION & GLOBAL STATE
+			 * ============================================================================
+			 */
+			const WORLD = {
+				width: 3200,
+				height: 2200,
+				biomes: [
+					{
+						name: "Verdant Oasis",
+						x: 600,
+						y: 500,
+						radius: 550,
+						color: "rgba(0, 245, 155, 0.05)",
+					},
+					{
+						name: "Sunlit Shallows",
+						x: 2200,
+						y: 550,
+						radius: 600,
+						color: "rgba(0, 212, 255, 0.06)",
+					},
+					{
+						name: "Volcanic Vents",
+						x: 700,
+						y: 1600,
+						radius: 500,
+						color: "rgba(255, 42, 95, 0.06)",
+					},
+					{
+						name: "Glacial Barrens",
+						x: 2400,
+						y: 1600,
+						radius: 550,
+						color: "rgba(130, 177, 255, 0.05)",
+					},
+				],
+			};
+
+			const CONFIG = {
+				initialPop: 45,
+				initialPredators: 6,
+				maxPop: 450,
+				foodRate: 12,
+				foodEnergy: 35,
+				temp: 22,
+				mutRate: 0.15,
+				reprThreshold: 130,
+				reprCost: 65,
+				maxEnergy: 220,
+				timeScale: 1.0,
+				paused: false,
+			};
+
+			let agents = [];
+			let food = [];
+			let cataclysmVfx = [];
+			let queryBuf = [];
+			let agentGrid = new SpatialGrid(WORLD.width, WORLD.height, 95);
+			let foodGrid = new SpatialGrid(WORLD.width, WORLD.height, 75);
+
+			let historyPop = [];
+			let historyPhase = []; // For Lotka-Volterra
+			let selectedAgent = null;
+			let cameraTarget = null;
+			let currentTool = "inspect";
+
+			const camera = {
+				x: WORLD.width / 2,
+				y: WORLD.height / 2,
+				zoom: 0.55,
+				targetZoom: 0.55,
+			};
+
+			/**
+			 * ============================================================================
+			 * ORGANISM CLASS (With Polygenic Traits & CRISPR compatibility)
+			 * ============================================================================
+			 */
+			const TAXA = [
+				"Velociraptor",
+				"Tyrannus Rex",
+				"Titanus Aegis",
+				"Velox Celer",
+				"Sylvan Vorax",
+				"Solaris Polyp",
+				"Corvus Necro",
+			];
+
+			class Organism {
+				constructor(x, y, genes = null, name = null) {
+					this.pos = Vec.create(x, y);
+					this.vel = Vec.random();
+					this.acc = Vec.create();
+					this.genes = genes || {
+						speed: 2.2 + Math.random() * 3.5,
+						size: 6 + Math.random() * 8,
+						sense: 50 + Math.random() * 60,
+						diet:
+							Math.random() < 0.22 ? 0.95 : Math.random() < 0.15 ? -0.5 : 0.0,
+						armor: Math.random() < 0.25 ? Math.random() * 0.6 : 0,
+						camo: Math.random() < 0.25 ? Math.random() * 0.6 : 0,
+						longevity: 50 + Math.random() * 60,
+						generation: 1,
+						isCRISPR: false,
+					};
+					this.taxon = name || TAXA[Math.floor(Math.random() * TAXA.length)];
+					this.color =
+						this.genes.diet > 0.6
+							? "#ff2a5f"
+							: this.genes.diet < -0.2
+								? "#00d4ff"
+								: "#00f59b";
+					this.energy = 90;
+					this.age = 0;
+					this.dead = false;
+					this.kills = 0;
+					this.offspring = 0;
+					this.currentAction = "Grazing";
+				}
+
+				update(dt) {
+					if (this.dead) return;
+					this.age += dt;
+
+					if (this.age >= this.genes.longevity) {
+						this.dead = true;
+						return;
+					}
+
+					const cost =
+						(0.08 +
+							this.genes.speed ** 2 * 0.004 +
+							this.genes.size ** 2 * 0.002 +
+							this.genes.sense * 0.0001) *
+						dt *
+						20;
+					this.energy -= cost;
+
+					if (this.energy <= 0) {
+						this.dead = true;
+						return;
+					}
+
+					this.behavior(dt);
+
+					this.vel = Vec.add(this.vel, this.acc);
+					this.vel = Vec.limit(this.vel, this.genes.speed);
+					this.pos = Vec.add(this.pos, Vec.mult(this.vel, dt * 60));
+					this.acc = Vec.create();
+
+					const m = this.genes.size + 4;
+					if (this.pos.x < m) {
+						this.pos.x = m;
+						this.vel.x *= -0.7;
+					}
+					if (this.pos.x > WORLD.width - m) {
+						this.pos.x = WORLD.width - m;
+						this.vel.x *= -0.7;
+					}
+					if (this.pos.y < m) {
+						this.pos.y = m;
+						this.vel.y *= -0.7;
+					}
+					if (this.pos.y > WORLD.height - m) {
+						this.pos.y = WORLD.height - m;
+						this.vel.y *= -0.7;
+					}
+				}
+
+				behavior(dt) {
+					const isCarn = this.genes.diet > 0.6;
+					const isAuto = this.genes.diet < -0.2;
+
+					if (isCarn) {
+						this.currentAction = "Hunting Prey";
+						const near = agentGrid.query(
+							this.pos.x,
+							this.pos.y,
+							this.genes.sense,
+							queryBuf,
+						);
+						let target = null;
+						let minDist = Infinity;
+						for (let i = 0; i < near.length; i++) {
+							const o = near[i];
+							if (o === this || o.dead || o.genes.diet > 0.6) continue;
+							const d = Vec.dist(this.pos, o.pos);
+							if (d < minDist) {
+								minDist = d;
+								target = o;
+							}
+						}
+						if (target) {
+							if (minDist < this.genes.size + target.genes.size) {
+								target.dead = true;
+								this.energy += 70;
+								this.kills++;
+							} else {
+								this.seek(target.pos);
+							}
+							return;
+						}
+					} else if (isAuto) {
+						this.currentAction = "Solar Synthesis";
+						this.energy += dt * 6;
+						this.wander();
+						return;
+					} else {
+						this.currentAction = "Grazing Flora";
+						const foods = foodGrid.query(
+							this.pos.x,
+							this.pos.y,
+							this.genes.sense,
+							queryBuf,
+						);
+						let nearest = null;
+						let minDist = Infinity;
+						for (let i = 0; i < foods.length; i++) {
+							const f = foods[i];
+							if (f.consumed) continue;
+							const d = Vec.dist(this.pos, f.pos);
+							if (d < minDist) {
+								minDist = d;
+								nearest = f;
+							}
+						}
+						if (nearest) {
+							if (minDist < this.genes.size + 6) {
+								nearest.consumed = true;
+								this.energy += nearest.energy;
+							} else {
+								this.seek(nearest.pos);
+							}
+							return;
+						}
+					}
+					this.wander();
+				}
+
+				seek(target) {
+					let des = Vec.sub(target, this.pos);
+					des = Vec.normalize(des);
+					des = Vec.mult(des, this.genes.speed);
+					let steer = Vec.sub(des, this.vel);
+					steer = Vec.limit(steer, 0.5);
+					this.acc = Vec.add(this.acc, steer);
+				}
+
+				wander() {
+					if (Math.random() < 0.12) {
+						this.acc = Vec.add(this.acc, Vec.mult(Vec.random(), 0.2));
+					}
+				}
+
+				reproduce() {
+					if (this.energy < CONFIG.reprThreshold) return null;
+					this.energy -= CONFIG.reprCost;
+					this.offspring++;
+					const childGenes = {
+						speed: Math.max(
+							1,
+							this.genes.speed + (Math.random() * 2 - 1) * CONFIG.mutRate * 2,
+						),
+						size: Math.max(
+							4,
+							this.genes.size + (Math.random() * 2 - 1) * CONFIG.mutRate * 2,
+						),
+						sense: Math.max(
+							20,
+							this.genes.sense + (Math.random() * 2 - 1) * CONFIG.mutRate * 20,
+						),
+						diet: this.genes.diet,
+						armor: this.genes.armor,
+						camo: this.genes.camo,
+						longevity: this.genes.longevity,
+						generation: this.genes.generation + 1,
+						isCRISPR: this.genes.isCRISPR,
+					};
+					return new Organism(
+						this.pos.x + (Math.random() * 16 - 8),
+						this.pos.y + (Math.random() * 16 - 8),
+						childGenes,
+						this.taxon,
+					);
+				}
+
+				draw(c) {
+					c.save();
+					c.translate(this.pos.x, this.pos.y);
+					c.fillStyle = this.color;
+					c.shadowColor = this.color;
+					c.shadowBlur = this.genes.diet > 0.6 ? 10 : 6;
+					c.beginPath();
+					c.arc(0, 0, this.genes.size, 0, Math.PI * 2);
+					c.fill();
+					c.shadowBlur = 0;
+
+					if (this.genes.isCRISPR) {
+						c.strokeStyle = "var(--accent-purple)";
+						c.lineWidth = 2;
+						c.beginPath();
+						c.arc(0, 0, this.genes.size * 1.35, 0, Math.PI * 2);
+						c.stroke();
+					}
+					c.restore();
+				}
+			}
+
+			/**
+			 * ============================================================================
+			 * SIMULATION ENGINE
+			 * ============================================================================
+			 */
+			const canvas = document.getElementById("simCanvas");
+			const ctx = canvas.getContext("2d");
+
+			function initSimulation() {
+				agents = [];
+				food = [];
+				historyPop = [];
+				historyPhase = [];
+				for (let i = 0; i < CONFIG.initialPop; i++) {
+					agents.push(
+						new Organism(
+							Math.random() * (WORLD.width - 200) + 100,
+							Math.random() * (WORLD.height - 200) + 100,
+						),
+					);
+				}
+				for (let i = 0; i < CONFIG.initialPredators; i++) {
+					const g = {
+						speed: 5.2,
+						size: 14,
+						sense: 110,
+						diet: 1.0,
+						armor: 0.2,
+						camo: 0.1,
+						longevity: 90,
+						generation: 1,
+						isCRISPR: false,
+					};
+					agents.push(
+						new Organism(
+							Math.random() * (WORLD.width - 200) + 100,
+							Math.random() * (WORLD.height - 200) + 100,
+							g,
+							"Velociraptor",
+						),
+					);
+				}
+				for (let i = 0; i < 150; i++) spawnFood();
+				selectedAgent = agents[0];
+			}
+
+			function spawnFood(x, y) {
+				food.push({
+					pos: Vec.create(
+						x !== undefined ? x : Math.random() * (WORLD.width - 60) + 30,
+						y !== undefined ? y : Math.random() * (WORLD.height - 60) + 30,
+					),
+					energy: CONFIG.foodEnergy,
+					consumed: false,
+				});
+			}
+
+			let lastTime = performance.now();
+			let updateTimer = 0;
+
+			function simLoop(now) {
+				requestAnimationFrame(simLoop);
+				const dt =
+					Math.min(0.08, (now - lastTime) / 1000) *
+					(CONFIG.paused ? 0 : CONFIG.timeScale);
+				lastTime = now;
+
+				if (!CONFIG.paused && dt > 0) {
+					updateEngine(dt);
+				}
+
+				if (cameraTarget && !cameraTarget.dead) {
+					camera.x += (cameraTarget.pos.x - camera.x) * 0.1;
+					camera.y += (cameraTarget.pos.y - camera.y) * 0.1;
+				}
+				camera.zoom += (camera.targetZoom - camera.zoom) * 0.15;
+
+				renderWorld();
+				renderMinimap();
+				renderPIPCam();
+
+				updateTimer += dt;
+				if (updateTimer >= 0.25) {
+					updateUIStats();
+					renderPhaseSpacePlot();
+					renderHardyWeinberg();
+					updateTimer = 0;
+				}
+			}
+
+			function updateEngine(dt) {
+				agentGrid.clear();
+				for (let i = 0; i < agents.length; i++) agentGrid.insert(agents[i]);
+
+				foodGrid.clear();
+				for (let i = 0; i < food.length; i++) {
+					if (!food[i].consumed) foodGrid.insert(food[i]);
+				}
+
+				if (Math.random() < CONFIG.foodRate * dt) spawnFood();
+
+				for (let i = agents.length - 1; i >= 0; i--) {
+					const a = agents[i];
+					a.update(dt);
+					if (a.dead) {
+						agents.splice(i, 1);
+					} else if (
+						agents.length < CONFIG.maxPop &&
+						a.energy > CONFIG.reprThreshold + 30 &&
+						Math.random() < 0.05
+					) {
+						const child = a.reproduce();
+						if (child) agents.push(child);
+					}
+				}
+
+				for (let i = food.length - 1; i >= 0; i--) {
+					if (food[i].consumed) food.splice(i, 1);
+				}
+
+				if (agents.length === 0) initSimulation();
+			}
+
+			function renderWorld() {
+				const w = (canvas.width = window.innerWidth);
+				const h = (canvas.height = window.innerHeight);
+				ctx.clearRect(0, 0, w, h);
+
+				ctx.save();
+				ctx.translate(w / 2, h / 2);
+				ctx.scale(camera.zoom, camera.zoom);
+				ctx.translate(-camera.x, -camera.y);
+
+				ctx.fillStyle = "#070b13";
+				ctx.fillRect(0, 0, WORLD.width, WORLD.height);
+
+				ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
+				ctx.lineWidth = 1;
+				for (let x = 0; x <= WORLD.width; x += 120) {
+					ctx.beginPath();
+					ctx.moveTo(x, 0);
+					ctx.lineTo(x, WORLD.height);
+					ctx.stroke();
+				}
+				for (let y = 0; y <= WORLD.height; y += 120) {
+					ctx.beginPath();
+					ctx.moveTo(0, y);
+					ctx.lineTo(WORLD.width, y);
+					ctx.stroke();
+				}
+
+				for (let i = 0; i < WORLD.biomes.length; i++) {
+					const b = WORLD.biomes[i];
+					ctx.fillStyle = b.color;
+					ctx.beginPath();
+					ctx.arc(b.x, b.y, b.radius, 0, Math.PI * 2);
+					ctx.fill();
+				}
+
+				ctx.strokeStyle = "rgba(0, 212, 255, 0.4)";
+				ctx.lineWidth = 3;
+				ctx.strokeRect(0, 0, WORLD.width, WORLD.height);
+
+				ctx.fillStyle = "#00f59b";
+				for (let i = 0; i < food.length; i++) {
+					ctx.beginPath();
+					ctx.arc(food[i].pos.x, food[i].pos.y, 3.5, 0, Math.PI * 2);
+					ctx.fill();
+				}
+
+				for (let i = 0; i < agents.length; i++) agents[i].draw(ctx);
+
+				ctx.restore();
+			}
+
+			function renderMinimap() {
+				const mCanvas = document.getElementById("minimapCanvas");
+				if (!mCanvas) return;
+				const mc = mCanvas.getContext("2d");
+				const mw = (mCanvas.width = 160);
+				const mh = (mCanvas.height = 120);
+
+				mc.fillStyle = "rgba(6, 10, 18, 0.95)";
+				mc.fillRect(0, 0, mw, mh);
+
+				const sx = mw / WORLD.width;
+				const sy = mh / WORLD.height;
+
+				for (let i = 0; i < agents.length; i++) {
+					const a = agents[i];
+					mc.fillStyle = a.genes.diet > 0.6 ? "#ff2a5f" : "#00f59b";
+					mc.fillRect(a.pos.x * sx, a.pos.y * sy, 2, 2);
+				}
+
+				const vw = (canvas.width / camera.zoom) * sx;
+				const vh = (canvas.height / camera.zoom) * sy;
+				const vx = (camera.x - canvas.width / (2 * camera.zoom)) * sx;
+				const vy = (camera.y - canvas.height / (2 * camera.zoom)) * sy;
+
+				mc.strokeStyle = "rgba(0, 212, 255, 0.8)";
+				mc.lineWidth = 1;
+				mc.strokeRect(vx, vy, vw, vh);
+			}
+
+			function renderPIPCam() {
+				const pCanvas = document.getElementById("pipCanvas");
+				if (!pCanvas) return;
+				const pc = pCanvas.getContext("2d");
+				const pw = (pCanvas.width = pCanvas.clientWidth);
+				const ph = (pCanvas.height = pCanvas.clientHeight);
+
+				pc.fillStyle = "#070b13";
+				pc.fillRect(0, 0, pw, ph);
+
+				const target = selectedAgent || agents[0];
+				if (!target || target.dead) return;
+
+				pc.save();
+				pc.translate(pw / 2, ph / 2);
+				pc.scale(1.8, 1.8);
+				pc.translate(-target.pos.x, -target.pos.y);
+
+				// Draw nearby food
+				pc.fillStyle = "#00f59b";
+				for (let i = 0; i < food.length; i++) {
+					if (Vec.dist(food[i].pos, target.pos) < 140) {
+						pc.beginPath();
+						pc.arc(food[i].pos.x, food[i].pos.y, 3, 0, Math.PI * 2);
+						pc.fill();
+					}
+				}
+
+				// Draw target organism
+				target.draw(pc);
+				pc.restore();
+			}
+
+			/**
+			 * ============================================================================
+			 * 3D DNA DOUBLE HELIX VISUALIZER
+			 * ============================================================================
+			 */
+			const dnaCanvas = document.getElementById("dna-helix-canvas");
+			const dnaCtx = dnaCanvas.getContext("2d");
+			let dnaAngle = 0;
+
+			function renderDNAHelix() {
+				requestAnimationFrame(renderDNAHelix);
+				if (!dnaCanvas.parentElement) return;
+
+				const w = (dnaCanvas.width = dnaCanvas.clientWidth);
+				const h = (dnaCanvas.height = dnaCanvas.clientHeight);
+				dnaCtx.clearRect(0, 0, w, h);
+
+				dnaAngle += 0.015;
+
+				const cx = w / 2;
+				const cy = h / 2;
+				const radius = Math.min(100, w * 0.16);
+				const rungs = 38;
+				const totalHeight = h * 0.88;
+				const stepY = totalHeight / rungs;
+
+				const pointsA = [];
+				const pointsB = [];
+
+				for (let i = 0; i < rungs; i++) {
+					const y = -totalHeight / 2 + i * stepY;
+					const angle = y * 0.018 + dnaAngle;
+
+					const x1 = Math.cos(angle) * radius;
+					const z1 = Math.sin(angle) * radius;
+					const x2 = -x1;
+					const z2 = -z1;
+
+					const colors = ["#00d4ff", "#00f59b", "#ff9f1c", "#ff2a5f"];
+					const rungColor = colors[i % colors.length];
+
+					dnaCtx.save();
+					dnaCtx.translate(cx, cy);
+					const alpha = ((z1 + radius) / (radius * 2)) * 0.5 + 0.3;
+					dnaCtx.strokeStyle = rungColor;
+					dnaCtx.globalAlpha = alpha;
+					dnaCtx.lineWidth = 2.5;
+					dnaCtx.beginPath();
+					dnaCtx.moveTo(x1, y);
+					dnaCtx.lineTo(x2, y);
+					dnaCtx.stroke();
+					dnaCtx.restore();
+
+					pointsA.push({ x: cx + x1, y: cy + y, z: z1 });
+					pointsB.push({ x: cx + x2, y: cy + y, z: z2 });
+				}
+
+				const drawStrand = (pts, col) => {
+					dnaCtx.save();
+					dnaCtx.shadowColor = col;
+					dnaCtx.shadowBlur = 10;
+					for (let i = 0; i < pts.length; i++) {
+						const p = pts[i];
+						const r = ((p.z + radius) / (radius * 2)) * 3 + 3.5;
+						dnaCtx.fillStyle = col;
+						dnaCtx.beginPath();
+						dnaCtx.arc(p.x, p.y, r, 0, Math.PI * 2);
+						dnaCtx.fill();
+					}
+					dnaCtx.restore();
+				};
+
+				drawStrand(pointsA, "#00d4ff");
+				drawStrand(pointsB, "#ff9f1c");
+			}
+
+			/**
+			 * ============================================================================
+			 * LIVE EKG WAVEFORM VISUALIZER
+			 * ============================================================================
+			 */
+			const ekgCanvas = document.getElementById("heart-rate-canvas");
+			const ekgCtx = ekgCanvas.getContext("2d");
+			let ekgPhase = 0;
+
+			function renderEKG() {
+				requestAnimationFrame(renderEKG);
+				const w = (ekgCanvas.width = ekgCanvas.clientWidth);
+				const h = (ekgCanvas.height = ekgCanvas.clientHeight);
+				ekgCtx.clearRect(0, 0, w, h);
+
+				ekgPhase += 0.04;
+				ekgCtx.strokeStyle = "#00f59b";
+				ekgCtx.lineWidth = 1.8;
+				ekgCtx.shadowColor = "#00f59b";
+				ekgCtx.shadowBlur = 8;
+				ekgCtx.beginPath();
+
+				for (let x = 0; x < w; x++) {
+					const t = (x / w) * 6 + ekgPhase;
+					const beatPos = t % 1;
+					let y = h / 2;
+
+					if (beatPos > 0.4 && beatPos < 0.45) y -= 4;
+					else if (beatPos > 0.48 && beatPos < 0.5) y += 6;
+					else if (beatPos >= 0.5 && beatPos < 0.54) y -= 22;
+					else if (beatPos >= 0.54 && beatPos < 0.58) y += 12;
+					else if (beatPos > 0.65 && beatPos < 0.72) y -= 6;
+
+					if (x === 0) ekgCtx.moveTo(x, y);
+					else ekgCtx.lineTo(x, y);
+				}
+				ekgCtx.stroke();
+			}
+
+			/**
+			 * ============================================================================
+			 * 3D WIREFRAME PARTICLE SPHERE
+			 * ============================================================================
+			 */
+			const sphereCanvas = document.getElementById("sphere-canvas");
+			const spCtx = sphereCanvas.getContext("2d");
+			let spAngle = 0;
+			const spherePts = [];
+
+			for (let i = 0; i < 90; i++) {
+				const phi = Math.acos(-1 + (2 * i) / 90);
+				const theta = Math.sqrt(90 * Math.PI) * phi;
+				spherePts.push({
+					x: Math.cos(theta) * Math.sin(phi),
+					y: Math.sin(theta) * Math.sin(phi),
+					z: Math.cos(phi),
+				});
+			}
+
+			function renderSphere() {
+				requestAnimationFrame(renderSphere);
+				const w = (sphereCanvas.width = 95);
+				const h = (sphereCanvas.height = 95);
+				spCtx.clearRect(0, 0, w, h);
+
+				spAngle += 0.02;
+				const cos = Math.cos(spAngle);
+				const sin = Math.sin(spAngle);
+
+				spCtx.save();
+				spCtx.translate(47, 47);
+				spCtx.fillStyle = "#00d4ff";
+				spCtx.shadowColor = "#00d4ff";
+				spCtx.shadowBlur = 6;
+
+				for (let i = 0; i < spherePts.length; i++) {
+					const p = spherePts[i];
+					const rotX = p.x * cos - p.z * sin;
+					const rotZ = p.x * sin + p.z * cos;
+					const px = rotX * 36;
+					const py = p.y * 36;
+					const alpha = ((rotZ + 1) / 2) * 0.7 + 0.3;
+
+					spCtx.globalAlpha = alpha;
+					spCtx.beginPath();
+					spCtx.arc(px, py, 1.5, 0, Math.PI * 2);
+					spCtx.fill();
+				}
+				spCtx.restore();
+			}
+
+			/**
+			 * ============================================================================
+			 * REAL SCIENTIFIC VISUALIZATIONS: LOTKA-VOLTERRA PHASE SPACE
+			 * ============================================================================
+			 */
+			function renderPhaseSpacePlot() {
+				const pCanvas = document.getElementById("phase-space-canvas");
+				if (!pCanvas) return;
+				const pc = pCanvas.getContext("2d");
+				const w = (pCanvas.width = pCanvas.clientWidth);
+				const h = (pCanvas.height = pCanvas.clientHeight);
+				pc.clearRect(0, 0, w, h);
+
+				let herbs = 0,
+					carns = 0;
+				for (let i = 0; i < agents.length; i++) {
+					if (agents[i].genes.diet > 0.6) carns++;
+					else herbs++;
+				}
+
+				historyPhase.push({ x: herbs, y: carns });
+				if (historyPhase.length > 120) historyPhase.shift();
+
+				// Grid
+				pc.strokeStyle = "rgba(255, 255, 255, 0.05)";
+				pc.lineWidth = 1;
+				for (let i = 1; i <= 4; i++) {
+					pc.beginPath();
+					pc.moveTo((w / 5) * i, 0);
+					pc.lineTo((w / 5) * i, h);
+					pc.stroke();
+					pc.beginPath();
+					pc.moveTo(0, (h / 5) * i);
+					pc.lineTo(w, (h / 5) * i);
+					pc.stroke();
+				}
+
+				// Draw Phase Trajectory
+				if (historyPhase.length > 2) {
+					const maxX = Math.max(80, ...historyPhase.map((p) => p.x)) * 1.15;
+					const maxY = Math.max(30, ...historyPhase.map((p) => p.y)) * 1.15;
+
+					pc.strokeStyle = "#00d4ff";
+					pc.lineWidth = 2;
+					pc.shadowColor = "#00d4ff";
+					pc.shadowBlur = 8;
+					pc.beginPath();
+
+					for (let i = 0; i < historyPhase.length; i++) {
+						const pt = historyPhase[i];
+						const px = (pt.x / maxX) * (w - 20) + 10;
+						const py = h - ((pt.y / maxY) * (h - 20) + 10);
+						if (i === 0) pc.moveTo(px, py);
+						else pc.lineTo(px, py);
+					}
+					pc.stroke();
+					pc.shadowBlur = 0;
+
+					// Current point head
+					const last = historyPhase[historyPhase.length - 1];
+					const lx = (last.x / maxX) * (w - 20) + 10;
+					const ly = h - ((last.y / maxY) * (h - 20) + 10);
+					pc.fillStyle = "#00f59b";
+					pc.beginPath();
+					pc.arc(lx, ly, 5, 0, Math.PI * 2);
+					pc.fill();
+				}
+			}
+
+			/**
+			 * ============================================================================
+			 * HARDY-WEINBERG ALLELE FREQUENCY PLOT
+			 * ============================================================================
+			 */
+			function renderHardyWeinberg() {
+				const hwCanvas = document.getElementById("hardy-weinberg-canvas");
+				if (!hwCanvas) return;
+				const hc = hwCanvas.getContext("2d");
+				const w = (hwCanvas.width = hwCanvas.clientWidth);
+				const h = (hwCanvas.height = hwCanvas.clientHeight);
+				hc.clearRect(0, 0, w, h);
+
+				// Compute p and q
+				let highSpeedCount = 0;
+				for (let i = 0; i < agents.length; i++) {
+					if (agents[i].genes.speed > 3.5) highSpeedCount++;
+				}
+				const p = agents.length > 0 ? highSpeedCount / agents.length : 0.5;
+				const q = 1 - p;
+
+				document.getElementById("hw-p").innerText = p.toFixed(2);
+				document.getElementById("hw-q").innerText = q.toFixed(2);
+
+				// Draw HW parabola curve
+				hc.strokeStyle = "rgba(255, 255, 255, 0.15)";
+				hc.lineWidth = 1;
+				hc.beginPath();
+				for (let x = 0; x < w; x++) {
+					const pVal = x / w;
+					const y = h - pVal ** 2 * h;
+					if (x === 0) hc.moveTo(x, y);
+					else hc.lineTo(x, y);
+				}
+				hc.stroke();
+
+				// Current allele marker
+				const curX = p * w;
+				const curY = h - p ** 2 * h;
+				hc.fillStyle = "#b537f2";
+				hc.shadowColor = "#b537f2";
+				hc.shadowBlur = 8;
+				hc.beginPath();
+				hc.arc(curX, curY, 5, 0, Math.PI * 2);
+				hc.fill();
+				hc.shadowBlur = 0;
+			}
+
+			/**
+			 * ============================================================================
+			 * UI STATS & AI BIO-ANALYST STREAM
+			 * ============================================================================
+			 */
+			function updateUIStats() {
+				const pop = agents.length;
+				let maxGen = 1;
+				const speciesCount = {};
+
+				for (let i = 0; i < agents.length; i++) {
+					const a = agents[i];
+					if (a.genes.generation > maxGen) maxGen = a.genes.generation;
+					speciesCount[a.taxon] = (speciesCount[a.taxon] || 0) + 1;
+				}
+
+				document.getElementById("hud-pop").innerText = pop;
+				document.getElementById("hud-food").innerText = food.length;
+				document.getElementById("hud-gen").innerText = maxGen;
+				document.getElementById("hist-pop").innerText = pop;
+				document.getElementById("hist-gen").innerText = `${maxGen} d`;
+
+				const active = selectedAgent || agents[0];
+				if (active && !active.dead) {
+					document.getElementById("lab-specimen-taxon").innerText =
+						active.taxon;
+					document.getElementById("dossier-taxon-name").innerText =
+						active.taxon;
+					document.getElementById("lab-specimen-code").innerText =
+						`SPECIMEN VX-${active.genes.generation} • GEN ${active.genes.generation}`;
+					document.getElementById("pip-spec-name").innerText = active.taxon;
+					document.getElementById("metric-tolerance").innerText =
+						`${Math.min(99, Math.round(active.energy / 2))}%`;
+					document.getElementById("metric-gestation").innerText =
+						`${Math.round(active.age)} d`;
+					document.getElementById("metric-viability").innerText = (
+						active.genes.speed / 6
+					).toFixed(2);
+				}
+
+				// AI Bio-Analyst Log stream
+				const aiLog = document.getElementById("ai-analyst-log");
+				if (aiLog && Math.random() < 0.25) {
+					let carnCount = agents.filter((a) => a.genes.diet > 0.6).length;
+					let herbCount = pop - carnCount;
+					let msg = "";
+					if (pop === 0)
+						msg = "[ALERT] Total biosphere extinction. Reinjecting organisms.";
+					else if (carnCount > herbCount * 0.7)
+						msg = `[CASCADE WARNING] Predator ratio elevated (${carnCount} carnivores vs ${herbCount} grazers).`;
+					else if (food.length < pop * 0.4)
+						msg = "[RESOURCE ALERT] Flora carrying capacity strained.";
+					else
+						msg = `[STABLE] Gen ${maxGen} proceeding under optimal genetic equilibrium.`;
+					aiLog.innerHTML = `[SYS] ${msg}<br/>` + aiLog.innerHTML.slice(0, 150);
+				}
+
+				// Update Dynasties list
+				const sorted = Object.entries(speciesCount).sort((a, b) => b[1] - a[1]);
+				const dynList = document.getElementById("overview-dynasties-list");
+				if (dynList) {
+					dynList.innerHTML = sorted
+						.slice(0, 4)
+						.map(
+							([name, count]) => `
+						<div style="display:flex; justify-content:space-between; padding:3px 6px; background:rgba(255,255,255,0.03); border-radius:4px;">
+							<span>${name}</span>
+							<strong style="color:var(--accent-blue)">${count}</strong>
+						</div>
+					`,
+						)
+						.join("");
+				}
+
+				const fullDynList = document.getElementById("dynasties-full-list");
+				if (fullDynList) {
+					fullDynList.innerHTML = sorted
+						.map(
+							([name, count], idx) => `
+						<div style="display:flex; justify-content:space-between; align-items:center; padding:8px 12px; background:rgba(0,0,0,0.4); border:1px solid var(--border-subtle); border-radius:6px;">
+							<div>
+								<span style="font-size:10px; color:var(--text-muted); margin-right:8px">#${idx + 1}</span>
+								<strong>${name}</strong>
+							</div>
+							<span style="font-family:var(--font-mono); color:var(--accent-green); font-weight:800">${count} organisms</span>
+						</div>
+					`,
+						)
+						.join("");
+				}
+
+				// History Bar Chart
+				historyPop.push(pop);
+				if (historyPop.length > 18) historyPop.shift();
+				const barCont = document.getElementById("history-bar-container");
+				if (barCont) {
+					const max = Math.max(50, ...historyPop);
+					barCont.innerHTML = historyPop
+						.map((val, i) => {
+							const h = Math.round((val / max) * 60) + 10;
+							const colors = ["#00d4ff", "#00f59b", "#b537f2"];
+							const c = colors[i % colors.length];
+							return `<div style="flex:1; height:${h}px; background:${c}; border-radius:2px 2px 0 0; opacity:0.85;"></div>`;
+						})
+						.join("");
+				}
+			}
+
+			/**
+			 * ============================================================================
+			 * DATA EXPORT & SNAPSHOTTING (Actually Useful Feature!)
+			 * ============================================================================
+			 */
+			document
+				.getElementById("btn-export-csv")
+				.addEventListener("click", () => {
+					let csv =
+						"Timestamp,Population,Herbivores,Carnivores,Flora,AmbientTemp\n";
+					const now = new Date().toISOString();
+					const carns = agents.filter((a) => a.genes.diet > 0.6).length;
+					const herbs = agents.length - carns;
+					csv += `${now},${agents.length},${herbs},${carns},${food.length},${CONFIG.temp}\n`;
+
+					const blob = new Blob([csv], { type: "text/csv" });
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement("a");
+					a.href = url;
+					a.download = `cretax_biosphere_${Date.now()}.csv`;
+					a.click();
+					URL.revokeObjectURL(url);
+				});
+
+			document
+				.getElementById("btn-save-state")
+				.addEventListener("click", () => {
+					const snapshot = {
+						world: WORLD,
+						config: CONFIG,
+						agents: agents.map((a) => ({
+							pos: a.pos,
+							genes: a.genes,
+							energy: a.energy,
+							taxon: a.taxon,
+						})),
+					};
+					const blob = new Blob([JSON.stringify(snapshot, null, 2)], {
+						type: "application/json",
+					});
+					const url = URL.createObjectURL(blob);
+					const a = document.createElement("a");
+					a.href = url;
+					a.download = `biosphere_snapshot_${Date.now()}.json`;
+					a.click();
+					URL.revokeObjectURL(url);
+				});
+
+			/**
+			 * ============================================================================
+			 * CRISPR-CAS9 SPLICER CONTROLS
+			 * ============================================================================
+			 */
+			const crisprModal = document.getElementById("crispr-modal");
+			document
+				.getElementById("btn-crispr-splicer")
+				.addEventListener("click", () => (crisprModal.style.display = "flex"));
+			document
+				.getElementById("btn-genome-compare")
+				.addEventListener("click", () => (crisprModal.style.display = "flex"));
+			document
+				.getElementById("btn-close-crispr")
+				.addEventListener("click", () => (crisprModal.style.display = "none"));
+
+			document
+				.getElementById("btn-deploy-crispr")
+				.addEventListener("click", () => {
+					const locus = document.getElementById("crispr-target-locus").value;
+					const method = document.getElementById("crispr-method").value;
+
+					agents.forEach((a) => {
+						if (method === "enhance") a.genes[locus] *= 1.5;
+						else if (method === "knockout") a.genes[locus] = 0.1;
+						else if (method === "synthetic")
+							a.genes[locus] = locus === "speed" ? 10 : 25;
+						a.genes.isCRISPR = true;
+					});
+
+					crisprModal.style.display = "none";
+					alert(
+						`🚀 CRISPR Gene Drive deployed! Allele [${locus.toUpperCase()}] inoculated into gene pool.`,
+					);
+				});
+
+			document
+				.getElementById("btn-apply-selected")
+				.addEventListener("click", () => {
+					if (selectedAgent) {
+						const locus = document.getElementById("crispr-target-locus").value;
+						selectedAgent.genes[locus] *= 1.5;
+						selectedAgent.genes.isCRISPR = true;
+						crisprModal.style.display = "none";
+						alert(`🧬 Modified specimen ${selectedAgent.taxon}.`);
+					}
+				});
+
+			// Transcript Codon Viewer
+			const transModal = document.getElementById("transcript-modal");
+			document
+				.getElementById("btn-transcript")
+				.addEventListener("click", () => {
+					transModal.style.display = "flex";
+					const codons = [
+						"ATG",
+						"CGA",
+						"TTA",
+						"GGC",
+						"AAT",
+						"TGC",
+						"CTA",
+						"GCG",
+						"TAA",
+					];
+					let res = "";
+					for (let i = 0; i < 40; i++) {
+						const c = codons[i % codons.length];
+						const color =
+							i % 4 === 0
+								? "var(--accent-blue)"
+								: i % 3 === 0
+									? "var(--accent-green)"
+									: "#8fa0ba";
+						res += `<span style="color:${color}; margin-right:4px;">${c}</span>`;
+					}
+					document.getElementById("transcript-codons-box").innerHTML = res;
+				});
+			document
+				.getElementById("btn-close-transcript")
+				.addEventListener("click", () => (transModal.style.display = "none"));
+
+			/**
+			 * ============================================================================
+			 * EXPERIMENTAL SCENARIOS
+			 * ============================================================================
+			 */
+			document.getElementById("scen-cambrian").addEventListener("click", () => {
+				CONFIG.foodRate = 35;
+				CONFIG.mutRate = 0.35;
+				initSimulation();
+				document
+					.querySelector('.nav-pill-btn[data-view="view-overview"]')
+					.click();
+			});
+
+			document.getElementById("scen-climate").addEventListener("click", () => {
+				CONFIG.temp = 48;
+				CONFIG.foodRate = 4;
+				agents.forEach((a) => (a.energy *= 0.6));
+				document
+					.querySelector('.nav-pill-btn[data-view="view-overview"]')
+					.click();
+			});
+
+			document.getElementById("scen-invasive").addEventListener("click", () => {
+				for (let i = 0; i < 15; i++) {
+					const g = {
+						speed: 6.8,
+						size: 18,
+						sense: 140,
+						diet: 1.0,
+						armor: 0.6,
+						camo: 0.2,
+						longevity: 120,
+						generation: 1,
+						isCRISPR: true,
+					};
+					agents.push(new Organism(camera.x, camera.y, g, "Apex Titanus"));
+				}
+				document
+					.querySelector('.nav-pill-btn[data-view="view-overview"]')
+					.click();
+			});
+
+			document.getElementById("scen-crispr").addEventListener("click", () => {
+				for (let i = 0; i < 20; i++) {
+					const g = {
+						speed: 4.5,
+						size: 10,
+						sense: 90,
+						diet: -0.5,
+						armor: 0.4,
+						camo: 0.3,
+						longevity: 100,
+						generation: 1,
+						isCRISPR: true,
+					};
+					agents.push(new Organism(camera.x, camera.y, g, "CRISPR Solaris"));
+				}
+				document
+					.querySelector('.nav-pill-btn[data-view="view-overview"]')
+					.click();
+			});
+
+			/**
+			 * ============================================================================
+			 * NAVIGATION & CONTROLS
+			 * ============================================================================
+			 */
+			document.querySelectorAll(".nav-pill-btn").forEach((btn) => {
+				btn.addEventListener("click", () => {
+					document
+						.querySelectorAll(".nav-pill-btn")
+						.forEach((b) => b.classList.remove("active"));
+					document
+						.querySelectorAll(".view-container")
+						.forEach((v) => v.classList.remove("active"));
+					btn.classList.add("active");
+					const targetId = btn.dataset.view;
+					const targetView = document.getElementById(targetId);
+					if (targetView) targetView.classList.add("active");
+				});
+			});
+
+			// Canvas interaction
+			canvas.addEventListener(
+				"wheel",
+				(e) => {
+					e.preventDefault();
+					const z = e.deltaY < 0 ? 1.15 : 0.88;
+					camera.targetZoom = Math.max(
+						0.18,
+						Math.min(2.8, camera.targetZoom * z),
+					);
+				},
+				{ passive: false },
+			);
+
+			let isDragging = false;
+			let dragStart = { x: 0, y: 0 };
+			canvas.addEventListener("mousedown", (e) => {
+				isDragging = true;
+				dragStart = { x: e.clientX, y: e.clientY };
+			});
+
+			canvas.addEventListener("mousemove", (e) => {
+				if (isDragging) {
+					const dx = e.clientX - dragStart.x;
+					const dy = e.clientY - dragStart.y;
+					camera.x -= dx / camera.zoom;
+					camera.y -= dy / camera.zoom;
+					cameraTarget = null;
+					dragStart = { x: e.clientX, y: e.clientY };
+				}
+			});
+
+			canvas.addEventListener("mouseup", (e) => {
+				if (isDragging) {
+					const dx = Math.abs(e.clientX - dragStart.x);
+					const dy = Math.abs(e.clientY - dragStart.y);
+					if (dx < 3 && dy < 3 && e.button === 0) {
+						const wx = (e.clientX - canvas.width / 2) / camera.zoom + camera.x;
+						const wy = (e.clientY - canvas.height / 2) / camera.zoom + camera.y;
+						let closest = null;
+						let minDist = 35 / camera.zoom;
+						for (let i = 0; i < agents.length; i++) {
+							const d = Vec.dist({ x: wx, y: wy }, agents[i].pos);
+							if (d < minDist) {
+								minDist = d;
+								closest = agents[i];
+							}
+						}
+						if (closest) {
+							selectedAgent = closest;
+							document.getElementById("inspector-drawer").style.display =
+								"flex";
+							document.getElementById("insp-name").innerText = closest.taxon;
+							document.getElementById("insp-energy").innerText = Math.round(
+								closest.energy,
+							);
+							document.getElementById("insp-spd").innerText =
+								closest.genes.speed.toFixed(1);
+							document.getElementById("insp-mass").innerText =
+								closest.genes.size.toFixed(1);
+						}
+					}
+				}
+				isDragging = false;
+			});
+
+			document
+				.getElementById("btn-insp-jump-lab")
+				.addEventListener("click", () => {
+					document
+						.querySelector('.nav-pill-btn[data-view="view-genome-lab"]')
+						.click();
+				});
+
+			document.getElementById("btn-insp-kill").addEventListener("click", () => {
+				if (selectedAgent) {
+					selectedAgent.dead = true;
+					document.getElementById("inspector-drawer").style.display = "none";
+				}
+			});
+
+			document
+				.getElementById("btn-close-insp")
+				.addEventListener("click", () => {
+					document.getElementById("inspector-drawer").style.display = "none";
+				});
+
+			// God tools selection
+			document.querySelectorAll(".tool-btn").forEach((btn) => {
+				btn.addEventListener("click", () => {
+					document
+						.querySelectorAll(".tool-btn")
+						.forEach((b) => b.classList.remove("active"));
+					btn.classList.add("active");
+					currentTool = btn.dataset.tool;
+				});
+			});
+
+			// Sliders
+			document.getElementById("sl-food-rate").addEventListener("input", (e) => {
+				CONFIG.foodRate = parseFloat(e.target.value);
+				document.getElementById("disp-food-rate").innerText =
+					`${e.target.value}/s`;
+			});
+			document
+				.getElementById("sl-food-energy")
+				.addEventListener("input", (e) => {
+					CONFIG.foodEnergy = parseFloat(e.target.value);
+					document.getElementById("disp-food-energy").innerText =
+						e.target.value;
+				});
+			document.getElementById("sl-temp").addEventListener("input", (e) => {
+				CONFIG.temp = parseFloat(e.target.value);
+				document.getElementById("disp-temp").innerText = `${e.target.value} °C`;
+			});
+			document.getElementById("sl-mut-rate").addEventListener("input", (e) => {
+				CONFIG.mutRate = parseFloat(e.target.value) / 100;
+				document.getElementById("disp-mut-rate").innerText =
+					`${e.target.value}%`;
+			});
+
+			// Cataclysms
+			document.getElementById("btn-meteor").addEventListener("click", () => {
+				for (let i = agents.length - 1; i >= 0; i--) {
+					if (Math.random() < 0.45) agents[i].dead = true;
+				}
+			});
+			document.getElementById("btn-gamma").addEventListener("click", () => {
+				agents.forEach((a) => {
+					a.genes.speed = Math.max(1, a.genes.speed + (Math.random() * 4 - 2));
+					a.genes.size = Math.max(4, a.genes.size + (Math.random() * 4 - 2));
+				});
+			});
+			document.getElementById("btn-bloom").addEventListener("click", () => {
+				for (let i = 0; i < 100; i++) spawnFood();
+			});
+			document.getElementById("btn-ice").addEventListener("click", () => {
+				agents.forEach((a) => (a.energy *= 0.5));
+			});
+
+			// Top Bar Buttons
+			document.getElementById("btn-pause").addEventListener("click", () => {
+				CONFIG.paused = !CONFIG.paused;
+			});
+			document
+				.getElementById("btn-cam-center")
+				.addEventListener("click", () => {
+					camera.x = WORLD.width / 2;
+					camera.y = WORLD.height / 2;
+					camera.targetZoom = 0.55;
+				});
+			document
+				.getElementById("btn-toggle-hud")
+				.addEventListener("click", () => {
+					document.getElementById("ui-layer").classList.toggle("hud-hidden");
+				});
+
+			const thModal = document.getElementById("theory-modal-wrap");
+			document
+				.getElementById("btn-theory")
+				.addEventListener("click", () => (thModal.style.display = "flex"));
+			document
+				.getElementById("btn-modal-close")
+				.addEventListener("click", () => (thModal.style.display = "none"));
+
+			// Hotkeys
+			window.addEventListener("keydown", (e) => {
+				if (e.target.tagName === "INPUT" || e.target.tagName === "SELECT")
+					return;
+				if (e.code === "Space") {
+					e.preventDefault();
+					CONFIG.paused = !CONFIG.paused;
+				} else if (e.code === "KeyC") {
+					camera.x = WORLD.width / 2;
+					camera.y = WORLD.height / 2;
+				} else if (e.code === "KeyH") {
+					document.getElementById("ui-layer").classList.toggle("hud-hidden");
+				} else if (e.code === "Escape") {
+					thModal.style.display = "none";
+					crisprModal.style.display = "none";
+					transModal.style.display = "none";
+					document.getElementById("inspector-drawer").style.display = "none";
+				}
+			});
+
+			window.addEventListener("load", () => {
+				initSimulation();
+				simLoop(performance.now());
+				renderDNAHelix();
+				renderEKG();
+				renderSphere();
+			});
+		</script>
+	</body>
 </html>

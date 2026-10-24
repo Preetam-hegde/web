@@ -30,6 +30,22 @@ const projects = [
 
 	// ── Games & Simulations ──────────────────────────────────────────────────
 	{
+		name: "Bag & Blade",
+		category: "games",
+		icon: "backpack",
+		link: "apps/bag-and-blade/index.html",
+		description:
+			"A medieval parchment inventory management RPG and spatial puzzle roguelike — arrange weapons, shields, and potions on a Tetris grid where rotation, placement, and adjacency synergies drive tactical combat.",
+		tech: [
+			"HTML5",
+			"CSS3",
+			"JavaScript",
+			"Web Audio API",
+			"Game Design",
+			"Pixel Art",
+		],
+	},
+	{
 		name: "ComicClash",
 		category: "games",
 		icon: "sparkles",
@@ -151,14 +167,14 @@ const projects = [
 		icon: "dna",
 		link: "apps/natural-selection-sim/index.html",
 		description:
-			"Watch evolution unfold in real time — organisms with randomized traits compete to survive, reproduce, mutate, and diverge into new species across generations.",
+			"Watch evolution unfold beyond limits — organisms with complex polygenic traits, multi-tier trophic niches, and biomes compete in an expansive world with real-time analytics, cataclysms, and deep gene inspection.",
 		tech: [
 			"HTML5",
 			"CSS3",
 			"JavaScript",
 			"Canvas API",
-			"Simulation",
-			"Genetics",
+			"Spatial Hash Grid",
+			"Evolutionary Dynamics",
 		],
 	},
 	{
@@ -220,10 +236,17 @@ const projects = [
 		name: "Dear Diary",
 		category: "personal",
 		icon: "notebook-pen",
-		link: "https://sites.google.com/view/ptwo-diary",
+		link: "apps/dear-diary/index.html",
 		description:
-			"An external Google Sites experiment for journaling and notes — not part of this repository's in-repo app set.",
-		tech: ["Google Sites", "Content Writing"],
+			"A cozy, tactile DIY scrapbooking and personal journaling studio. Decorate with cute stickers, washi tapes, polaroids, sticky notes and freehand doodles, with instant URL-encoded state saving and sharing.",
+		tech: [
+			"HTML5",
+			"CSS3",
+			"JavaScript",
+			"URL State Compression",
+			"Canvas API",
+			"Web Audio API",
+		],
 	},
 
 	// ── Interactive Studies & Visualizers (FCC) ──────────────────────────────
@@ -314,6 +337,8 @@ const projectIcons = {
 	zap: '<polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/>',
 	swords:
 		'<polyline points="14.5 17.5 3 6 3 3 6 3 17.5 14.5"/> <line x1="13" x2="19" y1="19" y2="13"/> <line x1="16" x2="20" y1="16" y2="20"/> <line x1="19" x2="21" y1="21" y2="19"/> <polyline points="14.5 6.5 18 3 21 3 21 6 17.5 9.5"/> <line x1="5" x2="9" y1="14" y2="18"/> <line x1="7" x2="4" y1="17" y2="20"/> <line x1="3" x2="5" y1="19" y2="21"/>',
+	backpack:
+		'<path d="M4 10a4 4 0 0 1 4-4h8a4 4 0 0 1 4 4v10a2 2 0 0 1-2 2H6a2 2 0 0 1-2-2Z"/> <path d="M9 6V4a2 2 0 0 1 2-2h2a2 2 0 0 1 2 2v2"/> <path d="M8 21v-5a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v5"/> <path d="M8 10h8"/> <path d="M9 18h6"/>',
 };
 
 function projectIcon(name) {

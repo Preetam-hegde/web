@@ -1,0 +1,553 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+		<title>Dear Diary — Aesthetic DIY Scrapbooking & Dual Journal</title>
+		<meta
+			name="description"
+			content="A cozy, tactile DIY personal scrapbooking and dual-page journaling studio with rich SVG stickers, washi tapes, habit tracking, ambient sounds, and instant URL-based saving."
+		/>
+
+		<!-- Fonts -->
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&family=Patrick+Hand&family=Bricolage+Grotesque:opsz,wght@12..96,400..700&display=swap"
+			rel="stylesheet"
+		/>
+
+		<!-- Favicon & Stylesheet -->
+		<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg" />
+		<link rel="stylesheet" href="styles.css" />
+	</head>
+	<body data-theme="parchment" data-font="handwriting">
+		<!-- Top App Header -->
+		<header class="app-header">
+			<div class="brand-section">
+				<a
+					href="../../index.html"
+					class="portfolio-back-btn"
+					title="Back to Portfolio"
+				>
+					<svg
+						width="14"
+						height="14"
+						viewBox="0 0 24 24"
+						fill="none"
+						stroke="currentColor"
+						stroke-width="2"
+						stroke-linecap="round"
+						stroke-linejoin="round"
+						aria-hidden="true"
+					>
+						<path d="m15 18-6-6 6-6" />
+					</svg>
+					Portfolio
+				</a>
+				<h1 class="app-title">
+					📖 Dear Diary
+					<span class="title-badge">DIY Studio v2</span>
+				</h1>
+				<div class="status-pill" id="status-pill">
+					<span class="status-dot" id="status-dot"></span>
+					<span id="status-text">Saved to URL</span>
+				</div>
+			</div>
+
+			<div class="header-actions">
+				<button
+					id="zen-toggle-btn"
+					class="btn-icon"
+					title="Toggle Distraction-Free Zen Writing (Ctrl+Enter)"
+				>
+					🧘 Zen
+				</button>
+				<button
+					id="sound-toggle-btn"
+					class="btn-icon"
+					title="Toggle Cozy Rain Ambiance"
+					aria-label="Toggle Cozy Rain Ambiance"
+				>
+					🌧️ Ambiance
+				</button>
+				<button id="new-page-btn" class="btn-icon" title="Start Fresh Page">
+					✨ New Page
+				</button>
+				<button
+					id="export-png-btn"
+					class="btn-icon"
+					title="Export as PNG Snapshot"
+				>
+					🖼️ Snapshot
+				</button>
+				<button
+					id="export-json-btn"
+					class="btn-icon"
+					title="Download JSON Backup"
+				>
+					💾 Backup
+				</button>
+				<button id="import-json-btn" class="btn-icon" title="Import JSON File">
+					📂 Open
+				</button>
+				<input
+					type="file"
+					id="json-file-input"
+					accept=".json"
+					style="display: none"
+				/>
+				<button
+					id="share-btn"
+					class="btn-primary"
+					title="Copy Shareable Link Encoded in URL"
+				>
+					🔗 Share Link
+				</button>
+			</div>
+		</header>
+
+		<!-- Creative Crafting Ribbon -->
+		<nav class="craft-ribbon" aria-label="Crafting Tools">
+			<div class="tool-group">
+				<button
+					id="tool-text-btn"
+					class="tool-btn active"
+					title="Text Writing Mode"
+				>
+					✍️ Write
+				</button>
+				<button
+					id="tool-draw-btn"
+					class="tool-btn"
+					title="Freehand Doodle Canvas"
+				>
+					🎨 Doodle
+				</button>
+				<div class="tool-divider"></div>
+				<button
+					id="tool-stickers-btn"
+					class="tool-btn"
+					title="Stickers & SVG Drawer"
+				>
+					🌸 SVGs &amp; Stickers
+				</button>
+				<button
+					id="tool-tape-btn"
+					class="tool-btn"
+					title="Add Washi Tape Strip"
+				>
+					🏷️ Washi Tape
+				</button>
+				<button
+					id="tool-note-btn"
+					class="tool-btn"
+					title="Add Pastel Sticky Note"
+				>
+					📌 Sticky Note
+				</button>
+				<button id="tool-photo-btn" class="tool-btn" title="Add Polaroid Photo">
+					📷 Polaroid
+				</button>
+			</div>
+
+			<!-- Freehand Doodle Bar (Expands when drawing is active) -->
+			<div id="doodle-bar" class="doodle-bar">
+				<span style="font-size: 0.8rem; color: var(--ui-text-muted)">Ink:</span>
+				<div
+					class="color-dot active"
+					data-color="#2c2523"
+					style="background: #2c2523"
+					title="Espresso Ink"
+				></div>
+				<div
+					class="color-dot"
+					data-color="#e11d48"
+					style="background: #e11d48"
+					title="Blush Rose"
+				></div>
+				<div
+					class="color-dot"
+					data-color="#16a34a"
+					style="background: #16a34a"
+					title="Sage Green"
+				></div>
+				<div
+					class="color-dot"
+					data-color="#2563eb"
+					style="background: #2563eb"
+					title="Sky Blue"
+				></div>
+				<div
+					class="color-dot"
+					data-color="#9333ea"
+					style="background: #9333ea"
+					title="Lavender"
+				></div>
+				<div
+					class="color-dot"
+					data-color="#f59e0b"
+					style="background: #f59e0b"
+					title="Warm Amber"
+				></div>
+
+				<div class="tool-divider"></div>
+				<label
+					for="brush-size"
+					style="font-size: 0.8rem; color: var(--ui-text-muted)"
+					>Size:</label
+				>
+				<input
+					type="range"
+					id="brush-size"
+					min="1"
+					max="24"
+					value="3"
+					style="width: 60px; cursor: pointer"
+				/>
+
+				<button
+					id="clear-doodles-btn"
+					class="ctrl-btn"
+					style="color: #ef4444"
+					title="Clear drawings"
+				>
+					🧹 Clear
+				</button>
+			</div>
+
+			<!-- Workspace Layout & Typography Controls -->
+			<div class="tool-group">
+				<label
+					for="layout-select"
+					style="font-size: 0.8rem; color: var(--ui-text-muted)"
+					>Layout:</label
+				>
+				<select
+					id="layout-select"
+					class="select-control"
+					aria-label="Select Layout Spread"
+				>
+					<option value="dual">📖 Dual Journal (2 Pages)</option>
+					<option value="bullet">📋 Bullet &amp; Habits</option>
+					<option value="scrapbook">🎨 Scrapbook Collage</option>
+					<option value="wide">📜 Wide Seamless</option>
+				</select>
+
+				<label
+					for="font-select"
+					style="font-size: 0.8rem; color: var(--ui-text-muted)"
+					>Font:</label
+				>
+				<select
+					id="font-select"
+					class="select-control"
+					aria-label="Select Writing Font"
+				>
+					<option value="handwriting">✍️ Handwriting</option>
+					<option value="serif">📖 Classic Serif</option>
+					<option value="sans">🔤 Clean Sans</option>
+					<option value="typewriter">⌨️ Typewriter</option>
+				</select>
+
+				<label
+					for="theme-select"
+					style="font-size: 0.8rem; color: var(--ui-text-muted)"
+					>Theme:</label
+				>
+				<select
+					id="theme-select"
+					class="select-control"
+					aria-label="Select Theme"
+				>
+					<option value="parchment">Warm Parchment</option>
+					<option value="sakura">Sakura Blossom</option>
+					<option value="matcha">Matcha &amp; Sage</option>
+					<option value="midnight">Midnight Starlight</option>
+					<option value="lavender">Lavender Mist</option>
+					<option value="kraft">Retro Kraft</option>
+				</select>
+
+				<label
+					for="paper-select"
+					style="font-size: 0.8rem; color: var(--ui-text-muted)"
+					>Paper:</label
+				>
+				<select
+					id="paper-select"
+					class="select-control"
+					aria-label="Select Paper Texture"
+				>
+					<option value="ruled">Ruled Lined</option>
+					<option value="dotted">Bullet Dotted</option>
+					<option value="grid">Math Grid</option>
+					<option value="ledger">Vintage Ledger</option>
+					<option value="blank">Blank Parchment</option>
+				</select>
+			</div>
+		</nav>
+
+		<!-- Main Stage: Cozy Scrapbook Notebook -->
+		<main class="stage-container">
+			<button id="zen-exit-btn" class="zen-exit-btn">
+				✕ Exit Zen Mode (Esc)
+			</button>
+
+			<div class="diary-book layout-dual" id="diary-book">
+				<!-- Realistic Spiral Spine Rings -->
+				<div class="book-spine-rings" id="book-spine-rings" aria-hidden="true">
+					<div class="ring"></div>
+					<div class="ring"></div>
+					<div class="ring"></div>
+					<div class="ring"></div>
+					<div class="ring"></div>
+					<div class="ring"></div>
+					<div class="ring"></div>
+					<div class="ring"></div>
+					<div class="ring"></div>
+					<div class="ring"></div>
+				</div>
+
+				<!-- Open Book Spread -->
+				<div class="pages-spread paper-ruled" id="pages-spread">
+					<!-- Left Page: Metadata & Dynamic Layout Views -->
+					<section
+						class="page page-left"
+						id="page-left"
+						aria-label="Left Page: Writing and Planner"
+					>
+						<div class="page-header-row">
+							<div class="date-container">
+								<span style="font-size: 1.1rem">📅</span>
+								<input
+									type="date"
+									id="date-input"
+									class="date-input"
+									aria-label="Journal Date"
+								/>
+							</div>
+							<div class="weather-mood-bar">
+								<button
+									id="mood-badge"
+									class="picker-badge"
+									title="Click to cycle mood"
+								>
+									😊 Happy
+								</button>
+								<button
+									id="weather-badge"
+									class="picker-badge"
+									title="Click to cycle weather"
+								>
+									☀️ Sunny
+								</button>
+							</div>
+						</div>
+
+						<!-- View 1: Dual Journal (More writing room!) -->
+						<div class="left-layout-view view-dual">
+							<input
+								type="text"
+								id="left-journal-title-input"
+								class="left-journal-title-input"
+								placeholder="Morning Spark &amp; Intentions..."
+								value="Morning Spark &amp; Intentions"
+								aria-label="Left Page Title"
+							/>
+							<textarea
+								id="left-journal-content-area"
+								class="left-journal-content-area"
+								placeholder="Write your morning reflections, gratitude, intentions, or daily thoughts here..."
+								aria-label="Left Page Journal Body"
+							></textarea>
+						</div>
+
+						<!-- View 2: Bullet Planner & Habits -->
+						<div class="left-layout-view view-bullet">
+							<div class="planner-container">
+								<div class="planner-card">
+									<h3 class="planner-card-title">
+										🎯 Daily Priorities &amp; Tasks
+									</h3>
+									<ul id="task-list" class="task-list"></ul>
+									<div class="task-add-row">
+										<input
+											type="text"
+											id="task-add-input"
+											class="task-add-input"
+											placeholder="+ Add next priority..."
+										/>
+										<button id="task-add-btn" class="task-add-btn">Add</button>
+									</div>
+								</div>
+
+								<div class="planner-card">
+									<h3 class="planner-card-title">🌿 Daily Habits Tracker</h3>
+									<div id="habits-row" class="habits-row"></div>
+								</div>
+							</div>
+						</div>
+
+						<!-- View 3: Scrapbook & Prompt -->
+						<div class="left-layout-view view-scrapbook">
+							<div class="prompt-card">
+								<div class="prompt-header">
+									<span class="prompt-label">Daily Spark ✨</span>
+									<button
+										id="prompt-shuffle-btn"
+										class="prompt-shuffle-btn"
+										title="Shuffle prompt"
+										aria-label="Shuffle daily prompt"
+									>
+										🎲 Next
+									</button>
+								</div>
+								<p
+									id="prompt-text"
+									class="prompt-text"
+									contenteditable="true"
+									aria-label="Prompt text"
+								>
+									What is one sweet moment you want to remember today?
+								</p>
+							</div>
+
+							<div class="collage-dropzone">
+								<p class="dropzone-hint">
+									📌 Decorate with washi tape, stamps, stickers, and polaroids
+									anywhere!
+								</p>
+							</div>
+						</div>
+					</section>
+
+					<!-- Right Page: Main Journal Writing & Freehand Canvas -->
+					<section
+						class="page page-right"
+						id="page-right"
+						aria-label="Right Page: Evening Story and Doodles"
+					>
+						<input
+							type="text"
+							id="journal-title-input"
+							class="journal-title-input"
+							placeholder="Evening Story &amp; Reflections..."
+							value="Evening Story &amp; Reflections"
+							aria-label="Journal Entry Title"
+						/>
+						<textarea
+							id="journal-content-area"
+							class="journal-content-area"
+							placeholder="Dear Diary, today was..."
+							aria-label="Journal Content Body"
+						></textarea>
+					</section>
+
+					<!-- Freehand Doodle Canvas Overlay across whole spread -->
+					<canvas id="doodle-canvas" class="doodle-canvas"></canvas>
+
+					<!-- Floating Interactive Stickers Layer across whole spread -->
+					<div id="stickers-layer" class="stickers-layer"></div>
+				</div>
+			</div>
+
+			<!-- Bottom Pagination & Metrics Dock -->
+			<footer class="bottom-dock">
+				<div class="pagination-controls">
+					<button
+						id="prev-spread-btn"
+						class="page-nav-btn"
+						title="Previous Spread"
+					>
+						◀ Prev
+					</button>
+					<span id="spread-indicator" class="spread-indicator"
+						>Spread 1 of 1</span
+					>
+					<button id="next-spread-btn" class="page-nav-btn" title="Next Spread">
+						Next ▶
+					</button>
+					<button
+						id="add-spread-btn"
+						class="page-nav-btn"
+						style="color: var(--accent); font-weight: 600"
+						title="Add extra page spread"
+					>
+						+ Add Page
+					</button>
+				</div>
+
+				<div class="writing-metrics">
+					<span
+						>✍️
+						<strong id="word-count" style="color: var(--ui-text)">0</strong>
+						words</span
+					>
+					<span>•</span>
+					<span
+						>⏱️
+						<strong id="read-time" style="color: var(--ui-text)">1</strong> min
+						read</span
+					>
+				</div>
+			</footer>
+		</main>
+
+		<!-- Sticker & SVG Drawer (Slide-up Panel) -->
+		<aside
+			id="sticker-drawer"
+			class="drawer-panel"
+			aria-label="Sticker and SVG Collection Drawer"
+		>
+			<div class="drawer-header">
+				<h2 class="drawer-title">🌸 Stickers &amp; SVG Vectors</h2>
+				<input
+					type="text"
+					id="drawer-search-box"
+					class="drawer-search-box"
+					placeholder="🔍 Search 60+ SVGs &amp; stickers..."
+				/>
+				<button
+					id="close-sticker-drawer"
+					class="btn-icon"
+					style="padding: 4px 8px"
+					aria-label="Close drawer"
+				>
+					✕
+				</button>
+			</div>
+
+			<div class="drawer-tabs" role="tablist">
+				<button class="drawer-tab active" data-cat="all-svg">
+					🎨 All SVGs
+				</button>
+				<button class="drawer-tab" data-cat="stamps">
+					🏷️ Stamps &amp; Seals
+				</button>
+				<button class="drawer-tab" data-cat="nature">🌿 Nature</button>
+				<button class="drawer-tab" data-cat="cozy">☕ Cozy Cafe</button>
+				<button class="drawer-tab" data-cat="celestial">✨ Celestial</button>
+				<button class="drawer-tab" data-cat="lifestyle">📐 Icons</button>
+				<button class="drawer-tab" data-cat="emojis">🐱 Emojis</button>
+				<button class="drawer-tab" data-cat="badges">🏷️ Word Badges</button>
+			</div>
+
+			<div id="sticker-grid" class="sticker-grid"></div>
+		</aside>
+
+		<!-- Floating Toast Notice -->
+		<div
+			id="toast-notice"
+			class="toast-notice"
+			role="status"
+			aria-live="polite"
+		>
+			<span id="toast-msg">✨ Notification</span>
+		</div>
+
+		<!-- Scripts -->
+		<script src="svg-catalog.js"></script>
+		<script src="url-codec.js"></script>
+		<script src="script.js"></script>
+	</body>
+</html>

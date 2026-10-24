@@ -30,7 +30,7 @@ export function createScene(buildingsEl, peopleEl) {
 				const x = shown === 1 ? (from + to) / 2 : from + ((to - from) * i) / (shown - 1);
 				const back = i % 2;
 				const cls = fresh && i === shown - 1 ? 'sprite is-new' : 'sprite';
-				return `<svg class="${cls} sprite-${key}" style="left:${x}%;bottom:${25 + back * 6}%;z-index:${2 - back}"><title>${name} ×${count}</title><use href="#${sprite}"/></svg>`;
+				return `<div class="${cls} sprite-${key}" role="img" aria-label="${name} ×${count}" title="${name} ×${count}" style="left:${x}%;bottom:${25 + back * 6}%;z-index:${2 - back}"></div>`;
 			}).join('');
 		}).join('');
 	}
@@ -38,7 +38,7 @@ export function createScene(buildingsEl, peopleEl) {
 	function drawPeople(population) {
 		peopleEl.innerHTML = ROLES.flatMap((role) => Array.from({ length: population[role] }, (_, i) => ({ role, i })))
 			.slice(0, MAX_VILLAGERS)
-			.map(({ role, i }) => `<i class="vill ${role}" style="left:${HOME[role] + (i % 4) * 3}%;bottom:${15 + ((i * 5) % 9)}%;--range:${10 + (i % 3) * 5}px;--dur:${5 + ((i * 3) % 5)}s;--delay:-${(i * 7) % 5}s"></i>`)
+			.map(({ role, i }) => `<i class="vill ${role}" style="left:${HOME[role] + (i % 4) * 3}%;bottom:${15 + ((i * 5) % 9)}%;--range:${10 + (i % 3) * 5}px;--dur:${5 + ((i * 3) % 5)}s;--delay:-${(i * 7) % 5}s"><b></b></i>`)
 			.join('');
 	}
 

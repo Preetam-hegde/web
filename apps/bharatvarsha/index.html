@@ -11,6 +11,7 @@
 	<link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
 	<link rel="stylesheet" href="css/style.css">
 	<link rel="stylesheet" href="css/fx.css">
+	<link rel="stylesheet" href="css/paper.css">
 	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -76,7 +77,7 @@
 			</div>
 			<div class="hud">
 				<div class="hud-chip chip-morale">
-					<span class="chip-label"><i class="fas fa-face-smile"></i> Morale</span>
+					<span class="chip-label"><img class="ico" src="assets/icons/heart.png" alt="" width="32" height="32"> Morale</span>
 					<strong id="morale-display">70%</strong>
 					<div class="morale-meter"><div id="morale-fill" class="morale-fill"></div></div>
 				</div>
@@ -112,14 +113,14 @@
 
 		<main class="main-grid">
 			<aside class="panel">
-				<div class="panel-title"><i class="fas fa-coins"></i> Treasury &amp; Labor</div>
+				<div class="panel-title"><img class="ico" src="assets/icons/coin.png" alt="" width="32" height="32"> Treasury &amp; Labor</div>
 				<div class="panel-body">
 					<div id="resource-grid" class="resource-grid"></div>
 					<section class="manual-labor-panel">
 						<h3 class="section-title title-font">Manual Labor</h3>
 						<div class="manual-actions">
-							<button data-action="manual" data-key="food"><i class="fas fa-wheat-awn"></i> Harvest Crops</button>
-							<button data-action="manual" data-key="wood"><i class="fas fa-tree"></i> Chop Wood</button>
+							<button data-action="manual" data-key="food"><img class="ico" src="assets/icons/food.png" alt="" width="32" height="32"> Harvest Crops</button>
+							<button data-action="manual" data-key="wood"><img class="ico" src="assets/icons/wood.png" alt="" width="32" height="32"> Chop Wood</button>
 						</div>
 					</section>
 					<h3 class="section-title title-font">Workforce</h3>
@@ -152,15 +153,16 @@
 								<path d="M581 168h14l-4 4 4 4h-14z" fill="#f59e0b"/>
 							</g>
 							<path class="hill-near" d="M0 300 Q200 268 430 292 T860 286 T1200 274 V400 H0Z"/>
-							<g transform="translate(58 306)"><rect x="-3" y="-4" width="6" height="22" fill="#6b4423"/><circle cy="-16" r="20" class="leaf-a"/><circle cx="-11" cy="-6" r="14" class="leaf-b"/><circle cx="11" cy="-8" r="13" class="leaf-b"/></g>
-							<g transform="translate(112 312) scale(.8)"><rect x="-3" y="-4" width="6" height="22" fill="#6b4423"/><circle cy="-16" r="20" class="leaf-a"/><circle cx="-11" cy="-6" r="14" class="leaf-b"/><circle cx="11" cy="-8" r="13" class="leaf-b"/></g>
-							<g transform="translate(1140 304)"><rect x="-3" y="-4" width="6" height="22" fill="#6b4423"/><circle cy="-16" r="20" class="leaf-a"/><circle cx="-11" cy="-6" r="14" class="leaf-b"/><circle cx="11" cy="-8" r="13" class="leaf-b"/></g>
 							<path class="river" d="M0 356 Q180 338 380 352 T780 350 T1200 340 V400 H0Z"/>
 							<path class="bank" d="M0 356 Q180 338 380 352 T780 350 T1200 340"/>
 							<g class="glint"><path d="M50 374q26-7 52 0M260 386q26-7 52 0M470 372q26-7 52 0M700 384q26-7 52 0M930 372q26-7 52 0M1110 386q26-7 52 0"/></g>
 						</svg>
 
-						<div id="scene-buildings" class="scene-layer" aria-hidden="true"></div>
+						<div id="scene-deco" class="scene-layer" aria-hidden="true">
+								<i class="deco tree t1"></i><i class="deco tree t2"></i><i class="deco tree t3"></i>
+								<i class="deco bush b1"></i><i class="deco bush b2"></i>
+							</div>
+							<div id="scene-buildings" class="scene-layer" aria-hidden="true"></div>
 						<div id="scene-people" class="scene-layer" aria-hidden="true"></div>
 						<div class="weather-tint" aria-hidden="true"></div>
 						<div class="rain" aria-hidden="true"></div>
@@ -199,7 +201,7 @@
 					<div id="event-log" class="log-list"></div>
 				</div>
 				<div class="objective-box">
-					<strong><i class="fas fa-scroll"></i> Current Objective</strong>
+					<strong><img class="ico" src="assets/icons/scroll.png" alt="" width="32" height="32"> Current Objective</strong>
 					<p id="objective-text">Raise 3 Mud Huts to shelter your growing clan.</p>
 					<div class="progress" role="presentation"><i id="objective-fill"></i></div>
 					<small id="objective-count">1 / 3</small>

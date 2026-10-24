@@ -1,0 +1,1486 @@
+/* Dear Diary — Styling, Themes & Scrapbook Crafting (v2) */
+:root {
+	--bg-desk: #2b2520;
+	--book-cover: #5a3e2e;
+	--book-spine: #3d291e;
+	--page-bg: #fcf9f2;
+	--page-text: #2c2523;
+	--page-sub: #786b66;
+	--line-color: rgba(180, 160, 140, 0.35);
+	--accent: #d97757;
+	--accent-hover: #c26143;
+	--accent-subtle: rgba(217, 119, 87, 0.12);
+	--tape-shadow: rgba(0, 0, 0, 0.1);
+	--ui-surface: #1e1b18;
+	--ui-card: #2a2622;
+	--ui-border: #3d3732;
+	--ui-text: #f5f0ea;
+	--ui-text-muted: #9e9389;
+	--selection-ring: #d97757;
+	--font-ui:
+		"Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI",
+		Roboto, sans-serif;
+	--font-handwriting:
+		"Caveat", "Patrick Hand", "Comic Sans MS", cursive, sans-serif;
+	--font-serif: "Georgia", "Cambria", "Times New Roman", serif;
+	--font-typewriter: "Courier New", Courier, ui-monospace, monospace;
+	--writing-font: var(--font-handwriting);
+	--writing-size: 1.35rem;
+	--writing-line-height: 32px;
+	--radius-sm: 6px;
+	--radius-md: 10px;
+	--radius-lg: 16px;
+	--shadow-book: 0 20px 50px rgba(0, 0, 0, 0.45), 0 5px 15px rgba(0, 0, 0, 0.3);
+	--shadow-page: 0 4px 15px rgba(0, 0, 0, 0.08);
+}
+
+/* Theme 2: Sakura Blossom */
+[data-theme="sakura"] {
+	--bg-desk: #261a22;
+	--book-cover: #733d59;
+	--book-spine: #50273c;
+	--page-bg: #fff5f8;
+	--page-text: #3c2431;
+	--page-sub: #875c73;
+	--line-color: rgba(230, 175, 195, 0.4);
+	--accent: #e8638b;
+	--accent-hover: #d24e75;
+	--accent-subtle: rgba(232, 99, 139, 0.15);
+	--selection-ring: #e8638b;
+}
+
+/* Theme 3: Matcha & Sage */
+[data-theme="matcha"] {
+	--bg-desk: #1b241c;
+	--book-cover: #334835;
+	--book-spine: #223324;
+	--page-bg: #f4f8f3;
+	--page-text: #1d2a1f;
+	--page-sub: #546b57;
+	--line-color: rgba(160, 195, 165, 0.4);
+	--accent: #528c5a;
+	--accent-hover: #3f7346;
+	--accent-subtle: rgba(82, 140, 90, 0.15);
+	--selection-ring: #528c5a;
+}
+
+/* Theme 4: Midnight Starlight */
+[data-theme="midnight"] {
+	--bg-desk: #0e111a;
+	--book-cover: #1c2336;
+	--book-spine: #121724;
+	--page-bg: #161b26;
+	--page-text: #e2e8f0;
+	--page-sub: #8c9bb3;
+	--line-color: rgba(70, 85, 120, 0.35);
+	--accent: #7c8cf8;
+	--accent-hover: #6375f0;
+	--accent-subtle: rgba(124, 140, 248, 0.15);
+	--selection-ring: #7c8cf8;
+}
+
+/* Theme 5: Lavender Mist */
+[data-theme="lavender"] {
+	--bg-desk: #1e1b29;
+	--book-cover: #463b61;
+	--book-spine: #302745;
+	--page-bg: #f8f6fc;
+	--page-text: #2a2238;
+	--page-sub: #6e6085;
+	--line-color: rgba(190, 175, 220, 0.4);
+	--accent: #9370db;
+	--accent-hover: #7d59c9;
+	--accent-subtle: rgba(147, 112, 219, 0.15);
+	--selection-ring: #9370db;
+}
+
+/* Theme 6: Retro Kraft */
+[data-theme="kraft"] {
+	--bg-desk: #1f1a14;
+	--book-cover: #42301c;
+	--book-spine: #2c1f10;
+	--page-bg: #dfcfb7;
+	--page-text: #2b2014;
+	--page-sub: #69533c;
+	--line-color: rgba(110, 85, 55, 0.25);
+	--accent: #a8582d;
+	--accent-hover: #8f451e;
+	--accent-subtle: rgba(168, 88, 45, 0.15);
+	--selection-ring: #a8582d;
+}
+
+/* Font Preferences */
+body[data-font="handwriting"] {
+	--writing-font: var(--font-handwriting);
+}
+body[data-font="serif"] {
+	--writing-font: var(--font-serif);
+}
+body[data-font="sans"] {
+	--writing-font: var(--font-ui);
+}
+body[data-font="typewriter"] {
+	--writing-font: var(--font-typewriter);
+}
+
+/* Base Reset & Layout */
+* {
+	box-sizing: border-box;
+	margin: 0;
+	padding: 0;
+}
+
+html,
+body {
+	height: 100%;
+	width: 100%;
+	overflow-x: hidden;
+}
+
+body {
+	font-family: var(--font-ui);
+	background-color: var(--bg-desk);
+	color: var(--ui-text);
+	display: flex;
+	flex-direction: column;
+	transition: background-color 0.3s ease;
+	user-select: none;
+}
+
+/* Top App Header */
+.app-header {
+	height: 56px;
+	background: var(--ui-surface);
+	border-bottom: 1px solid var(--ui-border);
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0 16px;
+	z-index: 50;
+	flex-shrink: 0;
+	transition:
+		transform 0.3s ease,
+		opacity 0.3s ease;
+}
+
+.brand-section {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+.portfolio-back-btn {
+	color: var(--ui-text-muted);
+	text-decoration: none;
+	font-size: 0.85rem;
+	padding: 6px 10px;
+	border-radius: var(--radius-sm);
+	border: 1px solid var(--ui-border);
+	transition: all 0.2s;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.portfolio-back-btn:hover {
+	color: var(--ui-text);
+	border-color: var(--accent);
+	background: var(--accent-subtle);
+}
+
+.app-title {
+	font-size: 1.15rem;
+	font-weight: 700;
+	color: var(--ui-text);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.title-badge {
+	font-size: 0.72rem;
+	background: var(--accent-subtle);
+	color: var(--accent);
+	border: 1px solid var(--accent);
+	padding: 2px 7px;
+	border-radius: 12px;
+	font-weight: 600;
+}
+
+.status-pill {
+	font-size: 0.78rem;
+	color: var(--ui-text-muted);
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.status-dot {
+	width: 8px;
+	height: 8px;
+	border-radius: 50%;
+	background: #34d399;
+	box-shadow: 0 0 8px rgba(52, 211, 153, 0.6);
+}
+
+.status-dot.saving {
+	background: #fbbf24;
+	box-shadow: 0 0 8px rgba(251, 191, 36, 0.6);
+	animation: pulse 1s infinite alternate;
+}
+
+@keyframes pulse {
+	0% {
+		opacity: 0.4;
+	}
+	100% {
+		opacity: 1;
+	}
+}
+
+.header-actions {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.btn-icon {
+	background: var(--ui-card);
+	color: var(--ui-text);
+	border: 1px solid var(--ui-border);
+	border-radius: var(--radius-sm);
+	padding: 7px 12px;
+	font-size: 0.85rem;
+	font-weight: 500;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transition: all 0.2s;
+}
+
+.btn-icon:hover {
+	border-color: var(--accent);
+	background: var(--ui-surface);
+	color: var(--accent);
+}
+
+.btn-primary {
+	background: var(--accent);
+	color: #ffffff;
+	border: none;
+	border-radius: var(--radius-sm);
+	padding: 7px 14px;
+	font-size: 0.85rem;
+	font-weight: 600;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transition: all 0.2s;
+}
+
+.btn-primary:hover {
+	background: var(--accent-hover);
+	transform: translateY(-1px);
+}
+
+/* Secondary Tool Ribbon */
+.craft-ribbon {
+	background: var(--ui-surface);
+	border-bottom: 1px solid var(--ui-border);
+	padding: 8px 16px;
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	flex-wrap: wrap;
+	z-index: 40;
+	flex-shrink: 0;
+	transition:
+		transform 0.3s ease,
+		opacity 0.3s ease;
+}
+
+.tool-group {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.tool-divider {
+	width: 1px;
+	height: 24px;
+	background: var(--ui-border);
+	margin: 0 4px;
+}
+
+.tool-btn {
+	background: transparent;
+	border: 1px solid transparent;
+	color: var(--ui-text-muted);
+	border-radius: var(--radius-sm);
+	padding: 6px 10px;
+	font-size: 0.82rem;
+	cursor: pointer;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	transition: all 0.15s;
+}
+
+.tool-btn:hover {
+	color: var(--ui-text);
+	background: var(--ui-card);
+}
+
+.tool-btn.active {
+	background: var(--accent-subtle);
+	color: var(--accent);
+	border-color: var(--accent);
+	font-weight: 600;
+}
+
+.select-control {
+	background: var(--ui-card);
+	border: 1px solid var(--ui-border);
+	color: var(--ui-text);
+	padding: 5px 8px;
+	border-radius: var(--radius-sm);
+	font-size: 0.8rem;
+	cursor: pointer;
+	outline: none;
+}
+
+.select-control:focus {
+	border-color: var(--accent);
+}
+
+/* Main Studio Stage */
+.stage-container {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	justify-content: center;
+	align-items: center;
+	padding: 16px 24px;
+	overflow: auto;
+	position: relative;
+}
+
+/* The Notebook Container */
+.diary-book {
+	width: 100%;
+	max-width: 1140px;
+	min-height: 660px;
+	background: var(--book-cover);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-book);
+	padding: 16px;
+	display: flex;
+	position: relative;
+	transition: all 0.3s ease;
+}
+
+/* Realistic Ring Binder Spine */
+.book-spine-rings {
+	position: absolute;
+	left: 50%;
+	top: 24px;
+	bottom: 24px;
+	width: 32px;
+	transform: translateX(-50%);
+	z-index: 25;
+	display: flex;
+	flex-direction: column;
+	justify-content: space-around;
+	align-items: center;
+	pointer-events: none;
+	transition: opacity 0.3s;
+}
+
+.ring {
+	width: 30px;
+	height: 12px;
+	background: linear-gradient(
+		to bottom,
+		#d6d3d1 0%,
+		#78716c 40%,
+		#292524 80%,
+		#a8a29e 100%
+	);
+	border-radius: 6px;
+	box-shadow:
+		0 4px 6px rgba(0, 0, 0, 0.4),
+		inset 0 1px 2px rgba(255, 255, 255, 0.7);
+}
+
+/* Pages Spread */
+.pages-spread {
+	width: 100%;
+	display: flex;
+	background: var(--page-bg);
+	border-radius: calc(var(--radius-lg) - 4px);
+	overflow: hidden;
+	box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.08);
+	position: relative;
+	transition: background 0.3s ease;
+}
+
+/* Individual Page */
+.page {
+	flex: 1;
+	padding: 28px 34px;
+	display: flex;
+	flex-direction: column;
+	position: relative;
+	min-height: 600px;
+}
+
+.page-left {
+	border-right: 1px solid var(--line-color);
+	box-shadow: inset -15px 0 20px -15px rgba(0, 0, 0, 0.12);
+}
+
+.page-right {
+	box-shadow: inset 15px 0 20px -15px rgba(0, 0, 0, 0.12);
+}
+
+/* Paper Patterns */
+.paper-ruled {
+	background-image: repeating-linear-gradient(
+		to bottom,
+		transparent 0px,
+		transparent 31px,
+		var(--line-color) 31px,
+		var(--line-color) 32px
+	);
+}
+
+.paper-dotted {
+	background-image: radial-gradient(var(--line-color) 1.5px, transparent 1.5px);
+	background-size: 24px 24px;
+}
+
+.paper-grid {
+	background-image:
+		linear-gradient(to right, var(--line-color) 1px, transparent 1px),
+		linear-gradient(to bottom, var(--line-color) 1px, transparent 1px);
+	background-size: 24px 24px;
+}
+
+.paper-ledger {
+	background-image:
+		linear-gradient(to right, rgba(239, 68, 68, 0.25) 1px, transparent 1px),
+		repeating-linear-gradient(
+			to bottom,
+			transparent 0,
+			transparent 31px,
+			var(--line-color) 31px,
+			var(--line-color) 32px
+		);
+	background-size:
+		60px 100%,
+		100% 32px;
+}
+
+.paper-blank {
+	background-image: none;
+}
+
+/* Page Header Row */
+.page-header-row {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 16px;
+	border-bottom: 1.5px dashed var(--line-color);
+	padding-bottom: 10px;
+}
+
+.date-container {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.date-input {
+	font-family: var(--writing-font);
+	font-size: 1.35rem;
+	font-weight: 700;
+	color: var(--page-text);
+	background: transparent;
+	border: none;
+	outline: none;
+	cursor: pointer;
+}
+
+.weather-mood-bar {
+	display: flex;
+	gap: 8px;
+}
+
+.picker-badge {
+	display: flex;
+	align-items: center;
+	gap: 5px;
+	font-size: 0.85rem;
+	background: rgba(0, 0, 0, 0.04);
+	padding: 4px 10px;
+	border-radius: 20px;
+	cursor: pointer;
+	border: 1px solid transparent;
+	transition: all 0.2s;
+	font-family: var(--writing-font);
+	font-weight: 700;
+	color: var(--page-text);
+}
+
+.picker-badge:hover {
+	border-color: var(--accent);
+	background: var(--accent-subtle);
+}
+
+/* ── Left Page Dynamic Layout Views ────────────────────────────────────────── */
+.left-layout-view {
+	display: none;
+	flex: 1;
+	flex-direction: column;
+}
+
+/* 1. Dual Journal Mode (More place to write!) */
+.layout-dual .view-dual {
+	display: flex;
+}
+
+.left-journal-title-input {
+	width: 100%;
+	font-family: var(--writing-font);
+	font-size: 1.8rem;
+	font-weight: 700;
+	color: var(--page-text);
+	background: transparent;
+	border: none;
+	outline: none;
+	margin-bottom: 8px;
+	line-height: 1.2;
+}
+
+.left-journal-content-area {
+	flex: 1;
+	width: 100%;
+	min-height: 420px;
+	font-family: var(--writing-font);
+	font-size: var(--writing-size);
+	line-height: var(--writing-line-height);
+	color: var(--page-text);
+	background: transparent;
+	border: none;
+	outline: none;
+	resize: none;
+	padding: 0;
+	position: relative;
+	z-index: 5;
+}
+
+/* 2. Bullet Journal & Habit Planner Mode */
+.layout-bullet .view-bullet {
+	display: flex;
+}
+
+.planner-container {
+	flex: 1;
+	display: flex;
+	flex-direction: column;
+	gap: 16px;
+}
+
+.planner-card {
+	background: rgba(255, 255, 255, 0.5);
+	border: 1px solid var(--line-color);
+	border-radius: var(--radius-md);
+	padding: 12px 14px;
+	box-shadow: var(--shadow-page);
+}
+
+[data-theme="midnight"] .planner-card {
+	background: rgba(30, 41, 59, 0.6);
+}
+
+.planner-card-title {
+	font-size: 0.82rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	font-weight: 700;
+	color: var(--accent);
+	margin-bottom: 8px;
+	display: flex;
+	align-items: center;
+	gap: 6px;
+}
+
+.task-list {
+	list-style: none;
+	display: flex;
+	flex-direction: column;
+	gap: 6px;
+}
+
+.task-item {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	font-family: var(--writing-font);
+	font-size: 1.25rem;
+	color: var(--page-text);
+}
+
+.task-checkbox {
+	width: 18px;
+	height: 18px;
+	cursor: pointer;
+	accent-color: var(--accent);
+}
+
+.task-label {
+	flex: 1;
+	outline: none;
+}
+
+.task-item.done .task-label {
+	text-decoration: line-through;
+	opacity: 0.55;
+}
+
+.task-del-btn {
+	background: transparent;
+	border: none;
+	color: var(--page-sub);
+	cursor: pointer;
+	opacity: 0.3;
+	font-size: 0.9rem;
+	transition: opacity 0.2s;
+}
+
+.task-item:hover .task-del-btn {
+	opacity: 1;
+}
+
+.task-add-row {
+	display: flex;
+	gap: 8px;
+	margin-top: 8px;
+}
+
+.task-add-input {
+	flex: 1;
+	font-family: var(--writing-font);
+	font-size: 1.15rem;
+	background: transparent;
+	border: none;
+	border-bottom: 1px dashed var(--line-color);
+	color: var(--page-text);
+	outline: none;
+	padding: 2px 4px;
+}
+
+.task-add-btn {
+	background: var(--accent-subtle);
+	color: var(--accent);
+	border: 1px solid var(--accent);
+	border-radius: var(--radius-sm);
+	padding: 2px 8px;
+	font-size: 0.8rem;
+	font-weight: 600;
+	cursor: pointer;
+}
+
+/* Habit Tracker Row */
+.habits-row {
+	display: flex;
+	gap: 8px;
+	flex-wrap: wrap;
+}
+
+.habit-pill {
+	display: flex;
+	align-items: center;
+	gap: 6px;
+	background: rgba(0, 0, 0, 0.04);
+	border: 1px solid var(--line-color);
+	padding: 6px 12px;
+	border-radius: 20px;
+	font-family: var(--writing-font);
+	font-size: 1.1rem;
+	cursor: pointer;
+	transition: all 0.2s;
+	color: var(--page-text);
+}
+
+.habit-pill.completed {
+	background: var(--accent);
+	color: #ffffff;
+	border-color: var(--accent);
+	box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+}
+
+/* 3. Scrapbook Mode */
+.layout-scrapbook .view-scrapbook {
+	display: flex;
+}
+
+.prompt-card {
+	background: rgba(255, 255, 255, 0.65);
+	border: 1.5px dashed var(--accent);
+	border-radius: var(--radius-md);
+	padding: 14px 16px;
+	margin-bottom: 16px;
+	position: relative;
+	box-shadow: var(--shadow-page);
+	backdrop-filter: blur(2px);
+}
+
+[data-theme="midnight"] .prompt-card {
+	background: rgba(30, 41, 59, 0.7);
+}
+
+.prompt-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 6px;
+}
+
+.prompt-label {
+	font-size: 0.75rem;
+	text-transform: uppercase;
+	letter-spacing: 0.08em;
+	font-weight: 700;
+	color: var(--accent);
+}
+
+.prompt-shuffle-btn {
+	background: transparent;
+	border: none;
+	color: var(--accent);
+	cursor: pointer;
+	font-size: 0.8rem;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	transition: transform 0.2s;
+}
+
+.prompt-shuffle-btn:hover {
+	transform: rotate(45deg);
+}
+
+.prompt-text {
+	font-family: var(--writing-font);
+	font-size: 1.2rem;
+	color: var(--page-text);
+	line-height: 1.35;
+	outline: none;
+}
+
+.collage-dropzone {
+	flex: 1;
+	position: relative;
+	border: 1.5px dashed rgba(0, 0, 0, 0.08);
+	border-radius: var(--radius-md);
+	display: flex;
+	flex-direction: column;
+	justify-content: flex-end;
+	align-items: center;
+	padding: 16px;
+	min-height: 240px;
+}
+
+.dropzone-hint {
+	font-family: var(--writing-font);
+	color: var(--page-sub);
+	font-size: 1.05rem;
+	text-align: center;
+	pointer-events: none;
+	opacity: 0.75;
+}
+
+/* 4. Wide Zen Spread Layout */
+.layout-wide .page-left {
+	border-right: none;
+	box-shadow: none;
+}
+.layout-wide .page-right {
+	box-shadow: none;
+}
+.layout-wide .book-spine-rings {
+	opacity: 0.15;
+}
+
+/* ── Right Page Journal Writing & Freehand Canvas ──────────────────────────── */
+.journal-title-input {
+	width: 100%;
+	font-family: var(--writing-font);
+	font-size: 2rem;
+	font-weight: 700;
+	color: var(--page-text);
+	background: transparent;
+	border: none;
+	outline: none;
+	margin-bottom: 12px;
+	line-height: 1.2;
+}
+
+.journal-title-input::placeholder,
+.left-journal-title-input::placeholder {
+	color: var(--page-sub);
+	opacity: 0.6;
+}
+
+.journal-content-area {
+	flex: 1;
+	width: 100%;
+	min-height: 440px;
+	font-family: var(--writing-font);
+	font-size: var(--writing-size);
+	line-height: var(--writing-line-height);
+	color: var(--page-text);
+	background: transparent;
+	border: none;
+	outline: none;
+	resize: none;
+	padding: 0;
+	position: relative;
+	z-index: 5;
+}
+
+.journal-content-area::placeholder,
+.left-journal-content-area::placeholder {
+	color: var(--page-sub);
+	opacity: 0.5;
+}
+
+/* Freehand Doodle Canvas Overlay */
+.doodle-canvas {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	z-index: 10;
+	pointer-events: none;
+	touch-action: none;
+}
+
+.doodle-canvas.drawing-active {
+	pointer-events: auto;
+	cursor: crosshair;
+}
+
+/* Stickers Floating Layer Spanning the whole book */
+.stickers-layer {
+	position: absolute;
+	top: 0;
+	left: 0;
+	width: 100%;
+	height: 100%;
+	pointer-events: none;
+	z-index: 15;
+}
+
+/* Interactive Sticker Item */
+.sticker-item {
+	position: absolute;
+	pointer-events: auto;
+	cursor: grab;
+	touch-action: none;
+	user-select: none;
+	transform-origin: center center;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	transition: filter 0.15s ease;
+}
+
+.sticker-item:active {
+	cursor: grabbing;
+}
+
+.sticker-item.selected {
+	outline: 2px dashed var(--selection-ring);
+	outline-offset: 6px;
+}
+
+/* Sticker Types */
+.sticker-item[data-type="emoji"] {
+	font-size: 3rem;
+	line-height: 1;
+	filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+.sticker-item[data-type="svg"] {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+}
+
+.sticker-item[data-type="badge"] {
+	background: #ffffff;
+	border: 1.5px solid var(--accent);
+	color: var(--accent);
+	padding: 6px 14px;
+	border-radius: 20px;
+	font-family: var(--writing-font);
+	font-size: 1.15rem;
+	font-weight: 700;
+	box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+	white-space: nowrap;
+}
+
+[data-theme="midnight"] .sticker-item[data-type="badge"] {
+	background: #1e293b;
+}
+
+/* Washi Tape Strips */
+.sticker-item[data-type="washi"] {
+	height: 28px;
+	min-width: 120px;
+	box-shadow: 0 2px 5px var(--tape-shadow);
+	opacity: 0.88;
+	border-left: 2px dashed rgba(255, 255, 255, 0.6);
+	border-right: 2px dashed rgba(255, 255, 255, 0.6);
+}
+
+.washi-stripes {
+	background: repeating-linear-gradient(
+		45deg,
+		#fbcfe8,
+		#fbcfe8 10px,
+		#f472b6 10px,
+		#f472b6 20px
+	);
+}
+
+.washi-dots {
+	background-color: #fef08a;
+	background-image: radial-gradient(#ca8a04 1.5px, transparent 1.5px);
+	background-size: 10px 10px;
+}
+
+.washi-grid {
+	background-color: #bbf7d0;
+	background-image:
+		linear-gradient(#16a34a 1px, transparent 1px),
+		linear-gradient(90deg, #16a34a 1px, transparent 1px);
+	background-size: 12px 12px;
+}
+
+.washi-lavender {
+	background: linear-gradient(
+		135deg,
+		#e9d5ff 25%,
+		#c084fc 25%,
+		#c084fc 50%,
+		#e9d5ff 50%,
+		#e9d5ff 75%,
+		#c084fc 75%,
+		#c084fc 100%
+	);
+	background-size: 20px 20px;
+}
+
+.washi-kraft {
+	background: #d4a373;
+	border-color: #a98467;
+}
+
+/* Sticky Note */
+.sticker-item[data-type="note"] {
+	width: 180px;
+	min-height: 140px;
+	padding: 16px;
+	border-radius: 2px 2px 12px 2px;
+	box-shadow:
+		0 8px 18px rgba(0, 0, 0, 0.15),
+		0 2px 4px rgba(0, 0, 0, 0.1);
+	font-family: var(--writing-font);
+	font-size: 1.15rem;
+	color: #2b2520;
+	display: flex;
+	flex-direction: column;
+}
+
+.note-yellow {
+	background: #fef9c3;
+}
+.note-pink {
+	background: #ffe4e6;
+}
+.note-mint {
+	background: #dcfce7;
+}
+.note-blue {
+	background: #e0f2fe;
+}
+.note-lavender {
+	background: #f3e8ff;
+}
+
+.note-pin {
+	position: absolute;
+	top: -8px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	background: radial-gradient(circle at 35% 35%, #ff4d4d, #990000);
+	box-shadow: 0 2px 4px rgba(0, 0, 0, 0.4);
+}
+
+.note-textarea {
+	width: 100%;
+	height: 100%;
+	min-height: 100px;
+	background: transparent;
+	border: none;
+	outline: none;
+	font-family: inherit;
+	font-size: inherit;
+	color: inherit;
+	resize: none;
+	line-height: 1.35;
+}
+
+/* Polaroid Photo Card */
+.sticker-item[data-type="polaroid"] {
+	background: #ffffff;
+	padding: 10px 10px 32px 10px;
+	box-shadow:
+		0 10px 24px rgba(0, 0, 0, 0.2),
+		0 2px 6px rgba(0, 0, 0, 0.12);
+	border-radius: 3px;
+	width: 180px;
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+}
+
+.polaroid-img-box {
+	width: 160px;
+	height: 140px;
+	background: #e2e8f0;
+	border-radius: 2px;
+	overflow: hidden;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	font-size: 2.5rem;
+}
+
+.polaroid-img {
+	width: 100%;
+	height: 100%;
+	object-fit: cover;
+}
+
+.polaroid-caption {
+	margin-top: 8px;
+	font-family: var(--writing-font);
+	font-size: 1.05rem;
+	color: #334155;
+	text-align: center;
+	width: 100%;
+	border: none;
+	background: transparent;
+	outline: none;
+}
+
+/* Sticker Transform Controls Overlay */
+.transform-controls {
+	position: absolute;
+	top: -46px;
+	left: 50%;
+	transform: translateX(-50%);
+	background: var(--ui-surface);
+	border: 1px solid var(--ui-border);
+	border-radius: 20px;
+	padding: 4px 10px;
+	display: flex;
+	gap: 6px;
+	align-items: center;
+	box-shadow: 0 6px 16px rgba(0, 0, 0, 0.35);
+	z-index: 100;
+	pointer-events: auto;
+}
+
+.ctrl-btn {
+	background: transparent;
+	border: none;
+	color: var(--ui-text);
+	cursor: pointer;
+	font-size: 0.82rem;
+	padding: 2px 6px;
+	border-radius: 4px;
+	transition: all 0.15s;
+}
+
+.ctrl-btn:hover {
+	color: var(--accent);
+	background: var(--ui-card);
+}
+
+.rotate-handle {
+	position: absolute;
+	top: -16px;
+	left: 50%;
+	transform: translateX(-50%);
+	width: 18px;
+	height: 18px;
+	background: var(--accent);
+	border: 2px solid #ffffff;
+	border-radius: 50%;
+	cursor: grab;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+	pointer-events: auto;
+}
+
+.scale-handle {
+	position: absolute;
+	bottom: -8px;
+	right: -8px;
+	width: 18px;
+	height: 18px;
+	background: var(--accent);
+	border: 2px solid #ffffff;
+	border-radius: 50%;
+	cursor: se-resize;
+	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
+	pointer-events: auto;
+}
+
+/* SVG Color Tint Bar in Transform Controls */
+.svg-tint-picker {
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	border-left: 1px solid var(--ui-border);
+	padding-left: 6px;
+	margin-left: 4px;
+}
+
+.svg-tint-dot {
+	width: 14px;
+	height: 14px;
+	border-radius: 50%;
+	cursor: pointer;
+	border: 1px solid rgba(255, 255, 255, 0.4);
+	transition: transform 0.15s;
+}
+
+.svg-tint-dot:hover {
+	transform: scale(1.3);
+}
+
+/* ── Pagination & Writing Stats Floating Bar ───────────────────────────────── */
+.bottom-dock {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	width: 100%;
+	max-width: 1140px;
+	margin-top: 12px;
+	padding: 4px 8px;
+	z-index: 30;
+}
+
+.pagination-controls {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	background: var(--ui-surface);
+	border: 1px solid var(--ui-border);
+	padding: 4px 12px;
+	border-radius: 20px;
+}
+
+.page-nav-btn {
+	background: transparent;
+	border: none;
+	color: var(--ui-text);
+	cursor: pointer;
+	font-size: 0.82rem;
+	padding: 2px 6px;
+	border-radius: 4px;
+	transition: color 0.15s;
+}
+
+.page-nav-btn:hover {
+	color: var(--accent);
+}
+
+.spread-indicator {
+	font-size: 0.8rem;
+	color: var(--ui-text-muted);
+	font-weight: 600;
+}
+
+.writing-metrics {
+	font-size: 0.8rem;
+	color: var(--ui-text-muted);
+	background: var(--ui-surface);
+	border: 1px solid var(--ui-border);
+	padding: 4px 12px;
+	border-radius: 20px;
+	display: flex;
+	align-items: center;
+	gap: 12px;
+}
+
+/* ── Zen Focus Writing Mode ────────────────────────────────────────────────── */
+body.zen-focus .app-header,
+body.zen-focus .craft-ribbon {
+	transform: translateY(-100%);
+	opacity: 0;
+	pointer-events: none;
+	position: absolute;
+}
+
+body.zen-focus .stage-container {
+	padding: 12px;
+}
+
+body.zen-focus .diary-book {
+	max-width: 96vw;
+	min-height: 90vh;
+}
+
+.zen-exit-btn {
+	position: fixed;
+	top: 16px;
+	right: 16px;
+	background: var(--ui-surface);
+	color: var(--ui-text);
+	border: 1px solid var(--ui-border);
+	padding: 6px 14px;
+	border-radius: 20px;
+	font-size: 0.82rem;
+	cursor: pointer;
+	display: none;
+	z-index: 200;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+}
+
+body.zen-focus .zen-exit-btn {
+	display: block;
+}
+
+/* Modal / Drawer Panels */
+.drawer-panel {
+	position: fixed;
+	bottom: 0;
+	left: 0;
+	right: 0;
+	background: var(--ui-surface);
+	border-top: 1px solid var(--ui-border);
+	box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
+	padding: 16px 24px;
+	z-index: 1000;
+	transform: translateY(105%);
+	transition: transform 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+	max-height: 52vh;
+	display: flex;
+	flex-direction: column;
+}
+
+.drawer-panel.open {
+	transform: translateY(0);
+}
+
+.drawer-header {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	margin-bottom: 10px;
+}
+
+.drawer-title {
+	font-size: 1.05rem;
+	font-weight: 700;
+	color: var(--ui-text);
+	display: flex;
+	align-items: center;
+	gap: 8px;
+}
+
+.drawer-search-box {
+	background: var(--ui-card);
+	border: 1px solid var(--ui-border);
+	border-radius: 20px;
+	padding: 5px 14px;
+	color: var(--ui-text);
+	font-size: 0.82rem;
+	outline: none;
+	width: 260px;
+	transition: border-color 0.2s;
+}
+
+.drawer-search-box:focus {
+	border-color: var(--accent);
+}
+
+.drawer-tabs {
+	display: flex;
+	gap: 6px;
+	border-bottom: 1px solid var(--ui-border);
+	padding-bottom: 8px;
+	margin-bottom: 12px;
+	overflow-x: auto;
+}
+
+.drawer-tab {
+	background: transparent;
+	border: none;
+	color: var(--ui-text-muted);
+	padding: 5px 12px;
+	border-radius: 16px;
+	font-size: 0.85rem;
+	cursor: pointer;
+	white-space: nowrap;
+}
+
+.drawer-tab.active {
+	background: var(--accent);
+	color: #ffffff;
+	font-weight: 600;
+}
+
+.sticker-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fill, minmax(68px, 1fr));
+	gap: 12px;
+	overflow-y: auto;
+	padding: 8px 4px;
+}
+
+.sticker-option {
+	background: var(--ui-card);
+	border: 1px solid var(--ui-border);
+	border-radius: var(--radius-md);
+	font-size: 2rem;
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	height: 68px;
+	cursor: pointer;
+	transition: all 0.2s;
+	color: var(--ui-text);
+}
+
+.sticker-option:hover {
+	border-color: var(--accent);
+	transform: scale(1.1);
+	background: var(--accent-subtle);
+}
+
+/* Doodle Controls Bar */
+.doodle-bar {
+	display: none;
+	align-items: center;
+	gap: 12px;
+	background: var(--ui-card);
+	padding: 6px 14px;
+	border-radius: var(--radius-md);
+	border: 1px solid var(--ui-border);
+}
+
+.doodle-bar.show {
+	display: flex;
+}
+
+.color-dot {
+	width: 20px;
+	height: 20px;
+	border-radius: 50%;
+	cursor: pointer;
+	border: 2px solid transparent;
+	transition: transform 0.15s;
+}
+
+.color-dot.active {
+	border-color: #ffffff;
+	transform: scale(1.2);
+}
+
+/* Toast Notifications */
+.toast-notice {
+	position: fixed;
+	bottom: 24px;
+	left: 50%;
+	transform: translateX(-50%) translateY(100px);
+	background: #18181b;
+	color: #fafafa;
+	border: 1px solid #3f3f46;
+	padding: 10px 20px;
+	border-radius: 30px;
+	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
+	font-size: 0.9rem;
+	font-weight: 500;
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	z-index: 2000;
+	transition:
+		transform 0.3s cubic-bezier(0.16, 1, 0.3, 1),
+		opacity 0.3s;
+	opacity: 0;
+	pointer-events: none;
+}
+
+.toast-notice.show {
+	transform: translateX(-50%) translateY(0);
+	opacity: 1;
+}
+
+/* Mobile & Tablet Responsiveness */
+@media (max-width: 860px) {
+	.diary-book {
+		flex-direction: column;
+		min-height: auto;
+		padding: 10px;
+	}
+
+	.book-spine-rings {
+		display: none;
+	}
+
+	.pages-spread {
+		flex-direction: column;
+	}
+
+	.page-left {
+		border-right: none;
+		border-bottom: 1px solid var(--line-color);
+		box-shadow: none;
+		min-height: 440px;
+	}
+
+	.page-right {
+		box-shadow: none;
+		min-height: 480px;
+	}
+
+	.app-header {
+		padding: 0 10px;
+	}
+
+	.craft-ribbon {
+		padding: 6px 10px;
+		gap: 6px;
+	}
+
+	.drawer-search-box {
+		width: 160px;
+	}
+}
