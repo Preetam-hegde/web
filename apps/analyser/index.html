@@ -1,122 +1,109 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Sorting Visualizer</title>
-    <link rel="stylesheet" href="style.css">
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600&display=swap" rel="stylesheet">
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<title>DSA Visualizer</title>
+	<meta name="description" content="Step-by-step visualizations of sorting, searching, stacks, queues, linked lists, trees, heaps, graphs, pathfinding, dynamic programming and backtracking.">
+	<meta name="color-scheme" content="dark">
+	<link rel="preconnect" href="https://fonts.googleapis.com">
+	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+	<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@500;700&family=Space+Mono:wght@400;700&display=swap" rel="stylesheet">
+	<link rel="stylesheet" href="style.css">
 	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body>
-    <div class="container">
-        <header class="header">
-            <h1>Sorting Algorithm Visualizer</h1>
-            <p>Interactive visualization to understand sorting algorithms</p>
-        </header>
+	<div class="app">
+		<header class="topbar">
+			<a class="back" href="../../index.html">&larr; Portfolio</a>
+			<div class="brand">
+				<span class="brand-mark" aria-hidden="true"></span>
+				<h1>DSA Visualizer</h1>
+			</div>
+			<p class="tagline">Watch data structures and algorithms think — step, rewind and scrub every move.</p>
+		</header>
 
-        <div class="controls-container">
-            <div class="controls">
-                <div class="control-group algorithm-control">
-                    <label for="algorithm">Algorithm</label>
-                    <select id="algorithm">
-                        <option value="bubble">Bubble Sort</option>
-                        <option value="insertion">Insertion Sort</option>
-                        <option value="selection">Selection Sort</option>
-                        <option value="quick">Quick Sort</option>
-                        <option value="merge">Merge Sort</option>
-                    </select>
-                </div>
+		<nav class="groups" id="groups" aria-label="Topics"></nav>
+		<nav class="algos" id="algos" aria-label="Algorithms"></nav>
 
-                <div class="control-group size-control">
-                    <label for="size">Array Size</label>
-                    <div class="range-input">
-                        <input type="range" id="size" min="5" max="100" value="50">
-                        <span id="size-value">50</span>
-                    </div>
-                </div>
+		<section class="controls" id="controls" aria-label="Controls"></section>
 
-                <div class="control-group speed-control">
-                    <label for="speed">Speed</label>
-                    <div class="range-input">
-                        <input type="range" id="speed" min="1" max="100" value="50">
-                        <span id="speed-value">Medium</span>
-                    </div>
-                </div>
+		<main class="workspace">
+			<section class="stage-card">
+				<div class="stage-head">
+					<h2 id="stage-title"></h2>
+					<div class="legend" id="legend"></div>
+				</div>
 
-                <div class="control-group dataset-control">
-                    <label for="distribution">Array Pattern</label>
-                    <select id="distribution">
-                        <option value="random">Random</option>
-                        <option value="nearly-sorted">Nearly Sorted</option>
-                        <option value="reversed">Reverse Sorted</option>
-                        <option value="few-unique">Few Unique Values</option>
-                    </select>
-                </div>
-            </div>
+				<div class="stage" id="stage">
+					<div class="view v-bars" id="v-bars" hidden></div>
+					<div class="view v-net" id="v-net" hidden></div>
+					<div class="view v-lin" id="v-lin" hidden></div>
+					<div class="view v-table" id="v-table" hidden></div>
+					<div class="view v-board" id="v-board" hidden></div>
+					<div class="view v-grid" id="v-grid" hidden></div>
+					<div class="view v-strip" id="v-strip" hidden></div>
+				</div>
 
-            <div class="buttons">
-                <button id="generate" class="primary-action">New Array</button>
-                <button id="sort" class="accent-action">Run Sort</button>
-                <button id="pause" class="secondary-action" disabled>Pause</button>
-                <button id="stop" class="secondary-action" disabled>Stop</button>
-            </div>
+				<p class="narration" id="narration" aria-live="polite"></p>
+				<div class="stats" id="stats"></div>
 
-            <section class="runtime-panel">
-                <div class="runtime-header">
-                    <span class="runtime-label">Status</span>
-                    <span id="run-status" class="runtime-value" data-state="idle">Idle</span>
-                </div>
-                <div class="stats-grid">
-                    <div class="stat-card">
-                        <span class="stat-label">Algorithm</span>
-                        <span class="stat-value" id="stat-algorithm">Bubble Sort</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">Comparisons</span>
-                        <span class="stat-value" id="stat-comparisons">0</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">Swaps</span>
-                        <span class="stat-value" id="stat-swaps">0</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">Array Size</span>
-                        <span class="stat-value" id="stat-size">50</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">Elapsed</span>
-                        <span class="stat-value" id="stat-time">00:00</span>
-                    </div>
-                    <div class="stat-card">
-                        <span class="stat-label">Step Delay</span>
-                        <span class="stat-value" id="stat-delay">0 ms</span>
-                    </div>
-                </div>
-            </section>
-        </div>
+				<div class="player">
+					<button type="button" class="icon-btn" id="btn-first" aria-label="Restart" title="Restart (Home)">
+						<svg viewBox="0 0 24 24"><path d="M6 5v14M19 5.5v13L9 12z"/></svg>
+					</button>
+					<button type="button" class="icon-btn" id="btn-prev" aria-label="Step back" title="Step back (←)">
+						<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
+					</button>
+					<button type="button" class="icon-btn play" id="btn-play" aria-label="Play" title="Play / pause (Space)">
+						<svg class="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13L19 12z"/></svg>
+						<svg class="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>
+					</button>
+					<button type="button" class="icon-btn" id="btn-next" aria-label="Step forward" title="Step forward (→)">
+						<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
+					</button>
+					<button type="button" class="icon-btn" id="btn-last" aria-label="Jump to end" title="Jump to end (End)">
+						<svg viewBox="0 0 24 24"><path d="M18 5v14M5 5.5v13L15 12z"/></svg>
+					</button>
+					<input type="range" id="scrub" class="scrub" min="0" max="0" value="0" aria-label="Timeline">
+					<span class="step-count" id="step-count">1 / 1</span>
+					<label class="speed">
+						<span>Speed</span>
+						<input type="range" id="speed" min="0" max="8" value="3">
+						<output id="speed-label">1×</output>
+					</label>
+				</div>
+			</section>
 
-        <div class="algorithm-info-container">
-            <section id="algorithm-definition" class="algorithm-section">
-                <h2>Algorithm Definition</h2>
-                <p id="definition-text">Select an algorithm from the dropdown to view its definition.</p>
-            </section>
+			<aside class="info-card">
+				<h3 id="info-name"></h3>
+				<p class="blurb" id="info-blurb"></p>
+				<div class="eli5" id="eli5"></div>
+				<h4>How fast?</h4>
+				<div class="complexity" id="complexity"></div>
+				<h4>Pseudocode</h4>
+				<div class="codebox">
+					<div class="codebar"><i></i><i></i><i></i><span>pseudocode.txt</span></div>
+					<ol class="code" id="code"></ol>
+				</div>
+			</aside>
+		</main>
 
-            <section id="algorithm-complexity" class="algorithm-section">
-                <h2>Time Complexity</h2>
-                <p id="complexity-text">Time complexity will be displayed here after algorithm selection.</p>
-            </section>
-        </div>
+		<footer class="foot">
+			Built with love by Preetam Ptwo &middot; Space plays, &larr; &rarr; step, Home / End jump
+		</footer>
+	</div>
 
-
-        <div class="visualization">
-            <div id="array-container"></div>
-        </div>
-    </div>
-
-    <footer id="footer">
-        -- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" style="border:none; vertical-align:middle;" allowFullScreen></iframe> By Preetam Ptwo --
-    </footer>
-
-    <script src="script.js"></script>
+	<script src="js/core.js"></script>
+	<script src="js/eli5.js"></script>
+	<script src="js/views.js"></script>
+	<script src="js/sorting.js"></script>
+	<script src="js/searching.js"></script>
+	<script src="js/structures.js"></script>
+	<script src="js/trees.js"></script>
+	<script src="js/graphs.js"></script>
+	<script src="js/grid.js"></script>
+	<script src="js/dp.js"></script>
+	<script src="js/app.js"></script>
 </body>
 </html>
