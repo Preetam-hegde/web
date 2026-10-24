@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0">
+	<title>Illusion Museum</title>
+	<meta name="description" content="A walk-through museum of five canvas illusions: bouncing, dividing and shattering balls, a gravity vortex, and a nine-dimension starfield.">
+	<link rel="stylesheet" href="styles.css">
+	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
+	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
+</head>
+<body>
+	<canvas id="museumCanvas" role="img" aria-label="Animated illusion exhibit"></canvas>
+
+	<header class="museum-bar">
+		<div class="brand">
+			<span class="brand-mark" aria-hidden="true">◈</span>
+			<span class="brand-name">Illusion Museum</span>
+		</div>
+		<nav id="rooms" class="rooms" aria-label="Exhibits"></nav>
+		<div class="bar-actions">
+			<button type="button" id="tour-btn" class="chip" aria-pressed="false" title="Auto-tour (T)">Tour</button>
+			<button type="button" id="pause-btn" class="chip" aria-pressed="false" title="Pause (Space)">Pause</button>
+			<button type="button" id="panel-btn" class="chip" aria-expanded="true" aria-controls="panel" title="Controls (C)">Controls</button>
+		</div>
+	</header>
+
+	<aside id="placard" class="placard" aria-live="polite">
+		<p class="placard-no" id="placard-no"></p>
+		<h1 id="placard-title"></h1>
+		<p id="placard-blurb"></p>
+		<p class="placard-hint" id="placard-hint"></p>
+	</aside>
+
+	<aside id="panel" class="panel">
+		<div class="control-group">
+			<label for="palette-select"><span class="lbl">Dimension (palette)</span></label>
+			<select id="palette-select"></select>
+		</div>
+		<div id="controls-body"></div>
+		<div class="control-group control-check" id="shooting-row">
+			<label for="shooting-toggle">
+				<input type="checkbox" id="shooting-toggle" checked>
+				<span class="lbl">Shooting stars</span>
+			</label>
+		</div>
+	</aside>
+
+	<footer id="footer">
+		-- With Love <iframe src="https://giphy.com/embed/DCUz9t7BK8VFuSqRWH" width="24" height="20" title="Heart animation" allowfullscreen></iframe> By Preetam Ptwo --
+	</footer>
+
+	<script src="script.js"></script>
+</body>
+</html>

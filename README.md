@@ -15,6 +15,7 @@ Source for [preetamhegde.in](https://preetamhegde.in): two portfolio front-ends 
 | [Keystorm](apps/keystorm/index.html) | Typing game with five modes and per-key analytics |
 | [Faceoff](apps/faceoff/index.html) | Two-player duels on one phone: timing, hangman, couple games, shareable result card |
 | [VectorDrift](apps/vectordrift/index.html) | Bullet-hell cursor-grazing game with post-run telemetry |
+| [Particle Life](apps/particle-life/index.html) | Artificial life & emergent ecosystem with multi-species physics and sound synthesis |
 | [DevPulse](apps/live-analytics-dashboard/index.html) | Real-time developer and systems telemetry dashboard |
 | [GeoLocation Explorer](apps/geo-location/index.html) | Geolocation, IP/phone lookup, coordinate conversion and mapping |
 

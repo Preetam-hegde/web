@@ -11,12 +11,12 @@ function getGameProjects() {
     'apps/synapse/index.html',
     'apps/dreamscape/index.html',
     'apps/bharatvarsha/index.html',
-    'apps/cellular-automata/index.html',
+    'apps/particle-life/index.html',
     'apps/natural-selection-sim/index.html'
   ];
   return sharedProjects.filter(p => {
     return gameSlugs.includes(p.link) ||
-      (p.tech && (p.tech.includes('Game Design') || p.tech.includes('Simulation') || p.tech.includes('Cellular Automata')));
+      (p.tech && (p.tech.includes('Game Design') || p.tech.includes('Simulation') || p.tech.includes('Artificial Life') || p.tech.includes('Cellular Automata')));
   });
 }
 
@@ -185,7 +185,7 @@ function setupInteractiveShell() {
     '/': ['home/', 'projects/', 'games/', 'experience/', 'resume/', 'contact/', 'README.md'],
     '/home': ['about_me.txt', 'skills.json', 'resume.md', 'whoami.txt'],
     '/projects': ['featured.list', 'open <name-or-index>'],
-    '/games': ['aim-trainer', 'keystorm', 'faceoff', 'vectordrift', 'synapse', 'dreamscape', 'bharatvarsha', 'cellular-automata', 'natural-selection-sim'],
+    '/games': ['aim-trainer', 'keystorm', 'faceoff', 'vectordrift', 'synapse', 'dreamscape', 'bharatvarsha', 'particle-life', 'natural-selection-sim'],
     '/experience': ['career.log'],
     '/resume': ['summary.txt', 'skills.list', 'experience.list', 'highlights.list', 'resume.pdf'],
     '/contact': ['contact.txt', 'resume.md', 'resume.pdf']
