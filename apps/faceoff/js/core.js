@@ -283,6 +283,7 @@ function reveal() {
 		m.pts[1] = m.pts[0];
 		if (m.res[0].score) sfx.win();
 	} else if (w >= 0) { m.pts[w]++; sfx.win(); }
+	(m.rlog ||= []).push({ w, l: [m.res[0].label, m.res[1].label], pts: [...m.pts] });
 	const pass = m.pass;
 	// Split screen speaks to each player ("You win"); a shared screen names people instead.
 	const verdict = (p) => (coop ? m.game.verdict(m.res[0].score) : w < 0 ? ['tie', 'Draw'] : pass ? ['win', `${esc(nameOf(w))} takes it`] : w === p ? ['win', 'You win the round'] : ['lose', `${esc(nameOf(w))} takes it`]);
@@ -303,14 +304,16 @@ function reveal() {
 	both(head);
 	const champ = coop ? -2 : m.pts[0] === m.pts[1] ? -1 : m.pts[0] > m.pts[1] ? 0 : 1; // -1 draw, -2 together
 	const sum = coop ? m.game.summary(m.pts[0], m.rounds) : null;
-	if (!net) { // the stats are for the two regulars on this phone, not for an online opponent
-		if (champ >= 0) store.series[champ]++;
+	const h2h = headToHead(champ); // read before this match is added to the history
+	if (!net && champ >= 0) store.series[champ]++; // the tally is for the two regulars on this phone
+	{
 		store.plays[m.game.id] = (store.plays[m.game.id] || 0) + 1;
 		logHistory({ g: m.game.id, n: [nameOf(0), nameOf(1)], p: [...m.pts], c: champ, s: sum ? sum.title : '' });
 		save();
 	}
 	const dare = champ >= 0 && store.dares ? choice(allDares()).replace('{w}', nameOf(champ)) : '';
 	m.final = { champ, dare, coop: sum };
+	const insight = coop ? '' : insights(champ, h2h);
 	m.final.card = renderCard(); // built now so the Share tap can hand it straight to the share sheet
 	$('#share').hidden = false;
 	if (champ !== -1) confetti(champ >= 0 ? [['#ff7a59', '#35d6c8'][champ], '#ffd24d', '#fff'] : ['#ff7a59', '#35d6c8', '#ffd24d', '#b794f6']);
@@ -321,6 +324,7 @@ function reveal() {
 		const again = champ === -1 ? 'sudden' : 'again';
 		const s = paint(p, `<div class="hint">${verdict(p)[1]}</div>
 			<div class="res ${champ === p || (pass && champ >= 0) || coop ? 'win' : 'tie'}">${title}</div><div class="hint">${score}</div>
+			${insight}
 			${dare ? `<div class="dare"><b>Dare</b> ${esc(dare)}</div>` : ''}
 			<div class="btns"><button class="btn" type="button" data-act="${again}">${champ === -1 ? 'Sudden death' : 'Rematch'}</button><button class="btn ghost" type="button" data-act="hub">Hub</button></div>`);
 		$$('button', s).forEach((b) => (b.onclick = () => FINAL[b.dataset.act]()));
@@ -352,6 +356,36 @@ function soloReveal() {
 	const s = paint(0, `${result}<div class="rows">${m.run.map((l, i) => `<div class="row"><span>Round ${i + 1}</span><b>${l}</b></div>`).join('')}</div>
 		<div class="btns"><button class="btn" type="button" data-act="again">Play again</button><button class="btn ghost" type="button" data-act="hub">Hub</button></div>`);
 	$$('button', s).forEach((b) => (b.onclick = () => FINAL[b.dataset.act]()));
+}
+
+/* Wins between these two names in this game before today's match, from the saved history. */
+function headToHead() {
+	const [a, b] = [nameOf(0), nameOf(1)];
+	const past = store.history.filter((x) => x.g === m.game.id && x.n?.length === 2 && x.c >= 0 && [x.n[0], x.n[1]].sort().join('|') === [a, b].sort().join('|'));
+	const won = (name) => past.filter((x) => x.n[x.c] === name).length;
+	return { n: past.length, a: won(a), b: won(b) };
+}
+
+/* Result screen insights: who won each round, the swing of the match, and the all-time record for this pair. */
+function insights(champ, h2h) {
+	const log = m.rlog || [];
+	if (log.length < 2) return '';
+	const dot = (w) => (w < 0 ? '<i class="rd tie"></i>' : `<i class="rd" style="background:var(--p${w})"></i>`);
+	const rounds = log.map((r, i) => `<div class="irow"><span>R${i + 1}</span><span>${esc(plainText(r.l[0]))}</span>${dot(r.w)}<span>${esc(plainText(r.l[1]))}</span></div>`).join('');
+	const lines = [];
+	let run = 0, last = -1, best = 0, streaker = -1;
+	log.forEach((r) => {
+		run = r.w >= 0 && r.w === last ? run + 1 : r.w >= 0 ? 1 : 0;
+		last = r.w;
+		if (run > best) { best = run; streaker = r.w; }
+	});
+	if (best >= 2) lines.push(`🔥 ${esc(nameOf(streaker))} won ${best} rounds in a row`);
+	if (champ >= 0 && log.some((r) => (champ === 0 ? r.pts[0] < r.pts[1] : r.pts[1] < r.pts[0]))) lines.push(`↩️ ${esc(nameOf(champ))} came back from behind`);
+	const ties = log.filter((r) => r.w < 0).length;
+	if (ties) lines.push(`🤝 ${ties} round${ties > 1 ? 's' : ''} ended level`);
+	const a = h2h.a + (champ === 0 ? 1 : 0), b = h2h.b + (champ === 1 ? 1 : 0);
+	if (a + b) lines.push(`📊 ${esc(nameOf(0))} ${a} – ${b} ${esc(nameOf(1))} in ${m.game.name}, all time`);
+	return `<div class="insight"><div class="irows">${rounds}</div>${lines.map((l) => `<div class="iline">${l}</div>`).join('')}</div>`;
 }
 
 const FINAL = {

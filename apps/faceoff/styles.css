@@ -785,3 +785,12 @@ body[data-big='1'] .stage .res { font-size: 2rem; }
 body[data-big='1'] .card h3, body[data-big='1'] .mode b { font-size: 1.35rem; }
 body[data-big='1'] .card p, body[data-big='1'] .mode small { font-size: 1rem; }
 .stage .used { max-width: 440px; }
+
+/* result insights */
+.insight { width: min(100%, 420px); display: grid; gap: 8px; margin: 6px 0; padding: 12px 14px; border: 1px solid var(--line); border-radius: 16px; background: rgba(0, 0, 0, 0.35); font-size: 0.9rem; text-align: left; }
+.irows { display: grid; gap: 4px; max-height: 24vh; overflow: auto; }
+.irow { display: grid; grid-template-columns: 2.2em 1fr auto 1fr; gap: 8px; align-items: center; font: 500 0.78rem var(--mono); color: var(--mute); }
+.irow span:nth-child(2) { text-align: right; }
+.rd { width: 10px; height: 10px; border-radius: 50%; background: var(--mute); }
+.iline { color: var(--ink); }
+.srow small { grid-column: 1 / -1; color: var(--mute); font-size: 0.78rem; }

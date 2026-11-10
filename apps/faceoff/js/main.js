@@ -155,17 +155,18 @@ function renderParty() {
 
 /* Two phones: make a room or join one. Everything after that is in net.js. */
 function renderRoom() {
-	const key = `${lobby.state}|${lobby.code}|${lobby.msg}`;
+	const key = `${lobby.state}|${lobby.code}|${lobby.msg}|${lobby.invite || ''}`;
 	const room = $('#room');
 	if (room.dataset.key === key) return;
 	room.dataset.key = key;
 	const L = lobby;
-	const name = `<label class="who" style="--c: var(--p0)"><i></i><input id="myName" maxlength="14" placeholder="Your name" autocomplete="off" value="${esc(store.names[0])}" aria-label="Your name"></label>`;
+	const name = `<label class="who" style="--c: var(--p0)"><i></i><input id="myName" maxlength="14" placeholder="Your name" autocomplete="off" value="${esc(store.names[0])}" aria-label="Your name"${L.invite ? ' autofocus' : ''}></label>`;
 	const wait = (txt) => `<h2 class="stepttl">${txt}</h2><button class="btn ghost" type="button" data-a="cancel">Cancel</button>`;
 	room.innerHTML = L.state === 'hosting'
 		? `<h2 class="stepttl">Your room</h2><p class="stepsub">Your friend scans this with their camera, or opens Faceoff, picks <b>Two phones</b> and types the code.</p><div class="qr" id="qr"></div><div class="tcode">${L.code}</div><button class="btn" type="button" data-a="share">Send invite link</button><p class="stepsub">Waiting for your friend…</p><button class="btn ghost" type="button" data-a="cancel">Cancel</button>`
 		: L.state === 'starting' ? wait('Opening a room…')
 		: L.state === 'joining' ? wait(`Joining ${L.code}…`)
+		: L.invite ? `<h2 class="stepttl">Join room ${esc(L.invite)}</h2><p class="stepsub">Your friend invited you. What should they call you?</p>${L.state === 'error' ? `<p class="oops">${esc(L.msg)}</p>` : ''}${name}<button class="btn" type="button" data-a="accept">Join</button><button class="btn ghost" type="button" data-a="decline">Not now</button>`
 		: `<h2 class="stepttl">Two phones</h2><p class="stepsub">One of you makes a room, the other joins it with the code. You each play on your own phone.</p>${L.state === 'error' ? `<p class="oops">${esc(L.msg)}</p>` : ''}${name}<button class="btn" type="button" data-a="create">Make a room</button><div class="or">or join a friend</div><input class="tinput" id="joinCode" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Room code"><button class="btn ghost" type="button" data-a="join">Join</button>`;
 	if (L.state === 'hosting') loadQr().then(() => { if (lobby.state === 'hosting' && $('#qr')) $('#qr').innerHTML = qrSvg(inviteUrl(L.code)); }).catch(() => { /* no QR: the code and link still work */ });
 }
@@ -196,8 +197,18 @@ $('#room').oninput = (e) => {
 };
 $('#room').onclick = async (e) => {
 	const act = e.target.closest('[data-a]')?.dataset.a;
-	if (act === 'create') netHost();
-	if (act === 'join') netJoin($('#joinCode').value);
+	const named = () => {
+		if ((store.names[0] || '').trim()) return true;
+		const box = $('#myName');
+		box.focus();
+		box.placeholder = 'Type your name first';
+		sfx.bad();
+		return false;
+	};
+	if (act === 'create' && named()) netHost();
+	if (act === 'join' && named()) netJoin($('#joinCode').value);
+	if (act === 'accept' && named()) { const c = lobby.invite; lobby.invite = ''; netJoin(c); }
+	if (act === 'decline') { lobby.invite = ''; lobbySet('idle'); }
 	if (act === 'cancel') { netCancel(); lobbySet('idle'); }
 	if (act === 'share') {
 		const url = inviteUrl(lobby.code);
@@ -287,6 +298,14 @@ function renderStats() {
 	const tile = (n, label, c = '') => `<div class="tile"${c ? ` style="--c:${c}"` : ''}><b>${n}</b><small>${label}</small></div>`;
 	const gameOf = (id) => GAMES.find((y) => y.id === id) || PARTY.find((y) => y.id === id);
 	const bests = GAMES.filter((g) => store.best[g.id]).map((g) => `<div class="srow"><b>${gameIcon(g.id)} ${g.name}</b><span>${esc(store.best[g.id].l)}</span><span>★</span></div>`).join('');
+	const names = [...new Set(duo.flatMap((x) => x.n))];
+	const perGame = GAMES.map((g) => {
+		const mine = duo.filter((x) => x.g === g.id);
+		if (!mine.length) return '';
+		const tally = names.map((n) => [n, mine.filter((x) => x.c >= 0 && x.n[x.c] === n).length]).filter(([, w]) => w).sort((a, b) => b[1] - a[1]);
+		const draws = mine.filter((x) => x.c < 0).length;
+		return `<div class="srow"><b>${gameIcon(g.id)} ${g.name}</b><span>${mine.length}×</span><small>${tally.map(([n, w]) => `${esc(n)} ${w}`).join(' · ') || 'no wins yet'}${draws ? ` · ${draws} draw${draws > 1 ? 's' : ''}` : ''}</small></div>`;
+	}).join('');
 	const day = (t) => new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
 	const time = (t) => new Date(t).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
 	const line = (x) => {
@@ -305,6 +324,7 @@ function renderStats() {
 	$('#statsBody').innerHTML = h.length
 		? `<div class="tiles">${tile(h.length, 'plays')}${tile(h.filter((x) => kindOf(x) === 'solo').length, 'solo runs', 'var(--win)')}${tile(wins[0], `${esc(nameOf(0))} wins`, 'var(--p0)')}${tile(wins[1], `${esc(nameOf(1))} wins`, 'var(--p1)')}</div>
 			${bests ? `<div class="stat-list"><h3>Personal bests</h3>${bests}</div>` : ''}
+			${perGame ? `<div class="stat-list"><h3>Wins by game</h3>${perGame}</div>` : ''}
 			<div class="stat-list"><h3>Everything you played</h3><div class="seg htabs" role="group" aria-label="Filter">${HIST_TABS.map(([id, n]) => `<button type="button" data-t="${id}" aria-pressed="${id === histTab}">${n}</button>`).join('')}</div>${rows || '<p class="empty">Nothing here yet.</p>'}</div>`
 		: '<p class="empty">Nothing played yet. Finish a game and it shows up here.</p>';
 }
@@ -347,4 +367,4 @@ renderHub();
 
 // A friend's invite link opens straight into joining their room.
 const invite = new URLSearchParams(location.search).get('join');
-if (invite) { go('room', { mode: 'online' }); netJoin(invite); }
+if (invite) { lobby.invite = invite.toUpperCase().slice(0, 4); go('room', { mode: 'online' }); } // ask for a name before joining
