@@ -62,7 +62,7 @@ const Teach = (() => {
 	function kid(id, domId = 'like-5') {
 		const m = store[id];
 		if (!m) return '';
-		return `<section class="eli5 teach-kid"${domId ? ` id="${domId}"` : ''}><div class="eli5-head"><span class="eli5-emoji" aria-hidden="true">${esc(m.kid.emoji)}</span><b>Explain it like I'm 5</b></div><p>${fmt(m.kid.story)}</p><ol>${m.kid.say.map((s) => `<li>${fmt(s)}</li>`).join('')}</ol></section>`;
+		return `<section class="eli5 teach-kid"${domId ? ` id="${domId}"` : ''}><div class="eli5-head"><span class="eli5-emoji" aria-hidden="true">${esc(m.kid.emoji)}</span><b>The simple version</b></div><p>${fmt(m.kid.story)}</p><ol>${m.kid.say.map((s) => `<li>${fmt(s)}</li>`).join('')}</ol></section>`;
 	}
 
 	// Top of the lesson: the simplest possible version, a real example, a picture.

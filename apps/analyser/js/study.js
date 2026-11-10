@@ -168,7 +168,7 @@
 			'</h2><p class="study-lead">' +
 			esc(lesson.lead) +
 			'</p>' +
-			'<nav class="lesson-jumps" aria-label="On this lesson"><button type="button" data-jump="like-5">Like I\'m 5</button><button type="button" data-jump="mental-model">Mental model</button><button type="button" data-jump="worked-example">Worked example</button><button type="button" data-jump="design">Design</button><button type="button" data-jump="boundary">Boundary cases</button><button type="button" data-jump="code-template">Code & reasoning</button><button type="button" data-jump="lesson-practice">Practice</button></nav></header>' +
+			'<nav class="lesson-jumps" aria-label="On this lesson"><button type="button" data-jump="like-5">Simple version</button><button type="button" data-jump="mental-model">Mental model</button><button type="button" data-jump="worked-example">Worked example</button><button type="button" data-jump="design">Design</button><button type="button" data-jump="boundary">Boundary cases</button><button type="button" data-jump="code-template">Code & reasoning</button><button type="button" data-jump="lesson-practice">Practice</button></nav></header>' +
 			Teach.intro(lesson.id) +
 			'<section class="study-callout" id="mental-model"><p class="eyebrow">The mental model</p><p>' +
 			esc(lesson.model) +

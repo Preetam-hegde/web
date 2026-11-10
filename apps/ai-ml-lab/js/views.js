@@ -281,7 +281,7 @@ const AIViews = (() => {
 					['Slope w', number(f.w)],
 					['Intercept b', number(f.b)],
 				];
-				note = `Update ${index}: ŷ = ${number(f.w)}x + ${number(f.b)}. Mean squared error = ${number(f.loss)}. Pink segments are residuals on seven synthetic points.`;
+				note = `Update ${index}: ŷ = ${number(f.w)}x + ${number(f.b)}. Mean squared error = ${number(f.loss)}. Orange segments are residuals on seven synthetic points.`;
 				break;
 			}
 			case 'gradient': {
@@ -356,7 +356,7 @@ const AIViews = (() => {
 					text(
 						40,
 						28,
-						'TRUE CLASS 1 (pink) · TRUE CLASS 0 (blue)',
+						'TRUE CLASS 1 (orange) · TRUE CLASS 0 (blue)',
 						'chart-label',
 					) + line(65, 134, 590, 134, 'var(--control-line)');
 				scores.forEach((score, i) => {
@@ -466,12 +466,12 @@ const AIViews = (() => {
 					text(
 						65,
 						25,
-						'CLASS 0: PINK · CLASS 1: BLUE · QUERY: YELLOW',
+						'CLASS 0: ORANGE · CLASS 1: BLUE · QUERY: RING',
 						'chart-label',
 					) + axis('feature 1', 'feature 2');
 				ranked.forEach((d) => {
 					if (phase === 1 || (phase >= 2 && nearest.includes(d)))
-						svg += plotLine(...query, ...d.point, '#b7a08d', '3 4');
+						svg += plotLine(...query, ...d.point, 'var(--ink-soft)', '3 4');
 				});
 				ranked.forEach((d) => {
 					svg += plotDot(
@@ -514,7 +514,7 @@ const AIViews = (() => {
 					text(
 						65,
 						25,
-						'CLASS 0: PINK · CLASS 1: BLUE · CANDIDATE SPLIT',
+						'CLASS 0: ORANGE · CLASS 1: BLUE · CANDIDATE SPLIT',
 						'chart-label',
 					) +
 					axis('feature x', 'feature y') +
@@ -590,14 +590,14 @@ const AIViews = (() => {
 					const scale = M.dot(point, direction),
 						projection = direction.map((v) => v * scale);
 					svg +=
-						plotLine(...point, ...projection, '#c7b6a0') +
+						plotLine(...point, ...projection, 'var(--control-line)') +
 						plotDot(...point) +
 						plotDot(...projection, gold, 4);
 				});
 				svg += text(
 					70,
 					338,
-					'Solid: your direction · dashed pink: computed PC1',
+					'Solid: your direction · dashed orange: computed PC1',
 					'chart-label',
 				);
 				stats = [
@@ -617,8 +617,8 @@ const AIViews = (() => {
 						'A SINGLE ReLU NEURON · change w₁ and watch the gate',
 						'chart-label',
 					) +
-					line(120, 110, 330, 180, '#a585a1') +
-					line(120, 250, 330, 180, '#a585a1') +
+					line(120, 110, 330, 180, 'var(--ink-soft)') +
+					line(120, 250, 330, 180, 'var(--ink-soft)') +
 					line(360, 180, 520, 180) +
 					circle(110, 110, 37, colors[1]) +
 					circle(110, 250, 37, colors[1]) +
@@ -674,7 +674,7 @@ const AIViews = (() => {
 				});
 				if (phase >= 2)
 					svg +=
-						line(550, 235, 85, 235, '#be7391') +
+						line(550, 235, 85, 235, 'var(--rose-ink)') +
 						text(
 							330,
 							264,
