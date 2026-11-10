@@ -1668,6 +1668,62 @@ const AICourse = (() => {
 			],
 		},
 		{
+			id: 'agents',
+			group: 'language',
+			title: 'Prompts, tools & AI agents',
+			story:
+				'A new assistant with a to-do list and a toolbox does not guess everything from memory. It reads the instructions, decides whether to use the calculator or the search box, looks at what comes back, and keeps going until the job is done or the time is up. An AI agent is a language model wrapped in that loop.',
+			detail:
+				'A prompt sets role, rules, examples, and the required output format. Function calling lets the model request a named tool with structured arguments, while ordinary code runs the tool and returns the result. In the ReAct pattern the model alternates reasoning, tool calls, and observations. Context (instructions, history, tool results) must fit the window. Agents need step and cost budgets, permission checks for actions with side effects, and evaluation of both the final answer and the tool trace.',
+			formula: 'loop: observe → decide → call tool → read result → repeat until done or budget reached',
+			symbols:
+				'Prompt: the instructions and examples sent to the model. Tool: code the model may request. Observation: the tool’s returned result. Budget: the maximum steps, tokens, time, or money allowed.',
+			steps: [
+				'Instruct: State the role, rules, tools, and the exact output format.',
+				'Decide: The model chooses an answer or asks for a tool with arguments.',
+				'Act: Your code validates the request, runs the tool, and returns the result.',
+				'Check: Stop on success or budget limit, then evaluate the answer and the trace.',
+			],
+			code: 'messages = [system_prompt, user_request]\nfor step in range(MAX_STEPS):\n    reply = llm(messages, tools=TOOLS)\n    if not reply.tool_call:\n        return reply.text\n    check_permission(reply.tool_call)\n    result = run_tool(reply.tool_call)\n    messages += [reply, tool_result(result)]\nreturn escalate_to_human()',
+			pitfall:
+				'Text returned by a tool or a web page can contain instructions (prompt injection). Treat it as data, validate tool arguments, and require approval before irreversible actions.',
+			challenge:
+				'Design a refund agent with two tools, lookup_order and issue_refund. Write its step budget, one permission rule, and three test cases including a malicious order note.',
+			sources: ['llm', 'rag', 'production'],
+			check: quiz(
+				'Who should execute a tool the model asks for?',
+				[
+					'The model itself, with no checks',
+					'Your own code, after validating arguments and permissions',
+					'Whoever wrote the retrieved document',
+				],
+				1,
+				'The model only proposes a call. Trusted application code validates it, runs it, and returns the result.',
+			),
+			interview: [
+				question(
+					'What is an AI agent compared with a single prompt?',
+					'A single prompt maps input to output once. An agent runs a loop in which the model chooses actions, tools execute them, and observations feed the next decision. The loop adds capability and new risks: cost, latency, compounding errors, and side effects.',
+					'When is a fixed workflow better than an agent?',
+				),
+				question(
+					'How does function calling work?',
+					'You describe tools with names and argument schemas. The model returns a structured request instead of prose. Your code validates it, performs the action, and sends the result back as a message for the next turn.',
+					'What do you do when the arguments fail validation?',
+				),
+				question(
+					'How do you defend an agent against prompt injection?',
+					'Separate instructions from untrusted data, give tools least privilege, validate arguments, require human approval for risky actions, limit what retrieved text can trigger, and test with adversarial inputs.',
+					'Why is filtering bad words not enough?',
+				),
+				question(
+					'How would you evaluate an LLM application?',
+					'Build a labelled test set from real cases. Use deterministic checks where possible, model-graded or human review for open-ended quality, inspect traces, and track cost and latency. Re-run it on each prompt or model change as a regression suite.',
+					'What are the risks of a model grading its own output?',
+				),
+			],
+		},
+		{
 			id: 'tuning',
 			group: 'language',
 			title: 'Fine-tuning, LoRA & quantization',
@@ -1777,6 +1833,62 @@ const AICourse = (() => {
 					'How does diffusion generation differ from training?',
 					'Training often samples a random noise level and learns a denoising target for that level. Sampling begins from noise and applies an iterative reverse procedure, with a chosen schedule and sampler. Faster samplers trade compute against model- and task-specific quality.',
 					'Why must conditioning be evaluated for faithfulness rather than appearance alone?',
+				),
+			],
+		},
+		{
+			id: 'autoencoders',
+			group: 'generative',
+			title: 'Autoencoders & GANs',
+			story:
+				'An autoencoder is a game of short notes: look at a drawing, write a tiny note about it, and let a friend redraw the picture from the note alone. A GAN is a different game: a forger paints fakes and a detective tries to spot them, and each gets better by competing.',
+			detail:
+				'An autoencoder compresses an input through a narrow bottleneck (the code) and reconstructs it, training on reconstruction error without labels. Useful uses include compression, denoising, and anomaly detection, because unusual inputs reconstruct badly. A GAN trains a generator to produce samples and a discriminator to separate real from generated ones. GAN training can be unstable and may miss parts of the data (mode collapse); diffusion models later became a more stable choice for many image tasks.',
+			formula: 'AE: minimize ‖x − D(E(x))‖²   GAN: min_G max_D log D(x) + log(1 − D(G(z)))',
+			symbols:
+				'E is the encoder and D (in the AE) the decoder. z is random noise given to the GAN generator G. In the GAN, D is instead the discriminator that outputs the probability an input is real.',
+			steps: [
+				'Encode: Squeeze the input into a short code.',
+				'Decode: Rebuild the input from that code.',
+				'Compare: Measure reconstruction error, or in a GAN ask the detective to score real and fake.',
+				'Update: Adjust the networks to reduce the error, or alternate forger and detective updates.',
+			],
+			code: 'code = encoder(x)\nx_hat = decoder(code)\nloss = mse(x_hat, x)\nloss.backward()\noptimizer.step()',
+			pitfall:
+				'A bottleneck that is too wide lets the network copy the input and learn nothing useful. A GAN whose detective wins too easily gives the forger no useful signal.',
+			challenge:
+				'You have thousands of normal machine-sensor readings and almost no failures. Explain how an autoencoder could flag a failure and how you would choose the alert threshold.',
+			sources: ['pca', 'training', 'diffusion'],
+			check: quiz(
+				'How can an autoencoder find anomalies?',
+				[
+					'Unusual inputs reconstruct poorly',
+					'It needs a label for every anomaly',
+					'It always outputs a class name',
+				],
+				0,
+				'It learns to rebuild typical inputs. An input unlike the training data tends to have a large reconstruction error.',
+			),
+			interview: [
+				question(
+					'How does an autoencoder differ from PCA?',
+					'Both compress and reconstruct. PCA is linear and has a closed-form solution. An autoencoder with nonlinear layers can capture curved structure, but needs training, tuning, and has no guaranteed unique solution.',
+					'When would PCA be the better first choice?',
+				),
+				question(
+					'Why does the bottleneck matter?',
+					'A narrow code forces the model to keep only the most useful structure. Too wide, and it can learn the identity mapping. Denoising or sparsity constraints give extra protection.',
+					'How would you pick the code size?',
+				),
+				question(
+					'Explain how a GAN trains.',
+					'The generator maps noise to samples; the discriminator scores real and generated samples. They are updated in alternation, so each improves against the other. Training can oscillate or collapse to few modes.',
+					'What signs suggest mode collapse?',
+				),
+				question(
+					'How would you use an autoencoder for anomaly detection?',
+					'Train on normal data only, compute reconstruction error on validation data, and choose a threshold from the cost of false alarms versus misses. Monitor drift, because the definition of normal changes.',
+					'What if some anomalies are in the training data?',
 				),
 			],
 		},

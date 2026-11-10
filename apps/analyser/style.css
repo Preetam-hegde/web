@@ -2375,3 +2375,266 @@ summary:focus-visible {
 		overflow: visible;
 	}
 }
+
+/* ── Teaching cards (shared by DSA and AI/ML guides) ─────────────────── */
+.teach-kid {
+	margin-bottom: 24px;
+}
+
+.dg {
+	margin: 0;
+	padding: 16px;
+	background: var(--paper-2);
+	border: 1.5px solid var(--ink);
+	border-radius: 14px;
+}
+
+.dg figcaption {
+	margin-bottom: 12px;
+	font-weight: 700;
+}
+
+.dg-flow {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 18px 16px;
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.dg-flow li {
+	position: relative;
+	flex: 1 1 140px;
+	max-width: 220px;
+	padding: 10px 12px;
+	background: #fff;
+	border: 1.5px solid var(--ink);
+	border-radius: 10px;
+}
+
+.dg-flow {
+	counter-reset: dg;
+}
+
+.dg-flow li::before {
+	content: counter(dg);
+	counter-increment: dg;
+	position: absolute;
+	left: -8px;
+	top: -10px;
+	display: grid;
+	place-items: center;
+	width: 22px;
+	height: 22px;
+	font-size: 12px;
+	font-weight: 700;
+	color: #fff;
+	background: var(--accent);
+	border-radius: 50%;
+}
+
+.dg-flow b,
+.dg-flow span {
+	display: block;
+}
+
+.dg-flow span {
+	margin-top: 4px;
+	font-size: 13px;
+	line-height: 1.4;
+	color: var(--ink-soft);
+}
+
+.dg-loop {
+	margin: 12px 0 0;
+	font-weight: 700;
+}
+
+.dg-bars > div {
+	display: grid;
+	grid-template-columns: minmax(70px, 150px) 1fr minmax(60px, auto);
+	gap: 10px;
+	align-items: center;
+	margin-bottom: 8px;
+	font-size: 14px;
+}
+
+.dg-bars i {
+	display: block;
+	width: var(--w);
+	height: 18px;
+	background: var(--sakura);
+	border: 1.5px solid var(--ink);
+	border-radius: 9px;
+}
+
+.dg-compare {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 12px;
+}
+
+.dg-compare > div {
+	padding: 10px 14px;
+	background: #fff;
+	border: 1.5px solid var(--ink);
+	border-radius: 10px;
+}
+
+.dg-compare h5 {
+	margin: 0 0 6px;
+	font-size: 14px;
+}
+
+.dg-compare ul {
+	margin: 0;
+	padding-left: 18px;
+	font-size: 14px;
+	line-height: 1.5;
+}
+
+.dg-note {
+	margin: 12px 0 0;
+	font-size: 14px;
+	color: var(--ink-soft);
+}
+
+.design-grid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
+	gap: 12px;
+	margin-top: 12px;
+}
+
+.design-grid > div {
+	padding: 12px 14px;
+	background: var(--paper-2);
+	border: 1.5px solid var(--ink);
+	border-radius: 12px;
+}
+
+.design-grid h4 {
+	margin: 0 0 6px;
+}
+
+.design-grid p {
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.55;
+}
+
+.seen-list {
+	margin: 0;
+	padding: 0;
+	list-style: none;
+}
+
+.seen-list li {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 4px 14px;
+	padding: 8px 0;
+	border-bottom: 1px dashed var(--ink-soft);
+}
+
+.seen-list li > a {
+	font-weight: 700;
+}
+
+.seen-link {
+	font-weight: 700;
+	text-decoration: underline dotted;
+}
+
+.lab-help {
+	margin-top: 14px;
+	padding: 12px 16px;
+	background: var(--paper-2);
+	border: 1.5px solid var(--ink);
+	border-radius: 12px;
+	font-size: 14px;
+	line-height: 1.55;
+}
+
+.lab-help h3 {
+	margin: 0 0 6px;
+	font-size: 15px;
+}
+
+.lab-help ul {
+	margin: 0 0 8px;
+	padding-left: 18px;
+}
+
+/* ── Roadmap ─────────────────────────────────────────────────────────── */
+.rm-count {
+	font-size: 14px;
+	color: var(--ink-soft);
+}
+
+.rm-stages {
+	display: grid;
+	gap: 12px;
+	margin: 14px 0;
+	padding: 0;
+	list-style: none;
+}
+
+.rm-stages > li {
+	display: grid;
+	grid-template-columns: 34px 1fr;
+	gap: 12px;
+	padding: 12px 14px;
+	background: var(--paper-2);
+	border: 1.5px solid var(--ink);
+	border-radius: 12px;
+}
+
+.rm-n {
+	display: grid;
+	place-items: center;
+	width: 30px;
+	height: 30px;
+	font-weight: 700;
+	color: #fff;
+	background: var(--accent);
+	border-radius: 50%;
+}
+
+.rm-stages h4 {
+	margin: 4px 0 8px;
+}
+
+.rm-chips {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+}
+
+.rm-chip {
+	padding: 3px 10px;
+	font-size: 13px;
+	color: var(--ink);
+	text-decoration: none;
+	background: #fff;
+	border: 1.5px solid var(--accent);
+	border-radius: 999px;
+}
+
+a.rm-chip:hover {
+	color: #fff;
+	background: var(--accent);
+}
+
+.rm-ext {
+	color: var(--ink-soft);
+	border-style: dashed;
+	border-color: var(--control-line);
+	background: transparent;
+}
+
+.rm-key {
+	font-size: 13px;
+	color: var(--ink-soft);
+}

@@ -6,12 +6,12 @@ supplies the layout and study components; AI/ML content and logic stay in this a
 
 ## Learning modes
 
-- **Study guide:** a learning path, 35 lessons in eight chapters, mental models,
+- **Study guide:** a learning path, 37 lessons in eight chapters, mental models,
   four-step worked examples, decoded formulas, illustrative Python, reasoning,
   cost/trade-offs, recall checks, and links into the visual lab.
-- **Interview practice:** 140 questions with concrete scenarios, separate hint and
+- **Interview practice:** 148 questions with concrete scenarios, separate hint and
   answer reveals, follow-ups, topic/difficulty filters, and self-rated review status.
-- **Visual lab:** 16 computed experiments and 19 concept walkthroughs, reversible
+- **Visual lab:** 16 computed experiments and 21 concept walkthroughs, reversible
   playback, adjustable parameters, full-width notes below the canvas, and a link
   back to the corresponding written lesson.
 - **Revision desk and reading room:** formula/method references, an interview
@@ -66,9 +66,9 @@ Open `http://localhost:4173/apps/ai-ml-lab/index.html`.
 
 Verification for the Study Studio update:
 
-- Numerical invariants, rendered frames, 35 worked-example records, 140 guided
+- Numerical invariants, rendered frames, 37 worked-example records, 148 guided
   question records, source mappings, route fallbacks, and guide rendering pass.
-- Chrome and Firefox passed all 35 study lessons and 35 lab routes, study/lab
+- Chrome and Firefox passed all 37 study lessons and 37 lab routes, study/lab
   return links, recall checks, progressive reveals, filters, ratings, old progress,
   corrupt/unavailable storage, revision, reading, and 390/768/1024/1536 px layouts.
 - Narrow diagrams scroll inside their container; shared study navigation scrolls

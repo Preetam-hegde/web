@@ -262,6 +262,12 @@
 				'<p>' + esc(kid.story) + '</p>' +
 				'<ol>' + kid.steps.map(function (st) { return '<li>' + esc(st) + '</li>'; }).join('') + '</ol>' +
 				'<p class="eli5-speed"><b>Speed:</b> ' + esc(kid.speed) + '</p>';
+			const lesson = DSA.lessons.find(function (l) { return l.labs.indexOf(a.id) !== -1; });
+			const why = lesson && Teach.store[lesson.id];
+			if (why) {
+				el.eli5.innerHTML += '<p class="eli5-speed"><b>Design principle:</b> ' + esc(why.principle.name) + '. ' + esc(why.principle.rule) + '</p>' +
+					'<p class="eli5-speed"><a href="#study/' + lesson.id + '">Full lesson: diagram, design and boundary cases →</a></p>';
+			}
 		}
 		el.legend.innerHTML = (a.legend || []).map(function (pair) {
 			return '<span class="key"><i class="sw ' + pair[0] + '"></i>' + esc(pair[1]) + '</span>';

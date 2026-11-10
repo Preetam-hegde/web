@@ -6,6 +6,12 @@
 	const nav = document.getElementById('study-nav');
 	const lessons = DSA.lessons;
 	let lastLesson = 'start';
+	Teach.setResolver(function (id) {
+		const l = DSA.lessons.find(function (item) {
+			return item.id === id;
+		});
+		return l ? { title: l.title, href: '#study/' + id } : null;
+	});
 
 	function lessonLink(lesson, label) {
 		return (
@@ -67,6 +73,7 @@
 			'<h2>Learn the idea.<br>Make the next move.</h2><p class="study-lead">A complete learning path through the essential data structures and algorithms. Read for understanding, trace an example, then build a solution of your own.</p>' +
 			'<div class="study-actions"><a class="study-button" href="#study/complexity">Begin with the foundations <span>→</span></a><a class="text-link" href="#study/questions">Practice for an interview ↗</a></div></div>' +
 			'<div class="notebook-mark" aria-hidden="true"><span>FIELD NOTES</span><b>DSA</b><i>think · trace · solve</i><div>01 → ∞</div></div></header>' +
+			Teach.roadmap() +
 			'<div class="study-metrics"><span><b>' +
 			lessons.length +
 			'</b> detailed chapters</span><span><b>' +
@@ -161,7 +168,8 @@
 			'</h2><p class="study-lead">' +
 			esc(lesson.lead) +
 			'</p>' +
-			'<nav class="lesson-jumps" aria-label="On this lesson"><button type="button" data-jump="mental-model">Mental model</button><button type="button" data-jump="worked-example">Worked example</button><button type="button" data-jump="code-template">Code & reasoning</button><button type="button" data-jump="lesson-practice">Practice</button></nav></header>' +
+			'<nav class="lesson-jumps" aria-label="On this lesson"><button type="button" data-jump="like-5">Like I\'m 5</button><button type="button" data-jump="mental-model">Mental model</button><button type="button" data-jump="worked-example">Worked example</button><button type="button" data-jump="design">Design</button><button type="button" data-jump="boundary">Boundary cases</button><button type="button" data-jump="code-template">Code & reasoning</button><button type="button" data-jump="lesson-practice">Practice</button></nav></header>' +
+			Teach.intro(lesson.id) +
 			'<section class="study-callout" id="mental-model"><p class="eyebrow">The mental model</p><p>' +
 			esc(lesson.model) +
 			'</p></section>' +
@@ -195,6 +203,7 @@
 				})
 				.join('') +
 			'</tbody></table></div></section>' +
+			Teach.design(lesson.id) +
 			'<section class="lesson-section" id="code-template"><p class="eyebrow">A template to rebuild</p><h3>From idea to code</h3><p>Read the contract and assumptions first. Trace this on a small input, then close it and implement the same idea yourself.</p><pre class="study-code"><code>' +
 			esc(lesson.code.trim()) +
 			'</code></pre><div class="reasoning-grid"><div><h4>Why it works</h4><p>' +

@@ -161,6 +161,48 @@ DSA.lessons = [
 		labs: [],
 	},
 	{
+		id: 'recursion',
+		title: 'Recursion & divide and conquer',
+		phase: 'Foundations',
+		lead: 'Solve a problem by trusting a smaller copy of the same problem to do part of the work.',
+		model:
+			'A recursive function has a base case that stops and a step that moves to a smaller input. Divide and conquer splits the input, solves the pieces, and combines the answers.',
+		concepts: [
+			'Write the base case first. It must be reachable from every input: each call has to make the problem strictly smaller. A missing or unreachable base case ends in a stack overflow.',
+			'Trust the smaller call. Assume it returns the right answer for the smaller input, then check only that your step combines that answer correctly. You do not need to trace every nested call in your head.',
+			'Each active call occupies stack memory. The depth of recursion is the extra space, even if you allocate no array. Linear recursion over n items uses O(n) stack; halving uses O(log n).',
+			'Divide and conquer has three parts: split, solve each part recursively, combine. Merge sort splits in half and merges in O(n); quick sort partitions then recurses. Fast exponentiation halves the exponent.',
+			'Count the calls with a recursion tree. T(n) = 2T(n/2) + O(n) has log n levels of O(n) work, so O(n log n). T(n) = T(n-1) + T(n-2) branches twice per level and is exponential unless answers are remembered.',
+		],
+		example: {
+			title: 'Compute 2^10 by halving the exponent',
+			rows: [
+				['Go down', 'power(2,10) → power(2,5) → power(2,2) → power(2,1) → power(2,0)', 'Each call halves the exponent; five calls instead of ten multiplications.'],
+				['Hit the base case', 'power(2,0) = 1', 'The smallest problem has an obvious answer.'],
+				['Combine upward', 'power(2,1) = 1×1×2 = 2; power(2,2) = 2×2 = 4', 'An odd exponent needs one extra factor of the base.'],
+				['Finish', 'power(2,5) = 4×4×2 = 32; power(2,10) = 32×32 = 1024', 'Square the half-answer; the work is O(log n).'],
+			],
+		},
+		code: `function power(base, exp) {
+	if (exp === 0) return 1;
+	const half = power(base, Math.floor(exp / 2));
+	return exp % 2 === 0 ? half * half : half * half * base;
+}`,
+		invariant:
+			'power(base, exp) returns base^exp for every non-negative integer exp. Assuming it is correct for the half exponent, squaring it (and one extra base when odd) gives the correct result for exp.',
+		cost: 'O(log exp) time and O(log exp) call-stack space. A loop over exp multiplications would take O(exp) time.',
+		pitfalls: [
+			'A base case that some input never reaches, causing infinite recursion.',
+			'Recomputing the same sub-problem repeatedly; add a memo table when calls overlap.',
+			'Forgetting that recursion depth is real memory, and deep recursion can overflow the stack.',
+		],
+		recall: [
+			'Why is the naive recursive Fibonacci slow but power(base, exp) fast?',
+			'Fibonacci makes two overlapping calls per level, so calls multiply and repeat. power makes one call on half the input, so the work shrinks geometrically.',
+		],
+		labs: [],
+	},
+	{
 		id: 'two-pointers',
 		title: 'Two pointers',
 		phase: 'Array patterns',
@@ -815,6 +857,64 @@ function kthLargest(stream, k) {
 		labs: ['dijkstra', 'prim', 'grid-astar', 'grid-greedy'],
 	},
 	{
+		id: 'union-find',
+		title: 'Union-Find (disjoint sets)',
+		phase: 'Graphs & optimization',
+		lead: 'Track which items belong to the same group while groups keep merging.',
+		model:
+			'Each group has one representative root. find(x) walks to the root; union(a, b) joins two roots. Two items are connected exactly when they have the same root.',
+		concepts: [
+			'Store parent[i]. A root points to itself. find follows parents until it reaches a root, so two items are in one group if find returns the same root.',
+			'union(a, b) finds both roots; if they differ, attach one root under the other. If the roots are equal the edge would create a cycle, which is how Kruskal and cycle detection use it.',
+			'Path compression shortens the route to the root during find (here by pointing each node to its grandparent). Union by size attaches the smaller tree under the larger, keeping trees shallow.',
+			'With both tricks, a sequence of operations costs nearly O(1) each (inverse Ackermann). With neither, a chain can make find O(n).',
+			'Union-find answers "are these connected?" while edges are only added. It does not support deleting an edge; for that use other techniques such as rebuilding or offline processing.',
+		],
+		example: {
+			title: 'Merge five items and catch a cycle',
+			rows: [
+				['Start', 'parent = [0,1,2,3,4]', 'Five groups, each its own root.'],
+				['union(0,1), union(1,2)', 'roots merge: {0,1,2}, {3}, {4}', 'Items 0, 1 and 2 now share one root.'],
+				['union(3,4)', '{0,1,2}, {3,4}', 'Two groups remain.'],
+				['union(2,0)', 'find(2) = find(0), so it returns false', 'They were already connected, so this edge would form a cycle.'],
+			],
+		},
+		code: `function makeUnionFind(n) {
+	const parent = Array.from({ length: n }, (_, i) => i);
+	const size = new Array(n).fill(1);
+	function find(x) {
+		while (parent[x] !== x) {
+			parent[x] = parent[parent[x]];
+			x = parent[x];
+		}
+		return x;
+	}
+	function union(a, b) {
+		let rootA = find(a);
+		let rootB = find(b);
+		if (rootA === rootB) return false;
+		if (size[rootA] < size[rootB]) [rootA, rootB] = [rootB, rootA];
+		parent[rootB] = rootA;
+		size[rootA] += size[rootB];
+		return true;
+	}
+	return { find, union };
+}`,
+		invariant:
+			'Following parents from any item always ends at exactly one root, and two items are in the same set if and only if they reach the same root. Compression and size-based linking never change which items share a root.',
+		cost: 'Nearly O(1) amortized per operation with path compression and union by size; O(n) space for the parent and size arrays.',
+		pitfalls: [
+			'Comparing parent[a] to parent[b] instead of their roots.',
+			'Attaching one item to another item instead of root to root.',
+			'Using it when edges can be removed.',
+		],
+		recall: [
+			'How does union-find detect a cycle while edges are added?',
+			'If both endpoints of a new edge already have the same root, they were connected before the edge, so adding it forms a cycle.',
+		],
+		labs: [],
+	},
+	{
 		id: 'greedy-intervals',
 		title: 'Greedy choices & intervals',
 		phase: 'Graphs & optimization',
@@ -991,6 +1091,56 @@ function hasWord(root, word) {
 		recall: [
 			'Can a terminal node also have children?',
 			'Yes. “car” is a word and a prefix of “cart”. A terminal flag and the child map describe separate facts.',
+		],
+		labs: [],
+	},
+	{
+		id: 'advanced-trees',
+		title: 'Balanced trees & range queries',
+		phase: 'Further essentials',
+		lead: 'Keep trees shallow and answer range questions without scanning the whole array.',
+		model:
+			'A plain search tree can lean into a list. Balanced trees (AVL, red-black, B-trees) restore shape automatically. Segment and Fenwick trees store partial sums so updates and range queries both cost O(log n).',
+		concepts: [
+			'An AVL tree keeps the heights of every node’s two children within 1 by rotating after inserts and deletes. That keeps height O(log n) so search, insert and delete are all O(log n).',
+			'A B-tree stores many keys per node and has many children, so a node fits a disk page. Databases use B and B+ trees because each step reads one page and the tree is only a few levels deep.',
+			'A skip list stacks sorted linked lists with random "express lanes". It gives expected O(log n) search with simpler code than rotations.',
+			'A Fenwick (binary indexed) tree stores partial sums at indexes that differ by the lowest set bit. Point update and prefix sum both take O(log n); a range sum is two prefix sums.',
+			'A segment tree stores a combined value (sum, min, max) for each range in a tree. It supports O(log n) range queries and point updates, and with lazy propagation, range updates.',
+		],
+		example: {
+			title: 'Fenwick tree over [3, 1, 4, 2]',
+			rows: [
+				['Build', 'tree[1..4] = [3, 4, 4, 10]', 'tree[2] holds items 0–1; tree[4] holds the whole array.'],
+				['prefix(2)', 'visit 3 (value 4), then 2 (value 4)', 'The sum of items 0..2 is 4 + 4 = 8, which equals 3 + 1 + 4.'],
+				['add(1, +5)', 'update tree[2] and tree[4]', 'Only the O(log n) ranges that include item 1 change.'],
+				['Range sum', 'sum(1..2) = prefix(2) − prefix(0)', 'Two prefix queries answer any range.'],
+			],
+		},
+		code: `function makeFenwick(n) {
+	const tree = new Array(n + 1).fill(0);
+	return {
+		add(i, delta) {
+			for (i++; i <= n; i += i & -i) tree[i] += delta;
+		},
+		prefix(i) {
+			let sum = 0;
+			for (i++; i > 0; i -= i & -i) sum += tree[i];
+			return sum;
+		},
+	};
+}`,
+		invariant:
+			'tree[i] always equals the sum of the range that ends at index i and has length equal to the lowest set bit of i. Updates touch every range containing the changed item, and a prefix query combines non-overlapping ranges that exactly cover the prefix.',
+		cost: 'O(log n) per update and per query, O(n) space. A prefix-sum array answers queries in O(1) but costs O(n) per update.',
+		pitfalls: [
+			'Mixing 0-based and 1-based indexes in a Fenwick tree.',
+			'Using a Fenwick tree for min or max, where an item cannot be "subtracted out".',
+			'Assuming a binary search tree stays balanced without a balancing scheme.',
+		],
+		recall: [
+			'When should you choose a Fenwick tree instead of a prefix-sum array?',
+			'When values change between queries. A prefix-sum array must be rebuilt in O(n) after an update; a Fenwick tree updates in O(log n).',
 		],
 		labs: [],
 	},
@@ -1662,7 +1812,7 @@ DSA.questions = [
 		trap: 'Summing all shortest distances does not give the arrival time. The signal propagates along different routes concurrently.',
 	},
 	{
-		topic: 'advanced-graphs',
+		topic: 'union-find',
 		title: 'Redundant Connection',
 		level: 'Medium',
 		slug: 'redundant-connection',
@@ -2146,5 +2296,70 @@ DSA.questions = [
 			'Copy intervals ending before the new start. Then merge every interval whose start is at most the growing new end, updating both new boundaries. Append the merged interval and copy the remaining suffix. The input ordering makes each region contiguous, so no new sort is needed.',
 		cost: 'O(n) time, O(n) output space with O(1) additional scan state.',
 		trap: 'The merged end can grow during the overlap loop, bringing more intervals into the same group. Closed intervals sharing an endpoint overlap.',
+	},
+	{
+		topic: 'recursion',
+		title: 'Pow(x, n)',
+		level: 'Medium',
+		slug: 'pow-x-n',
+		prompt: 'Compute x raised to an integer power n faster than n multiplications.',
+		example: 'x = 2, n = 10 → 1024; x = 2, n = −2 → 0.25',
+		hint: 'If you know x^(n/2), how do you get x^n?',
+		answer:
+			'Recurse on half the exponent. Square the half result, and multiply by x once more when n is odd. For a negative n, compute with |n| and take the reciprocal. Each call halves n, so only about log n calls are needed.',
+		cost: 'O(log n) time and O(log n) call stack.',
+		trap: 'Negating the smallest negative integer can overflow in fixed-width languages; also handle n = 0 and x = 0 deliberately.',
+	},
+	{
+		topic: 'recursion',
+		title: 'Merge Sort an Array',
+		level: 'Medium',
+		slug: 'merge-sort-an-array',
+		prompt: 'Sort an array using divide and conquer in O(n log n).',
+		example: '[5, 2, 4, 1] → [1, 2, 4, 5]',
+		hint: 'Sort each half, then merge two sorted lists with two fingers.',
+		answer:
+			'Split at the middle, sort both halves recursively, and merge by repeatedly taking the smaller front item. A one-item or empty array is the base case. There are log n levels and each level merges n items in total.',
+		cost: 'O(n log n) time, O(n) extra space.',
+		trap: 'Take from the left half on ties to keep the sort stable, and make sure each half is strictly smaller than the whole.',
+	},
+	{
+		topic: 'union-find',
+		title: 'Number of Provinces',
+		level: 'Medium',
+		slug: 'number-of-provinces',
+		prompt: 'Given which cities are directly connected, count groups of connected cities.',
+		example: '[[1,1,0],[1,1,0],[0,0,1]] → 2',
+		hint: 'Start with n groups; each successful union reduces the count by one.',
+		answer:
+			'Create a union-find with one set per city. For every connected pair, union them and decrement the count if the roots were different. The final count is the number of provinces. BFS or DFS from each unvisited city also works.',
+		cost: 'O(n² α(n)) time for the matrix, O(n) space.',
+		trap: 'Count merges by comparing roots, not by counting edges, because many edges can join one group.',
+	},
+	{
+		topic: 'advanced-trees',
+		title: 'Range Sum Query – Mutable',
+		level: 'Medium',
+		slug: 'range-sum-query-mutable',
+		prompt: 'Support point updates and range sums on an array, many times.',
+		example: '[1, 3, 5]; sum(0,2) = 9; update(1, 2); sum(0,2) = 8',
+		hint: 'A prefix-sum array makes updates O(n). What structure updates and queries in O(log n)?',
+		answer:
+			'Use a Fenwick tree or a segment tree. For an update, apply the difference between the new and old value. A range sum is prefix(right) − prefix(left − 1).',
+		cost: 'O(log n) per operation, O(n) space.',
+		trap: 'Add the difference, not the new value, and be careful with 0-based versus 1-based indexes.',
+	},
+	{
+		topic: 'advanced-trees',
+		title: 'Why does a binary search tree need balancing?',
+		level: 'Easy',
+		slug: 'why-balance-a-bst',
+		prompt: 'Explain what happens to search cost when a plain BST receives sorted input.',
+		example: 'Insert 1, 2, 3, 4, 5 in order into an empty BST',
+		hint: 'Draw the shape after each insertion.',
+		answer:
+			'Every new key is larger than all previous keys, so it becomes a right child and the tree is a chain. Height becomes n and search is O(n). Self-balancing trees (AVL, red-black) rotate to keep height O(log n); B-trees do it by splitting full nodes.',
+		cost: 'Unbalanced: O(n) per operation. Balanced: O(log n).',
+		trap: 'A random insertion order often gives a decent shape, but you cannot rely on it for adversarial or sorted input.',
 	},
 ];

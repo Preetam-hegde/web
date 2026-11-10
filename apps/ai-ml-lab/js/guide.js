@@ -4,6 +4,10 @@ const AIGuide = (() => {
 	const C = AICourse,
 		D = AIStudyData,
 		escape = AIViews.escape;
+	Teach.setResolver((id) => {
+		const l = C.lessons.find((item) => item.id === id);
+		return l ? { title: l.title, href: `#study/${id}` } : null;
+	});
 	const table = (headings, rows) =>
 		`<div class="study-table-wrap" tabindex="0" role="region" aria-label="Scrollable worked reference table"><table class="study-table"><thead><tr>${headings.map((h) => `<th scope="col">${escape(h)}</th>`).join('')}</tr></thead><tbody>${rows.map((row) => `<tr>${row.map((cell) => `<td>${escape(cell)}</td>`).join('')}</tr>`).join('')}</tbody></table></div>`;
 	const sources = (keys) =>
@@ -57,11 +61,12 @@ const AIGuide = (() => {
 			)
 			.join(
 				'',
-			)}<p class="nav-caption">Put it together</p>${link('questions', 'Interview questions', '140 guided questions')}${link('revision', 'Revision desk', 'Formulas & interview checklist')}${link('resources', 'Reading room', 'Primary sources & further study')}`;
+			)}<p class="nav-caption">Put it together</p>${link('questions', 'Interview questions', `${C.lessons.length * 4} guided questions`)}${link('revision', 'Revision desk', 'Formulas & interview checklist')}${link('resources', 'Reading room', 'Primary sources & further study')}`;
 	}
 	function renderStart() {
 		return `<header class="study-hero"><div><p class="eyebrow">One notebook · from first principles to interviews</p><h2>Learn the idea.<br>Question the model.</h2><p class="study-lead">A connected learning path through AI and machine learning. Understand a concept, trace a small example, then explain when you would use it.</p><div class="study-actions"><a class="study-button" href="#study/ai-map">Begin with the foundations <span>→</span></a><a class="text-link" href="#study/questions">Practice for an interview ↗</a></div></div><div class="notebook-mark" aria-hidden="true"><span>FIELD NOTES</span><b>AI/ML</b><i>understand · trace · explain</i><div>data → decisions</div></div></header>
-		<div class="study-metrics"><span><b>35</b> detailed lessons</span><span><b>140</b> interview questions</span><span><b>16</b> interactive experiments</span><span><b>29</b> primary references</span></div>
+		${Teach.roadmap()}
+		<div class="study-metrics"><span><b>${C.lessons.length}</b> detailed lessons</span><span><b>${C.lessons.length * 4}</b> interview questions</span><span><b>16</b> interactive experiments</span><span><b>29</b> primary references</span></div>
 		<section class="lesson-section"><p class="eyebrow">How to use this guide</p><h3>Turn a familiar term into an idea you can use.</h3><p>Start with basic Python: variables, loops, functions, and arrays. The foundation lessons introduce the vectors, probability, and derivatives used later. Code examples are illustrative Python; the visual experiments run directly in your browser.</p><ol class="learning-loop"><li><b>Understand</b><span>Read the mental model. Name the inputs, target, assumptions, and decision before choosing a model.</span></li><li><b>Trace</b><span>Work through the numerical example. Predict each next row, then compare it with the visual lab.</span></li><li><b>Rebuild</b><span>Close the snippet and reproduce the calculation or pipeline. Check the shapes, units, and data split.</span></li><li><b>Explain</b><span>Attempt an interview question out loud. Open a hint before the answer, then reason through the follow-up.</span></li><li><b>Revisit</b><span>Use the revision desk and mixed questions to find weak concepts. Self-rate what needs another attempt.</span></li></ol></section>
 		<section class="lesson-section"><p class="eyebrow">The curriculum</p><h3>Build your toolkit in layers.</h3><p>Follow the chapter order for a first pass, or use the notebook navigation to revisit a specific lesson.</p><div class="chapter-grid">${C.groups
 			.map((group, index) => {
@@ -109,10 +114,12 @@ const AIGuide = (() => {
 		const notes = D[lesson.id],
 			index = C.lessons.indexOf(lesson),
 			group = C.groups.find((g) => g.id === lesson.group);
-		return `<header class="lesson-header"><p class="eyebrow">Lesson ${String(index + 1).padStart(2, '0')} / 35 · ${escape(group.title)}</p><h2>${escape(lesson.title)}</h2><p class="study-lead">${escape(notes.lead)}</p><nav class="lesson-jumps" aria-label="On this lesson"><button type="button" data-jump="mental-model">Mental model</button><button type="button" data-jump="worked-example">Worked example</button><button type="button" data-jump="code-template">Code & reasoning</button><button type="button" data-jump="lesson-practice">Practice</button></nav></header>
+		return `<header class="lesson-header"><p class="eyebrow">Lesson ${String(index + 1).padStart(2, '0')} / ${C.lessons.length} · ${escape(group.title)}</p><h2>${escape(lesson.title)}</h2><p class="study-lead">${escape(notes.lead)}</p><nav class="lesson-jumps" aria-label="On this lesson"><button type="button" data-jump="like-5">Like I'm 5</button><button type="button" data-jump="mental-model">Mental model</button><button type="button" data-jump="worked-example">Worked example</button><button type="button" data-jump="design">Design</button><button type="button" data-jump="boundary">Boundary cases</button><button type="button" data-jump="code-template">Code & reasoning</button><button type="button" data-jump="lesson-practice">Practice</button></nav></header>
+		${Teach.intro(lesson.id)}
 		<section class="study-callout" id="mental-model"><p class="eyebrow">The mental model</p><p>${escape(lesson.story)}</p></section>
 		<section class="lesson-section"><h3>Understand the moving parts</h3><p>${escape(lesson.detail)}</p>${lesson.steps.map((step, i) => `<div class="concept-row"><span>${String(i + 1).padStart(2, '0')}</span><p>${escape(step)}</p></div>`).join('')}</section>
 		<section class="lesson-section" id="worked-example"><p class="eyebrow">Pencil-and-paper walkthrough</p><h3>${escape(notes.example.title)}</h3><p>Pause after each row. Predict the next state before reading why it changes.</p>${table(['Step', 'State', 'Why'], notes.example.rows)}</section>
+		${Teach.design(lesson.id)}
 		<section class="lesson-section"><p class="eyebrow">Read the symbols</p><h3>The math behind the idea</h3><code class="formula">${escape(lesson.formula)}</code><p>${escape(lesson.symbols)}</p></section>
 		<section class="lesson-section" id="code-template"><p class="eyebrow">A template to rebuild</p><h3>From idea to code</h3><p>Illustrative Python. Imports, data setup, and helper names are abbreviated; code is not executed in this notebook. Trace a small case before adapting it in your editor.</p><pre class="study-code"><code>${escape(lesson.code)}</code></pre><div class="reasoning-grid"><div><h4>Why it works</h4><p>${escape(notes.reasoning)}</p></div><div><h4>Cost & trade-offs</h4><p>${escape(notes.cost)}</p></div></div></section>
 		<section class="lab-links"><div><p class="eyebrow">See it in motion</p><h3>Connect the notes to the visual lab</h3><p>${lesson.lab ? 'Change a parameter, predict its effect, and inspect the computed results. The examples are small and synthetic.' : 'Trace the four-step concept diagram alongside the written example.'}</p></div><div><a href="#lab/${lesson.id}">${lesson.lab ? 'Open the experiment' : 'Open the concept walkthrough'} ↗</a></div></section>

@@ -6,7 +6,7 @@
 		<title>AI &amp; ML Study Studio — Learn, Visualize &amp; Interview</title>
 		<meta
 			name="description"
-			content="Learn AI and machine learning through 35 story-first lessons, interactive experiments, reversible visual walkthroughs, and 140 interview questions with answers."
+			content="Learn AI and machine learning through 37 story-first lessons, interactive experiments, reversible visual walkthroughs, and 148 interview questions with answers."
 		/>
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -16,10 +16,20 @@
 		/>
 		<link rel="stylesheet" href="../analyser/style.css" />
 		<link rel="stylesheet" href="style.css" />
+		<script src="../analyser/js/teach.js" defer></script>
 		<script src="js/math.js" defer></script>
 		<script src="js/course.js" defer></script>
 		<script src="js/views.js" defer></script>
 		<script src="js/study-data.js" defer></script>
+		<script src="js/materials/foundations.js" defer></script>
+		<script src="js/materials/learning.js" defer></script>
+		<script src="js/materials/classical.js" defer></script>
+		<script src="js/materials/unsupervised.js" defer></script>
+		<script src="js/materials/deep.js" defer></script>
+		<script src="js/materials/language.js" defer></script>
+		<script src="js/materials/generative.js" defer></script>
+		<script src="js/materials/systems.js" defer></script>
+		<script src="js/materials/roadmap.js" defer></script>
 		<script src="js/guide.js" defer></script>
 		<script src="js/app.js" defer></script>
 	</head>
@@ -44,7 +54,7 @@
 					>Visual lab <span>16 experiments</span></a
 				>
 				<p id="course-progress" class="course-progress">
-					35 lessons · 8 chapters
+					37 lessons · 8 chapters
 				</p>
 			</nav>
 			<div class="layout" id="learn-layout">
@@ -68,12 +78,12 @@
 					/>
 					<details id="topic-menu" open>
 						<summary>
-							Visual explorations <span id="lesson-total">35 topics</span>
+							Visual explorations <span id="lesson-total">37 topics</span>
 						</summary>
 						<nav id="nav" aria-label="Topics and lessons"></nav>
 					</details>
 					<p class="nav-note">
-						16 computed experiments and 19 concept walkthroughs.<br /><a
+						16 computed experiments and 21 concept walkthroughs.<br /><a
 							href="../analyser/index.html"
 							>Looking for DSA? →</a
 						>
@@ -91,7 +101,7 @@
 							<p class="eyebrow">Practice with a purpose</p>
 							<h2 id="interview-title">The interview notebook</h2>
 							<p class="study-lead">
-								140 essential questions, from foundational concepts to
+								148 essential questions, from foundational concepts to
 								production decisions. Each has a concrete scenario, a hint, an
 								answer, and a follow-up.
 							</p>
@@ -186,6 +196,7 @@
 								aria-atomic="true"
 							></p>
 							<div class="stats" id="stats"></div>
+							<div id="lab-help"></div>
 							<div class="player" aria-label="Visualization playback">
 								<button
 									type="button"

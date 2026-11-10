@@ -251,8 +251,9 @@
 	}
 	function renderNotes() {
 		const l = state.lesson;
+		$('lab-help').innerHTML = Teach.labHelp(l.id);
 		$('pane-story').innerHTML =
-			`<div class="story-analogy"><strong>Picture this</strong><p>${escape(l.story)}</p></div><p>${escape(l.detail)}</p><h3>Step by step</h3><ol class="story-steps">${l.steps.map((step) => `<li>${escape(step)}</li>`).join('')}</ol><div class="pitfall"><h3>Watch out</h3><p>${escape(l.pitfall)}</p></div>`;
+			`${Teach.kid(l.id, '')}<div class="story-analogy"><strong>Picture this</strong><p>${escape(l.story)}</p></div><p>${escape(l.detail)}</p><h3>Step by step</h3><ol class="story-steps">${l.steps.map((step) => `<li>${escape(step)}</li>`).join('')}</ol><div class="pitfall"><h3>Watch out</h3><p>${escape(l.pitfall)}</p></div>`;
 		$('pane-math').innerHTML =
 			`<h3>The compact version</h3><code class="formula">${escape(l.formula)}</code><h3>Read the symbols</h3><p>${escape(l.symbols)}</p><div class="pitfall"><h3>What the equation leaves out</h3><p>${escape(l.pitfall)}</p></div>`;
 		$('pane-code').innerHTML =
@@ -382,7 +383,7 @@
 			(value) => value === 'ready',
 		).length;
 		$('question-count').textContent =
-			`${matches.length} / 140 questions · ${confident} self-rated confident`;
+			`${matches.length} / ${C.lessons.length * 4} questions · ${confident} self-rated confident`;
 	}
 	function setMode(mode) {
 		pause();

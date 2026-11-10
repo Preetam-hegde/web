@@ -19,12 +19,26 @@ for (const file of [
 		context,
 	);
 }
+for (const file of ['teach', 'materials/foundations', 'materials/patterns', 'materials/structures', 'materials/graphs', 'materials/essentials', 'materials/roadmap'])
+	vm.runInContext(
+		readFileSync(new URL('./js/' + file + '.js', import.meta.url), 'utf8') +
+			(file === 'teach' ? ';this.Teach = Teach' : ''),
+		context,
+	);
 const DSA = vm.runInContext('DSA', context);
+assert.equal(
+	JSON.stringify(context.Teach.roadmapProblems(DSA.lessons.map((lesson) => lesson.id))),
+	'[]',
+);
+assert.equal(
+	JSON.stringify(context.Teach.problems(DSA.lessons.map((lesson) => lesson.id))),
+	'[]',
+);
 const lessonIds = new Set(DSA.lessons.map((lesson) => lesson.id));
 const algoIds = new Set(DSA.algos.map((algo) => algo.id));
-assert.equal(lessonIds.size, 19);
-assert.equal(DSA.questions.length, 75);
-assert.equal(new Set(DSA.questions.map((question) => question.slug)).size, 75);
+assert.equal(lessonIds.size, 22);
+assert.equal(DSA.questions.length, 80);
+assert.equal(new Set(DSA.questions.map((question) => question.slug)).size, 80);
 assert.equal(algoIds.size, 24);
 const linkedLabs = new Set();
 for (const lesson of DSA.lessons) {
@@ -60,6 +74,20 @@ function evaluate(expression) {
 function expectJSON(expression, expected) {
 	assert.deepEqual(JSON.parse(JSON.stringify(evaluate(expression))), expected);
 }
+assert.equal(evaluate('power(2, 10)'), 1024);
+assert.equal(evaluate('power(3, 0)'), 1);
+assert.equal(
+	evaluate(
+		'(() => { const uf = makeUnionFind(5); uf.union(0, 1); uf.union(1, 2); uf.union(3, 4); return [uf.find(0) === uf.find(2), uf.find(0) === uf.find(3), uf.union(2, 0)]; })()',
+	).join(),
+	'true,false,false',
+);
+assert.equal(
+	evaluate(
+		'(() => { const f = makeFenwick(4); [3, 1, 4, 2].forEach((v, i) => f.add(i, v)); const a = f.prefix(2); f.add(1, 5); return [a, f.prefix(2)]; })()',
+	).join(),
+	'8,13',
+);
 assert.equal(evaluate('containsDuplicate([])'), false);
 assert.equal(evaluate('containsDuplicate([0, 0])'), true);
 expectJSON('moveZeroes([0, 1, 0, 3, 12])', [1, 3, 12, 0, 0]);
@@ -148,5 +176,5 @@ for (let seed = 1; seed <= 40; seed++) {
 	assert.equal(frame.net.edges.filter((edge) => edge.cls === 'tree').length, 8);
 }
 console.log(
-	'Passed: 19 lesson records and runnable code examples, 75 question records, 24 lab builds, edge cases and 40 Prim/Kruskal comparisons.',
+	'Passed: 22 lesson records, complete teaching materials (child explanation, example, diagram, design, boundary cases, links) and runnable code examples, 80 question records, 24 lab builds, edge cases and 40 Prim/Kruskal comparisons.',
 );

@@ -119,9 +119,9 @@ near(
 	Number(afterUpdate.stats.find(([label]) => label === 'Squared loss')[1]),
 	0.25,
 );
-assert.equal(C.lessons.length, 35);
+assert.equal(C.lessons.length, 37);
 assert.equal(new Set(C.lessons.map((l) => l.id)).size, C.lessons.length);
-assert.equal(C.lessons.flatMap((l) => l.interview).length, 140);
+assert.equal(C.lessons.flatMap((l) => l.interview).length, 148);
 for (const lesson of C.lessons) {
 	assert.ok(C.groups.some((g) => g.id === lesson.group));
 	for (const key of [
@@ -176,6 +176,38 @@ const guideContext = vm.createContext({
 	AIViews: V,
 	URLSearchParams,
 });
+for (const file of [
+	'../analyser/js/teach',
+	...[
+		'foundations',
+		'learning',
+		'classical',
+		'unsupervised',
+		'deep',
+		'language',
+		'generative',
+		'systems',
+		'roadmap',
+	].map((name) => `js/materials/${name}`),
+])
+	vm.runInContext(
+		fs.readFileSync(`${__dirname}/${file}.js`, 'utf8') +
+			(file.endsWith('teach') ? '\nthis.Teach = Teach;' : ''),
+		guideContext,
+	);
+assert.equal(
+	JSON.stringify(
+		guideContext.Teach.problems(
+			C.lessons.map((l) => l.id),
+			true,
+		),
+	),
+	'[]',
+);
+assert.equal(
+	JSON.stringify(guideContext.Teach.roadmapProblems(C.lessons.map((l) => l.id))),
+	'[]',
+);
 vm.runInContext(
 	fs.readFileSync(`${__dirname}/js/guide.js`, 'utf8') +
 		'\nthis.guide = AIGuide;',
@@ -207,5 +239,5 @@ for (const lesson of C.lessons) {
 	assert.doesNotMatch(html, /\$\{|>undefined</);
 }
 console.log(
-	'Passed: numerical invariants, 35 lessons and worked examples, 140 guided questions, source mappings, guide rendering, and route compatibility.',
+	'Passed: numerical invariants, 37 lessons and worked examples, 148 guided questions, source mappings, teaching materials for every lesson, guide rendering, and route compatibility.',
 );
