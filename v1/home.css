@@ -1,13 +1,13 @@
-/* Lean home-page styles: no blend modes, no filters, no fixed overlays, no infinite animations. */
+/* Home and 404 styles. Rules behind them live in DESIGN.md: transform/opacity motion only, no blend modes, filters or canvas. */
 :root {
-	--lacquer: #100c0b;
-	--lacquer-soft: #1b1312;
-	--vermilion: #bf2d26;
-	--marigold: #e4a529;
+	--field: #f2c230;
+	--ink: #14100f;
+	--lacquer: #14100f;
+	--lacquer-soft: #1c1715;
 	--paper: #f1e8d8;
-	--dim: rgba(241, 232, 216, .72);
-	--faint: rgba(241, 232, 216, .56);
-	--line: rgba(241, 232, 216, .2);
+	--dim: rgba(241, 232, 216, .74);
+	--faint: rgba(241, 232, 216, .58);
+	--line: rgba(241, 232, 216, .18);
 	--display: 'Fraunces', Georgia, serif;
 	--sans: 'DM Sans', Arial, sans-serif;
 	--mono: 'DM Mono', monospace;
@@ -17,212 +17,227 @@
 }
 
 * { box-sizing: border-box; }
-html { background: var(--lacquer); scroll-behavior: smooth; }
+html { background: var(--lacquer); scroll-behavior: smooth; scroll-padding-top: 4.5rem; }
 body { min-width: 320px; margin: 0; background: var(--lacquer); color: var(--paper); font-family: var(--sans); overflow-x: clip; -webkit-font-smoothing: antialiased; }
 a { color: inherit; text-decoration: none; }
 button { font: inherit; }
 img { display: block; max-width: 100%; }
 p, h1, h2, h3, figure, dl, dd { margin: 0; }
 ul, ol { padding: 0; margin: 0; list-style: none; }
-:focus-visible { outline: 2px solid var(--marigold); outline-offset: 4px; }
-.skip-link { position: fixed; z-index: 100; left: 1rem; top: -4rem; padding: .75rem 1rem; background: var(--paper); color: #241916; font: .75rem var(--mono); transition: top .2s var(--ease); }
+:focus-visible { outline: 3px solid var(--field); outline-offset: 3px; }
+.loom-hero :focus-visible, .loom-contact-content :focus-visible { outline-color: var(--ink); }
+.skip-link { position: fixed; z-index: 100; left: 1rem; top: -4rem; padding: .75rem 1rem; background: var(--paper); color: var(--ink); font-weight: 600; font-size: .9rem; transition: top .2s var(--ease); }
 .skip-link:focus { top: 1rem; }
 
-/* header */
-.loom-header { position: fixed; z-index: 50; top: 0; left: 0; display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 1.1rem var(--gutter); border-bottom: 1px solid transparent; font: .68rem var(--mono); letter-spacing: .08em; text-transform: uppercase; transition: background-color .3s, border-color .3s; }
-.loom-header.is-scrolled { border-color: var(--line); background: rgba(16, 12, 11, .98); }
+/* header: ink on the yellow hero, paper on the dark page once scrolled */
+.loom-header { position: fixed; z-index: 50; top: 0; left: 0; display: flex; width: 100%; align-items: center; justify-content: space-between; padding: 1.1rem var(--gutter); border-bottom: 1px solid transparent; color: var(--ink); font-size: .95rem; font-weight: 500; transition: background-color .3s, border-color .3s, color .3s; }
+.loom-header.is-scrolled { border-color: var(--line); background: rgba(20, 16, 15, .98); color: var(--paper); }
 .loom-mark, .loom-nav { display: flex; align-items: center; }
-.loom-mark { gap: .65rem; }
-.loom-mark-sigil { width: .7rem; height: .7rem; border: 1px solid var(--marigold); border-radius: 50%; box-shadow: inset 0 0 0 2px var(--lacquer), inset 0 0 0 3px var(--marigold); }
-.loom-nav { gap: clamp(1rem, 2.4vw, 2.65rem); color: var(--dim); }
+.loom-mark { gap: .6rem; font-weight: 700; }
+.loom-mark-sigil { width: .8rem; height: .8rem; border: 2px solid currentColor; border-radius: 50%; }
+.loom-nav { gap: clamp(1rem, 2.4vw, 2.4rem); }
 .loom-nav a { position: relative; padding-block: .25rem; }
-.loom-nav a::after { position: absolute; bottom: -.08rem; left: 0; width: 100%; height: 1px; content: ''; background: var(--marigold); transform: scaleX(0); transform-origin: right; transition: transform .28s var(--ease); }
-.loom-nav a:hover, .loom-nav a.is-active { color: var(--paper); }
+.loom-nav a::after { position: absolute; bottom: -.08rem; left: 0; width: 100%; height: 2px; content: ''; background: currentColor; transform: scaleX(0); transform-origin: right; transition: transform .28s var(--ease); }
 .loom-nav a:hover::after, .loom-nav a.is-active::after { transform: scaleX(1); transform-origin: left; }
-.loom-nav .loom-nav-terminal { display: inline-flex; gap: .45rem; padding: .35rem .65rem; border: 1px solid rgba(228, 165, 41, .55); color: var(--marigold); transition: background-color .25s, color .25s; }
+.loom-nav .loom-nav-terminal { display: inline-flex; gap: .45rem; padding: .35rem .7rem; border: 1px solid currentColor; transition: background-color .25s; }
 .loom-nav .loom-nav-terminal::after { display: none; }
-.loom-nav .loom-nav-terminal:hover { background: rgba(228, 165, 41, .14); color: var(--paper); }
-
-/* shared type */
-.loom-kicker, .loom-eyebrow, .loom-project-category { font: .68rem/1.45 var(--mono); letter-spacing: .115em; text-transform: uppercase; }
-.loom-kicker, .loom-eyebrow, .loom-project-category, .loom-card-kicker, .loom-job-date { color: var(--marigold); }
-.loom-hero h1, .loom-craft h2, .loom-experience h2, .loom-work h2, .loom-contact h2 { font-family: var(--display); font-weight: 600; letter-spacing: -.075em; }
-.loom-craft h2, .loom-experience h2, .loom-work h2, .loom-contact h2 { margin-top: .7rem; font-size: clamp(3rem, 5.8vw, 5.8rem); line-height: .9; }
-.loom-hero h1 em, h2 em { color: var(--marigold); font-weight: 500; }
-.loom-hero h1 em { text-shadow: 0 0 .35em rgba(228, 165, 41, .32); }
-.loom-section-label { display: flex; grid-column: 1 / -1; justify-content: space-between; padding-bottom: .85rem; border-bottom: 1px solid currentColor; color: rgba(241, 232, 216, .67); font: .62rem/1.3 var(--mono); letter-spacing: .09em; text-transform: uppercase; }
-.loom-body-copy { max-width: 33rem; margin-top: 1.5rem; color: var(--dim); font-size: 1.1rem; line-height: 1.65; }
+.loom-nav .loom-nav-terminal:hover { background: color-mix(in srgb, currentColor 14%, transparent); }
+.loom-progress { position: absolute; left: 0; bottom: -1px; width: 100%; height: 2px; background: var(--field); transform: scaleX(0); transform-origin: left; }
 
 /* buttons */
-.loom-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 2.1rem; }
-.loom-button { display: inline-flex; align-items: center; justify-content: center; gap: .8rem; min-height: 3.15rem; padding: .85rem 1.12rem; border: 1px solid rgba(241, 232, 216, .44); font: .7rem var(--mono); letter-spacing: .05em; text-transform: uppercase; transition: background-color .25s, border-color .25s, transform .25s var(--ease); }
+.loom-actions { display: flex; flex-wrap: wrap; gap: .75rem; margin-top: 1.7rem; }
+.loom-button { display: inline-flex; align-items: center; justify-content: center; min-height: 3.1rem; padding: .8rem 1.3rem; border: 2px solid var(--ink); font-size: 1rem; font-weight: 600; transition: background-color .25s, transform .25s var(--ease); }
 .loom-button:hover { transform: translateY(-3px); }
-.loom-button-primary { border-color: var(--vermilion); background: var(--vermilion); }
-.loom-button-primary:hover { border-color: #e24335; background: #e24335; }
-.loom-button-quiet:hover { border-color: var(--marigold); background: rgba(228, 165, 41, .1); }
+.loom-button-primary { background: var(--ink); color: var(--field); }
+.loom-button-quiet:hover { background: rgba(20, 16, 15, .1); }
 
-/* hero: one static painting, one wash, one entrance animation */
-.loom-hero { position: relative; isolation: isolate; display: grid; min-height: max(44rem, 100svh); align-items: end; padding: clamp(7.5rem, 13vh, 10rem) var(--gutter) 4.75rem; overflow: hidden; background: #130d0b; }
-/* The scene is sized like object-fit: cover (image is 1672x941) so glows stay pinned to the painting, without JS. */
-.loom-hero-media { position: absolute; z-index: -2; inset: 0; overflow: hidden; container-type: size; }
-.loom-hero-scene { --w: max(100cqw, 100cqh * 1.7769); --focus: .5; position: absolute; left: calc((100cqw - var(--w)) * var(--focus)); top: calc((100cqh - var(--w) * .5628) / 2); width: var(--w); aspect-ratio: 1672 / 941; transform-origin: 82% 40%; animation: drift 40s ease-in-out infinite alternate; }
-.loom-hero-image { display: block; width: 100%; height: 100%; }
-.loom-glow, .loom-halo-ring { position: absolute; left: var(--x); top: var(--y); translate: -50% -50%; pointer-events: none; }
-.loom-glow { width: var(--s); aspect-ratio: 1; border-radius: 50%; background: radial-gradient(circle, rgba(255, 200, 96, .5), rgba(255, 145, 40, .16) 42%, transparent 70%); animation: glow-pulse var(--t, 5s) ease-in-out infinite alternate; }
-.loom-glow-lamp { animation-name: lamp-flicker; animation-timing-function: steps(1, end); animation-direction: normal; }
-.loom-halo-ring { width: 24.5%; overflow: visible; fill: none; stroke: rgba(255, 214, 128, .6); stroke-width: .5; animation: ring-spin 120s linear infinite; }
-.loom-halo-ring-b { animation-duration: 75s; animation-direction: reverse; }
-.hr-solid { stroke-width: .8; }
-.hr-ticks { stroke-width: 5; stroke-dasharray: .8 5.0905; opacity: .55; }
-.hr-dots { stroke: rgba(255, 205, 110, .9); stroke-width: 2.6; stroke-linecap: round; stroke-dasharray: 0 27.75; }
-.hr-dash { stroke-dasharray: 10 4 2 4; opacity: .7; }
-@keyframes drift { from { transform: scale(1.02); } to { transform: scale(1.09) translate3d(-1.2%, .6%, 0); } }
-@keyframes glow-pulse { from { opacity: .3; transform: scale(.88); } to { opacity: 1; transform: scale(1.14); } }
-@keyframes lamp-flicker { 0% { opacity: .9; transform: scale(1); } 12% { opacity: .55; transform: scale(.92); } 26% { opacity: 1; transform: scale(1.08); } 41% { opacity: .7; transform: scale(.96); } 58% { opacity: 1; transform: scale(1.12); } 73% { opacity: .6; transform: scale(.9); } 88% { opacity: .95; transform: scale(1.04); } 100% { opacity: .8; transform: scale(1); } }
-@keyframes ring-spin { to { transform: rotate(360deg); } }
-.loom-hero-wash { position: absolute; z-index: -1; inset: 0; background: linear-gradient(90deg, rgba(15, 10, 10, .93), rgba(15, 10, 10, .78) 38%, rgba(15, 10, 10, .13) 74%), linear-gradient(0deg, rgba(15, 10, 10, .82), transparent 45%); }
-.loom-hero-content { max-width: 49rem; }
-.loom-kicker { margin-bottom: 1.4rem; }
-.loom-hero h1 { max-width: 9ch; font-size: clamp(4.7rem, 10.6vw, 10.5rem); line-height: .76; }
-.loom-intro { max-width: 33rem; margin-top: clamp(2rem, 4vh, 3.6rem); color: rgba(241, 232, 216, .85); font-size: clamp(1rem, 1.25vw, 1.18rem); line-height: 1.6; }
-.loom-stats { display: flex; gap: clamp(1.4rem, 4vw, 3rem); max-width: 33rem; padding-top: 1.15rem; margin-top: 2.4rem; border-top: 1px solid var(--line); }
-.loom-stats div { display: flex; flex-direction: column-reverse; gap: .3rem; }
-.loom-stats dd { font: 600 clamp(1.7rem, 3vw, 2.4rem)/1 var(--display); letter-spacing: -.05em; font-variant-numeric: tabular-nums; }
-.loom-stats dt { color: var(--faint); font: .54rem/1.4 var(--mono); letter-spacing: .09em; text-transform: uppercase; }
-.loom-hero-content > * { animation: rise .8s var(--ease) both; }
-.loom-hero-content > :nth-child(2) { animation-delay: 90ms; }
-.loom-hero-content > :nth-child(3) { animation-delay: 180ms; }
-.loom-hero-content > :nth-child(4) { animation-delay: 250ms; }
-.loom-hero-content > :nth-child(5) { animation-delay: 330ms; }
+/* hero: a flat colour field, one cutout portrait, one giant name. Nothing here is decoration. */
+.loom-hero { position: relative; isolation: isolate; display: flex; flex-direction: column; justify-content: space-between; min-height: max(38rem, 100svh); padding: clamp(6.5rem, 13vh, 9rem) var(--gutter) clamp(1.5rem, 5vh, 3rem); overflow: hidden; background: var(--field); color: var(--ink); }
+.loom-hero-content { position: relative; z-index: 2; order: 1; max-width: min(34rem, 52%); }
+.loom-hero-name { position: relative; z-index: 0; order: 2; margin-top: 2rem; padding-bottom: .1em; font: 600 min(12.5vw, 23vh)/.82 var(--display); letter-spacing: -.055em; }
+.loom-hero-name span { display: block; }
+.loom-hero-portrait { position: absolute; z-index: 1; right: 0; bottom: 0; height: min(82%, 54vw); }
+.loom-hero-portrait img { display: block; width: auto; height: 100%; }
+.loom-hero-role { font-size: 1.1rem; font-weight: 700; }
+.loom-intro { max-width: 30rem; margin-top: .8rem; font-size: clamp(1.05rem, 1.45vw, 1.3rem); line-height: 1.5; }
+.loom-hero-proof { margin-top: 1.5rem; font-size: .95rem; line-height: 1.5; opacity: .8; }
+.loom-hero-time { position: absolute; z-index: 2; top: 5.2rem; right: var(--gutter); display: flex; gap: .55rem; align-items: center; padding: .45rem .9rem; border-radius: 999px; background: var(--ink); color: var(--paper); font-size: .85rem; font-weight: 500; }
+.loom-hero-time i, .loom-local i { width: .5rem; height: .5rem; border-radius: 50%; background: #4ade80; }
+.loom-hero-content > *, .loom-hero-name span { animation: rise .8s var(--ease) both; }
+.loom-hero-content > :nth-child(2) { animation-delay: 80ms; }
+.loom-hero-content > :nth-child(3) { animation-delay: 160ms; }
+.loom-hero-content > :nth-child(4) { animation-delay: 240ms; }
+.loom-hero-name span:nth-child(2) { animation-delay: 90ms; }
+.loom-hero-portrait img { animation: portrait-in 1s var(--ease) 150ms both; }
 @keyframes rise { from { opacity: 0; transform: translateY(22px); } }
+@keyframes portrait-in { from { opacity: 0; transform: translateY(5%); } }
 
-/* Scroll-driven motion: pure CSS, transform/opacity only, so it runs on the compositor with zero JS. */
-/* Browsers without animation-timeline just show everything, un-animated. */
-.loom-progress { position: absolute; left: 0; bottom: -1px; width: 100%; height: 2px; background: linear-gradient(90deg, var(--vermilion), var(--marigold)); transform: scaleX(0); transform-origin: left; }
+/* shared section type */
+.loom-craft h2, .loom-experience h2, .loom-work h2, .loom-contact h2 { font-family: var(--display); font-size: clamp(2.6rem, 5vw, 4.8rem); font-weight: 600; letter-spacing: -.045em; line-height: .98; text-wrap: balance; }
+.loom-craft h2::after, .loom-experience h2::after, .loom-work h2::after, .loom-contact h2::after { display: block; width: 3.5rem; height: 4px; margin-top: 1.3rem; content: ''; background: var(--field); transform-origin: left; }
+.loom-contact h2::after { background: var(--ink); }
+.loom-lead { max-width: 34rem; margin-top: 1.1rem; color: var(--dim); font-size: 1.15rem; line-height: 1.6; text-wrap: pretty; }
+.loom-craft, .loom-experience, .loom-work { padding: clamp(5rem, 10vw, 9rem) var(--gutter); }
+
+/* craft */
+.loom-craft { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2.5rem, 5vw, 4.5rem) clamp(3rem, 7vw, 8rem); background: var(--lacquer); }
+.loom-craft-main { display: grid; gap: clamp(2.5rem, 5vw, 4rem); align-content: start; }
+.loom-capability-list { align-self: start; border-top: 1px solid var(--line); }
+.loom-capability { padding: 1.5rem 0 1.6rem; border-bottom: 1px solid var(--line); }
+.loom-capability h3 { font-family: var(--display); font-size: 1.9rem; font-weight: 600; letter-spacing: -.035em; line-height: 1.05; }
+.loom-capability p { max-width: 30rem; margin-top: .5rem; color: var(--dim); line-height: 1.55; }
+.loom-capability-link { display: inline-block; margin-top: .8rem; color: var(--field); font-size: .95rem; font-weight: 600; text-decoration: underline; text-decoration-thickness: 1px; text-underline-offset: .25em; transition: text-decoration-thickness .2s; }
+.loom-capability-link:hover { text-decoration-thickness: 3px; }
+
+/* the code panel: lines uncover like typing, the tile's bars grow. Time-based by default, scroll-linked with .is-scroll. */
+.loom-code { --panel: #0e0b0a; align-self: start; overflow: hidden; border: 1px solid var(--line); background: var(--panel); view-timeline: --code block; }
+.loom-code-title { padding: .7rem 1rem; border-bottom: 1px solid var(--line); color: var(--faint); font: .78rem var(--mono); }
+.loom-code-body { display: grid; grid-template-columns: minmax(0, 1fr) auto; gap: 1.2rem; align-items: end; padding: 1.1rem 1rem 1.2rem; }
+.loom-code-text { margin: 0; overflow: hidden; color: var(--paper); font: .85rem/1.75 var(--mono); }
+.loom-code-line { position: relative; display: block; white-space: pre; }
+.loom-code-line::after { position: absolute; inset: 0; content: ''; background: var(--panel); pointer-events: none; transform-origin: right; animation: uncover .7s steps(24, end) calc(var(--i) * .4s) both; }
+.tk-dim { color: var(--faint); }
+.tk-str { color: var(--field); }
+.loom-caret { display: inline-block; width: .55em; height: 1.1em; margin-left: .1em; vertical-align: -.2em; background: var(--field); animation: blink 1s steps(1) 6; }
+.loom-tile { width: 9.5rem; padding: .9rem; border: 1px solid var(--line); background: var(--lacquer-soft); }
+.loom-tile-name { color: var(--faint); font: .72rem var(--mono); }
+.loom-tile-value { margin-top: .3rem; font: 600 1.5rem/1 var(--display); }
+.loom-bars { display: flex; gap: .3rem; align-items: flex-end; height: 3.2rem; margin-top: .8rem; }
+.loom-bars i { flex: 1; height: 100%; background: var(--field); transform: scaleY(var(--h)); transform-origin: bottom; animation: grow .6s var(--ease) calc(1.6s + var(--i) * .08s) both; }
+.loom-code-note { padding: 0 1rem 1rem; color: var(--faint); font-size: .85rem; line-height: 1.5; }
+@keyframes fade-in { from { opacity: 0; } }
+@keyframes uncover { to { transform: scaleX(0); } }
+@keyframes grow { from { transform: scaleY(0); } }
+@keyframes blink { 50% { opacity: 0; } }
+
+/* experience */
+.loom-experience { border-top: 1px solid var(--line); background: var(--lacquer-soft); }
+.loom-experience-body { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(16rem, .75fr); gap: clamp(2.5rem, 6vw, 7rem); margin-top: 3.2rem; align-items: start; }
+.loom-timeline { position: relative; padding-left: 1.9rem; }
+.loom-timeline::before { position: absolute; top: .4rem; bottom: 0; left: .3rem; width: 1px; content: ''; background: linear-gradient(var(--field), var(--line) 70%, transparent); }
+.loom-job { position: relative; padding-bottom: 3rem; }
+.loom-job::before { position: absolute; top: .3rem; left: -1.9rem; width: .62rem; height: .62rem; content: ''; border: 2px solid var(--field); border-radius: 50%; background: var(--lacquer-soft); box-shadow: 0 0 0 4px var(--lacquer-soft); }
+.loom-job-date { color: var(--field); font-size: .92rem; font-weight: 600; }
+.loom-job h3 { margin-top: .4rem; font-family: var(--display); font-size: clamp(1.7rem, 2.8vw, 2.5rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; }
+.loom-job-org { margin-top: .4rem; color: var(--faint); }
+.loom-job ul { display: grid; gap: .75rem; margin-top: 1.3rem; }
+.loom-job li { position: relative; max-width: 40rem; padding-left: 1.1rem; color: var(--dim); line-height: 1.6; }
+.loom-job li::before { position: absolute; top: .75em; left: 0; width: .45rem; height: 2px; content: ''; background: var(--field); }
+.loom-skills { padding: 1.5rem; border: 1px solid var(--line); background: var(--lacquer); }
+.loom-skills-title { color: var(--field); font-size: 1rem; font-weight: 700; }
+.loom-skills-title:not(:first-child) { margin-top: 1.9rem; }
+.loom-skill-groups { display: grid; gap: 1.1rem; margin-top: 1.1rem; }
+.loom-skill-groups dt { color: var(--faint); font-size: .85rem; font-weight: 600; }
+.loom-skill-groups dd { margin-top: .25rem; line-height: 1.55; }
+.loom-skill-note { margin-top: .6rem; color: var(--dim); line-height: 1.6; }
+
+/* selected work */
+.loom-work { border-top: 1px solid var(--line); background: var(--lacquer); }
+.loom-featured { display: grid; gap: 1.4rem; margin-top: 3rem; }
+.loom-playground { margin-top: clamp(4rem, 8vw, 6.5rem); }
+.loom-playground-title { font-family: var(--display); font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 600; letter-spacing: -.04em; line-height: 1; }
+.loom-filters { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; }
+.loom-filter { padding: .5rem .95rem; border: 1px solid var(--line); border-radius: 999px; background: transparent; color: var(--dim); cursor: pointer; font-size: .92rem; font-weight: 500; transition: background-color .2s, border-color .2s, color .2s, transform .2s var(--ease); }
+.loom-filter span { margin-left: .35rem; opacity: .6; }
+.loom-filter:hover { border-color: var(--paper); color: var(--paper); }
+.loom-filter[aria-pressed='true'] { border-color: var(--field); background: var(--field); color: var(--ink); }
+.loom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); grid-auto-flow: dense; gap: 1.1rem; margin-top: 1.6rem; }
+.loom-card { display: flex; flex-direction: column; border: 1px solid var(--line); background: var(--lacquer-soft); transition: transform .25s var(--ease), border-color .25s; }
+.loom-card[hidden] { display: none; }
+.loom-card:hover, .loom-card:focus-visible { transform: translateY(-3px); border-color: var(--field); }
+.loom-card-visual { position: relative; display: grid; aspect-ratio: 16 / 10; place-items: center; overflow: hidden; border-bottom: 1px solid var(--line); background: #0e0b0a; color: var(--field); }
+.loom-card-visual img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); animation: fade-in .5s both; }
+.loom-card:hover .loom-card-visual img, .loom-card:focus-visible .loom-card-visual img { transform: scale(1.05); }
+.loom-card-visual .project-icon { width: 34%; height: 62%; }
+.loom-card-body { display: flex; flex: 1; flex-direction: column; padding: 1.15rem 1.15rem 1.3rem; }
+.loom-project-category { color: var(--field); font-size: .88rem; font-weight: 600; }
+.loom-card h3 { margin-top: .5rem; font-family: var(--display); font-size: 1.55rem; font-weight: 600; letter-spacing: -.03em; line-height: 1.05; }
+.loom-card-description { display: -webkit-box; margin-top: .8rem; overflow: hidden; color: var(--dim); line-height: 1.5; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
+.loom-project-tech { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
+.loom-project-tech li { padding: .3rem .55rem; border: 1px solid var(--line); color: var(--dim); font-size: .8rem; }
+.loom-card-cta { margin-top: auto; padding-top: 1.2rem; color: var(--field); font-weight: 600; text-underline-offset: .25em; }
+.loom-card:hover .loom-card-cta { text-decoration: underline; }
+.loom-card.is-spotlight { border-color: rgba(242, 194, 48, .4); }
+.loom-card.is-spotlight .loom-card-body { padding: 1.5rem 1.5rem 1.7rem; }
+.loom-card.is-spotlight h3 { font-size: clamp(1.9rem, 2.6vw, 2.4rem); }
+.loom-card.is-spotlight .loom-card-description { display: block; margin-top: 1rem; font-size: 1.05rem; line-height: 1.6; -webkit-line-clamp: unset; }
+.loom-noscript a { border-bottom: 1px solid var(--field); }
+
+/* contact: the yellow comes back so the page is bookended */
+.loom-contact { min-height: max(34rem, 80svh); padding: clamp(5rem, 10vw, 9rem) var(--gutter); background: var(--field); color: var(--ink); }
+.loom-contact-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(19rem, .9fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
+.loom-contact h2 { max-width: 14ch; }
+.loom-contact-copy { max-width: 31rem; margin-top: 1.4rem; font-size: 1.15rem; line-height: 1.6; }
+.loom-contact-card { padding: 1.8rem; background: var(--ink); color: var(--paper); }
+.loom-card-kicker { color: var(--field); font-size: .95rem; font-weight: 700; }
+.loom-mail { display: flex; flex-wrap: wrap; gap: .9rem; align-items: center; justify-content: space-between; margin-top: 1rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--line); }
+.loom-mail-link { font: 600 clamp(1.3rem, 2.2vw, 1.8rem)/1.15 var(--display); letter-spacing: -.02em; overflow-wrap: anywhere; transition: color .25s; }
+.loom-mail-link:hover { color: var(--field); }
+.loom-copy { padding: .5rem .95rem; border: 2px solid var(--field); background: transparent; color: var(--field); cursor: pointer; font-size: .9rem; font-weight: 600; transition: background-color .2s, color .2s, transform .2s var(--ease); }
+.loom-copy:hover, .loom-copy.is-done { background: var(--field); color: var(--ink); }
+.loom-copy.is-done { animation: pop .4s var(--ease); }
+.loom-links a { display: grid; grid-template-columns: 5.6rem 1fr; gap: .8rem; align-items: baseline; padding: 1rem 0; border-bottom: 1px solid var(--line); transition: color .25s; }
+.loom-links span { color: var(--faint); font-size: .88rem; font-weight: 600; }
+.loom-links em { font-style: normal; }
+.loom-links a:hover { color: var(--field); }
+.loom-local { display: flex; gap: .6rem; align-items: center; margin-top: 1.3rem; color: var(--faint); font-size: .9rem; }
+@keyframes pop { 50% { transform: scale(1.12); } }
+
+.loom-footer { display: flex; gap: 1rem; justify-content: space-between; padding: 1.1rem var(--gutter); background: var(--ink); color: var(--faint); font-size: .85rem; line-height: 1.5; }
+.loom-footer a { color: var(--field); text-decoration: underline; text-underline-offset: .2em; }
+
+/* back to top: appears once the hero has scrolled away (scroll-linked, so no JS) */
+.loom-top { position: fixed; z-index: 40; right: max(1rem, var(--gutter)); bottom: 1.2rem; display: grid; width: 3rem; height: 3rem; place-items: center; border-radius: 50%; background: var(--field); color: var(--ink); opacity: 0; pointer-events: none; transform: translateY(12px); }
+
+/* press feedback */
+.loom-button:active, .loom-copy:active, .loom-filter:active, .loom-top:active { transform: scale(.96); }
+.loom-card:active { transform: translateY(-1px) scale(.99); }
+
+/* scroll-driven motion: pure CSS, transform/opacity only. Browsers without animation-timeline just show everything. */
 @supports (animation-timeline: view()) {
 	@media (prefers-reduced-motion: no-preference) {
 		[data-reveal] { animation: reveal linear both; animation-timeline: view(); animation-range: entry 0% entry 40%; }
-		.loom-hero-media { animation: media-shift linear both; animation-timeline: scroll(root); animation-range: 0 100svh; }
+		.loom-craft h2::after, .loom-experience h2::after, .loom-work h2::after, .loom-contact h2::after { animation: draw linear both; animation-timeline: view(); animation-range: entry 30% entry 90%; }
+		.loom-hero-name { animation: shift-up linear both; animation-timeline: scroll(root); animation-range: 0 100svh; }
+		.loom-hero-portrait { animation: shift-down linear both; animation-timeline: scroll(root); animation-range: 0 100svh; }
 		.loom-progress { animation: progress linear both; animation-timeline: scroll(root); }
+		.loom-top { animation: top-in linear both; animation-timeline: scroll(root); animation-range: 90svh 110svh; }
+		.loom-code.is-scroll .loom-code-line::after { animation-timeline: --code; animation-delay: 0s; animation-range: entry calc(5% + var(--i) * 7%) entry calc(30% + var(--i) * 7%); }
+		.loom-code.is-scroll .loom-bars i { animation-timeline: --code; animation-delay: 0s; animation-range: entry 55% entry 90%; }
 	}
 }
 @keyframes reveal { from { opacity: 0; transform: translateY(28px); } }
-@keyframes media-shift { to { transform: translateY(12%); } }
+@keyframes draw { from { transform: scaleX(0); } }
+@keyframes shift-up { to { transform: translateY(-16%); } }
+@keyframes shift-down { to { transform: translateY(12%); } }
 @keyframes progress { to { transform: scaleX(1); } }
+@keyframes top-in { to { opacity: 1; pointer-events: auto; transform: none; } }
+::view-transition-group(*) { animation-duration: .35s; animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
 
-/* craft */
-.loom-craft { display: grid; grid-template-columns: minmax(0, .94fr) minmax(20rem, 1.06fr); gap: clamp(2rem, 5vw, 5rem) clamp(3rem, 7vw, 9rem); padding: clamp(6.5rem, 12vw, 11rem) var(--gutter); background: linear-gradient(180deg, var(--lacquer), var(--lacquer-soft) 55%, var(--lacquer)); }
-.loom-craft-copy { grid-column: 1; }
-.loom-capability-list { grid-column: 2; grid-row: 2 / span 2; align-self: start; border-top: 1px solid var(--line); }
-.loom-workshop-image { grid-column: 1; align-self: end; }
-.loom-capability { position: relative; display: grid; grid-template-columns: 2.7rem 1fr; gap: .75rem; padding: 1.35rem 0 1.45rem; border-bottom: 1px solid var(--line); }
-.loom-capability::before { position: absolute; top: -1px; left: 1.1rem; width: 1px; height: calc(100% + 2px); content: ''; background: var(--line); }
-.loom-capability-number { position: relative; z-index: 1; display: grid; width: 2.2rem; height: 2.2rem; place-items: center; border: 1px solid var(--marigold); border-radius: 50%; background: var(--lacquer); color: var(--marigold); font: .61rem var(--mono); }
-.loom-capability h3 { font-family: var(--display); font-size: 2rem; letter-spacing: -.055em; }
-.loom-capability p { max-width: 28rem; margin-top: .3rem; color: var(--dim); font-size: .92rem; line-height: 1.5; }
-.loom-capability-link { display: inline-block; margin-top: .7rem; color: var(--marigold); font: .6rem var(--mono); letter-spacing: .09em; text-transform: uppercase; transition: color .2s; }
-.loom-capability-link:hover { color: var(--paper); }
-.loom-workshop-frame { position: relative; border: 1px solid rgba(228, 165, 41, .4); background: var(--lacquer); }
-.loom-workshop-frame img { width: 100%; height: auto; aspect-ratio: 1.18; object-fit: cover; }
-.loom-workshop-frame::after { position: absolute; inset: 0; pointer-events: none; content: ''; background: linear-gradient(180deg, rgba(16, 12, 11, .05), rgba(16, 12, 11, .5)); }
-.loom-workshop-image figcaption { padding: .75rem .2rem .1rem; color: var(--faint); font: .59rem/1.4 var(--mono); letter-spacing: .06em; text-transform: uppercase; }
-
-/* experience */
-.loom-experience { border-top: 1px solid var(--line); }
-.loom-experience-stage, .loom-work-stage { padding: clamp(5.7rem, 10vh, 7.7rem) var(--gutter) clamp(4.5rem, 9vh, 7rem); }
-.loom-experience-head, .loom-work-heading { margin-top: 3rem; }
-.loom-experience-body { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(16rem, .75fr); gap: clamp(2.5rem, 6vw, 7rem); margin-top: 3.2rem; align-items: start; }
-.loom-timeline { position: relative; padding-left: 1.9rem; }
-.loom-timeline::before { position: absolute; top: .4rem; bottom: 0; left: .3rem; width: 1px; content: ''; background: linear-gradient(var(--marigold), var(--line) 70%, transparent); }
-.loom-job { position: relative; padding-bottom: 3rem; }
-.loom-job::before { position: absolute; top: .3rem; left: -1.9rem; width: .62rem; height: .62rem; content: ''; border: 1px solid var(--marigold); border-radius: 50%; background: var(--lacquer); box-shadow: 0 0 0 4px var(--lacquer); }
-.loom-job-date { font: .66rem/1.4 var(--mono); letter-spacing: .1em; text-transform: uppercase; }
-.loom-job h3 { margin-top: .5rem; font-family: var(--display); font-size: clamp(1.7rem, 2.8vw, 2.5rem); letter-spacing: -.05em; line-height: 1; }
-.loom-job-org { margin-top: .35rem; color: var(--faint); font: .68rem var(--mono); letter-spacing: .06em; }
-.loom-job ul { display: grid; gap: .75rem; margin-top: 1.3rem; }
-.loom-job li { position: relative; max-width: 40rem; padding-left: 1.1rem; color: var(--dim); font-size: .97rem; line-height: 1.55; }
-.loom-job li::before { position: absolute; top: .72em; left: 0; width: .45rem; height: 1px; content: ''; background: var(--marigold); }
-.loom-skills { padding: 1.5rem; border: 1px solid var(--line); background: rgba(27, 19, 18, .7); }
-.loom-skills .loom-eyebrow:not(:first-child) { margin-top: 1.9rem; }
-.loom-skill-groups { display: grid; gap: 1.1rem; margin-top: 1.1rem; }
-.loom-skill-groups dt { color: var(--faint); font: .56rem var(--mono); letter-spacing: .09em; text-transform: uppercase; }
-.loom-skill-groups dd { margin-top: .3rem; font-size: .9rem; line-height: 1.55; }
-.loom-skill-note { margin-top: .8rem; color: var(--dim); font-size: .9rem; line-height: 1.6; }
-
-/* selected work */
-.loom-work { background: var(--lacquer-soft); border-top: 1px solid var(--line); }
-.loom-featured { display: grid; gap: 1.4rem; margin-top: 2.5rem; }
-.loom-playground { margin-top: clamp(4rem, 8vw, 6.5rem); }
-.loom-playground-title { font-family: var(--display); font-size: clamp(1.8rem, 3vw, 2.6rem); font-weight: 600; letter-spacing: -.05em; line-height: 1; }
-.loom-playground .loom-body-copy { margin-top: .8rem; font-size: 1rem; }
-.loom-filters { display: flex; flex-wrap: wrap; gap: .5rem; margin-top: 1.4rem; }
-.loom-filter { padding: .55rem .8rem; border: 1px solid var(--line); background: transparent; color: var(--faint); cursor: pointer; font: .64rem var(--mono); letter-spacing: .08em; text-transform: uppercase; transition: color .2s, border-color .2s, background-color .2s; }
-.loom-filter span { margin-left: .35rem; color: var(--marigold); }
-.loom-filter:hover { color: var(--paper); border-color: rgba(241, 232, 216, .5); }
-.loom-filter[aria-pressed='true'] { border-color: var(--marigold); background: rgba(228, 165, 41, .12); color: var(--paper); }
-.loom-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 19rem), 1fr)); grid-auto-flow: dense; gap: 1.1rem; margin-top: 1.6rem; }
-.loom-card { display: flex; flex-direction: column; border: 1px solid var(--line); background: rgba(16, 12, 11, .55); transition: transform .25s var(--ease), border-color .25s, background-color .25s; }
-.loom-card[hidden] { display: none; }
-.loom-card:hover, .loom-card:focus-visible { transform: translateY(-3px); border-color: var(--marigold); background: rgba(16, 12, 11, .85); }
-.loom-card.is-spotlight { border-color: rgba(228, 165, 41, .4); }
-.loom-card-visual { position: relative; display: grid; aspect-ratio: 16 / 10; place-items: center; overflow: hidden; border-bottom: 1px solid var(--line); background: radial-gradient(circle at 50% 40%, #241a17, #140e0c); color: var(--marigold); }
-.loom-card-visual img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s var(--ease); }
-.loom-card:hover .loom-card-visual img, .loom-card:focus-visible .loom-card-visual img { transform: scale(1.05); }
-.loom-card-visual .project-icon { width: 34%; height: 62%; }
-.loom-card.is-spotlight .loom-card-body { padding: 1.5rem 1.5rem 1.7rem; }
-.loom-card.is-spotlight h3 { font-size: clamp(1.9rem, 2.6vw, 2.4rem); }
-.loom-card.is-spotlight .loom-card-description { display: block; margin-top: 1rem; font-size: 1rem; line-height: 1.6; -webkit-line-clamp: unset; }
-.loom-card-body { display: flex; flex: 1; flex-direction: column; padding: 1.15rem 1.15rem 1.3rem; }
-.loom-card h3 { margin-top: .55rem; font-family: var(--display); font-size: 1.55rem; letter-spacing: -.045em; line-height: 1; }
-.loom-card-description { display: -webkit-box; margin-top: .8rem; overflow: hidden; color: var(--dim); font-size: .92rem; line-height: 1.5; -webkit-line-clamp: 2; -webkit-box-orient: vertical; }
-.loom-project-tech { display: flex; flex-wrap: wrap; gap: .4rem; margin-top: 1rem; }
-.loom-project-tech li { padding: .37rem .47rem; border: 1px solid rgba(241, 232, 216, .25); color: var(--dim); font: .58rem var(--mono); }
-.loom-card-cta { margin-top: auto; padding-top: 1.2rem; color: var(--marigold); font: .64rem var(--mono); letter-spacing: .08em; text-transform: uppercase; }
-.loom-noscript a { border-bottom: 1px solid var(--marigold); }
-
-/* contact */
-.loom-contact { min-height: max(40rem, 85svh); padding: clamp(6rem, 12vh, 9rem) var(--gutter) clamp(4rem, 8vh, 6rem); border-top: 1px solid var(--line); background: linear-gradient(180deg, var(--lacquer-soft), #120e0d); }
-.loom-contact .loom-section-label { margin-bottom: 4rem; }
-.loom-contact-grid { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(19rem, .9fr); gap: clamp(2rem, 6vw, 7rem); align-items: center; }
-.loom-contact h2 { max-width: 15ch; }
-.loom-contact-copy { max-width: 31rem; margin-top: 1.5rem; color: var(--dim); font-size: 1.12rem; line-height: 1.6; }
-.loom-contact-card { padding: 1.7rem; border: 1px solid rgba(228, 165, 41, .38); background: rgba(16, 12, 11, .86); }
-.loom-card-kicker { font: .62rem var(--mono); letter-spacing: .12em; text-transform: uppercase; }
-.loom-mail { display: flex; flex-wrap: wrap; gap: .9rem; align-items: center; justify-content: space-between; margin-top: 1rem; padding-bottom: 1.2rem; border-bottom: 1px solid var(--line); }
-.loom-mail-link { font: 600 clamp(1.2rem, 2vw, 1.65rem)/1.15 var(--display); letter-spacing: -.03em; overflow-wrap: anywhere; transition: color .25s; }
-.loom-mail-link:hover { color: var(--marigold); }
-.loom-copy { padding: .5rem .85rem; border: 1px solid var(--marigold); background: transparent; color: var(--marigold); cursor: pointer; font: .62rem var(--mono); letter-spacing: .09em; text-transform: uppercase; transition: background-color .2s, color .2s; }
-.loom-copy:hover, .loom-copy.is-done { background: var(--marigold); color: var(--lacquer); }
-.loom-links a { display: grid; grid-template-columns: 5.6rem 1fr auto; gap: .8rem; align-items: baseline; padding: 1.05rem 0; border-bottom: 1px solid var(--line); transition: color .25s; }
-.loom-links span { color: var(--faint); font: .64rem var(--mono); letter-spacing: .09em; text-transform: uppercase; }
-.loom-links em { font-style: normal; font-size: 1rem; }
-.loom-links b { color: var(--marigold); font-weight: 400; }
-.loom-links a:hover { color: var(--marigold); }
-.loom-local { display: flex; gap: .6rem; align-items: center; margin-top: 1.3rem; color: var(--faint); font: .62rem var(--mono); letter-spacing: .09em; text-transform: uppercase; }
-.loom-local i { width: .5rem; height: .5rem; border-radius: 50%; background: #4ade80; }
-.loom-footer { display: flex; gap: 1rem; justify-content: space-between; padding: 1rem var(--gutter); border-top: 1px solid var(--line); background: var(--lacquer); color: rgba(241, 232, 216, .5); font: .57rem/1.45 var(--mono); letter-spacing: .055em; text-transform: uppercase; }
-.loom-footer a { color: var(--marigold); }
-
+@media (min-width: 760px) { .loom-featured { grid-template-columns: 1fr 1fr; } }
 @media (max-width: 860px) {
 	.loom-craft, .loom-experience-body, .loom-contact-grid { grid-template-columns: 1fr; }
-	.loom-craft { gap: 2rem; }
-	.loom-capability-list, .loom-workshop-image { grid-column: 1; grid-row: auto; }
+	.loom-craft { gap: 2.5rem; }
+}
+@media (max-width: 760px) {
+	.loom-hero { justify-content: flex-start; padding-bottom: 0; }
+	.loom-hero-content { max-width: none; }
+	.loom-hero-name { margin-top: 1.8rem; font-size: 23vw; }
+	.loom-button { padding-inline: 1rem; font-size: .95rem; }
+	.loom-hero-portrait { position: relative; order: 3; align-self: flex-end; width: min(100%, 24rem); height: auto; }
+	.loom-hero-portrait img { width: 100%; height: auto; }
+	.loom-hero-time { top: auto; right: auto; bottom: 1.2rem; left: var(--gutter); }
 }
 @media (max-width: 620px) {
-	.loom-nav { gap: .8rem; font-size: .55rem; }
+	.loom-nav { gap: .9rem; font-size: .8rem; }
 	.loom-nav-optional, .loom-nav a[href='#about'], .loom-nav-terminal-label { display: none; }
 	.loom-nav a, .loom-mark { white-space: nowrap; }
-	.loom-hero { min-height: 44rem; padding-bottom: 5rem; }
-	.loom-hero-wash { background: linear-gradient(90deg, rgba(15, 10, 10, .92), rgba(15, 10, 10, .48)), linear-gradient(0deg, rgba(15, 10, 10, .88), transparent 60%); }
-	.loom-craft, .loom-experience-stage, .loom-work-stage, .loom-contact { padding-top: 5.6rem; padding-bottom: 5.6rem; }
-	.loom-links a { grid-template-columns: 5rem 1fr auto; }
+	.loom-links a { grid-template-columns: 5rem 1fr; }
 	.loom-contact-card { padding: 1.3rem; }
-	.loom-footer { flex-direction: column; padding-block: 1.25rem; }
+	.loom-footer { flex-direction: column; }
 }
+@media (max-width: 520px) { .loom-code-body { grid-template-columns: 1fr; } .loom-tile { width: 100%; } }
 @media (max-width: 480px) { .loom-mark span:not(.loom-mark-sigil) { display: none; } }
-@media (min-width: 760px) { .loom-featured { grid-template-columns: 1fr 1fr; } }
-@media (max-width: 620px) { .loom-hero-scene { --focus: .59; } }
-::view-transition-group(*) { animation-duration: .35s; animation-timing-function: cubic-bezier(.22, 1, .36, 1); }
 @media (prefers-reduced-motion: reduce) {
 	html { scroll-behavior: auto; }
 	*, *::before, *::after { animation: none !important; transition: none !important; }

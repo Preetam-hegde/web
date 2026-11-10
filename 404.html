@@ -4,53 +4,34 @@
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="robots" content="noindex">
-	<meta name="theme-color" content="#100c0b">
-	<title>404 — Lost the thread · Preetam Hegde</title>
+	<meta name="theme-color" content="#f2c230">
+	<title>404, page not found · Preetam Hegde</title>
+	<base href="/">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=DM+Sans:opsz,wght@9..40,400;500;600;700&family=Fraunces:opsz,wght@9..144,500;600;700;800&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="v1/style.css">
+	<link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+	<noscript><link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600&display=swap" rel="stylesheet"></noscript>
+	<link rel="stylesheet" href="v1/home.css">
 	<link rel="icon" type="image/svg+xml" href="v1/favicon.svg">
 	<link rel="icon" type="image/x-icon" href="favicon.ico" sizes="32x32">
 	<link rel="apple-touch-icon" href="apple-touch-icon.png">
 	<link rel="manifest" href="site.webmanifest">
 	<style>
-		.nf-hero { position: relative; isolation: isolate; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: clamp(2rem, 6vw, 6rem); align-items: center; min-height: 100svh; padding: clamp(7rem, 14vh, 9rem) var(--gutter) 4rem; overflow: hidden; background: #130d0b; }
-		.nf-bg { position: absolute; z-index: -4; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: 72% center; filter: saturate(.8) brightness(.5); }
-		.nf-wash { position: absolute; z-index: -3; inset: 0; background: linear-gradient(90deg, rgba(15, 10, 10, .94), rgba(15, 10, 10, .7) 50%, rgba(15, 10, 10, .4)), linear-gradient(0deg, #100c0b, transparent 40%); }
-		.nf-numerals { position: absolute; z-index: -2; left: 50%; top: 50%; translate: -50% -50%; white-space: nowrap; color: transparent; font: 700 clamp(14rem, 44vw, 40rem)/.8 var(--display); letter-spacing: -.08em; -webkit-text-stroke: 1px rgba(228, 165, 41, .26); user-select: none; animation: nf-flicker 7s infinite; }
-		.nf-mandala { left: auto; right: -6vw; z-index: -2; width: min(72vw, 50rem); top: 50%; translate: 0 -50%; }
-		.nf-mandala .m-draw { stroke-dashoffset: 1; animation: hr-draw 2.8s var(--ease) .4s forwards; }
-		.nf-copy { position: relative; }
-		.nf-copy h1 { margin-top: 1rem; font-family: var(--display); font-size: clamp(3.2rem, 6.4vw, 6.6rem); font-weight: 600; letter-spacing: -.075em; line-height: .9; }
-		.nf-copy h1 em { color: var(--marigold); font-weight: 500; }
-		.nf-copy code { padding: .1rem .4rem; border: 1px solid var(--line); color: var(--marigold); font: .82em var(--mono); overflow-wrap: anywhere; }
-		.nf-copy .loom-eyebrow { color: var(--marigold); }
-		.nf-copy .loom-body-copy { max-width: 30rem; }
-		.nf-copy .loom-actions { margin-top: 2rem; }
-		.nf-term { position: relative; }
-		.nf-term .loom-term-body { min-height: 14rem; }
-		.nf-term .loom-term-body a { color: var(--marigold); border-bottom: 1px solid rgba(228, 165, 41, .4); }
-		.nf-term .loom-term-body a:hover { color: var(--paper); border-color: var(--paper); }
-		.nf-err { color: #ff6b5e; }
-		.nf-more { position: relative; padding: clamp(4rem, 9vh, 7rem) var(--gutter) clamp(4rem, 9vh, 6rem); background: var(--lacquer); border-top: 1px solid var(--line); }
-		.nf-more .loom-section-label { color: rgba(241, 232, 216, .67); }
-		.nf-more h2 { margin-top: 2.5rem; font-family: var(--display); font-size: clamp(2.4rem, 4.6vw, 4.4rem); font-weight: 600; letter-spacing: -.07em; line-height: .95; }
-		.nf-more h2 em { color: var(--marigold); font-weight: 500; }
-		.nf-more .loom-grid { margin-top: 2.2rem; }
-		.nf-more .loom-card { min-height: 100%; }
-		@keyframes nf-flicker { 0%, 92%, 100% { opacity: 1; } 93% { opacity: .35; } 94% { opacity: 1; } 96% { opacity: .5; } 97% { opacity: 1; } }
-		@media (max-width: 860px) {
-			.nf-hero { grid-template-columns: 1fr; padding-top: 6.5rem; }
-			.nf-numerals { top: 28%; opacity: .7; }
-			.nf-mandala { width: 120vw; right: -30vw; top: 30%; }
-		}
+		.nf-hero .loom-hero-name { font-size: min(26vw, 42vh); }
+		.nf-hero code { padding: .05rem .4rem; background: rgba(20, 16, 15, .12); font: .85em var(--mono); overflow-wrap: anywhere; }
+		.nf-code { position: absolute; z-index: 2; right: var(--gutter); bottom: clamp(2rem, 8vh, 5rem); width: min(32rem, 44%); }
+		.nf-code .loom-code-body { grid-template-columns: minmax(0, 1fr); }
+		.nf-code .loom-code-line { white-space: pre-wrap; overflow-wrap: anywhere; }
+		.nf-code a { color: var(--field); text-decoration: underline; text-underline-offset: .2em; }
+		.nf-err { color: #ff8b7d; }
+		.nf-more .loom-grid { margin-top: 2rem; }
+		@media (max-width: 760px) { .nf-code { position: relative; order: 3; right: auto; bottom: auto; width: auto; margin: 1.5rem 0; } }
 	</style>
 	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body class="loom-page">
-	<header class="loom-header is-scrolled">
-		<a class="loom-mark" href="/" aria-label="Preetam Hegde, back to the beginning"><span class="loom-mark-sigil" aria-hidden="true"></span><span>PH / 01</span></a>
+	<header class="loom-header" data-site-header>
+		<a class="loom-mark" href="/" aria-label="Preetam Hegde, back to the home page"><span class="loom-mark-sigil" aria-hidden="true"></span><span>PH</span></a>
 		<nav class="loom-nav" aria-label="Primary navigation">
 			<a href="/#projects">Selected work</a>
 			<a href="/#contact">Contact</a>
@@ -59,104 +40,42 @@
 	</header>
 
 	<main>
-		<section class="nf-hero" aria-labelledby="nf-title">
-			<img class="nf-bg" src="/resource/Image/loom/loom-hero-v3.jpg" alt="" aria-hidden="true" fetchpriority="high">
-			<div class="nf-wash" aria-hidden="true"></div>
-			<i class="loom-fog loom-fog-a" aria-hidden="true"></i>
-			<i class="loom-glow" aria-hidden="true" style="--x:78%;--y:34%;--s:38%;--t:7s"></i>
-			<i class="loom-glow" aria-hidden="true" style="--x:12%;--y:88%;--s:28%;--t:9s"></i>
-			<svg class="loom-mandala nf-mandala" viewBox="-100 -100 200 200" aria-hidden="true">
-				<circle class="m-draw" r="98" pathLength="1"></circle>
-				<g class="m-spin"><circle class="m-dots" r="92"></circle></g>
-				<circle class="m-draw" r="84" pathLength="1"></circle>
-				<g class="m-spin m-rev"><circle class="m-ticks" r="76"></circle></g>
-				<polygon class="m-draw" pathLength="1" points="0,-64 55.4,32 -55.4,32"></polygon>
-				<polygon class="m-draw" pathLength="1" points="0,64 55.4,-32 -55.4,-32"></polygon>
-				<circle class="m-draw" r="32" pathLength="1"></circle>
-			</svg>
-			<div class="nf-numerals" aria-hidden="true">404</div>
-
-			<div class="nf-copy">
-				<p class="loom-eyebrow" data-reveal="up">Error 404 · thread not found</p>
-				<h1 id="nf-title" data-split aria-label="That thread goes nowhere."><span class="w" aria-hidden="true"><span style="--i:0">That</span></span> <span class="w" aria-hidden="true"><span style="--i:1">thread</span></span><br><em><span class="w" aria-hidden="true"><span style="--i:2">goes</span></span> <span class="w" aria-hidden="true"><span style="--i:3">nowhere.</span></span></em></h1>
-				<p class="loom-body-copy" data-reveal="up" style="--d:300ms">Nothing lives at <code id="nf-path">this address</code>. It may have moved, or it was never woven.</p>
-				<div class="loom-actions" data-reveal="up" style="--d:450ms">
-					<a class="loom-button loom-button-primary" href="/">Back to the beginning <span aria-hidden="true">↗</span></a>
-					<a class="loom-button loom-button-quiet" href="/#projects">See the work <span aria-hidden="true">↘</span></a>
-				</div>
+		<section class="loom-hero nf-hero" aria-labelledby="nf-title">
+			<h1 class="loom-hero-name" id="nf-title"><span>404</span></h1>
+			<div class="loom-hero-content">
+				<p class="loom-hero-role">That page doesn’t exist.</p>
+				<p class="loom-intro">Nothing lives at <code id="nf-path">this address</code>. It may have moved, or it never existed.</p>
+				<div class="loom-actions"><a class="loom-button loom-button-primary" href="/">Back to the home page</a><a class="loom-button loom-button-quiet" href="/#projects">See selected work</a></div>
 			</div>
-
-			<div class="loom-term-window nf-term" data-reveal="right" style="--d:500ms">
-				<span class="loom-term-bar" aria-hidden="true"><i></i><i></i><i></i><b>guest@preetamhegde.in: ~</b></span>
-				<pre class="loom-term-body"><code id="nf-term"></code><span class="loom-term-cursor" aria-hidden="true"></span></pre>
+			<div class="loom-code nf-code" aria-label="A terminal session: a failed cd into the missing path, then a listing of the real routes.">
+				<p class="loom-code-title">terminal</p>
+				<div class="loom-code-body">
+					<pre class="loom-code-text"><code><span class="loom-code-line" style="--i:0"><span class="tk-dim">$</span> cd <span id="nf-cd"></span></span><span class="loom-code-line nf-err" style="--i:1" id="nf-error"></span><span class="loom-code-line" style="--i:2"><span class="tk-dim">$</span> ls /</span><span class="loom-code-line" style="--i:3"><a href="/">home</a>  <a href="/#projects">work</a>  <a href="/#experience">experience</a>  <a href="/index-classic.html">terminal</a>  <a href="/#contact">contact</a></span><span class="loom-code-line" style="--i:4"><span class="tk-dim">$</span> <span class="loom-caret"></span></span></code></pre>
+				</div>
 			</div>
 		</section>
 
-		<section class="nf-more" aria-labelledby="nf-more-title">
-			<div class="loom-section-label" data-reveal="line"><span>?</span><span>Not lost, just rerouted</span></div>
-			<h2 id="nf-more-title">Try one of these <em>instead.</em></h2>
+		<section class="loom-work nf-more" aria-labelledby="nf-more-title">
+			<h2 id="nf-more-title">Try one of these instead</h2>
 			<div class="loom-grid" id="nf-grid"></div>
 		</section>
 	</main>
-	<footer class="loom-footer"><p>Made with intent, code, and a little monsoon static. <a href="/index-classic.html">Terminal version ↗</a></p><p>© <span id="nf-year"></span> Preetam Hegde</p></footer>
+	<footer class="loom-footer"><p>Built by hand with HTML, CSS and a little JavaScript. <a href="/index-classic.html">Terminal version</a></p><p>© <span id="loom-year"></span> Preetam Hegde</p></footer>
 
-	<script src="/projects.js"></script>
+	<script src="projects.js" defer></script>
+	<script src="v1/script.js" defer></script>
 	<script>
-		document.documentElement.classList.add('js');
-		document.getElementById('nf-year').textContent = new Date().getFullYear();
-		const motion = !matchMedia('(prefers-reduced-motion: reduce)').matches;
-
-		let path = location.pathname;
-		try { path = decodeURI(path); } catch (error) { /* keep raw path */ }
-		path = path.length > 44 ? `${path.slice(0, 41)}…` : path;
-		document.getElementById('nf-path').textContent = path;
-
-		// Featured work: Keystorm first, then anything flagged `featured` in projects.js.
-		const picks = [projects.find((project) => project.name === 'Keystorm'), ...projects.filter((project) => project.featured)].filter(Boolean);
-		const grid = document.getElementById('nf-grid');
-		picks.forEach((project, index) => {
-			const external = /^https?:\/\//.test(project.link);
-			const card = document.createElement('a');
-			card.className = 'loom-card';
-			card.href = external ? project.link : `/${project.link}`;
-			card.style.setProperty('--d', `${index * 90}ms`);
-			if (external) { card.target = '_blank'; card.rel = 'noopener noreferrer'; }
-			card.innerHTML = `<div class="loom-card-visual">${projectIcon(project.icon)}<span class="loom-card-number">${String(index + 1).padStart(2, '0')}</span></div><div class="loom-card-body"><p class="loom-project-category"></p><h3></h3><p class="loom-card-description"></p><span class="loom-card-cta">${external ? 'Visit live' : 'Play it'} <span aria-hidden="true">↗</span></span></div>`;
-			card.querySelectorAll('.project-icon > *').forEach((shape) => shape.setAttribute('pathLength', '1'));
-			card.querySelector('.loom-project-category').textContent = project.featured ? 'Featured' : 'New build';
-			card.querySelector('h3').textContent = project.name;
-			card.querySelector('.loom-card-description').textContent = project.description;
-			grid.appendChild(card);
+		document.addEventListener('DOMContentLoaded', () => {
+			let path = location.pathname;
+			try { path = decodeURI(path); } catch (error) { /* keep the raw path */ }
+			path = path.length > 44 ? `${path.slice(0, 41)}…` : path;
+			document.getElementById('nf-path').textContent = path;
+			document.getElementById('nf-cd').textContent = path;
+			document.getElementById('nf-error').textContent = `bash: cd: ${path}: No such file or directory`;
+			// Keystorm first, then the live products, using the same card the home page builds.
+			const picks = [projects.find((project) => project.name === 'Keystorm'), ...projects.filter((project) => project.featured)].filter(Boolean);
+			document.getElementById('nf-grid').replaceChildren(...picks.map((project) => createProjectCard(project, false)));
 		});
-
-		// Terminal: a failed `cd` into the missing path, then a working `ls /` whose entries are real links.
-		const term = document.getElementById('nf-term');
-		const escape = (text) => text.replace(/&/g, '&amp;').replace(/</g, '&lt;');
-		const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
-		const routes = '<a href="/">home</a>  <a href="/#projects">work</a>  <a href="/#experience">experience</a>  <a href="/index-classic.html">terminal</a>  <a href="/#contact">contact</a>';
-		const script = [
-			{ cmd: `cd ${path}` },
-			{ out: `<span class="nf-err">bash: cd: ${escape(path)}: No such file or directory</span>` },
-			{ cmd: 'ls /' },
-			{ out: routes },
-			{ out: '<span class="t-dim">↑ pick a route, or press the button.</span>' }
-		];
-		(async () => {
-			let html = '';
-			for (const step of script) {
-				if (step.cmd) {
-					html += '<span class="t-prompt">$ </span>';
-					if (motion) { for (const char of step.cmd) { html += escape(char); term.innerHTML = html; await wait(30 + Math.random() * 40); } await wait(260); } else html += escape(step.cmd);
-					html += '\n';
-				} else { html += `${step.out}\n`; if (motion) await wait(300); }
-				term.innerHTML = html;
-			}
-			term.innerHTML = `${html}<span class="t-prompt">$ </span>`;
-		})();
-
-		// Same reveal system as the main page: add `.in` as elements arrive.
-		const observer = new IntersectionObserver((entries) => entries.forEach((entry) => { if (entry.isIntersecting) { entry.target.classList.add('in'); observer.unobserve(entry.target); } }), { threshold: 0.01, rootMargin: '0px 0px -8% 0px' });
-		document.querySelectorAll('[data-reveal], [data-split], .loom-card').forEach((element) => observer.observe(element));
 	</script>
 </body>
 </html>

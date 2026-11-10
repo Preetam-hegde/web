@@ -108,12 +108,12 @@ const projects = [
 	{
 		name: "Faceoff",
 		shot: "resource/Image/projects/faceoff.jpg",
-		blurb: "Two-player games for one phone: timing duels, Connect 4, party and couple games. No sign-up.",
+		blurb: "Two-player games on one phone or two: timing duels, Connect 4, party and couple games. No sign-up.",
 		category: "games",
 		icon: "swords",
 		link: "apps/faceoff/index.html",
 		description:
-			"Two players, one phone — split-screen or pass-and-play. Timing duels, Cut in Half, Hangman Duel on your phone keyboard, and couple games: Tic-Tac-Toe, Connect 4, Memory Match, Green Flag Red Flag, Would You Rather, Who\u0027s More Likely, Never Have I Ever, Compatibility, Truth or Dare and Sync Tap — with your own dares, stats, offline caching and a shareable result card. Mobile-first, no sign-up.",
+			"Two players, one phone (split-screen or pass-and-play) or two phones with a 4-letter room code. Timing duels, Cut in Half, five Perceptle-style perception tests (Count, Track, Angle, Tempo, Split), Hangman Duel on your phone keyboard, and couple games: Tic-Tac-Toe, Connect 4, Memory Match, Green Flag Red Flag, Would You Rather, Who\u0027s More Likely, Never Have I Ever, Compatibility, Truth or Dare and Sync Tap — with your own dares, stats, offline caching and a shareable result card. Mobile-first, no sign-up.",
 		tech: [
 			"HTML5",
 			"CSS3",

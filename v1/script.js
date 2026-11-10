@@ -18,6 +18,7 @@ function setupLoomStats() {
 
 function setupLoomNavigation() {
 	const header = document.querySelector('[data-site-header]');
+	if (!header) return;
 	const links = [...document.querySelectorAll('[data-nav-link]')];
 	const sections = links.map((link) => document.querySelector(link.getAttribute('href'))).filter(Boolean);
 	const updateHeader = () => header.classList.toggle('is-scrolled', window.scrollY > 24);
@@ -31,9 +32,10 @@ function setupLoomNavigation() {
 
 function setupLoomContact() {
 	const contact = document.getElementById('contact');
-	const time = document.getElementById('loom-time');
+	if (!contact) return;
+	const times = document.querySelectorAll('[data-time]');
 	const formatter = new Intl.DateTimeFormat('en-GB', { timeZone: 'Asia/Kolkata', hour: '2-digit', minute: '2-digit', hour12: false });
-	const tick = () => { time.textContent = formatter.format(new Date()); };
+	const tick = () => { const now = formatter.format(new Date()); times.forEach((time) => { time.textContent = now; }); };
 	tick();
 	window.setInterval(tick, 30000);
 
@@ -120,7 +122,7 @@ function createProjectCard(project, spotlight) {
 	body.className = 'loom-card-body';
 	const category = document.createElement('p');
 	category.className = 'loom-project-category';
-	category.textContent = (project.featured ? 'Live product · ' : '') + (loomCategories[project.category] || 'Project');
+	category.textContent = project.featured ? 'Live product' : (loomCategories[project.category] || 'Project');
 	const title = document.createElement('h3');
 	title.textContent = project.name;
 	const description = document.createElement('p');
@@ -131,7 +133,7 @@ function createProjectCard(project, spotlight) {
 	tech.append(...project.tech.slice(0, spotlight ? 5 : 3).map((label) => { const item = document.createElement('li'); item.textContent = label; return item; }));
 	const cta = document.createElement('span');
 	cta.className = 'loom-card-cta';
-	cta.innerHTML = `${external ? 'Visit live' : 'Open project'} <span aria-hidden="true">↗</span>`;
+	cta.textContent = external ? 'Visit live' : 'Open project';
 	body.append(category, title, description, tech, cta);
 	card.append(visual, body);
 	return card;
