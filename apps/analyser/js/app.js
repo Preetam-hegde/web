@@ -312,7 +312,7 @@
 		el.narration.textContent = f.msg || '';
 		el.narration.classList.toggle('warn', !!f.warn);
 		el.scrub.value = i;
-		el.scrub.style.background = 'linear-gradient(90deg, var(--sakura) ' + (n > 1 ? i / (n - 1) * 100 : 100) + '%, #f3e7d3 0)';
+		el.scrub.style.background = 'linear-gradient(90deg, var(--sakura) ' + (n > 1 ? i / (n - 1) * 100 : 100) + '%, var(--paper-2) 0)';
 		el.step.textContent = (i + 1) + ' / ' + n;
 		const stats = f.stats || {};
 		el.stats.innerHTML = Object.keys(stats).map(function (key) {

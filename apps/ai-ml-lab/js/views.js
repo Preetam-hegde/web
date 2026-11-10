@@ -2,10 +2,10 @@
 
 const AIViews = (() => {
 	const M = AIMath;
-	const colors = ['#f4a9bd', '#8fd3d6', '#bba9ea'];
-	const ink = '#2a2745',
-		gold = '#f2c879',
-		mint = '#a9dcb4';
+	const colors = ['var(--plot-rose)', 'var(--plot-blue)', 'var(--plot-purple)'];
+	const ink = 'var(--ink)',
+		gold = 'var(--gold)',
+		mint = 'var(--mint)';
 	const escape = (value) =>
 		String(value).replace(
 			/[&<>"']/g,
@@ -44,11 +44,12 @@ const AIViews = (() => {
 		[-1, -0.5, 0, 0.5, 1]
 			.map(
 				(v) =>
-					plotLine(v, -1, v, 1, '#e6d8bd') + plotLine(-1, v, 1, v, '#e6d8bd'),
+					plotLine(v, -1, v, 1, 'var(--line)') +
+					plotLine(-1, v, 1, v, 'var(--line)'),
 			)
 			.join('') +
-		plotLine(-1, 0, 1, 0, '#afa18d') +
-		plotLine(0, -1, 0, 1, '#afa18d') +
+		plotLine(-1, 0, 1, 0, 'var(--control-line)') +
+		plotLine(0, -1, 0, 1, 'var(--control-line)') +
 		text(574, 320, xlabel, 'chart-label', 'end') +
 		text(65, 47, ylabel, 'chart-label');
 	const scores = [0.96, 0.87, 0.74, 0.64, 0.57, 0.49, 0.38, 0.31, 0.19, 0.08];
@@ -210,9 +211,9 @@ const AIViews = (() => {
 				y,
 				285,
 				130,
-				i === phase ? colors[0] : i < phase ? '#e1edda' : '#fffaf0',
+				i === phase ? colors[0] : i < phase ? 'var(--mint)' : 'var(--paper)',
 			);
-			svg += circle(x + 25, y + 27, 13, i === phase ? gold : '#fbf3e6');
+			svg += circle(x + 25, y + 27, 13, i === phase ? gold : 'var(--paper)');
 			svg +=
 				text(x + 25, y + 31, i + 1, '', 'middle') +
 				text(x + 48, y + 32, heading, 'chart-title');
@@ -249,7 +250,7 @@ const AIViews = (() => {
 				svg =
 					axis('coordinate 1', 'coordinate 2') +
 					plotLine(0, 0, 0.8, 0, colors[0]) +
-					plotLine(0, 0, b[0] * 0.8, b[1] * 0.8, '#5a8491') +
+					plotLine(0, 0, b[0] * 0.8, b[1] * 0.8, 'var(--blue-ink)') +
 					plotDot(0.8, 0, colors[0], 8) +
 					plotDot(b[0] * 0.8, b[1] * 0.8, colors[1], 8) +
 					text(px(0.8), py(0) + 27, 'a = [1,0]', '', 'middle') +
@@ -270,7 +271,8 @@ const AIViews = (() => {
 			case 'regression': {
 				svg = axis();
 				M.points.forEach(([x, y]) => {
-					svg += plotLine(x, y, x, f.w * x + f.b, '#cf899d') + plotDot(x, y);
+					svg +=
+						plotLine(x, y, x, f.w * x + f.b, 'var(--rose-ink)') + plotDot(x, y);
 				});
 				svg += plotLine(-1, -f.w + f.b, 1, f.w + f.b, ink);
 				stats = [
@@ -294,8 +296,8 @@ const AIViews = (() => {
 					path += `${i ? 'L' : 'M'}${x(w)},${y((w - 3) ** 2)} `;
 				}
 				svg =
-					line(65, 292, 580, 292, '#afa18d') +
-					line(65, 55, 65, 292, '#afa18d') +
+					line(65, 292, 580, 292, 'var(--control-line)') +
+					line(65, 55, 65, 292, 'var(--control-line)') +
 					`<path d="${path}" fill="none" stroke="${ink}" stroke-width="2"/>` +
 					circle(x(f.w), y(f.loss), 9, colors[0]) +
 					circle(x(3), y(0), 5, mint) +
@@ -326,9 +328,16 @@ const AIViews = (() => {
 				svg =
 					line(65, 290, 575, 290) +
 					line(65, 70, 65, 290) +
-					line(65, y(0.5), 575, y(0.5), '#b6a7cd', '5 5') +
+					line(65, y(0.5), 575, y(0.5), 'var(--control-line)', '5 5') +
 					`<path d="${path}" fill="none" stroke="${ink}" stroke-width="3"/>` +
-					line(x(p.logit), 290, x(p.logit), y(probability), '#cc839a', '4 4') +
+					line(
+						x(p.logit),
+						290,
+						x(p.logit),
+						y(probability),
+						'var(--rose-ink)',
+						'4 4',
+					) +
 					circle(x(p.logit), y(probability), 9, colors[0]) +
 					text(590, 185, '0.5', 'chart-label') +
 					text(68, 46, 'Positive probability p', 'chart-label') +
@@ -349,7 +358,7 @@ const AIViews = (() => {
 						28,
 						'TRUE CLASS 1 (pink) · TRUE CLASS 0 (blue)',
 						'chart-label',
-					) + line(65, 134, 590, 134, '#afa18d');
+					) + line(65, 134, 590, 134, 'var(--control-line)');
 				scores.forEach((score, i) => {
 					const x = 65 + score * 510,
 						y = labels[i] ? 65 : 100;
@@ -374,7 +383,13 @@ const AIViews = (() => {
 					const x = i % 2 ? 340 : 70,
 						y = i < 2 ? 180 : 255;
 					svg +=
-						rect(x, y, 250, 62, [mint, '#f7c4b7', colors[0], colors[1]][i]) +
+						rect(
+							x,
+							y,
+							250,
+							62,
+							[mint, 'var(--coral)', colors[0], colors[1]][i],
+						) +
 						text(x + 14, y + 23, label, 'chart-label') +
 						text(x + 222, y + 43, result.counts[i], 'chart-title', 'end');
 				});
@@ -414,8 +429,8 @@ const AIViews = (() => {
 					) +
 					line(160, 143, 160, 178) +
 					line(480, 143, 480, 178) +
-					rect(35, 185, 285, 76, phase === 1 ? gold : '#f8e2e6') +
-					rect(340, 185, 285, 76, phase === 2 ? gold : '#e1eef0') +
+					rect(35, 185, 285, 76, phase === 1 ? gold : 'var(--coral)') +
+					rect(340, 185, 285, 76, phase === 2 ? gold : 'var(--sky)') +
 					text(55, 211, 'True positive alarms', 'chart-label') +
 					text(55, 240, number(tp), 'chart-title') +
 					text(360, 211, 'False positive alarms', 'chart-label') +
@@ -503,7 +518,7 @@ const AIViews = (() => {
 						'chart-label',
 					) +
 					axis('feature x', 'feature y') +
-					plotLine(p.cutoff, -1, p.cutoff, 1, '#b17591', '5 5');
+					plotLine(p.cutoff, -1, p.cutoff, 1, 'var(--rose-ink)', '5 5');
 				M.cloud.forEach((point, i) => {
 					svg += plotDot(...point, colors[targets[i]]);
 				});
@@ -530,7 +545,7 @@ const AIViews = (() => {
 			case 'clustering': {
 				svg = axis('feature 1', 'feature 2');
 				M.cloud.forEach((point, i) => {
-					svg += plotDot(...point, colors[f.assignments[i]] || '#d9c9ad');
+					svg += plotDot(...point, colors[f.assignments[i]] || 'var(--line)');
 				});
 				f.centers.forEach((center, i) => {
 					svg +=
@@ -561,7 +576,7 @@ const AIViews = (() => {
 						-Math.sin(best),
 						Math.cos(best),
 						Math.sin(best),
-						'#b17591',
+						'var(--rose-ink)',
 						'4 5',
 					) +
 					plotLine(
@@ -607,8 +622,8 @@ const AIViews = (() => {
 					line(360, 180, 520, 180) +
 					circle(110, 110, 37, colors[1]) +
 					circle(110, 250, 37, colors[1]) +
-					circle(340, 180, 45, phase >= 1 ? gold : '#fffaf0') +
-					circle(540, 180, 49, phase >= 2 ? colors[0] : '#fffaf0') +
+					circle(340, 180, 45, phase >= 1 ? gold : 'var(--paper)') +
+					circle(540, 180, 49, phase >= 2 ? colors[0] : 'var(--paper)') +
 					text(110, 114, 'x₁=1', '', 'middle') +
 					text(110, 254, 'x₂=0.5', '', 'middle') +
 					text(228, 115, `w₁=${number(p.weight)}`, '', 'middle') +
@@ -653,7 +668,7 @@ const AIViews = (() => {
 				});
 				xs.forEach((x, i) => {
 					svg +=
-						circle(x, 155, 43, i === phase ? colors[0] : '#fffaf0') +
+						circle(x, 155, 43, i === phase ? colors[0] : 'var(--paper)') +
 						text(x, 160, number(values[i]), '', 'middle') +
 						text(x, 92, titles[i], 'chart-label', 'middle');
 				});
@@ -718,7 +733,7 @@ const AIViews = (() => {
 												? kind === 'output'
 													? gold
 													: colors[1]
-												: '#fffaf0',
+												: 'var(--paper)',
 										) +
 										text(
 											x + c * size + (size - 3) / 2,
@@ -763,8 +778,8 @@ const AIViews = (() => {
 					query = embeddings.cat;
 				svg =
 					axis('synthetic dimension 1', 'synthetic dimension 2') +
-					plotLine(0, 0, ...query, '#b17591') +
-					plotLine(0, 0, ...target, '#5a8491');
+					plotLine(0, 0, ...query, 'var(--rose-ink)') +
+					plotLine(0, 0, ...target, 'var(--blue-ink)');
 				Object.entries(embeddings).forEach(([word, point]) => {
 					svg +=
 						plotDot(
@@ -819,8 +834,8 @@ const AIViews = (() => {
 								102 + r * 52,
 								60,
 								46,
-								r === p.query ? colors[0] : '#fffaf0',
-								r === p.query ? ink : '#d9c9ad',
+								r === p.query ? colors[0] : 'var(--paper)',
+								r === p.query ? ink : 'var(--line)',
 							) +
 							text(
 								213 + c * 65,

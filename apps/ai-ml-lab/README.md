@@ -1,53 +1,57 @@
-# AI & ML Visualizer
+# AI & ML Study Studio
 
-## Design and implementation plan
+A companion to `apps/analyser` using the updated DSA Study Studio's dusk theme,
+notebook navigation, and three-mode teaching flow. The shared DSA stylesheet
+supplies the layout and study components; AI/ML content and logic stay in this app.
 
-Build a companion to `apps/analyser`: the same dusk sky, paper surfaces,
-story-first teaching, and reversible playback, for beginner-to-intermediate
-AI/ML study and interview preparation. Reuse the DSA stylesheet; keep all
-new logic and teaching material in this app. No runtime libraries or backend.
+## Learning modes
 
-Visual thesis: a calm illustrated notebook under the DSA app's dusk sky.
-Content: topic navigation → interactive experiment → story/math/code/interview
-reference → recall check → next lesson. Motion: user-controlled playback,
-active-step highlighting, and restrained button feedback with reduced-motion support.
+- **Study guide:** a learning path, 35 lessons in eight chapters, mental models,
+  four-step worked examples, decoded formulas, illustrative Python, reasoning,
+  cost/trade-offs, recall checks, and links into the visual lab.
+- **Interview practice:** 140 questions with concrete scenarios, separate hint and
+  answer reveals, follow-ups, topic/difficulty filters, and self-rated review status.
+- **Visual lab:** 16 computed experiments and 19 concept walkthroughs, reversible
+  playback, adjustable parameters, full-width notes below the canvas, and a link
+  back to the corresponding written lesson.
+- **Revision desk and reading room:** formula/method references, an interview
+  checklist, and the 29 primary course references.
 
-The implementation uses curated local lessons rather than a remote course embed
-(which would fragment the teaching) or an LLM tutor (which needs credentials and
-introduces unverified answers). Numerical labs calculate their results; conceptual
-walkthroughs are explicitly labelled. Python code is educational and is not executed
-in the browser. Small synthetic datasets and hand-set attention/embedding vectors
-are explicitly identified; they are not trained models.
+No backend or runtime library is required. Numerical experiments use small
+synthetic datasets; hand-set embeddings, attention vectors, and filters are
+labelled. Python snippets abbreviate imports, setup, and helper names and are not
+executed in the browser. Confidence ratings are self-assessments.
 
-- [x] Test the numerical core first: optimization, probabilities, metrics,
-  clustering, projection, and convolution. Include extreme logits, empty metric
-  denominators, empty clusters, and unstable learning rates.
-- [x] Author 35 lessons in eight ordered tracks. Each has an analogy, four
-  teaching steps, math with symbols explained, code, pitfalls, a recall check,
-  four interview answers with follow-ups, and primary references.
-- [x] Implement keyboard-accessible playback, experiment controls, lesson search,
-  deep links, persistent progress, and global interview search/review.
-- [x] Add the project to the shared catalog, preserving the earlier Verilog removal.
-- [x] Check all lesson routes and controls in Chromium and Firefox, mobile layout,
-  storage failure handling, numerical tests, syntax, links, and formatting.
+## Routes and saved progress
 
-Review focus: storage may be unavailable or corrupt; invalid hashes must fall back
-to a valid lesson; filters with no matches need a clear empty state; player shortcuts
-must not hijack inputs/buttons; toy demonstrations must not imply production results.
+The default page is the study-guide learning path.
 
-## Research
+- `#study/start`, `#study/<lesson-id>`
+- `#study/questions?topic=rag&level=Hard`
+- `#study/revision`, `#study/resources`
+- `#lab/<lesson-id>`
+
+Existing `#<lesson-id>` lab links and `#interview` links continue to work. Invalid
+or malformed routes fall back to the learning path. The original localStorage key
+`ai-ml-visualizer-progress-v1` and question IDs are retained, preserving completed
+lessons and interview ratings. Storage errors leave the app usable for the session.
+
+## Research and content
 
 Researched 10 November 2026. Google ML Crash Course was searched and read in
-Chrome; other primary references were checked through web research after Chrome
-navigation to scikit-learn timed out. The curriculum and interview questions are
-original syntheses, not copied interview lists or claims about interview frequency.
-All reference titles and URLs live in `js/course.js` and are exposed per lesson.
+Chrome; other primary references were checked through web research. The original
+lessons and interview answers live in `js/course.js`; the worked examples,
+question-specific hints/scenarios, and difficulty labels live in `js/study-data.js`.
+The guide renderer is `js/guide.js`, the controller is `js/app.js`, and the numerical
+experiments are `js/math.js` and `js/views.js`.
 
-Primary sources: Google ML Crash Course and recommendation systems; Stanford
-CS229 probability/linear algebra and CS231n convolution notes; scikit-learn's
-algorithm, evaluation, preprocessing, and leakage guides; PyTorch optimization
-and autograd; Hugging Face's LLM course; the Transformer, RAG, LoRA, and DDPM
-papers; Sutton & Barto's RL textbook; Forecasting: Principles and Practice.
+Primary sources include Google ML Crash Course and recommendation systems;
+Stanford CS229 and CS231n; scikit-learn preprocessing, algorithms, and evaluation;
+PyTorch autograd and training; Hugging Face's LLM course; the Transformer, RAG,
+LoRA, and DDPM papers; Sutton & Barto; and Forecasting: Principles and Practice.
+The reading room and lesson reference links expose the source URLs. The interview
+collection is an original learning selection, not a company frequency ranking or
+an exhaustive list of possible interview questions.
 
 ## Run and verify
 
@@ -59,21 +63,21 @@ node apps/ai-ml-lab/test.js
 ```
 
 Open `http://localhost:4173/apps/ai-ml-lab/index.html`.
-Progress and self-rated interview answers stay in localStorage on this browser.
-The source material is bundled; optional Google Fonts and external references
-need a network connection. No question bank can cover every interview.
 
-## Verification results
+Verification for the Study Studio update:
 
-- Numerical and rendered-frame checks pass, including matching the scalar
-  backpropagation example to its lesson and numeric teaching phases for k-means.
-- Chrome and Firefox passed all 35 routes, parameter extremes, tabs, recall checks,
-  playback, filters, ratings, saved/corrupt/unavailable storage, and both catalogs.
-- Layout checked at 390, 768, 1024, and 1536 pixels. Narrow diagrams scroll sideways
-  to preserve readable labels. Desktop/mobile screenshots are in `output/playwright/`.
-- Cached Prettier 3.9.6 checked all new HTML/CSS/JS with tabs and single quotes;
-  JavaScript syntax and `git diff --check` pass. The whole repository was not formatted.
-- Firefox logged one optional Google Font download failure and used the CSS system
-  font fallback. The RL reference uses the verified MIT Press page because the
-  author's host timed out during research.
-- Local implementation only; no commit, push, or deployment performed.
+- Numerical invariants, rendered frames, 35 worked-example records, 140 guided
+  question records, source mappings, route fallbacks, and guide rendering pass.
+- Chrome and Firefox passed all 35 study lessons and 35 lab routes, study/lab
+  return links, recall checks, progressive reveals, filters, ratings, old progress,
+  corrupt/unavailable storage, revision, reading, and 390/768/1024/1536 px layouts.
+- Narrow diagrams scroll inside their container; shared study navigation scrolls
+  horizontally on mobile. Notes render below the visual workspace.
+- New/changed HTML, CSS, and JS pass cached Prettier 3.9.6 with tabs and single
+  quotes. JavaScript syntax and `git diff --check` pass. DSA's own check also passes.
+- Firefox logged optional Google Font download failures and used system fallbacks.
+  External reading links and Google Fonts require a network connection.
+- Screenshots are under `output/playwright/ai-ml-*.png`; the portfolio thumbnail is
+  `resource/Image/projects/ai-ml-lab.jpg`.
+
+Local changes only; no commit, push, or deployment performed.

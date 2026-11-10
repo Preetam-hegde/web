@@ -1,62 +1,13 @@
-/* The DSA app supplies the shared dusk-and-paper theme. */
+/* Reuse the DSA Study Studio layout, notebook components, and shared reading theme. */
 body {
 	background-color: var(--sky-top);
-}
-.app {
-	max-width: 1560px;
-}
-.layout {
-	grid-template-columns: 232px minmax(0, 1fr) 360px;
-	gap: 18px;
 }
 .main,
 .info-card,
 .sidebar {
 	min-width: 0;
 }
-.brand {
-	flex-wrap: wrap;
-	gap: 5px 12px;
-}
-.brand h1 {
-	font-size: clamp(21px, 2.2vw, 28px);
-}
-.study-bar {
-	display: flex;
-	align-items: center;
-	justify-content: space-between;
-	gap: 12px;
-	margin: 0 0 18px;
-	color: var(--paper);
-}
-.study-bar p {
-	font-size: 12px;
-}
-.mode-switch {
-	display: flex;
-	gap: 4px;
-	padding: 4px;
-	border: 1px solid #fbf3e644;
-	border-radius: 24px;
-}
-.mode-switch button {
-	border: 0;
-	border-radius: 20px;
-	padding: 9px 15px;
-	color: var(--paper);
-	background: transparent;
-	font: 700 13px var(--sans);
-	cursor: pointer;
-}
-.mode-switch button[aria-pressed='true'] {
-	color: var(--ink);
-	background: var(--sakura);
-}
-.mode-switch span {
-	font: 11px var(--mono);
-	padding-left: 5px;
-}
-.sidebar {
+#lab-nav {
 	padding: 18px 12px;
 }
 .search-label {
@@ -65,13 +16,12 @@ body {
 	font-weight: 700;
 }
 input[type='search'],
-.interview-filters select,
 .speed select {
 	width: 100%;
 	min-width: 0;
 	padding: 10px;
 	color: var(--ink);
-	background: #fffaf2;
+	background: var(--paper);
 	border: 1px solid var(--line);
 	border-radius: 8px;
 	font: 13px var(--sans);
@@ -114,7 +64,7 @@ input[type='search'],
 	font-weight: 700;
 }
 .nav-algo .done {
-	color: #2e693a;
+	color: var(--accent-hover);
 }
 .nav-note {
 	padding: 12px 8px 0;
@@ -123,16 +73,13 @@ input[type='search'],
 	line-height: 1.8;
 	color: var(--ink-soft);
 }
-a {
-	color: #55508d;
-}
 .lesson-heading {
 	display: flex;
 	justify-content: space-between;
 	gap: 8px;
 	align-items: baseline;
 	margin: 0 2px 10px;
-	color: var(--paper);
+	color: var(--ink-soft);
 	font-size: 12px;
 }
 .lesson-heading p {
@@ -178,9 +125,6 @@ a {
 }
 .stage {
 	padding: 0;
-	height: auto;
-	min-height: 300px;
-	aspect-ratio: 660 / 360;
 	display: block;
 }
 .stage svg {
@@ -198,7 +142,7 @@ a {
 	fill: var(--ink-soft);
 }
 .stage svg .chart-title {
-	font: 16px var(--retro);
+	font: 600 16px var(--sans);
 }
 .example-note {
 	margin: 9px 0 0;
@@ -217,7 +161,7 @@ a {
 	flex: 1 1 90px;
 	min-width: 75px;
 	padding: 6px 9px;
-	background: #fffaf0;
+	background: var(--paper);
 }
 .stat span {
 	font-size: 10px;
@@ -257,14 +201,14 @@ a {
 }
 .info-card h2 {
 	margin: 0 0 14px;
-	font: 20px var(--retro);
+	font: 600 22px var(--sans);
 }
 .info-tabs button {
 	font-size: 12px;
 	min-height: 35px;
 }
 [role='tabpanel'] {
-	font-size: 13px;
+	font-size: 16px;
 	line-height: 1.8;
 }
 [role='tabpanel'] h3 {
@@ -273,7 +217,7 @@ a {
 }
 .story-analogy {
 	padding: 14px;
-	background: #fff7de;
+	background: var(--gold);
 	border: 1px solid var(--gold);
 	border-radius: 10px;
 	margin: 0 0 12px;
@@ -302,7 +246,7 @@ a {
 	border-radius: 10px;
 	font: 12px/1.8 var(--mono);
 	overflow-wrap: anywhere;
-	background: #fffaf0;
+	background: var(--paper);
 }
 .code-note {
 	font-size: 11px;
@@ -312,13 +256,13 @@ a {
 	list-style: decimal;
 	padding: 10px 8px 10px 32px;
 	border-radius: 8px;
-	background: #26243f;
-	color: #f7edda;
+	background: var(--code-bg);
+	color: var(--code-ink);
 	overflow-x: auto;
 }
 .code-lines li {
 	padding: 5px 7px;
-	font: 11px/1.65 var(--mono);
+	font: 13px/1.8 var(--mono);
 	white-space: pre;
 }
 .references {
@@ -346,12 +290,12 @@ summary {
 	margin-top: 18px;
 	padding: 22px;
 	background: var(--paper);
-	border: 2px solid var(--ink);
+	border: 1px solid var(--line);
 	border-radius: 16px;
 	font-size: 13px;
 	line-height: 1.7;
 }
-.eyebrow {
+.recall-panel .eyebrow {
 	margin: 0 0 8px;
 	font: 10px var(--mono);
 	letter-spacing: 0.1em;
@@ -359,7 +303,7 @@ summary {
 }
 .recall-panel h2 {
 	margin: 0;
-	font: 20px var(--retro);
+	font: 600 22px var(--sans);
 }
 fieldset {
 	border: 0;
@@ -370,13 +314,14 @@ legend {
 	font-weight: 700;
 	margin-bottom: 10px;
 }
-#check-options {
+#check-options,
+.check-options {
 	display: grid;
 	gap: 7px;
 }
 .answer-btn {
 	border: 1px solid var(--line);
-	background: #fffaf0;
+	background: var(--paper);
 	border-radius: 8px;
 	padding: 10px 12px;
 	font: 12px/1.5 var(--sans);
@@ -406,54 +351,6 @@ legend {
 	font-size: 12px;
 	padding: 9px 14px;
 	min-height: 40px;
-}
-.interview-view {
-	max-width: 1100px;
-	margin: auto;
-	padding: 32px;
-	background: var(--paper);
-	border: 2px solid var(--ink);
-	border-radius: 16px;
-	line-height: 1.7;
-}
-.interview-view h2 {
-	font: 28px var(--retro);
-	margin: 0;
-}
-.interview-view > p {
-	font-size: 13px;
-}
-.interview-filters {
-	display: grid;
-	grid-template-columns: 2fr 1fr 1fr;
-	gap: 14px;
-	margin: 24px 0;
-}
-.interview-filters label {
-	display: grid;
-	gap: 5px;
-	font-size: 11px;
-	font-weight: 700;
-}
-.question {
-	border-bottom: 1px solid var(--line);
-	padding: 14px 0;
-	font-size: 13px;
-}
-.question summary {
-	font-weight: 700;
-	padding: 4px 0;
-	line-height: 1.6;
-}
-.question summary small {
-	display: block;
-	margin: 3px 0 0 16px;
-	color: var(--ink-soft);
-	font: 10px var(--mono);
-	font-weight: 400;
-}
-.question p {
-	margin: 12px 0;
 }
 .followup {
 	padding-left: 12px;
@@ -494,46 +391,57 @@ legend {
 .foot {
 	line-height: 1.9;
 }
-.skip-link {
-	position: absolute;
-	top: -60px;
-	left: 20px;
-	padding: 12px;
-	z-index: 100;
-	background: var(--paper);
+
+.course-progress {
+	margin: 0 0 0 auto;
+	align-self: center;
+	color: var(--ink-soft);
+	font: 11px var(--mono);
 }
-.skip-link:focus {
-	top: 10px;
+.completion-mark {
+	margin-left: auto;
+	color: var(--accent-hover);
 }
-:focus-visible {
-	outline: 3px solid #7960af;
+.lab-intro a {
+	color: var(--accent);
+}
+.info-card a,
+.nav-note a {
+	color: var(--accent);
+}
+.info-card {
+	position: static;
+	max-height: none;
+}
+.question-filters {
+	grid-template-columns: minmax(180px, 1.5fr) repeat(3, minmax(0, 1fr));
+}
+.review-actions {
+	margin-top: 16px;
+}
+.source-list {
+	padding-left: 22px;
+	font-size: 13px;
+	line-height: 1.9;
+}
+.source-list li {
+	padding: 7px 0;
+	overflow-wrap: anywhere;
+}
+.study-recall .btn,
+[data-mark-complete] {
+	min-height: 42px;
+}
+.study-table-wrap:focus-visible {
+	outline: 3px solid var(--accent);
 	outline-offset: 3px;
 }
-@media (max-width: 1260px) {
-	.layout {
-		grid-template-columns: 220px minmax(0, 1fr);
-	}
-	.info-card {
-		grid-column: 2;
-	}
-	.sidebar {
-		grid-row: 1 / 3;
-	}
-}
 @media (max-width: 860px) {
-	.layout {
-		grid-template-columns: minmax(0, 1fr);
-	}
-	.sidebar,
-	.info-card {
-		grid-column: 1;
-		grid-row: auto;
-	}
-	.sidebar {
+	#lab-nav {
 		display: block;
 		padding: 12px;
 	}
-	.sidebar .search-label {
+	#lab-nav .search-label {
 		display: block;
 	}
 	#nav {
@@ -550,51 +458,27 @@ legend {
 	.nav-note {
 		margin-bottom: 0;
 	}
-	.info-card {
-		position: static;
-		max-height: none;
+	.question-filters {
+		grid-template-columns: 1fr 1fr;
 	}
-	.interview-view {
-		padding: 22px;
+	.question-filters label:first-child {
+		grid-column: 1 / -1;
 	}
 }
 @media (max-width: 600px) {
 	.app {
 		padding: 14px 10px 24px;
 	}
-	.topbar {
-		gap: 12px;
-	}
-	.tagline {
+	.course-progress {
 		flex-basis: 100%;
-	}
-	.brand {
-		gap: 5px;
-	}
-	.kana {
-		font-size: 9px;
-	}
-	.study-bar {
-		flex-wrap: wrap;
-		gap: 4px;
-	}
-	.study-bar p {
-		margin: 5px 4px;
-	}
-	.mode-switch {
-		width: 100%;
-	}
-	.mode-switch button {
-		flex: 1;
-		padding: 9px 10px;
-		font-size: 11px;
+		margin: 8px 2px 0;
 	}
 	.stage-card {
 		padding: 12px;
 	}
 	.stage {
+		height: 327px;
 		min-height: 0;
-		aspect-ratio: auto;
 		overflow-x: auto;
 	}
 	.stage svg {
@@ -627,13 +511,10 @@ legend {
 	.controls {
 		padding: 12px;
 	}
-	.interview-filters {
-		grid-template-columns: 1fr;
-	}
 	.recall-panel {
 		padding: 16px;
 	}
-	.interview-view h2 {
-		font-size: 24px;
+	.study-nav {
+		max-width: 100%;
 	}
 }

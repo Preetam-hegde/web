@@ -3,6 +3,8 @@
 (() => {
 	const C = AICourse,
 		V = AIViews;
+	const G = AIGuide,
+		D = AIStudyData;
 	const $ = (id) => document.getElementById(id);
 	const escape = V.escape;
 	const storageKey = 'ai-ml-visualizer-progress-v1';
@@ -19,7 +21,10 @@
 		index: 0,
 		timer: null,
 		tab: 'story',
-		mode: 'learn',
+		mode: 'study',
+		studyPage: 'start',
+		lastStudy: 'start',
+		lastLab: 'regression',
 		completed: new Set(),
 		ratings: Object.create(null),
 	};
@@ -168,6 +173,21 @@
 			? '✓ Understood · undo'
 			: 'Mark as understood';
 		$('mark-complete').setAttribute('aria-pressed', done);
+		for (const button of document.querySelectorAll('[data-mark-complete]')) {
+			const complete = state.completed.has(button.dataset.markComplete);
+			button.textContent = complete
+				? '✓ Understood · undo'
+				: 'Mark as understood';
+			button.setAttribute('aria-pressed', complete);
+		}
+	}
+	function toggleCompletion(id) {
+		if (state.completed.has(id)) state.completed.delete(id);
+		else state.completed.add(id);
+		saveProgress();
+		renderProgress();
+		renderNav();
+		$('study-nav').innerHTML = G.renderNav(state.studyPage, state.completed);
 	}
 	function renderNav() {
 		const query = $('lesson-search').value.trim().toLowerCase();
@@ -191,7 +211,9 @@
 			head.className = `nav-group${open ? ' open' : ''}`;
 			head.setAttribute('aria-expanded', open);
 			head.innerHTML = `<span>${escape(group.title)}</span><small>${escape(group.hint)}</small>`;
-			head.addEventListener('click', () => selectLesson(lessons[0], true));
+			head.addEventListener('click', () => {
+				location.hash = `lab/${lessons[0].id}`;
+			});
 			nav.append(head);
 			if (!open) continue;
 			const list = document.createElement('div');
@@ -204,7 +226,7 @@
 					button.setAttribute('aria-current', 'page');
 				button.innerHTML = `${state.completed.has(lesson.id) ? '<span class="done" aria-label="Understood">✓</span>' : ''}<span>${escape(lesson.title)}</span>`;
 				button.addEventListener('click', () => {
-					selectLesson(lesson, true);
+					location.hash = `lab/${lesson.id}`;
 					if (matchMedia('(max-width: 860px)').matches) {
 						$('topic-menu').open = false;
 						$('workspace').focus({ preventScroll: true });
@@ -223,7 +245,9 @@
 	function renderQuestion(lesson, q, index, practice = false) {
 		const key = `${lesson.id}:${index}`,
 			rating = state.ratings[key];
-		return `<details class="question" data-question="${key}"><summary>${escape(q.q)}${practice ? `<small>${escape(lesson.title)}${rating ? ` · ${rating === 'ready' ? 'Confident' : 'Needs practice'}` : ''}</small>` : ''}</summary><p>${escape(q.a)}</p><p class="followup"><strong>Go deeper:</strong> ${escape(q.followup)}</p>${practice ? `<div class="review-actions"><button type="button" data-rating="review" aria-pressed="${rating === 'review'}">Needs practice</button><button type="button" data-rating="ready" aria-pressed="${rating === 'ready'}">Confident</button><a href="#${lesson.id}">Study this concept →</a></div>` : ''}</details>`;
+		const notes = D[lesson.id].interview[index],
+			number = C.lessons.indexOf(lesson) * 4 + index + 1;
+		return `<details class="question-card" data-question="${key}"><summary><span class="question-number">${String(number).padStart(3, '0')}</span><span><b>${escape(q.q)}</b><small>${escape(lesson.title)}${rating ? ` · ${rating === 'ready' ? 'Confident' : 'Needs practice'}` : ''}</small></span><span class="difficulty ${notes.level.toLowerCase()}">${notes.level}</span></summary><div class="question-body"><p class="question-example"><b>Scenario:</b> ${escape(notes.example)}</p><details class="answer-reveal" data-reveal="hint"><summary>Show a hint</summary><p>${escape(notes.hint)}</p></details><details class="answer-reveal" data-reveal="answer"><summary>Reveal answer &amp; reasoning</summary><div><h4>Answer &amp; reasoning</h4><p>${escape(q.a)}</p><h4>Go deeper</h4><p class="followup">${escape(q.followup)}</p><p class="solution-task">Close the answer and explain the scenario again. Change an assumption and decide whether your reasoning still holds.</p></div></details>${practice ? `<div class="review-actions"><button type="button" data-rating="review" aria-pressed="${rating === 'review'}">Needs practice</button><button type="button" data-rating="ready" aria-pressed="${rating === 'ready'}">Confident</button><a href="#study/${lesson.id}">Review this lesson →</a></div>` : ''}</div></details>`;
 	}
 	function renderNotes() {
 		const l = state.lesson;
@@ -237,7 +261,7 @@
 				.map((code) => `<li>${escape(code) || ' '}</li>`)
 				.join('')}</ol><h3>Try it yourself</h3><p>${escape(l.challenge)}</p>`;
 		$('pane-interview').innerHTML =
-			`<p class="code-note">Answer aloud before opening the explanation.</p>${l.interview.map((q, i) => renderQuestion(l, q, i)).join('')}<p><a href="#interview">Practice across all chapters →</a></p>`;
+			`<p class="code-note">Attempt the scenario before opening a hint or answer.</p>${l.interview.map((q, i) => renderQuestion(l, q, i)).join('')}<p><a href="#study/questions?topic=${l.id}">Open this lesson’s interview practice →</a></p>`;
 		$('sources').innerHTML = l.sources
 			.map(
 				(key) =>
@@ -284,6 +308,8 @@
 	function selectLesson(lesson, updateHash = false) {
 		pause();
 		state.lesson = lesson;
+		state.lastLab = lesson.id;
+		$('lab-study-link').href = `#study/${lesson.id}`;
 		state.params = {};
 		state.index = 0;
 		const position = C.lessons.indexOf(lesson);
@@ -307,16 +333,18 @@
 		renderNav();
 		renderProgress();
 		renderCheck();
-		if (updateHash) location.hash = lesson.id;
+		if (updateHash) location.hash = `lab/${lesson.id}`;
 	}
 	function renderQuestions() {
 		const query = $('interview-search').value.trim().toLowerCase(),
-			group = $('interview-group').value,
+			topic = $('interview-topic').value,
+			level = $('interview-level').value,
 			filter = $('review-filter').value;
+		const detailsKey = (element) =>
+			element.dataset.question ||
+			`${element.closest('[data-question]').dataset.question}:${element.dataset.reveal}`;
 		const open = new Set(
-			[...$('questions').querySelectorAll('details[open]')].map(
-				(element) => element.dataset.question,
-			),
+			[...$('questions').querySelectorAll('details[open]')].map(detailsKey),
 		);
 		const matches = C.lessons
 			.flatMap((lesson) =>
@@ -328,10 +356,11 @@
 				})),
 			)
 			.filter(
-				({ lesson, q, key }) =>
-					(group === 'all' || lesson.group === group) &&
+				({ lesson, q, key, i }) =>
+					(!topic || lesson.id === topic) &&
+					(!level || D[lesson.id].interview[i].level === level) &&
 					(!query ||
-						`${lesson.title} ${q.q} ${q.a} ${q.followup}`
+						`${lesson.title} ${q.q} ${q.a} ${q.followup} ${D[lesson.id].interview[i].hint} ${D[lesson.id].interview[i].example}`
 							.toLowerCase()
 							.includes(query)) &&
 					(filter === 'all' ||
@@ -347,7 +376,7 @@
 		$('questions')
 			.querySelectorAll('details')
 			.forEach((details) => {
-				details.open = open.has(details.dataset.question);
+				details.open = open.has(detailsKey(details));
 			});
 		const confident = Object.values(state.ratings).filter(
 			(value) => value === 'ready',
@@ -358,18 +387,69 @@
 	function setMode(mode) {
 		pause();
 		state.mode = mode;
-		$('learn-layout').hidden = mode !== 'learn';
-		$('interview-view').hidden = mode !== 'interview';
-		$('learn-mode').setAttribute('aria-pressed', mode === 'learn');
-		$('interview-mode').setAttribute('aria-pressed', mode === 'interview');
-		if (mode === 'interview') renderQuestions();
+		document.body.dataset.mode = mode === 'lab' ? 'lab' : 'study';
+		$('lab-content').hidden = mode !== 'lab';
+		$('study-content').hidden = mode !== 'study';
+		$('interview-view').hidden = mode !== 'questions';
+		$('lab-nav').hidden = mode !== 'lab';
+		$('study-nav').hidden = mode === 'lab';
+		for (const link of document.querySelectorAll('[data-mode-link]')) {
+			if (link.dataset.modeLink === mode)
+				link.setAttribute('aria-current', 'page');
+			else link.removeAttribute('aria-current');
+		}
 	}
-	function followHash() {
-		const id = location.hash.slice(1);
-		if (id === 'interview') return setMode('interview');
-		const lesson = C.lessons.find((item) => item.id === id) || C.lessons[0];
-		if (state.lesson !== lesson) selectLesson(lesson);
-		setMode('learn');
+	function followHash(initial = false) {
+		const route = G.resolveRoute(location.hash);
+		setMode(route.mode);
+		state.studyPage = route.page;
+		let title;
+		if (route.mode === 'lab') {
+			selectLesson(C.lessons.find((l) => l.id === route.page));
+			title = `${state.lesson.title} · Visual lab`;
+		} else {
+			const lesson = C.lessons.find((l) => l.id === route.page);
+			if (route.mode === 'questions') {
+				$('interview-topic').value = route.topic;
+				$('interview-level').value = route.level;
+				renderQuestions();
+				title = 'Interview practice';
+			} else {
+				$('study-content').innerHTML = lesson
+					? G.renderLesson(lesson, state.completed.has(lesson.id))
+					: route.page === 'revision'
+						? G.renderRevision()
+						: route.page === 'resources'
+							? G.renderResources()
+							: G.renderStart();
+				title = lesson
+					? lesson.title
+					: route.page === 'revision'
+						? 'Revision desk'
+						: route.page === 'resources'
+							? 'Reading room'
+							: 'All-in-one AI & ML guide';
+				if (lesson || route.page === 'start') state.lastStudy = route.page;
+				if (lesson) state.lastLab = lesson.id;
+			}
+			$('study-nav').innerHTML = G.renderNav(route.page, state.completed);
+			const active = $('study-nav').querySelector('[aria-current="page"]');
+			if (active && matchMedia('(max-width: 860px)').matches)
+				$('study-nav').scrollLeft =
+					active.offsetLeft -
+					$('study-nav').clientWidth / 2 +
+					active.clientWidth / 2;
+		}
+		document.querySelector('[data-mode-link="study"]').href =
+			`#study/${state.lastStudy}`;
+		document.querySelector('[data-mode-link="lab"]').href =
+			`#lab/${state.lastLab}`;
+		document.title = `${title} | AI & ML Study Studio`;
+		renderProgress();
+		if (!initial) {
+			$('workspace').focus({ preventScroll: true });
+			window.scrollTo(0, 0);
+		}
 	}
 	$('btn-play').addEventListener('click', play);
 	$('btn-first').addEventListener('click', () => goToFrame(0));
@@ -391,40 +471,27 @@
 		$('topic-menu').open = true;
 		renderNav();
 	});
-	$('mark-complete').addEventListener('click', () => {
-		if (state.completed.has(state.lesson.id))
-			state.completed.delete(state.lesson.id);
-		else state.completed.add(state.lesson.id);
-		saveProgress();
-		renderProgress();
-		renderNav();
-	});
+	$('mark-complete').addEventListener('click', () =>
+		toggleCompletion(state.lesson.id),
+	);
 	$('next-lesson').addEventListener('click', () => {
 		const next = C.lessons[C.lessons.indexOf(state.lesson) + 1];
 		if (next) {
-			selectLesson(next, true);
-			$('workspace').focus();
+			location.hash = `lab/${next.id}`;
 		}
-	});
-	$('learn-mode').addEventListener('click', () => {
-		setMode('learn');
-		location.hash = state.lesson.id;
-	});
-	$('interview-mode').addEventListener('click', () => {
-		setMode('interview');
-		location.hash = 'interview';
 	});
 	for (const element of [
 		$('interview-search'),
-		$('interview-group'),
+		$('interview-topic'),
+		$('interview-level'),
 		$('review-filter'),
 	])
 		element.addEventListener(
 			element.tagName === 'INPUT' ? 'input' : 'change',
 			renderQuestions,
 		);
-	C.groups.forEach((group) =>
-		$('interview-group').add(new Option(group.title, group.id)),
+	C.lessons.forEach((lesson) =>
+		$('interview-topic').add(new Option(lesson.title, lesson.id)),
 	);
 	$('questions').addEventListener('click', (event) => {
 		const button = event.target.closest('[data-rating]');
@@ -441,6 +508,10 @@
 			replacement
 				.querySelector(`[data-rating="${button.dataset.rating}"]`)
 				.focus();
+		else {
+			$('question-count').tabIndex = -1;
+			$('question-count').focus();
+		}
 	});
 	const tabs = [...document.querySelectorAll('[data-tab]')];
 	tabs.forEach((tab, index) => {
@@ -465,7 +536,7 @@
 		)
 			return;
 		if (
-			state.mode !== 'learn' ||
+			state.mode !== 'lab' ||
 			event.altKey ||
 			event.ctrlKey ||
 			event.metaKey ||
@@ -490,11 +561,34 @@
 	document.addEventListener('visibilitychange', () => {
 		if (document.hidden) pause();
 	});
-	window.addEventListener('hashchange', followHash);
+	$('study-content').addEventListener('click', (event) => {
+		const jump = event.target.closest('[data-jump]');
+		if (jump) {
+			const section = $(jump.dataset.jump);
+			section.tabIndex = -1;
+			section.focus({ preventScroll: true });
+			section.scrollIntoView();
+		}
+		const complete = event.target.closest('[data-mark-complete]');
+		if (complete) toggleCompletion(complete.dataset.markComplete);
+		const choice = event.target.closest('[data-check-choice]');
+		if (choice) {
+			const lesson = C.lessons.find((l) => l.id === choice.dataset.lesson),
+				correct = Number(choice.dataset.checkChoice) === lesson.check.answer;
+			choice.parentElement.querySelectorAll('button').forEach((button) => {
+				button.setAttribute('aria-pressed', button === choice);
+				button.classList.toggle('correct', button === choice && correct);
+			});
+			$('study-feedback').textContent =
+				`${correct ? 'That’s right.' : 'Try the reasoning again.'} ${lesson.check.explanation}`;
+		}
+	});
+	window.addEventListener('hashchange', () => followHash(false));
 	if (matchMedia('(max-width: 860px)').matches) $('topic-menu').open = false;
 	selectLesson(
-		C.lessons.find((lesson) => lesson.id === location.hash.slice(1)) ||
-			C.lessons[0],
+		C.lessons.find(
+			(lesson) => lesson.id === G.resolveRoute(location.hash).page,
+		) || C.lessons.find((lesson) => lesson.id === 'regression'),
 	);
-	followHash();
+	followHash(true);
 })();

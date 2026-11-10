@@ -286,14 +286,14 @@ const projects = [
 		],
 	},
 	{
-		name: "AI & ML Visualizer",
+		name: "AI & ML Study Studio",
 		shot: "resource/Image/projects/ai-ml-lab.jpg",
-		blurb: "Learn AI and ML through 35 story-first lessons, interactive experiments, and 140 interview questions.",
+		blurb: "An all-in-one AI and ML study guide with worked examples, guided interview practice, and visual experiments.",
 		category: "fcc",
 		icon: "brain",
 		link: "apps/ai-ml-lab/index.html",
 		description:
-			"A visual AI and machine learning study companion: step through gradient descent, regression, clustering, neural networks, convolution and attention; study classical ML, LLMs, RAG and production systems; and practice 140 interview questions with answers and follow-ups.",
+			"Learn AI and machine learning through 35 detailed lessons, numerical worked examples, 140 interview questions with progressive hints and answers, a revision desk, primary references, and interactive visual experiments covering classical ML, deep learning, LLMs and production systems.",
 		tech: ["HTML5", "CSS3", "JavaScript", "SVG", "Machine Learning", "AI"],
 	},
 	{

@@ -3,7 +3,7 @@
 	<head>
 		<meta charset="UTF-8" />
 		<meta name="viewport" content="width=device-width, initial-scale=1" />
-		<title>AI &amp; ML Visualizer</title>
+		<title>AI &amp; ML Study Studio — Learn, Visualize &amp; Interview</title>
 		<meta
 			name="description"
 			content="Learn AI and machine learning through 35 story-first lessons, interactive experiments, reversible visual walkthroughs, and 140 interview questions with answers."
@@ -11,7 +11,7 @@
 		<link rel="preconnect" href="https://fonts.googleapis.com" />
 		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 		<link
-			href="https://fonts.googleapis.com/css2?family=DotGothic16&family=JetBrains+Mono:wght@400;600&family=Zen+Maru+Gothic:wght@400;500;700&display=swap"
+			href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Source+Sans+3:wght@400;500;600;700&display=swap"
 			rel="stylesheet"
 		/>
 		<link rel="stylesheet" href="../analyser/style.css" />
@@ -19,32 +19,46 @@
 		<script src="js/math.js" defer></script>
 		<script src="js/course.js" defer></script>
 		<script src="js/views.js" defer></script>
+		<script src="js/study-data.js" defer></script>
+		<script src="js/guide.js" defer></script>
 		<script src="js/app.js" defer></script>
 	</head>
-	<body>
-		<a class="skip-link" href="#workspace">Skip to lesson</a>
+	<body data-mode="study">
+		<a class="skip-link" href="#workspace">Skip to learning content</a>
 		<div class="app">
 			<header class="topbar">
 				<a class="back" href="../../index.html">&larr; Portfolio</a>
 				<div class="brand">
-					<h1>AI &amp; ML Visualizer</h1>
-					<span class="kana">LEARN BY SEEING</span>
+					<h1>AI &amp; ML Study Studio</h1>
 				</div>
-				<p class="tagline">An idea. A small experiment. Then the math.</p>
+				<p class="tagline">
+					Understand the idea. Trace the numbers. Explain your choice.
+				</p>
 			</header>
-			<div class="study-bar">
-				<div class="mode-switch" aria-label="Study mode">
-					<button type="button" id="learn-mode" aria-pressed="true">
-						Learn &amp; explore
-					</button>
-					<button type="button" id="interview-mode" aria-pressed="false">
-						Interview practice <span>140</span>
-					</button>
-				</div>
-				<p id="course-progress">35 lessons · 8 chapters</p>
-			</div>
+			<nav class="mode-nav" aria-label="Learning modes">
+				<a href="#study/start" data-mode-link="study">Study guide</a>
+				<a href="#study/questions" data-mode-link="questions"
+					>Interview practice</a
+				>
+				<a href="#lab/regression" data-mode-link="lab"
+					>Visual lab <span>16 experiments</span></a
+				>
+				<p id="course-progress" class="course-progress">
+					35 lessons · 8 chapters
+				</p>
+			</nav>
 			<div class="layout" id="learn-layout">
-				<aside class="sidebar" aria-label="Course navigation">
+				<nav
+					class="sidebar study-nav"
+					id="study-nav"
+					aria-label="Study chapters"
+				></nav>
+				<aside
+					class="sidebar"
+					id="lab-nav"
+					aria-label="Visual lab navigation"
+					hidden
+				>
 					<label class="search-label" for="lesson-search">Find a concept</label>
 					<input
 						type="search"
@@ -54,260 +68,298 @@
 					/>
 					<details id="topic-menu" open>
 						<summary>
-							Course chapters <span id="lesson-total">35 lessons</span>
+							Visual explorations <span id="lesson-total">35 topics</span>
 						</summary>
 						<nav id="nav" aria-label="Topics and lessons"></nav>
 					</details>
 					<p class="nav-note">
-						Start at 01, or jump to an idea.<br /><a
+						16 computed experiments and 19 concept walkthroughs.<br /><a
 							href="../analyser/index.html"
-							>Looking for DSA? &rarr;</a
+							>Looking for DSA? →</a
 						>
 					</p>
 				</aside>
 				<main class="main" id="workspace" tabindex="-1">
-					<div class="lesson-heading">
-						<p id="lesson-kicker"></p>
-						<span id="lesson-position"></span>
-					</div>
+					<article class="study-card" id="study-content"></article>
 					<section
-						class="controls"
-						id="controls"
-						aria-label="Experiment settings"
-					></section>
-					<section class="stage-card" aria-labelledby="stage-title">
-						<div class="stage-head">
-							<h2 id="stage-title"></h2>
-							<span id="lab-kind" class="lab-kind"></span>
-						</div>
-						<div
-							class="stage"
-							id="stage"
-							tabindex="0"
-							role="region"
-							aria-label="Visualization. On narrow screens, scroll sideways to see the full diagram."
-						></div>
-						<p class="example-note" id="example-note"></p>
-						<p
-							class="narration"
-							id="narration"
-							aria-live="polite"
-							aria-atomic="true"
-						></p>
-						<div class="stats" id="stats"></div>
-						<div class="player" aria-label="Visualization playback">
-							<button
-								type="button"
-								class="icon-btn"
-								id="btn-first"
-								aria-label="Restart"
-								title="Restart (Home)"
+						class="study-card"
+						id="interview-view"
+						aria-labelledby="interview-title"
+						hidden
+					>
+						<header class="lesson-header">
+							<p class="eyebrow">Practice with a purpose</p>
+							<h2 id="interview-title">The interview notebook</h2>
+							<p class="study-lead">
+								140 essential questions, from foundational concepts to
+								production decisions. Each has a concrete scenario, a hint, an
+								answer, and a follow-up.
+							</p>
+							<p>
+								These are guided practice questions, not a company frequency
+								ranking. Try mixed topics once you know the fundamentals.
+							</p>
+						</header>
+						<aside class="study-callout">
+							<b>Attempt → hint → explain → apply</b>
+							<p>
+								Make a concrete attempt out loud. Open a hint before the answer,
+								then work through the follow-up and self-rate what needs
+								practice. Difficulty labels describe the reasoning in this
+								collection.
+							</p>
+						</aside>
+						<div class="question-filters">
+							<label
+								>Find a question<input
+									type="search"
+									id="interview-search"
+									placeholder="Try leakage, attention, deployment…"
+							/></label>
+							<label
+								>Topic<select id="interview-topic">
+									<option value="">All topics</option>
+								</select></label
 							>
-								↤
-							</button>
-							<button
-								type="button"
-								class="icon-btn"
-								id="btn-prev"
-								aria-label="Step back"
-								title="Step back (←)"
+							<label
+								>Difficulty<select id="interview-level">
+									<option value="">All levels</option>
+									<option>Easy</option>
+									<option>Medium</option>
+									<option>Hard</option>
+								</select></label
 							>
-								←
-							</button>
-							<button
-								type="button"
-								class="icon-btn play"
-								id="btn-play"
-								aria-label="Play"
-								title="Play / pause (Space)"
-							>
-								▶
-							</button>
-							<button
-								type="button"
-								class="icon-btn"
-								id="btn-next"
-								aria-label="Step forward"
-								title="Step forward (→)"
-							>
-								→
-							</button>
-							<button
-								type="button"
-								class="icon-btn"
-								id="btn-last"
-								aria-label="Jump to end"
-								title="Jump to end (End)"
-							>
-								↦
-							</button>
-							<input
-								type="range"
-								id="scrub"
-								class="scrub"
-								min="0"
-								max="3"
-								value="0"
-								aria-label="Timeline"
-							/>
-							<span class="step-count" id="step-count">1 / 4</span>
-							<label class="speed" for="speed"
-								>Speed
-								<select id="speed">
-									<option value="0.5">0.5×</option>
-									<option value="1" selected>1×</option>
-									<option value="2">2×</option>
+							<label
+								>Review status<select id="review-filter">
+									<option value="all">All questions</option>
+									<option value="new">Not reviewed</option>
+									<option value="review">Needs practice</option>
+									<option value="ready">Confident</option>
 								</select></label
 							>
 						</div>
-					</section>
-					<section class="recall-panel" aria-labelledby="recall-title">
-						<p class="eyebrow">TRY → EXPLAIN → REMEMBER</p>
-						<h2 id="recall-title">Make the idea yours</h2>
-						<p id="challenge"></p>
-						<fieldset id="check">
-							<legend id="check-question"></legend>
-							<div id="check-options"></div>
-						</fieldset>
-						<p id="quiz-feedback" class="quiz-feedback" role="status"></p>
-						<div class="lesson-actions">
-							<button type="button" class="btn primary" id="mark-complete">
-								Mark as understood</button
-							><button type="button" class="btn ghost" id="next-lesson">
-								Next lesson →
-							</button>
-						</div>
-					</section>
-				</main>
-				<aside class="info-card" aria-label="Lesson reference">
-					<h2 id="info-name">The notebook</h2>
-					<div class="info-tabs" role="tablist" aria-label="Lesson detail">
-						<button
-							type="button"
-							role="tab"
-							id="tab-story"
-							aria-controls="pane-story"
-							aria-selected="true"
-							data-tab="story"
-							class="on"
-						>
-							Story
-						</button>
-						<button
-							type="button"
-							role="tab"
-							id="tab-math"
-							aria-controls="pane-math"
-							aria-selected="false"
-							data-tab="math"
-							tabindex="-1"
-						>
-							Math
-						</button>
-						<button
-							type="button"
-							role="tab"
-							id="tab-code"
-							aria-controls="pane-code"
-							aria-selected="false"
-							data-tab="code"
-							tabindex="-1"
-						>
-							Code
-						</button>
-						<button
-							type="button"
-							role="tab"
-							id="tab-interview"
-							aria-controls="pane-interview"
-							aria-selected="false"
-							data-tab="interview"
-							tabindex="-1"
-						>
-							Interview
-						</button>
-					</div>
-					<section
-						role="tabpanel"
-						id="pane-story"
-						aria-labelledby="tab-story"
-						tabindex="0"
-					></section>
-					<section
-						role="tabpanel"
-						id="pane-math"
-						aria-labelledby="tab-math"
-						tabindex="0"
-						hidden
-					></section>
-					<section
-						role="tabpanel"
-						id="pane-code"
-						aria-labelledby="tab-code"
-						tabindex="0"
-						hidden
-					></section>
-					<section
-						role="tabpanel"
-						id="pane-interview"
-						aria-labelledby="tab-interview"
-						tabindex="0"
-						hidden
-					></section>
-					<details class="references">
-						<summary>Sources &amp; further study</summary>
-						<ul id="sources"></ul>
-						<p>
-							Primary references checked 10 Nov 2026. These lessons and practice
-							questions are original study notes.
+						<p id="question-count" class="result-count" role="status"></p>
+						<div id="questions"></div>
+						<p class="bank-note">
+							Practice derivations, coding, and system design alongside these
+							explanations. Progress and confidence ratings stay in this
+							browser.
 						</p>
-					</details>
-				</aside>
+					</section>
+					<div class="lab-content" id="lab-content" hidden>
+						<div class="lab-intro">
+							<p class="eyebrow">Learn by doing</p>
+							<p>
+								Predict a change, step through it, then connect the picture to
+								the full-width notes below.
+								<a id="lab-study-link" href="#study/regression"
+									>Read the lesson →</a
+								>
+							</p>
+						</div>
+						<div class="lesson-heading">
+							<p id="lesson-kicker"></p>
+							<span id="lesson-position"></span>
+						</div>
+						<section
+							class="controls"
+							id="controls"
+							aria-label="Experiment settings"
+						></section>
+						<section class="stage-card" aria-labelledby="stage-title">
+							<div class="stage-head">
+								<h2 id="stage-title"></h2>
+								<span id="lab-kind" class="lab-kind"></span>
+							</div>
+							<div
+								class="stage"
+								id="stage"
+								tabindex="0"
+								role="region"
+								aria-label="Visualization. On narrow screens, scroll sideways to see the full diagram."
+							></div>
+							<p class="example-note" id="example-note"></p>
+							<p
+								class="narration"
+								id="narration"
+								aria-live="polite"
+								aria-atomic="true"
+							></p>
+							<div class="stats" id="stats"></div>
+							<div class="player" aria-label="Visualization playback">
+								<button
+									type="button"
+									class="icon-btn"
+									id="btn-first"
+									aria-label="Restart"
+									title="Restart (Home)"
+								>
+									↤
+								</button>
+								<button
+									type="button"
+									class="icon-btn"
+									id="btn-prev"
+									aria-label="Step back"
+									title="Step back (←)"
+								>
+									←
+								</button>
+								<button
+									type="button"
+									class="icon-btn play"
+									id="btn-play"
+									aria-label="Play"
+									title="Play / pause (Space)"
+								>
+									▶
+								</button>
+								<button
+									type="button"
+									class="icon-btn"
+									id="btn-next"
+									aria-label="Step forward"
+									title="Step forward (→)"
+								>
+									→
+								</button>
+								<button
+									type="button"
+									class="icon-btn"
+									id="btn-last"
+									aria-label="Jump to end"
+									title="Jump to end (End)"
+								>
+									↦
+								</button>
+								<input
+									type="range"
+									id="scrub"
+									class="scrub"
+									min="0"
+									max="3"
+									value="0"
+									aria-label="Timeline"
+								/>
+								<span class="step-count" id="step-count">1 / 4</span>
+								<label class="speed" for="speed"
+									>Speed
+									<select id="speed">
+										<option value="0.5">0.5×</option>
+										<option value="1" selected>1×</option>
+										<option value="2">2×</option>
+									</select></label
+								>
+							</div>
+						</section>
+
+						<section class="info-card" aria-label="Lesson reference">
+							<h2 id="info-name">Study notes</h2>
+							<div class="info-tabs" role="tablist" aria-label="Lesson detail">
+								<button
+									type="button"
+									role="tab"
+									id="tab-story"
+									aria-controls="pane-story"
+									aria-selected="true"
+									data-tab="story"
+									class="on"
+								>
+									Understand
+								</button>
+								<button
+									type="button"
+									role="tab"
+									id="tab-math"
+									aria-controls="pane-math"
+									aria-selected="false"
+									data-tab="math"
+									tabindex="-1"
+								>
+									Math
+								</button>
+								<button
+									type="button"
+									role="tab"
+									id="tab-code"
+									aria-controls="pane-code"
+									aria-selected="false"
+									data-tab="code"
+									tabindex="-1"
+								>
+									Python
+								</button>
+								<button
+									type="button"
+									role="tab"
+									id="tab-interview"
+									aria-controls="pane-interview"
+									aria-selected="false"
+									data-tab="interview"
+									tabindex="-1"
+								>
+									Interview
+								</button>
+							</div>
+							<section
+								role="tabpanel"
+								id="pane-story"
+								aria-labelledby="tab-story"
+								tabindex="0"
+							></section>
+							<section
+								role="tabpanel"
+								id="pane-math"
+								aria-labelledby="tab-math"
+								tabindex="0"
+								hidden
+							></section>
+							<section
+								role="tabpanel"
+								id="pane-code"
+								aria-labelledby="tab-code"
+								tabindex="0"
+								hidden
+							></section>
+							<section
+								role="tabpanel"
+								id="pane-interview"
+								aria-labelledby="tab-interview"
+								tabindex="0"
+								hidden
+							></section>
+							<details class="references">
+								<summary>Sources &amp; further study</summary>
+								<ul id="sources"></ul>
+								<p>
+									Primary references checked 10 Nov 2026. These lessons and
+									practice questions are original study notes.
+								</p>
+							</details>
+						</section>
+						<section class="recall-panel" aria-labelledby="recall-title">
+							<p class="eyebrow">TRY → EXPLAIN → REMEMBER</p>
+							<h2 id="recall-title">Make the idea yours</h2>
+							<p id="challenge"></p>
+							<fieldset id="check">
+								<legend id="check-question"></legend>
+								<div id="check-options"></div>
+							</fieldset>
+							<p id="quiz-feedback" class="quiz-feedback" role="status"></p>
+							<div class="lesson-actions">
+								<button type="button" class="btn primary" id="mark-complete">
+									Mark as understood</button
+								><button type="button" class="btn ghost" id="next-lesson">
+									Next lesson →
+								</button>
+							</div>
+						</section>
+					</div>
+				</main>
 			</div>
-			<main
-				id="interview-view"
-				class="interview-view"
-				aria-labelledby="interview-title"
-				hidden
-			>
-				<p class="eyebrow">RECALL BEFORE REVEAL</p>
-				<h2 id="interview-title">The interview notebook</h2>
-				<p>
-					Explain your answer out loud, reveal the reasoning, then try the
-					follow-up. Self-rate what needs another pass.
-				</p>
-				<div class="interview-filters">
-					<label
-						>Search questions<input
-							type="search"
-							id="interview-search"
-							placeholder="Try leakage, attention, deployment…"
-					/></label>
-					<label
-						>Chapter<select id="interview-group">
-							<option value="all">All chapters</option>
-						</select></label
-					>
-					<label
-						>Review status<select id="review-filter">
-							<option value="all">All questions</option>
-							<option value="new">Not reviewed</option>
-							<option value="review">Needs practice</option>
-							<option value="ready">Confident</option>
-						</select></label
-					>
-				</div>
-				<p id="question-count" role="status"></p>
-				<div id="questions"></div>
-				<p class="bank-note">
-					Core concepts and applied scenarios for ML, deep learning, and
-					generative AI interviews. Coverage varies by role; practice
-					derivations and coding as well as these answers.
-				</p>
-			</main>
 			<footer class="foot">
-				Built with love by Preetam Ptwo · Space plays · ← → step · Home / End
-				jump<br /><span id="save-status" role="status"
+				Built with love by Preetam Ptwo · Learn a little. Practice deliberately.
+				Come back tomorrow.<br /><span id="save-status" role="status"
 					>Progress stays in this browser.</span
 				>
 			</footer>

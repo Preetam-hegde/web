@@ -146,6 +146,66 @@ for (const lesson of C.lessons) {
 	assert.ok(lesson.check.explanation);
 	lesson.interview.forEach((q) => assert.ok(q.q && q.a && q.followup));
 }
+const studyData = require('./js/study-data.js');
+assert.deepEqual(
+	Object.keys(studyData).sort(),
+	C.lessons.map((l) => l.id).sort(),
+);
+for (const lesson of C.lessons) {
+	const notes = studyData[lesson.id];
+	for (const key of ['lead', 'reasoning', 'cost'])
+		assert.ok(notes[key], `${lesson.id}: ${key}`);
+	assert.ok(notes.example.title && notes.example.rows.length >= 3);
+	assert.notDeepEqual(notes.example.rows[0], ['Step', 'State', 'Why']);
+	notes.example.rows.forEach((row) =>
+		assert.ok(
+			row.length === 3 &&
+				row.every((cell) => typeof cell === 'string' && cell.length > 0),
+		),
+	);
+	assert.equal(notes.interview.length, 4);
+	notes.interview.forEach((q) =>
+		assert.ok(
+			['Easy', 'Medium', 'Hard'].includes(q.level) && q.hint && q.example,
+		),
+	);
+}
+const guideContext = vm.createContext({
+	AICourse: C,
+	AIStudyData: studyData,
+	AIViews: V,
+	URLSearchParams,
+});
+vm.runInContext(
+	fs.readFileSync(`${__dirname}/js/guide.js`, 'utf8') +
+		'\nthis.guide = AIGuide;',
+	guideContext,
+);
+const G = guideContext.guide;
+const route = (hash) => JSON.parse(JSON.stringify(G.resolveRoute(hash)));
+assert.deepEqual(route(''), { mode: 'study', page: 'start' });
+assert.deepEqual(route('#study/regression'), {
+	mode: 'study',
+	page: 'regression',
+});
+assert.deepEqual(route('#regression'), { mode: 'lab', page: 'regression' });
+assert.deepEqual(route('#lab/attention'), { mode: 'lab', page: 'attention' });
+assert.equal(route('#interview').mode, 'questions');
+assert.equal(route('#study/questions?topic=rag&level=Hard').topic, 'rag');
+assert.equal(route('#study/questions?topic=not-a-topic&level=Fake').topic, '');
+assert.deepEqual(route('#study/%E0%A4%A'), { mode: 'study', page: 'start' });
+assert.deepEqual(route('#lab/missing'), { mode: 'study', page: 'start' });
+assert.match(G.renderStart(), /learning-loop/);
+assert.match(G.renderRevision(), /Revision desk/);
+assert.match(G.renderResources(), /Reading room/);
+for (const lesson of C.lessons) {
+	const html = G.renderLesson(lesson, false);
+	assert.match(html, /id="worked-example"/);
+	assert.match(html, /id="code-template"/);
+	assert.ok(html.includes(`#lab/${lesson.id}`));
+	assert.ok(html.includes(`#study/questions?topic=${lesson.id}`));
+	assert.doesNotMatch(html, /\$\{|>undefined</);
+}
 console.log(
-	'Passed: numerical invariants, edge cases, 35 lessons, 140 interview answers, and source mappings.',
+	'Passed: numerical invariants, 35 lessons and worked examples, 140 guided questions, source mappings, guide rendering, and route compatibility.',
 );

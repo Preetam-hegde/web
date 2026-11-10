@@ -380,6 +380,7 @@
 			return {
 				empty: get('--grid-empty'),
 				line: get('--grid-line'),
+				ink: get('--ink'),
 				wall: get('--grid-wall'),
 				front: get('--grid-front'),
 				cur: get('--c-cur-lo'),
@@ -476,7 +477,7 @@
 				ctx.roundRect(x, y, cell - gap, cell - gap, radius);
 				ctx.fill();
 				ctx.lineWidth = 1.5;
-				ctx.strokeStyle = fill === col.empty ? col.line : '#2a2745';
+				ctx.strokeStyle = fill === col.empty ? col.line : col.ink;
 				ctx.stroke();
 			};
 			for (let idx = 0; idx < G.rows * G.cols; idx++) {
@@ -491,15 +492,15 @@
 					fill = col.front;
 				} else if (meta.visitedAt[idx] < f.n) {
 					const t = meta.visitedAt[idx] / total;
-					fill = 'hsl(' + Math.round(205 + 80 * t) + ' 85% ' + Math.round(70 - 6 * t) + '%)';
+					fill = 'hsl(' + Math.round(165 + 35 * t) + ' 25% ' + Math.round(83 - 12 * t) + '%)';
 				}
 				draw(idx, fill);
 			}
 			draw(G.start, col.start);
 			draw(G.end, col.end);
-			ctx.fillStyle = '#2a2745';
+			ctx.fillStyle = col.ink;
 			[[G.start, 'S'], [G.end, 'E']].forEach(function (pair) {
-				ctx.font = '700 ' + Math.round(cell * 0.5) + 'px Inter, sans-serif';
+				ctx.font = '700 ' + Math.round(cell * 0.5) + 'px sans-serif';
 				ctx.textAlign = 'center';
 				ctx.textBaseline = 'middle';
 				ctx.fillText(pair[1], (pair[0] % G.cols + 0.5) * cell, (Math.floor(pair[0] / G.cols) + 0.54) * cell);
