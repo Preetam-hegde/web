@@ -4,6 +4,11 @@
 const $ = (selector) => document.querySelector(selector);
 const $$ = (selector) => document.querySelectorAll(selector);
 
+// Order = menu order = number keys 1..8
+const MODES = ['graze-arena', 'vortex', 'laser-grid', 'hell', 'pulsar', 'squeeze', 'hunter', 'cascade'];
+const LEVEL_SECS = 12; // a new level every 12s of play
+const LEVEL_NAMES = ['BOOT', 'OVERCLOCK', 'REDLINE', 'SURGE', 'FRACTURE', 'OVERDRIVE', 'APEX', 'ZERO POINT', 'ABYSS', 'SINGULARITY'];
+
 class VectorDriftGame {
 	constructor() {
 		this.canvas = $('#gameCanvas');
@@ -14,6 +19,10 @@ class VectorDriftGame {
 		this.mode = 'graze-arena'; // graze-arena, vortex, laser-grid, hell
 		this.diff = 'pilot'; // cadet, pilot, cyber, singularity
 		this.durationLimit = 60; // 30, 60, Infinity
+		this.startLevel = 1;
+		this.level = 1;
+		this.levelTimer = 0;
+		this.diffSpeedMod = 1;
 
 		this.isRunning = false;
 		this.isPaused = false;
@@ -74,6 +83,7 @@ class VectorDriftGame {
 			toastNotice: $('#toastNotice'),
 			pauseScreen: $('#pauseScreen'),
 			// HUD
+			hLevel: $('#hLevel'),
 			hTime: $('#hTime'),
 			hScore: $('#hScore'),
 			hMult: $('#hMult'),
@@ -178,10 +188,7 @@ class VectorDriftGame {
 			const key = e.key.toLowerCase();
 
 			if (this.screen === 'menu') {
-				if (key === '1') this.selectMode('graze-arena');
-				else if (key === '2') this.selectMode('vortex');
-				else if (key === '3') this.selectMode('laser-grid');
-				else if (key === '4') this.selectMode('hell');
+				if (MODES[parseInt(key, 10) - 1]) this.selectMode(MODES[parseInt(key, 10) - 1]);
 				else if (key === 'enter' || key === ' ') {
 					e.preventDefault();
 					this.startRun();
@@ -242,6 +249,16 @@ class VectorDriftGame {
 				btn.classList.add('active');
 				const val = btn.getAttribute('data-len');
 				this.durationLimit = val === 'inf' ? Infinity : parseInt(val, 10);
+				if (window.soundEngine) window.soundEngine.playUiBlip(1.0);
+			});
+		});
+
+		// Start level buttons
+		$$('[data-lvl]').forEach((btn) => {
+			btn.addEventListener('click', () => {
+				$$('[data-lvl]').forEach((b) => b.classList.remove('active'));
+				btn.classList.add('active');
+				this.startLevel = parseInt(btn.getAttribute('data-lvl'), 10);
 				if (window.soundEngine) window.soundEngine.playUiBlip(1.0);
 			});
 		});
@@ -331,15 +348,10 @@ class VectorDriftGame {
 	}
 
 	updateMenuBests() {
-		const bestArena = window.store.best[`graze-arena:${this.diff}`] || 0;
-		const bestVortex = window.store.best[`vortex:${this.diff}`] || 0;
-		const bestGrid = window.store.best[`laser-grid:${this.diff}`] || 0;
-		const bestHell = window.store.best[`hell:${this.diff}`] || 0;
-
-		if ($('#best-arena')) $('#best-arena').textContent = bestArena.toLocaleString();
-		if ($('#best-vortex')) $('#best-vortex').textContent = bestVortex.toLocaleString();
-		if ($('#best-grid')) $('#best-grid').textContent = bestGrid.toLocaleString();
-		if ($('#best-hell')) $('#best-hell').textContent = bestHell.toLocaleString();
+		$$('.mode-card').forEach((card) => {
+			const best = window.store.best[`${card.getAttribute('data-mode')}:${this.diff}`] || 0;
+			card.querySelector('.mode-best b').textContent = best.toLocaleString();
+		});
 	}
 
 	quitAndSave() {
@@ -366,6 +378,9 @@ class VectorDriftGame {
 		this.multiplier = 1.0;
 		this.streak = 0;
 		this.shakeAmt = 0;
+		this.level = this.startLevel;
+		this.levelTimer = 0;
+		this.lastAnnouncedMilestone = 0;
 
 		// Anti-camping & dynamic laser tracking resets
 		this.campAnchor = { x: -999, y: -999 };
@@ -398,13 +413,14 @@ class VectorDriftGame {
 
 		// Start telemetry and sound
 		window.telemetry.start(this.mode, this.diff, this.durationLimit);
+		window.telemetry.level = this.level;
 		if (window.soundEngine) {
 			window.soundEngine.startMusic();
 			window.soundEngine.setMultiplier(1.0);
 			window.soundEngine.playUiBlip(1.4);
 		}
 
-		this.showToast('SYSTEM ARMED', 700);
+		this.showToast(this.level > 1 ? `LEVEL ${this.level} · ${this.levelName()}` : 'SYSTEM ARMED', 900);
 	}
 
 	togglePause() {
@@ -481,15 +497,38 @@ class VectorDriftGame {
 	}
 
 	finishRun(completed) {
+		window.telemetry.level = this.level;
 		const { runData, isNewBest } = window.telemetry.finish(this.score, completed);
 		this.renderResultsScreen(runData, isNewBest);
 		this.setScreen('results');
+	}
+
+	/* ── Levels ───────────────────────────────────────────────── */
+	get speedMul() {
+		return this.diffSpeedMod * Math.min(1.5, 1 + (this.level - 1) * 0.05);
+	}
+
+	levelName() {
+		return LEVEL_NAMES[(this.level - 1) % LEVEL_NAMES.length];
+	}
+
+	updateLevel(dt) {
+		this.levelTimer += dt;
+		if (this.levelTimer < LEVEL_SECS) return;
+		this.levelTimer -= LEVEL_SECS;
+		this.level++;
+		this.score += 250 * this.level;
+		this.showToast(`LEVEL ${this.level} · ${this.levelName()}`, 1100);
+		this.triggerScreenFlash('#ff0080', 0.35);
+		this.triggerShake(8);
+		if (window.soundEngine) window.soundEngine.playMilestone(10 + this.level);
 	}
 
 	/* ── Hazard Logic & Spawning ─────────────────────────────── */
 	updateHazards(dt) {
 		this.spawnTimer += dt;
 		this.patternTimer += dt;
+		this.updateLevel(dt);
 
 		if (this.mode === 'graze-arena') {
 			this.updateGrazeArena(dt);
@@ -501,6 +540,14 @@ class VectorDriftGame {
 			this.updateGrazeArena(dt * 0.75);
 			this.updateVortex(dt * 0.75);
 			this.updateLaserGrid(dt * 0.75);
+		} else if (this.mode === 'pulsar') {
+			this.updatePulsar(dt);
+		} else if (this.mode === 'squeeze') {
+			this.updateSqueeze(dt);
+		} else if (this.mode === 'hunter') {
+			this.updateHunter(dt);
+		} else if (this.mode === 'cascade') {
+			this.updateCascade(dt);
 		}
 
 		// Update generic hazards
@@ -536,19 +583,40 @@ class VectorDriftGame {
 					this.hazards.splice(i, 1);
 					continue;
 				}
+			} else if (h.type === 'turret') {
+				this.updateTurret(h, dt);
+			} else if (h.type === 'wall') {
+				h.pos += h.dir * h.speed * dt;
+				if ((h.dir > 0 && h.pos > h.limit + 40) || (h.dir < 0 && h.pos < -40)) {
+					this.hazards.splice(i, 1);
+					continue;
+				}
+			} else if (h.type === 'seeker') {
+				this.updateSeeker(h, dt);
+			} else if (h.type === 'strike' && h.age >= h.delay) {
+				// Telegraph done: detonate into a shockwave ring (the eye stays safe)
+				h.type = 'shock';
+				h.age = 0;
+				h.life = 1.0;
+				h.r = h.radius;
+				this.triggerShake(6);
+				if (window.soundEngine) window.soundEngine.playNearMissPulse();
+			} else if (h.type === 'shock') {
+				h.r += h.growth * dt;
 			}
 
 			if (h.life && h.age >= h.life) {
+				if (h.type === 'seeker') this.spawnRing(h.x, h.y, 8, 150 * this.speedMul);
 				this.hazards.splice(i, 1);
 			}
 		}
 	}
 
 	updateGrazeArena(dt) {
-		const targetCount = 5 + Math.min(Math.floor(this.sessionTime / 10), 6);
+		const targetCount = 4 + Math.min(this.level, 9);
 		const currentBlades = this.hazards.filter((h) => h.type === 'blade' || h.type === 'poly').length;
 
-		if (currentBlades < targetCount && this.spawnTimer >= 1.2) {
+		if (currentBlades < targetCount && this.spawnTimer >= Math.max(0.5, 1.2 - this.level * 0.06)) {
 			this.spawnTimer = 0;
 			const isBlade = Math.random() > 0.4;
 			const side = Math.floor(Math.random() * 4);
@@ -560,7 +628,7 @@ class VectorDriftGame {
 			else { x = 20; y = Math.random() * this.height; }
 
 			const angle = Math.atan2(this.height / 2 - y, this.width / 2 - x) + (Math.random() - 0.5) * 0.8;
-			const spd = (140 + Math.random() * 100) * this.diffSpeedMod;
+			const spd = (140 + Math.random() * 100) * this.speedMul;
 
 			if (isBlade) {
 				this.hazards.push({
@@ -594,14 +662,15 @@ class VectorDriftGame {
 		}
 
 		// Spiral bullet pattern every 6 seconds
-		if (this.patternTimer >= 6.0) {
+		if (this.patternTimer >= Math.max(3, 6.5 - this.level * 0.35)) {
 			this.patternTimer = 0;
 			const cx = this.width / 2 + (Math.random() - 0.5) * (this.width * 0.4);
 			const cy = this.height / 2 + (Math.random() - 0.5) * (this.height * 0.4);
-			const count = 16;
+			const count = Math.min(28, 12 + this.level * 2);
+			const twist = this.level >= 4 ? Math.random() * Math.PI : 0; // spiral offset from level 4
 			for (let i = 0; i < count; i++) {
-				const a = (i / count) * Math.PI * 2;
-				const spd = 160 * this.diffSpeedMod;
+				const a = (i / count) * Math.PI * 2 + twist;
+				const spd = 160 * this.speedMul;
 				this.hazards.push({
 					type: 'bullet',
 					x: cx,
@@ -616,21 +685,159 @@ class VectorDriftGame {
 		}
 	}
 
+	/* ── Shared helpers for new modes ─────────────────────────── */
+	spawnRing(x, y, count, spd, offset = 0) {
+		if (this.hazards.length > 320) return; // cap bullets
+		for (let i = 0; i < count; i++) {
+			const a = (i / count) * Math.PI * 2 + offset;
+			this.hazards.push({ type: 'bullet', x, y, vx: Math.cos(a) * spd, vy: Math.sin(a) * spd, radius: 5, age: 0, life: 8 });
+		}
+	}
+
+	// Random point at least `minDist` from the cursor
+	safeSpot(pad, minDist) {
+		let x = 0, y = 0;
+		for (let i = 0; i < 12; i++) {
+			x = pad + Math.random() * (this.width - pad * 2);
+			y = pad + Math.random() * (this.height - pad * 2);
+			if (Math.hypot(x - this.cursor.x, y - this.cursor.y) > minDist) break;
+		}
+		return { x, y };
+	}
+
+	/* ── Pulsar: turrets ──────────────────────────────────────── */
+	updatePulsar(dt) {
+		const turrets = this.hazards.filter((h) => h.type === 'turret').length;
+		const maxTurrets = Math.min(2 + Math.floor(this.level / 2), 6);
+		if (turrets < maxTurrets && this.spawnTimer >= Math.max(1.2, 3 - this.level * 0.15)) {
+			this.spawnTimer = 0;
+			const { x, y } = this.safeSpot(80, 200);
+			const patterns = ['spiral', 'burst', 'aim'];
+			this.hazards.push({
+				type: 'turret', x, y, radius: 16, rotation: 0,
+				pattern: patterns[Math.floor(Math.random() * Math.min(patterns.length, 1 + Math.ceil(this.level / 2)))],
+				fire: 0, spin: Math.random() > 0.5 ? 1 : -1,
+				arm: 1.0, age: 0, life: 14
+			});
+		}
+	}
+
+	updateTurret(h, dt) {
+		h.rotation += h.spin * 1.4 * dt;
+		if (h.age < h.arm) return; // powering up: harmless and silent
+		h.fire += dt;
+		const spd = 170 * this.speedMul;
+		if (h.pattern === 'spiral' && h.fire >= 0.14) {
+			h.fire = 0;
+			this.spawnRing(h.x, h.y, 2, spd * 0.9, h.rotation * 2.2);
+		} else if (h.pattern === 'burst' && h.fire >= 1.7) {
+			h.fire = 0;
+			this.spawnRing(h.x, h.y, 14, spd * 0.8, h.rotation);
+		} else if (h.pattern === 'aim' && h.fire >= 1.3) {
+			h.fire = 0;
+			const a = Math.atan2(this.cursor.y - h.y, this.cursor.x - h.x);
+			for (let k = -1; k <= 1; k++) {
+				this.hazards.push({ type: 'bullet', x: h.x, y: h.y, vx: Math.cos(a + k * 0.22) * spd * 1.3, vy: Math.sin(a + k * 0.22) * spd * 1.3, radius: 5, age: 0, life: 8 });
+			}
+		}
+	}
+
+	/* ── Squeeze: sweeping walls with gaps ────────────────────── */
+	updateSqueeze(dt) {
+		if (this.spawnTimer < Math.max(1.1, 2.4 - this.level * 0.12)) return;
+		this.spawnTimer = 0;
+		const vertical = Math.random() > 0.5; // vertical wall travels left/right
+		const limit = vertical ? this.width : this.height;
+		const span = vertical ? this.height : this.width;
+		const dir = Math.random() > 0.5 ? 1 : -1;
+		const gap = Math.max(110, 230 - this.level * 9);
+		this.hazards.push({
+			type: 'wall', vertical, dir, limit, span, gap,
+			pos: dir > 0 ? -30 : limit + 30,
+			speed: (200 + Math.random() * 60) * this.speedMul,
+			gapC: gap / 2 + 20 + Math.random() * Math.max(0, span - gap - 40),
+			wobble: this.level >= 4 ? Math.min(90, 20 + this.level * 8) : 0, // gaps start weaving at level 4
+			freq: 1 + Math.random() * 1.2,
+			thickness: 18, age: 0
+		});
+	}
+
+	// The two lethal bars of a wall as [x1,y1,x2,y2] segments (gap centre weaves with age)
+	wallSegments(h) {
+		const c = Math.max(h.gap / 2, Math.min(h.span - h.gap / 2, h.gapC + Math.sin(h.age * h.freq) * h.wobble));
+		const a = c - h.gap / 2;
+		const b = c + h.gap / 2;
+		return h.vertical
+			? [[h.pos, 0, h.pos, a], [h.pos, b, h.pos, h.span]]
+			: [[0, h.pos, a, h.pos], [b, h.pos, h.span, h.pos]];
+	}
+
+	/* ── Hunter: homing seekers ───────────────────────────────── */
+	updateHunter(dt) {
+		const seekers = this.hazards.filter((h) => h.type === 'seeker').length;
+		if (seekers < Math.min(2 + Math.floor(this.level / 2), 7) && this.spawnTimer >= Math.max(0.9, 2.2 - this.level * 0.1)) {
+			this.spawnTimer = 0;
+			const side = Math.floor(Math.random() * 4);
+			const x = side === 1 ? this.width + 10 : side === 3 ? -10 : Math.random() * this.width;
+			const y = side === 0 ? -10 : side === 2 ? this.height + 10 : Math.random() * this.height;
+			const a = Math.atan2(this.height / 2 - y, this.width / 2 - x);
+			this.hazards.push({ type: 'seeker', x, y, vx: Math.cos(a), vy: Math.sin(a), heading: a, radius: 9, age: 0, life: 9 });
+		}
+		// A slow sprinkler keeps the graze economy alive between hunts
+		if (this.patternTimer >= 5) {
+			this.patternTimer = 0;
+			const p = this.safeSpot(60, 150);
+			this.spawnRing(p.x, p.y, 10, 140 * this.speedMul);
+		}
+	}
+
+	updateSeeker(h, dt) {
+		const speed = (150 + Math.min(this.level, 10) * 8) * this.diffSpeedMod;
+		const maxTurn = (1.4 + this.level * 0.12) * dt;
+		const want = Math.atan2(this.cursor.y - h.y, this.cursor.x - h.x);
+		let diff = want - h.heading;
+		diff = Math.atan2(Math.sin(diff), Math.cos(diff)); // wrap to [-PI, PI]
+		h.heading += Math.max(-maxTurn, Math.min(maxTurn, diff));
+		h.x += Math.cos(h.heading) * speed * dt;
+		h.y += Math.sin(h.heading) * speed * dt;
+	}
+
+	/* ── Cascade: telegraphed strikes into shockwaves ─────────── */
+	updateCascade(dt) {
+		if (this.spawnTimer < Math.max(0.7, 1.7 - this.level * 0.09)) return;
+		this.spawnTimer = 0;
+		const strikes = 1 + Math.floor(this.level / 3);
+		for (let k = 0; k < strikes; k++) {
+			// The first strike (and half the rest) lead the cursor's motion
+			const aimed = k === 0 || Math.random() > 0.5;
+			const x = aimed ? this.cursor.x + this.cursor.vx * 3 : Math.random() * this.width;
+			const y = aimed ? this.cursor.y + this.cursor.vy * 3 : Math.random() * this.height;
+			this.hazards.push({
+				type: 'strike',
+				x: Math.max(40, Math.min(this.width - 40, x)),
+				y: Math.max(40, Math.min(this.height - 40, y)),
+				radius: 44 + Math.random() * 16,
+				delay: Math.max(0.6, 1.0 - this.level * 0.03),
+				growth: 240 * this.speedMul, age: 0
+			});
+		}
+	}
+
 	updateVortex(dt) {
 		const cx = this.width / 2;
 		const cy = this.height / 2;
 
 		// Pulsing event horizon rings expanding outward (Super Hexagon-style)
-		if (this.spawnTimer >= 1.6) {
+		if (this.spawnTimer >= Math.max(0.8, 1.6 - (this.level - 1) * 0.1)) {
 			this.spawnTimer = 0;
 			const gapAngle = Math.random() * Math.PI * 2;
-			const gapWidth = Math.PI * (0.35 / this.diffSpeedMod); // Opening to pass through
+			const gapWidth = Math.PI * Math.max(0.16, 0.35 / this.speedMul); // Opening to pass through
 
 			this.vortexRings.push({
 				cx: cx,
 				cy: cy,
 				radius: 30,
-				growthRate: 110 * this.diffSpeedMod,
+				growthRate: 110 * this.speedMul,
 				rotation: Math.random() * Math.PI,
 				rotSpeed: (0.6 + Math.random() * 0.8) * (Math.random() > 0.5 ? 1 : -1),
 				gapAngle: gapAngle,
@@ -689,7 +896,7 @@ class VectorDriftGame {
 		}
 
 		// 2. Dynamic Procedural Patterns
-		if (this.patternTimer >= 1.7) {
+		if (this.patternTimer >= Math.max(0.9, 1.7 - (this.level - 1) * 0.08)) {
 			this.patternTimer = 0;
 			this.patternStep = (this.patternStep + 1) % 5;
 			this.gridWaveShift = (this.gridWaveShift + 0.33) % 1;
@@ -819,8 +1026,12 @@ class VectorDriftGame {
 			} else if (h.type === 'poly') {
 				const dCenter = Math.hypot(px - h.x, py - h.y);
 				dist = Math.abs(dCenter - h.radius) - 3;
-			} else if (h.type === 'bullet') {
+			} else if (h.type === 'bullet' || h.type === 'turret' || h.type === 'seeker') {
 				dist = Math.hypot(px - h.x, py - h.y) - h.radius;
+			} else if (h.type === 'shock') {
+				dist = Math.abs(Math.hypot(px - h.x, py - h.y) - h.r) - 4;
+			} else if (h.type === 'wall') {
+				dist = Math.min(...this.wallSegments(h).map((s) => this.distToSegment(px, py, ...s))) - h.thickness / 2;
 			}
 
 			if (dist < minDistance) minDistance = dist;
@@ -1007,6 +1218,7 @@ class VectorDriftGame {
 			? this.sessionTime.toFixed(1) + 's'
 			: Math.max(0, this.durationLimit - this.sessionTime).toFixed(1) + 's';
 
+		this.dom.hLevel.textContent = this.level;
 		this.dom.hTime.textContent = timeLeft;
 		this.dom.hScore.textContent = Math.round(this.score).toLocaleString();
 		this.dom.hMult.textContent = 'x' + this.multiplier.toFixed(1);
@@ -1017,7 +1229,7 @@ class VectorDriftGame {
 		this.dom.grazeDistVal.textContent = (this.cursor.closestDist < 100 ? this.cursor.closestDist.toFixed(1) : '0.0');
 
 		// Danger Level
-		const dangerLevel = this.sessionTime < 15 ? 'LOW' : this.sessionTime < 35 ? 'MED' : 'CRITICAL';
+		const dangerLevel = this.level < 3 ? 'LOW' : this.level < 6 ? 'MED' : 'CRITICAL';
 		this.dom.hDanger.textContent = dangerLevel;
 	}
 
@@ -1154,7 +1366,7 @@ class VectorDriftGame {
 		// 3. Generic Hazards (Blades, Polys, Bullets)
 		for (const h of this.hazards) {
 			this.ctx.save();
-			this.ctx.translate(h.x, h.y);
+			this.ctx.translate(h.x || 0, h.y || 0); // walls live in world space (no x/y)
 
 			if (h.type === 'blade') {
 				this.ctx.rotate(h.rotation);
@@ -1194,6 +1406,80 @@ class VectorDriftGame {
 				}
 				this.ctx.closePath();
 				this.ctx.stroke();
+			} else if (h.type === 'turret') {
+				const armed = h.age >= h.arm;
+				this.ctx.rotate(h.rotation);
+				this.ctx.strokeStyle = armed ? '#ff0080' : 'rgba(255, 0, 128, 0.35)';
+				this.ctx.shadowColor = '#ff0080';
+				this.ctx.shadowBlur = armed ? 18 : 4;
+				this.ctx.lineWidth = 2.5;
+				this.ctx.beginPath();
+				for (let s = 0; s < 6; s++) {
+					const a = (s * Math.PI * 2) / 6;
+					const hx = Math.cos(a) * h.radius;
+					const hy = Math.sin(a) * h.radius;
+					if (s === 0) this.ctx.moveTo(hx, hy);
+					else this.ctx.lineTo(hx, hy);
+				}
+				this.ctx.closePath();
+				this.ctx.stroke();
+				if (!armed) {
+					// Power-up ring closes in
+					this.ctx.beginPath();
+					this.ctx.arc(0, 0, h.radius + 26 * (1 - h.age / h.arm), 0, Math.PI * 2);
+					this.ctx.stroke();
+				} else {
+					this.ctx.fillStyle = '#ffffff';
+					this.ctx.fillRect(-3, -3, 6, 6);
+				}
+			} else if (h.type === 'seeker') {
+				this.ctx.rotate(h.heading);
+				this.ctx.fillStyle = '#ff0080';
+				this.ctx.shadowColor = '#ff0080';
+				this.ctx.shadowBlur = 16;
+				this.ctx.beginPath();
+				this.ctx.moveTo(h.radius * 1.4, 0);
+				this.ctx.lineTo(-h.radius, h.radius * 0.8);
+				this.ctx.lineTo(-h.radius * 0.5, 0);
+				this.ctx.lineTo(-h.radius, -h.radius * 0.8);
+				this.ctx.closePath();
+				this.ctx.fill();
+			} else if (h.type === 'strike') {
+				// Telegraph: dashed target disc with a fill that rises to detonation
+				const t = Math.min(1, h.age / h.delay);
+				this.ctx.strokeStyle = `rgba(255, 170, 0, ${0.35 + 0.5 * t})`;
+				this.ctx.fillStyle = `rgba(255, 170, 0, ${0.05 + 0.2 * t})`;
+				this.ctx.lineWidth = 2;
+				this.ctx.setLineDash([6, 6]);
+				this.ctx.beginPath();
+				this.ctx.arc(0, 0, h.radius, 0, Math.PI * 2);
+				this.ctx.fill();
+				this.ctx.stroke();
+				this.ctx.setLineDash([]);
+				this.ctx.beginPath();
+				this.ctx.arc(0, 0, h.radius * (1 - t), 0, Math.PI * 2);
+				this.ctx.stroke();
+			} else if (h.type === 'shock') {
+				const alpha = 1 - h.age / h.life;
+				this.ctx.strokeStyle = `rgba(255, 170, 0, ${alpha})`;
+				this.ctx.shadowColor = '#ff5500';
+				this.ctx.shadowBlur = 20;
+				this.ctx.lineWidth = 8;
+				this.ctx.beginPath();
+				this.ctx.arc(0, 0, h.r, 0, Math.PI * 2);
+				this.ctx.stroke();
+			} else if (h.type === 'wall') {
+				this.ctx.strokeStyle = '#00f0ff';
+				this.ctx.shadowColor = '#00f0ff';
+				this.ctx.shadowBlur = 18;
+				this.ctx.lineWidth = h.thickness;
+				this.ctx.lineCap = 'round';
+				for (const [x1, y1, x2, y2] of this.wallSegments(h)) {
+					this.ctx.beginPath();
+					this.ctx.moveTo(x1, y1);
+					this.ctx.lineTo(x2, y2);
+					this.ctx.stroke();
+				}
 			} else if (h.type === 'bullet') {
 				this.ctx.fillStyle = '#00f0ff';
 				this.ctx.shadowColor = '#00f0ff';
@@ -1338,6 +1624,7 @@ class VectorDriftGame {
 
 		// KPI Cards
 		const kpis = [
+			{ label: 'Level Reached', val: runData.level || 1 },
 			{ label: 'Survival Time', val: runData.survivalTime.toFixed(1) + 's' },
 			{ label: 'Peak Multiplier', val: 'x' + runData.peakMultiplier },
 			{ label: 'Avg Proximity', val: runData.avgProximity + ' px' },

@@ -42,6 +42,7 @@ class TelemetryTracker {
 		this.mode = 'graze-arena';
 		this.diff = 'pilot';
 		this.durationLimit = 60;
+		this.level = 1;
 		this.startTime = 0;
 		this.endTime = 0;
 
@@ -160,6 +161,7 @@ class TelemetryTracker {
 			mode: this.mode,
 			diff: this.diff,
 			durationLimit: this.durationLimit,
+			level: this.level,
 			survivalTime: durationSec,
 			completed: completed,
 			score: Math.round(finalScore),

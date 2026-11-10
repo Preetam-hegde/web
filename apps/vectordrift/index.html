@@ -111,6 +111,66 @@
 						<p>The ultimate crucible. Simultaneous rotating blades, expanding vortex rings, and procedural laser grids all active at once.</p>
 						<div class="mode-best">best: <b id="best-hell">0</b> pts</div>
 					</div>
+
+					<div class="mode-card" data-mode="pulsar">
+						<div class="mode-header">
+							<div class="mode-icon">
+								<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="12" cy="12" r="2"/>
+									<path d="M16.2 7.8a6 6 0 0 1 0 8.4M7.8 16.2a6 6 0 0 1 0-8.4M19 5a10 10 0 0 1 0 14M5 19A10 10 0 0 1 5 5"/>
+								</svg>
+							</div>
+							<kbd>5</kbd>
+						</div>
+						<h3>Pulsar</h3>
+						<p>Turrets power up, then unload spirals, bursts and aimed volleys. Thread the bullet curtains.</p>
+						<div class="mode-best">best: <b>0</b> pts</div>
+					</div>
+
+					<div class="mode-card" data-mode="squeeze">
+						<div class="mode-header">
+							<div class="mode-icon">
+								<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M4 4v6M4 14v6M20 4v4M20 12v8M12 4v2M12 10v10"/>
+								</svg>
+							</div>
+							<kbd>6</kbd>
+						</div>
+						<h3>Squeeze</h3>
+						<p>Neon walls sweep the arena with narrow gaps. Later levels make the gaps weave and breathe.</p>
+						<div class="mode-best">best: <b>0</b> pts</div>
+					</div>
+
+					<div class="mode-card" data-mode="hunter">
+						<div class="mode-header">
+							<div class="mode-icon">
+								<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<circle cx="12" cy="12" r="9"/>
+									<circle cx="12" cy="12" r="4"/>
+									<path d="M12 1v4M12 19v4M1 12h4M19 12h4"/>
+								</svg>
+							</div>
+							<kbd>7</kbd>
+						</div>
+						<h3>Hunter</h3>
+						<p>Homing seekers lock onto your reticle. Drag them past hazards, and dodge the shrapnel when they pop.</p>
+						<div class="mode-best">best: <b>0</b> pts</div>
+					</div>
+
+					<div class="mode-card" data-mode="cascade">
+						<div class="mode-header">
+							<div class="mode-icon">
+								<svg viewBox="0 0 24 24" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+									<path d="M12 2v10M8 6l4 6 4-6"/>
+									<path d="M4 18a8 3 0 0 0 16 0 8 3 0 0 0-16 0"/>
+								</svg>
+							</div>
+							<kbd>8</kbd>
+						</div>
+						<h3>Cascade</h3>
+						<p>Orbital strikes are painted on the grid, then detonate into shockwave rings. The eye of each blast is safe.</p>
+						<div class="mode-best">best: <b>0</b> pts</div>
+					</div>
 				</div>
 
 				<div class="selectors-row">
@@ -119,6 +179,14 @@
 						<button type="button" data-len="30">30s</button>
 						<button type="button" data-len="60" class="active">60s</button>
 						<button type="button" data-len="inf">Endless</button>
+					</div>
+
+					<div class="selector-group" role="group" aria-label="Start level">
+						<span class="selector-label">Start Level</span>
+						<button type="button" data-lvl="1" class="active">1</button>
+						<button type="button" data-lvl="3">3</button>
+						<button type="button" data-lvl="5">5</button>
+						<button type="button" data-lvl="8">8</button>
 					</div>
 
 					<div class="selector-group" role="group" aria-label="Difficulty">
@@ -135,7 +203,7 @@
 				</div>
 
 				<div class="menu-hints">
-					<span><kbd>1</kbd>–<kbd>4</kbd> Choose Mode</span>
+					<span><kbd>1</kbd>–<kbd>8</kbd> Choose Mode</span>
 					<span><kbd>Esc</kbd> Pause / Save</span>
 					<span><kbd>R</kbd> Restart</span>
 				</div>
@@ -146,6 +214,7 @@
 			<!-- ── In-Game Play Screen ──────────────────────────────── -->
 			<section class="screen" id="play">
 				<div class="hud-bar">
+					<div class="hud-item"><b id="hLevel">1</b><small>Level</small></div>
 					<div class="hud-item"><b id="hTime">60.0s</b><small>Time</small></div>
 					<div class="hud-item highlight"><b id="hScore">0</b><small>Score</small></div>
 					<div class="hud-item danger"><b id="hMult">x1.0</b><small>Multiplier</small></div>
