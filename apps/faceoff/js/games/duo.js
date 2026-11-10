@@ -208,7 +208,7 @@ const SYNC_LEAD_MS = 900; // a moment to get thumbs ready before the first beat
 const SYNC_MISS_MS = 500; // a missing tap counts as this far off
 
 GAMES.push({
-	id: 'sync', name: 'Sync Tap', icon: '🥁', group: 'couple', lowerIsBetter: false, duel: true, coop: true, splitOnly: true, rounds: 3,
+	id: 'sync', name: 'Sync Tap', icon: '🥁', group: 'rhythm', lowerIsBetter: false, duel: true, coop: true, splitOnly: true, rounds: 3,
 	blurb: 'Watch four beats, then tap four more together. Win as a pair.',
 	config: (i) => ({ beat: [640, 520, 420][i % 3] }),
 	intro: () => 'Watch the four beats, then both tap four more <b>in the same rhythm</b><br><small>Tap on your own half. The closer your taps land, the higher the score.</small>',
@@ -221,14 +221,10 @@ GAMES.push({
 		const taps = [[], []];
 		let open = false;
 		let finished = false;
-		cs.forEach((c) => { c.stage.innerHTML = '<div class="beat"></div><div class="lbl">Get ready, then watch the beat…</div>'; });
-
-		const pulse = (c) => {
-			const d = $('.beat', c.stage);
-			if (!d) return;
-			d.classList.add('on');
-			setTimeout(() => d.classList.remove('on'), 140);
-		};
+		cs.forEach((c) => { c.stage.innerHTML = `${orbHtml(SYNC_TAPS)}<div class="lbl">Get ready, then watch the beat…</div>`; });
+		const ui = cs.map((c) => orbUi(c.stage));
+		const start = performance.now();
+		const pulse = (c) => ui[c.p].ring();
 		for (let k = 0; k < 4; k++) c0.after(SYNC_LEAD_MS + k * T, () => { cs.forEach(pulse); sfx.tick(); });
 		c0.after(SYNC_LEAD_MS + 4 * T - 80, () => {
 			open = true;
@@ -247,8 +243,11 @@ GAMES.push({
 		cs.forEach((c) => {
 			c.stage.onpointerdown = (e) => {
 				if (!open || taps[c.p].length >= SYNC_TAPS) return;
-				taps[c.p].push(tsOf(e));
+				const t = tsOf(e), k = taps[c.p].length;
+				taps[c.p].push(t);
 				pulse(c);
+				ui[c.p].pip(k, t - (start + SYNC_LEAD_MS + (4 + k) * T)); // against the beat itself; the score below is against each other
+				buzz(8);
 				sfx.key();
 				if (taps[0].length >= SYNC_TAPS && taps[1].length >= SYNC_TAPS) finish();
 			};

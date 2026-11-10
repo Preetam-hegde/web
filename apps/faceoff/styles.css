@@ -675,3 +675,83 @@ body[data-mode='online'][data-seat='1'] #pane0 { display: none; }
 .pane { --gm: color-mix(in srgb, var(--c) 55%, var(--gb)); }
 .pane .btn, .pane .ppts { background: linear-gradient(135deg, var(--c), var(--gm)); }
 .pane .btn.ghost { background: rgba(255, 255, 255, 0.07); }
+
+/* ══ rhythm games: the beat light, the swing and the note line ══ */
+[data-cat='rhythm'] { --ga: #ff6bd6; --gb: #6e8bff; }
+.orb { position: relative; flex: none; width: 112px; height: 112px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, color-mix(in srgb, var(--c) 55%, #fff), var(--c) 52%, color-mix(in srgb, var(--c) 45%, #000)); box-shadow: 0 0 38px color-mix(in srgb, var(--c) 40%, transparent), inset 0 -8px 18px rgba(0, 0, 0, 0.25); transition: transform 0.08s, box-shadow 0.08s; }
+.orb.on { transform: scale(1.1); box-shadow: 0 0 76px var(--c), inset 0 -8px 18px rgba(0, 0, 0, 0.25); }
+.orb .ring { position: absolute; inset: 0; border-radius: 50%; border: 3px solid var(--c); pointer-events: none; }
+.pips { display: flex; gap: 8px; flex-wrap: wrap; justify-content: center; }
+.pips span { width: 13px; height: 13px; border-radius: 50%; background: rgba(255, 255, 255, 0.14); transition: background 0.15s, box-shadow 0.15s; }
+.pips .g { background: var(--win); box-shadow: 0 0 10px var(--win); }
+.pips .y { background: #ffd24d; box-shadow: 0 0 10px #ffd24d; }
+.pips .r { background: var(--lose); box-shadow: 0 0 10px var(--lose); }
+.fb { min-height: 1.3em; color: var(--mute); font: 700 14px var(--mono); }
+.fb.g { color: var(--win); }
+.fb.y { color: #ffd24d; }
+.fb.r { color: var(--lose); }
+.swing { position: relative; width: min(80%, 300px); height: 6px; border-radius: 3px; background: rgba(255, 255, 255, 0.12); }
+.bob { position: absolute; top: 50%; left: 0; width: 18px; height: 18px; margin: -9px 0 0 -9px; border-radius: 50%; background: #fff; box-shadow: 0 0 14px var(--c); transition: opacity 0.3s; }
+.tl { position: relative; width: min(80%, 300px); height: 14px; }
+.tl::before { content: ''; position: absolute; left: 0; right: 0; top: 6px; height: 2px; background: rgba(255, 255, 255, 0.12); }
+.tl i { position: absolute; top: 0; width: 14px; height: 14px; margin-left: -7px; border-radius: 50%; background: rgba(255, 255, 255, 0.18); transition: background 0.1s, box-shadow 0.1s; }
+.tl i.on { background: var(--c); box-shadow: 0 0 12px var(--c); }
+
+/* more games */
+.arena { position: relative; width: min(100%, 340px); overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 18px; background: linear-gradient(160deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.02)); touch-action: none; }
+.tgt { position: absolute; width: 60px; height: 60px; margin: -30px 0 0 -30px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #fff, var(--ga) 30%, var(--gm, var(--gb))); box-shadow: 0 0 22px color-mix(in srgb, var(--ga) 60%, transparent); animation: tgt 0.9s linear forwards; }
+.tgt.pop { animation: hitpop 0.18s ease-out forwards; }
+@keyframes tgt { from { transform: scale(1); } to { transform: scale(0.25); opacity: 0.4; } }
+@keyframes hitpop { to { transform: scale(1.7); opacity: 0; } }
+.clashword { min-height: 1.1em; font: 800 clamp(2.2rem, 12vw, 3.2rem) / 1 var(--sans); letter-spacing: -0.02em; }
+.clashgrid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; width: min(100%, 320px); }
+.clashgrid .choice { min-height: 48px; padding: 8px; font-size: 1rem; font-weight: 700; letter-spacing: 0.08em; }
+.shades { display: grid; gap: 6px; }
+.shades button { padding: 0; border: 0; border-radius: 10px; }
+.shades button.bad { outline: 3px solid var(--lose); outline-offset: -3px; }
+.swatch { display: flex; width: min(100%, 320px); height: 64px; overflow: hidden; border: 1px solid rgba(255, 255, 255, 0.2); border-radius: 16px; }
+.swatch i { flex: 1; }
+.sliders { display: grid; gap: 4px; width: min(100%, 320px); }
+.sl { display: flex; align-items: center; gap: 10px; }
+.sl b { width: 14px; color: var(--mute); font: 700 13px var(--mono); }
+.sl input { flex: 1; height: 28px; accent-color: var(--ga); }
+.sum { font: 800 clamp(2rem, 11vw, 3rem) / 1 var(--mono); letter-spacing: 0.02em; }
+.simon { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; width: min(100%, 260px, 36vh); aspect-ratio: 1; }
+.simon button { border: 0; border-radius: 22px; background: color-mix(in srgb, var(--k) 38%, #15122a); transition: background 0.08s, box-shadow 0.08s, transform 0.08s; }
+.simon button.lit { background: var(--k); box-shadow: 0 0 34px var(--k); transform: scale(0.96); }
+.rush { display: grid; grid-template-columns: repeat(4, 1fr); gap: 6px; }
+.rush button { padding: 0; border: 1px solid rgba(255, 255, 255, 0.14); border-radius: 12px; background: linear-gradient(160deg, rgba(255, 255, 255, 0.12), rgba(255, 255, 255, 0.04)); color: var(--ink); font: 700 clamp(18px, 6vw, 24px) var(--mono); }
+.rush button.got { opacity: 0.22; }
+.rush button.bad { border-color: var(--lose); background: rgba(255, 93, 115, 0.25); }
+.dab { --d: 22px; display: grid; grid-template-columns: repeat(var(--n), var(--d) 1fr) var(--d); grid-template-rows: repeat(var(--n), var(--d) 1fr) var(--d); width: min(100%, 320px, 35vh); aspect-ratio: 1; }
+.dab .pt { width: 10px; height: 10px; margin: auto; border-radius: 50%; background: #fff; box-shadow: 0 0 6px rgba(255, 255, 255, 0.5); }
+.dab .edge { position: relative; padding: 0; border: 0; background: none; }
+.dab .edge::before { content: ''; position: absolute; border-radius: 3px; background: rgba(255, 255, 255, 0.1); transition: background 0.15s; }
+.dab .edge.h::before { left: 2px; right: 2px; top: 50%; height: 6px; margin-top: -3px; }
+.dab .edge.v::before { top: 2px; bottom: 2px; left: 50%; width: 6px; margin-left: -3px; }
+.dab .edge:not(.on):active::before { background: rgba(255, 255, 255, 0.35); }
+.dab .edge.on::before { background: var(--c); box-shadow: 0 0 10px var(--c); }
+.dab .box { display: grid; place-items: center; border-radius: 8px; color: var(--c); font: 700 18px var(--mono); }
+.dab .box.own { background: color-mix(in srgb, var(--c) 22%, transparent); }
+
+/* polish for the older games */
+.readout { background: linear-gradient(180deg, #fff, color-mix(in srgb, var(--c) 70%, #fff)); -webkit-background-clip: text; background-clip: text; color: transparent; filter: drop-shadow(0 0 18px color-mix(in srgb, var(--c) 35%, transparent)); }
+.track { height: 16px; background: linear-gradient(90deg, rgba(255, 255, 255, 0.08), rgba(255, 255, 255, 0.2), rgba(255, 255, 255, 0.08)); box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.35); }
+.zone { box-shadow: 0 0 16px var(--win); }
+.dot { background: radial-gradient(circle at 35% 30%, #fff, var(--c) 45%); box-shadow: 0 0 18px var(--c); }
+.lamps { display: flex; gap: 10px; padding: 10px 16px; border-radius: 999px; background: rgba(0, 0, 0, 0.35); }
+.lamps i { width: 22px; height: 22px; border-radius: 50%; background: rgba(255, 255, 255, 0.12); transition: background 0.1s, box-shadow 0.1s; }
+.lamps.wait i:nth-child(1) { background: #ff4d5e; box-shadow: 0 0 16px #ff4d5e; }
+.lamps.go i:nth-child(3) { background: #3ddc84; box-shadow: 0 0 18px #3ddc84; }
+.disc { background: radial-gradient(circle at 35% 30%, rgba(255, 255, 255, 0.08), rgba(0, 0, 0, 0.45)); box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.5); }
+.disc.p0 { background: radial-gradient(circle at 35% 30%, #ffd0c0, var(--p0) 45%, #c4452a); box-shadow: 0 0 10px color-mix(in srgb, var(--p0) 50%, transparent); }
+.disc.p1 { background: radial-gradient(circle at 35% 30%, #c8fff8, var(--p1) 45%, #1d9c92); box-shadow: 0 0 10px color-mix(in srgb, var(--p1) 50%, transparent); }
+
+/* a ripple under every tap, confetti for a winner */
+.tapfx { position: fixed; z-index: 60; width: 90px; height: 90px; border: 3px solid var(--c); border-radius: 50%; pointer-events: none; }
+.conf { position: fixed; z-index: 60; top: -14px; width: 9px; height: 14px; border-radius: 2px; pointer-events: none; }
+
+/* invite QR */
+.qr { width: min(60vw, 210px); margin: 4px auto; padding: 10px; border-radius: 18px; background: #fff; box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.8); }
+.qr svg { display: block; width: 100%; height: auto; }
+.qr:empty { display: none; }

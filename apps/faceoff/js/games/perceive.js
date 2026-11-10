@@ -182,27 +182,58 @@ GAMES.push({
 	},
 });
 
-/* ── Tempo: hear four beats, keep the rhythm in silence ─ */
+/* ── The beat light shared by the rhythm games ───────────
+   An orb that rings out on every beat, a row of pips that turn green, amber or red by how close each tap was, and a line of
+   feedback ("+23 ms late"). off = tap time minus where the beat was, in ms. */
+const orbHtml = (pips) => `<div class="orb"><i class="core"></i></div><div class="pips">${'<span></span>'.repeat(pips)}</div><div class="fb">&nbsp;</div>`;
+function orbUi(stage) {
+	const orb = $('.orb', stage), fb = $('.fb', stage), pips = $$('.pips span', stage);
+	return {
+		ring() {
+			const r = document.createElement('i');
+			r.className = 'ring';
+			orb.append(r);
+			r.animate([{ transform: 'scale(1)', opacity: 0.8 }, { transform: 'scale(2.3)', opacity: 0 }], { duration: 520, easing: 'ease-out' }).onfinish = () => r.remove();
+			orb.classList.add('on');
+			setTimeout(() => orb.classList.remove('on'), 110);
+		},
+		pip(i, off) {
+			const a = Math.abs(off), grade = a < 40 ? 'g' : a < 90 ? 'y' : 'r';
+			if (pips[i]) pips[i].className = grade;
+			fb.textContent = a < 40 ? `${off > 0 ? '+' : '−'}${Math.round(a)} ms · perfect` : `${off > 0 ? '+' : '−'}${Math.round(a)} ms · ${off > 0 ? 'late' : 'early'}`;
+			fb.className = `fb ${grade}`;
+		},
+		say(text) { fb.innerHTML = text; fb.className = 'fb'; },
+	};
+}
+
+/* ── Keep the Beat: hear four beats, carry on in silence ─ */
 GAMES.push({
-	id: 'tempo', name: 'Tempo', icon: '🥁', group: 'perception', lowerIsBetter: true,
-	blurb: 'Hear four beats, then keep the rhythm going in silence.',
+	id: 'tempo', name: 'Keep the Beat', icon: '🥁', group: 'rhythm', lowerIsBetter: true,
+	blurb: 'Watch the swing, hear four beats, then keep the tempo in the dark.',
 	config: (i) => ({ gap: 60000 / pick([100, 80, 120, 90, 140, 110], i) }),
-	intro: () => `Listen to <b>four beats</b>, then tap ${TEMPO_TAPS} more in the same rhythm<br><small>The sound stops. Keep the tempo. Sound on helps.</small>`,
+	intro: () => `Four beats play, then the sound <b>stops</b>. Tap ${TEMPO_TAPS} more on the beat.<br><small>Each tap tells you how early or late you were. Sound on helps.</small>`,
 	play(ctx) {
 		const { stage, cfg } = ctx;
 		const T = cfg.gap, LEAD = 900;
-		stage.innerHTML = '<div class="beat"></div><div class="lbl">Listen…</div>';
-		const light = $('.beat', stage), lbl = $('.lbl', stage);
-		const flash = () => { light.classList.add('on'); setTimeout(() => light.classList.remove('on'), 120); };
+		stage.innerHTML = `${orbHtml(TEMPO_TAPS)}<div class="swing"><i class="bob"></i></div><div class="lbl">Listen…</div>`;
+		const ui = orbUi(stage), bob = $('.bob', stage), lbl = $('.lbl', stage);
 		const taps = [];
+		const t0 = performance.now();
 		let t4 = 0; // when the last guide beat sounded; the silent beats are measured from here
 		for (let k = 0; k < 4; k++) {
 			ctx.after(LEAD + k * T, () => {
-				flash();
+				ui.ring();
 				if (net || m.pass || ctx.p === 0) sfx.tick(); // one phone in split screen shares a speaker, so only one pane makes the sound
-				if (k === 3) { t4 = performance.now(); lbl.innerHTML = `Keep it going <b>0/${TEMPO_TAPS}</b>`; }
+				lbl.innerHTML = `Listen… <b>${k + 1}</b>`;
+				if (k === 3) { t4 = performance.now(); lbl.innerHTML = `Your turn · <b>0/${TEMPO_TAPS}</b>`; bob.style.opacity = 0; }
 			});
 		}
+		ctx.loop(() => { // the swing touches an end exactly on every guide beat, then vanishes
+			const k = Math.min(3, Math.max(0, (performance.now() - t0 - LEAD) / T));
+			bob.style.left = `${(Math.floor(k) % 2 ? 1 - (k % 1) : k % 1) * 100}%`;
+			return !t4;
+		});
 		const finish = () => {
 			if (!taps.length) return ctx.fail('No taps');
 			const err = tempoErr(taps, t4, T);
@@ -211,10 +242,12 @@ GAMES.push({
 		stage.onpointerdown = (e) => {
 			const t = tsOf(e);
 			if (!t4 || t < t4 + T / 2 || taps.length >= TEMPO_TAPS) return; // taps on the guide beats don't count
+			ui.ring();
+			ui.pip(taps.length, t - (t4 + (taps.length + 1) * T));
 			taps.push(t);
-			flash();
-			lbl.innerHTML = `Keep it going <b>${taps.length}/${TEMPO_TAPS}</b>`;
-			if (taps.length === TEMPO_TAPS) finish();
+			buzz(8);
+			lbl.innerHTML = `Your turn · <b>${taps.length}/${TEMPO_TAPS}</b>`;
+			if (taps.length === TEMPO_TAPS) ctx.after(500, finish); // a beat to read the last tap
 		};
 		ctx.after(LEAD + (3 + TEMPO_TAPS) * T + 2500, finish);
 	},

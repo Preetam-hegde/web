@@ -307,6 +307,7 @@ function reveal() {
 	m.final = { champ, dare, coop: sum };
 	m.final.card = renderCard(); // built now so the Share tap can hand it straight to the share sheet
 	$('#share').hidden = false;
+	if (champ !== -1) confetti(champ >= 0 ? [['#ff7a59', '#35d6c8'][champ], '#ffd24d', '#fff'] : ['#ff7a59', '#35d6c8', '#ffd24d', '#b794f6']);
 	focus(0);
 	(pass ? [0] : [0, 1]).forEach((p) => {
 		const title = coop ? `💞 ${esc(sum.title)}` : champ < 0 ? 'Match drawn' : pass ? `🏆 ${esc(nameOf(champ))} wins the match` : champ === p ? '🏆 You win the match' : `${esc(nameOf(champ))} wins the match`;

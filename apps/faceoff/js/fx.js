@@ -67,3 +67,28 @@ const fx = (() => {
 		},
 	};
 })();
+
+/* Match feel: a ripple under every tap, and confetti when someone wins. */
+const calmFx = matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+document.addEventListener('pointerdown', (e) => {
+	if (calmFx || document.body.dataset.screen !== 'match') return;
+	const pane = e.target.closest?.('.pane');
+	if (!pane) return;
+	const ring = document.createElement('i');
+	ring.className = 'tapfx';
+	ring.style.cssText = `left:${e.clientX}px;top:${e.clientY}px;--c:${getComputedStyle(pane).getPropertyValue('--c')}`;
+	document.body.append(ring);
+	ring.animate([{ transform: 'translate(-50%,-50%) scale(0.2)', opacity: 0.55 }, { transform: 'translate(-50%,-50%) scale(1.6)', opacity: 0 }], { duration: 420, easing: 'ease-out' }).onfinish = () => ring.remove();
+}, true);
+
+function confetti(colors) {
+	if (calmFx) return;
+	for (let i = 0; i < 44; i++) {
+		const bit = document.createElement('i');
+		bit.className = 'conf';
+		bit.style.cssText = `left:${rand(2, 98)}vw;background:${choice(colors)}`;
+		document.body.append(bit);
+		bit.animate([{ transform: 'translateY(0) rotate(0)', opacity: 1 }, { transform: `translate(${rand(-60, 60)}px,${innerHeight + 30}px) rotate(${rand(240, 720)}deg)`, opacity: 0.9 }], { duration: rand(1300, 2300), delay: rand(0, 350), easing: 'cubic-bezier(0.2,0.6,0.4,1)', fill: 'forwards' }).onfinish = () => bit.remove();
+	}
+}

@@ -113,7 +113,7 @@ const projects = [
 		icon: "swords",
 		link: "apps/faceoff/index.html",
 		description:
-			"Two players, one phone (split-screen or pass-and-play) or two phones with a 4-letter room code. Timing duels, Cut in Half, five Perceptle-style perception tests (Count, Track, Angle, Tempo, Split), Hangman Duel on your phone keyboard, and couple games: Tic-Tac-Toe, Connect 4, Memory Match, Green Flag Red Flag, Would You Rather, Who\u0027s More Likely, Never Have I Ever, Compatibility, Truth or Dare and Sync Tap — with your own dares, stats, offline caching and a shareable result card. Mobile-first, no sign-up.",
+			"Two players, one phone (split-screen or pass-and-play) or two phones with a 4-letter room code. 34 two-player games in six categories: reflex, timing, rhythm, perception, board and couple, including Perceptle-style tests (Count, Track, Angle, Split), Keep the Beat, Copy the Rhythm, Simon, Dots & Boxes and Hangman Duel on your phone keyboard, and couple games: Tic-Tac-Toe, Connect 4, Memory Match, Green Flag Red Flag, Would You Rather, Who\u0027s More Likely, Never Have I Ever, Compatibility, Truth or Dare and Sync Tap — with your own dares, stats, offline caching and a shareable result card. Mobile-first, no sign-up.",
 		tech: [
 			"HTML5",
 			"CSS3",

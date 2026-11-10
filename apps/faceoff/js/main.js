@@ -29,6 +29,7 @@ const ON_OFF = [[true, 'On'], [false, 'Off']];
 const CATS = [
 	{ id: 'reflex', name: 'Reflex', icon: 'frenzy', blurb: 'Fast fingers. Who reacts first?' },
 	{ id: 'timing', name: 'Timing', icon: 'stop', blurb: 'Feel the clock and stop it on the mark.' },
+	{ id: 'rhythm', name: 'Rhythm', icon: 'tempo', blurb: 'Keep the beat, copy the groove, tap in sync.' },
 	{ id: 'perception', name: 'Perception', icon: 'track', blurb: 'Count, track and judge it by eye.' },
 	{ id: 'brain', name: 'Brain & Board', icon: 'memory', blurb: 'Tic-Tac-Toe, Connect 4, memory and word duels.' },
 	{ id: 'couple', name: 'Couple', icon: 'know', blurb: 'Questions, dares and games to share.' },
@@ -145,10 +146,31 @@ function renderRoom() {
 	const name = `<label class="who" style="--c: var(--p0)"><i></i><input id="myName" maxlength="14" placeholder="Your name" autocomplete="off" value="${esc(store.names[0])}" aria-label="Your name"></label>`;
 	const wait = (txt) => `<h2 class="stepttl">${txt}</h2><button class="btn ghost" type="button" data-a="cancel">Cancel</button>`;
 	room.innerHTML = L.state === 'hosting'
-		? `<h2 class="stepttl">Your room</h2><p class="stepsub">Your friend opens Faceoff, picks <b>Two phones</b> and types this code.</p><div class="tcode">${L.code}</div><button class="btn" type="button" data-a="share">Send invite link</button><p class="stepsub">Waiting for your friend…</p><button class="btn ghost" type="button" data-a="cancel">Cancel</button>`
+		? `<h2 class="stepttl">Your room</h2><p class="stepsub">Your friend scans this with their camera, or opens Faceoff, picks <b>Two phones</b> and types the code.</p><div class="qr" id="qr"></div><div class="tcode">${L.code}</div><button class="btn" type="button" data-a="share">Send invite link</button><p class="stepsub">Waiting for your friend…</p><button class="btn ghost" type="button" data-a="cancel">Cancel</button>`
 		: L.state === 'starting' ? wait('Opening a room…')
 		: L.state === 'joining' ? wait(`Joining ${L.code}…`)
 		: `<h2 class="stepttl">Two phones</h2><p class="stepsub">One of you makes a room, the other joins it with the code. You each play on your own phone.</p>${L.state === 'error' ? `<p class="oops">${esc(L.msg)}</p>` : ''}${name}<button class="btn" type="button" data-a="create">Make a room</button><div class="or">or join a friend</div><input class="tinput" id="joinCode" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Room code"><button class="btn ghost" type="button" data-a="join">Join</button>`;
+	if (L.state === 'hosting') loadQr().then(() => { if (lobby.state === 'hosting' && $('#qr')) $('#qr').innerHTML = qrSvg(inviteUrl(L.code)); }).catch(() => { /* no QR: the code and link still work */ });
+}
+
+/* The link a friend opens to join: this page's own address, so it works wherever Faceoff is hosted. */
+const inviteUrl = (code) => `${location.origin}${location.pathname.replace(/index\.html$/, '')}?join=${code}`;
+const loadQr = () => (window.qrcode ? Promise.resolve() : new Promise((ok, fail) => {
+	const s = document.createElement('script');
+	s.src = 'js/vendor/qrcode.js?v=16';
+	s.onload = ok;
+	s.onerror = fail;
+	document.head.append(s);
+}));
+/* A QR code as inline SVG: one square per dark module, on a white card with a quiet border. */
+function qrSvg(text) {
+	const q = qrcode(0, 'M');
+	q.addData(text);
+	q.make();
+	const n = q.getModuleCount(), pad = 3;
+	let d = '';
+	for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+	return `<svg viewBox="${-pad} ${-pad} ${n + pad * 2} ${n + pad * 2}" shape-rendering="crispEdges" role="img" aria-label="QR code to join this room"><path d="${d}" fill="#0d0b1a"/></svg>`;
 }
 
 $('#room').oninput = (e) => {
@@ -161,7 +183,7 @@ $('#room').onclick = async (e) => {
 	if (act === 'join') netJoin($('#joinCode').value);
 	if (act === 'cancel') { netCancel(); lobbySet('idle'); }
 	if (act === 'share') {
-		const url = `${location.origin}${location.pathname}?join=${lobby.code}`;
+		const url = inviteUrl(lobby.code);
 		try { await navigator.share({ title: 'Faceoff', text: `Join my Faceoff room: ${lobby.code}`, url }); } catch { navigator.clipboard?.writeText(url); e.target.textContent = 'Link copied ✓'; }
 	}
 };

@@ -216,12 +216,13 @@ function replay(msg) {
 /* ── guest ───────────────────────────────────────────── */
 function guestHandle(link, msg) {
 	switch (msg.t) {
-		case 'match': enterMatch(msg.cat); break;
+		case 'match': link.celebrated = false; enterMatch(msg.cat); break;
 		case 'ui': {
 			if (document.body.dataset.screen !== 'match') enterMatch(msg.cat);
 			const tpl = document.createElement('template');
 			tpl.innerHTML = msg.html;
 			morph(seat1(), tpl.content);
+			if (!link.celebrated && msg.html.includes('You win the match')) { link.celebrated = true; confetti(['#35d6c8', '#ffd24d', '#fff']); }
 			const box = $('input', seat1());
 			if (box && !document.activeElement?.matches('input')) box.focus({ preventScroll: true }); // opens the keyboard where a tap isn't needed first
 			break;

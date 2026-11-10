@@ -8,12 +8,12 @@ GAMES.push({
 	play(ctx) {
 		const { stage, cfg } = ctx;
 		stage.className = 'stage wait';
-		stage.innerHTML = '<div class="readout">Wait…</div>';
+		stage.innerHTML = '<div class="lamps wait"><i></i><i></i><i></i></div><div class="readout">Wait…</div>';
 		let t0 = 0;
 		ctx.after(cfg.delay, () => requestAnimationFrame(() => {
 			if (!ctx.alive()) return;
 			stage.className = 'stage go';
-			stage.innerHTML = '<div class="readout">TAP!</div>';
+			stage.innerHTML = '<div class="lamps go"><i></i><i></i><i></i></div><div class="readout">TAP!</div>';
 			t0 = performance.now();
 		}));
 		ctx.after(cfg.delay + 2500, () => ctx.fail('Too slow'));

@@ -12,6 +12,7 @@
 	<script src="js/games/couple.js"></script>
 	<script src="js/games/cut.js"></script>
 	<script src="js/games/perceive.js"></script>
+	<script src="js/games/more.js"></script>
 	<script src="js/games/quiz.js"></script>
 	<script src="js/games/duo.js"></script>
 	<script>
@@ -56,6 +57,16 @@
 		eq('tempo: perfect taps', tempoErr([600, 1200, 1800, 2400, 3000, 3600, 4200, 4800], 0, 600), 0);
 		eq('tempo: all 50ms late', tempoErr([650, 1250, 1850, 2450, 3050, 3650, 4250, 4850], 0, 600), 50);
 		eq('tempo: 4 missing taps = half miss penalty', tempoErr([600, 1200, 1800, 2400], 0, 600), TEMPO_MISS_MS / 2);
+
+		// more games: colours, rhythm copying, dots and boxes bookkeeping
+		eq('hsl: pure red', hslToRgb(0, 100, 50).join(), '255,0,0');
+		eq('hsl: grey', hslToRgb(200, 0, 50).join(), '128,128,128');
+		eq('colour distance: identical', rgbDist([10, 20, 30], [10, 20, 30]), 0);
+		eq('colour distance: black to white', Math.round(rgbDist([0, 0, 0], [255, 255, 255])), 100);
+		eq('rhythm: exact copy', rhythmErr([0, 500, 1000, 2000], [1, 1, 2], 500), 0);
+		eq('rhythm: start time does not matter', rhythmErr([777, 1277, 1777, 2777], [1, 1, 2], 500), 0);
+		eq('rhythm: 40ms long on every gap', rhythmErr([0, 540, 1080, 2120], [1, 1, 2], 500), 40);
+		eq('rhythm: a missing tap costs the miss penalty', rhythmErr([0, 500], [1, 1], 500), TEMPO_MISS_MS / 2);
 
 		// connect 4
 		const empty = () => Array(42).fill(null);
