@@ -258,7 +258,7 @@
 		const kid = DSA.eli5[a.id];
 		el.eli5.hidden = !kid;
 		if (kid) {
-			el.eli5.innerHTML = '<div class="eli5-head"><span class="eli5-emoji">' + kid.emoji + '</span><b>Explain like I\'m 5</b></div>' +
+			el.eli5.innerHTML = '<div class="eli5-head"><span class="eli5-emoji">' + kid.emoji + '</span><b>The simple version</b></div>' +
 				'<p>' + esc(kid.story) + '</p>' +
 				'<ol>' + kid.steps.map(function (st) { return '<li>' + esc(st) + '</li>'; }).join('') + '</ol>' +
 				'<p class="eli5-speed"><b>Speed:</b> ' + esc(kid.speed) + '</p>';

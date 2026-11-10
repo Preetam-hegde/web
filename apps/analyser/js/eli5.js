@@ -1,7 +1,7 @@
 'use strict';
 
 /*
- * "Explain like I'm 5" copy, keyed by algorithm id.
+ * Plain-language ("simple version") copy, keyed by algorithm id.
  * emoji: a picture to hang the idea on, story: the analogy,
  * steps: the idea in plain steps, speed: how fast it is, in kid words.
  */

@@ -4,7 +4,7 @@
  * Shared "teaching card" renderer used by the DSA and AI/ML study guides.
  * Content lives in per-chapter files (js/materials/*.js) that call Teach.add({...}).
  * One material per lesson id:
- *   kid       { emoji, story, say[] }               explain-like-I'm-5
+ *   kid       { emoji, story, say[] }               plain-language
  *   real      { title, scenario, result }           one concrete example with numbers
  *   diagram   { type: flow|bars|compare, ... }      drawn with HTML/CSS, no images
  *   principle { name, rule, why }                   the design principle behind it
@@ -58,7 +58,7 @@ const Teach = (() => {
 		return `<figure class="dg"><figcaption>${fmt(d.title)}</figcaption>${body}${d.caption ? `<p class="dg-note">${fmt(d.caption)}</p>` : ''}</figure>`;
 	}
 
-	// The explain-like-I'm-5 card on its own (the visual lab uses this one).
+	// The plain-language card on its own (the visual lab uses this one).
 	function kid(id, domId = 'like-5') {
 		const m = store[id];
 		if (!m) return '';
