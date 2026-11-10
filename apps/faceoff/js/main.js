@@ -286,7 +286,7 @@ $('#games').onclick = (e) => {
 	const id = e.target.closest('[data-game]')?.dataset.game;
 	if (!id) return;
 	const g = GAMES.find((x) => x.id === id);
-	if (isGuest()) return showRules(g); // only the host starts games; everyone else can read the rules
+	if (isGuest()) return showGameRules(g); // only the host starts games; everyone else can read the rules
 	if (mode === 'group') return grStart(g);
 	startMatch(g, undefined, solo());
 };
@@ -408,7 +408,7 @@ if ('serviceWorker' in navigator) addEventListener('load', () => navigator.servi
 document.addEventListener('contextmenu', (e) => e.preventDefault()); // long-press must not open menus mid-game
 
 /* Rules sheet: what a game is and how it is scored. Guests in a room see this instead of starting the game. */
-function showRules(g) {
+function showGameRules(g) {
 	let how = g.blurb;
 	try { how = g.intro(g.config(0)); } catch { /* a game whose intro needs a live config: the blurb will do */ }
 	const dlg = $('#rules');

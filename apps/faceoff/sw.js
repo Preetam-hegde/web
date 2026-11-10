@@ -4,12 +4,12 @@
    origin (including the 1.4 MB word list) is stored the first time it's fetched. Scripts and styles are served from the
    cache and refreshed in the background (the version in their URL forces a new copy when a release changes them); the page itself is network first.
    Bump CACHE when a release must replace everything at once. */
-const CACHE = 'faceoff-v24';
+const CACHE = 'faceoff-v25';
 const SHELL = [
-	'./', 'index.html', 'styles.css?v=24',
-	'js/core.js?v=24', 'js/extras.js?v=24', 'js/words.js?v=24', 'js/fx.js?v=24', 'js/main.js?v=24',
-	'js/games/timer.js?v=24', 'js/games/reaction.js?v=24', 'js/games/cut.js?v=24', 'js/games/perceive.js?v=24', 'js/games/more.js?v=24', 'js/games/match.js?v=24', 'js/funwords.js?v=24',
-	'js/games/hangman.js?v=24', 'js/games/couple.js?v=24', 'js/games/quiz.js?v=24', 'js/games/duo.js?v=24', 'js/party.js?v=24', 'js/spy.js?v=24', 'js/table.js?v=24', 'js/net.js?v=24', 'js/group.js?v=24',
+	'./', 'index.html', 'styles.css?v=25',
+	'js/core.js?v=25', 'js/extras.js?v=25', 'js/words.js?v=25', 'js/fx.js?v=25', 'js/main.js?v=25',
+	'js/games/timer.js?v=25', 'js/games/reaction.js?v=25', 'js/games/cut.js?v=25', 'js/games/perceive.js?v=25', 'js/games/more.js?v=25', 'js/games/match.js?v=25', 'js/funwords.js?v=25',
+	'js/games/hangman.js?v=25', 'js/games/couple.js?v=25', 'js/games/quiz.js?v=25', 'js/games/duo.js?v=25', 'js/party.js?v=25', 'js/spy.js?v=25', 'js/table.js?v=25', 'js/net.js?v=25', 'js/group.js?v=25',
 ];
 
 self.addEventListener('install', (e) => {
