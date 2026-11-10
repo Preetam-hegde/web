@@ -4,8 +4,8 @@
 
 /* ── sound ───────────────────────────────────────────── */
 let audio = null;
-const beep = (freq, ms = 90, { type = 'sine', gain = 0.06, at = 0 } = {}) => {
-	if (!store.sound) return;
+const beep = (freq, ms = 90, { type = 'sine', gain = 0.06, at = 0, force = false } = {}) => {
+	if (!store.sound && !force) return;
 	try {
 		audio ||= new (window.AudioContext || window.webkitAudioContext)();
 		if (audio.state === 'suspended') audio.resume();

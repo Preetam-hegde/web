@@ -1,7 +1,7 @@
 :root {
-	--bg: #0d0b1a;
+	--bg: #050409;
 	--ink: #f4f1ff;
-	--mute: #9a93c4;
+	--mute: #8e89a8;
 	--line: rgba(255, 255, 255, 0.12);
 	--p0: #ff7a59;
 	--p1: #35d6c8;
@@ -755,3 +755,33 @@ body[data-mode='online'][data-seat='1'] #pane0 { display: none; }
 .qr { width: min(60vw, 210px); margin: 4px auto; padding: 10px; border-radius: 18px; background: #fff; box-shadow: 0 16px 40px -16px rgba(0, 0, 0, 0.8); }
 .qr svg { display: block; width: 100%; height: auto; }
 .qr:empty { display: none; }
+
+/* ── v17: darker theme, new logo colours, history, match games, large text ── */
+body { background: radial-gradient(120% 60% at 50% -10%, #14101f 0%, var(--bg) 60%) fixed, var(--bg); }
+.logo span { --tone: color-mix(in oklch, #fff3b0, #ff4f9a var(--mix)); } /* cream to hot pink */
+.brand { background-image: linear-gradient(90deg, #fff3b0, #ff4f9a); }
+.card, .mode, .panel, .tile, .srow { background-color: rgba(0, 0, 0, 0.35); }
+[data-cat='match'] { --ga: #f5d90a; --gb: #ff8a3d; }
+[data-cat='solo'] { --ga: #7cf29a; --gb: #f5d90a; }
+.hday { margin: 14px 2px 2px; font: 500 0.75rem var(--mono); letter-spacing: 0.14em; text-transform: uppercase; color: var(--ga, var(--mute)); }
+.hrow { grid-template-columns: 1fr auto; }
+.hrow small { grid-column: 1 / -1; color: var(--mute); font-size: 0.78rem; }
+.htabs { flex-wrap: wrap; margin-bottom: 8px; }
+.sizebox { display: grid; place-items: center; border: 1px dashed var(--line); border-radius: 18px; }
+.sizebox i { display: block; border-radius: 50%; transition: opacity 0.2s; }
+.sl.big input { height: 44px; }
+.sl.big b { font-size: 1.6rem; }
+
+/* Hangman and every typed-word game: big letters and a big box */
+.stage .word { font-size: clamp(34px, min(12vw, 8vh), 64px); letter-spacing: 0.16em; }
+.stage .used span { font-size: clamp(20px, 6vw, 30px); padding: 4px 10px; }
+.stage .typein { width: min(100%, 440px); padding: 18px 16px; font-size: 30px; }
+.stage .dhead { font-size: 17px; padding: 8px 16px; }
+body[data-big='1'] .stage .lbl { font-size: 1.15rem; }
+body[data-big='1'] .stage .hint, body[data-big='1'] .stage .row { font-size: 1.05rem; }
+body[data-big='1'] .stage .btn { min-height: 62px; font-size: 1.2rem; }
+body[data-big='1'] .stage .gtitle { font-size: 1.8rem; }
+body[data-big='1'] .stage .res { font-size: 2rem; }
+body[data-big='1'] .card h3, body[data-big='1'] .mode b { font-size: 1.35rem; }
+body[data-big='1'] .card p, body[data-big='1'] .mode small { font-size: 1rem; }
+.stage .used { max-width: 440px; }

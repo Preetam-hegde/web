@@ -31,6 +31,7 @@ const CATS = [
 	{ id: 'timing', name: 'Timing', icon: 'stop', blurb: 'Feel the clock and stop it on the mark.' },
 	{ id: 'rhythm', name: 'Rhythm', icon: 'tempo', blurb: 'Keep the beat, copy the groove, tap in sync.' },
 	{ id: 'perception', name: 'Perception', icon: 'track', blurb: 'Count, track and judge it by eye.' },
+	{ id: 'match', name: 'Match', icon: 'pitch', blurb: 'Hear it, see it, size it. Then match it from memory.' },
 	{ id: 'brain', name: 'Brain & Board', icon: 'memory', blurb: 'Tic-Tac-Toe, Connect 4, memory and word duels.' },
 	{ id: 'couple', name: 'Couple', icon: 'know', blurb: 'Questions, dares and games to share.' },
 ];
@@ -43,14 +44,22 @@ Object.assign(GAME_ICONS, {
 	online: '<path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/>',
 });
 GAME_ICONS.party = GAME_ICONS.likely;
+Object.assign(GAME_ICONS, { solo: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', two: '<circle cx="9" cy="8" r="3.5"/><path d="M2 21a7 7 0 0 1 14 0"/><circle cx="17" cy="9" r="3"/><path d="M17 14a6 6 0 0 1 5 7"/>' });
 const MODES = [
+	{ id: 'solo', name: 'Single player', blurb: 'Just you. Beat your own best in timing, reflex, brain and match games.', cat: 'reflex' },
+	{ id: 'two', name: '2 players', blurb: 'Face off on one phone, or each on your own phone.', cat: 'phone' },
+	{ id: 'party', name: '3 + players', blurb: 'Party and spy games for the whole table.', cat: 'party' },
+];
+const MODES2 = [
 	{ id: 'phone', name: 'One phone', blurb: 'Split screen or pass and play. Two players, one device.' },
 	{ id: 'online', name: 'Two phones', blurb: 'Each of you on your own phone. Share a 4-letter room code.' },
-	{ id: 'party', name: 'Party · 3 or more', blurb: 'Group games for the whole table.' },
 ];
 
-let mode = 'phone'; // which way of playing was picked on the home step: phone, online or party
-let step = 'home'; // home, room, cats, list or party
+let mode = 'phone'; // which way of playing was picked: solo, phone, online or party
+let step = 'home'; // home, two, room, cats, list or party
+const solo = () => mode === 'solo';
+const gamesIn = (id) => GAMES.filter((g) => g.group === id && (!solo() || canSolo(g)));
+const bestOf = (g) => store.best[g.id]?.l;
 let catId = 'reflex';
 
 function go(next, opts = {}) {
@@ -66,8 +75,9 @@ const card = (g, attr, cat, extra, ic = g.id) => `<button class="card" type="but
 function renderHub() {
 	if (document.body.dataset.screen !== 'match') document.body.dataset.mode = store.mode;
 	document.body.dataset.flip = store.flip ? '1' : '0';
+	document.body.dataset.big = store.big ? '1' : '0';
 	if (net && step === 'room') step = 'cats'; // the other phone just joined
-	if (mode === 'online' && !net && (step === 'cats' || step === 'list')) step = 'home'; // the link dropped
+	if (mode === 'online' && !net && (step === 'cats' || step === 'list')) step = 'two'; // the link dropped
 	$('#hub').dataset.step = step;
 	$$('[data-for]').forEach((el) => { el.hidden = !el.dataset.for.split(' ').includes(step); });
 	$('#hubBack').hidden = step === 'home';
@@ -77,6 +87,7 @@ function renderHub() {
 	seg($('#seatSeg'), [[true, 'Face to face'], [false, 'Side by side']], store.flip, (v) => (store.flip = v));
 	seg($('#roundsSeg'), [[3, '3'], [5, '5'], [7, '7']], store.rounds, (v) => (store.rounds = v));
 	seg($('#soundSeg'), ON_OFF, store.sound, (v) => (store.sound = v));
+	seg($('#bigSeg'), [[true, 'Large'], [false, 'Normal']], store.big, (v) => (store.big = v));
 	seg($('#dareSeg'), ON_OFF, store.dares, (v) => (store.dares = v));
 	$('#seatSeg').hidden = store.mode === 'pass'; // seating only matters when two halves share the screen
 	$('#seatNote').textContent = `${MODE_NOTES[store.mode]} ${store.mode === 'split' ? SEAT_NOTES[store.flip] : ''}`.trim();
@@ -87,6 +98,7 @@ function renderHub() {
 	});
 
 	if (step === 'home') renderHome();
+	if (step === 'two') renderTwo();
 	if (step === 'room') renderRoom();
 	if (step === 'cats' || step === 'list') renderSetup();
 	if (step === 'cats') renderCats();
@@ -95,40 +107,45 @@ function renderHub() {
 	fx.start();
 }
 
+const modeCard = (o) => `<button class="mode" type="button" data-mode="${o.id}" data-cat="${o.cat || o.id}">${gameIcon(o.id)}<span><b>${o.name}</b><small>${o.blurb}</small></span></button>`;
 function renderHome() {
-	$('#modes').innerHTML = (lobby.note ? `<p class="oops">${esc(lobby.note)}</p>` : '')
-		+ MODES.map((o) => `<button class="mode" type="button" data-mode="${o.id}" data-cat="${o.id}">${gameIcon(o.id)}<span><b>${o.name}</b><small>${o.blurb}</small></span></button>`).join('');
+	$('#modes').innerHTML = (lobby.note ? `<p class="oops">${esc(lobby.note)}</p>` : '') + MODES.map(modeCard).join('');
+}
+function renderTwo() {
+	$('#modes2').innerHTML = `<h2 class="stepttl">2 players</h2><p class="stepsub">How are you playing?</p>${MODES2.map(modeCard).join('')}`;
 }
 
 /* Names and tally for one phone; who you are playing for two phones. */
 function renderSetup() {
 	const online = mode === 'online';
 	$('#names').hidden = online;
+	$('#n1').closest('label').hidden = solo();
+	$('#n0').placeholder = solo() ? 'Your name' : 'Player 1';
 	$('#onbar').hidden = !online;
 	if (online) $('#onbar').innerHTML = `<i class="live"></i><span style="color:var(--p0)">${esc(nameOf(0))}</span> vs <span style="color:var(--p1)">${esc(nameOf(1))}</span><button type="button">leave</button>`;
 	const [a, b] = store.series;
 	const series = $('#series');
-	series.hidden = online || !(a + b);
+	series.hidden = online || solo() || !(a + b);
 	series.innerHTML = `<span style="color:var(--p0)"><b>${esc(nameOf(0))} ${a}</b></span> – <span style="color:var(--p1)"><b>${b} ${esc(nameOf(1))}</b></span><button type="button">reset</button>`;
 	$('button', series).onclick = () => { store.series = [0, 0]; save(); renderHub(); };
 	const chip = $('#settingsChip');
 	chip.hidden = online && net?.role === 'guest'; // the host sets the rounds
-	chip.textContent = online ? `${store.rounds} rounds · Settings ⚙` : `${store.mode === 'pass' ? 'Pass & play' : 'Split screen'} · ${store.rounds} rounds · Settings ⚙`;
+	chip.textContent = solo() ? `${store.rounds} rounds · Settings ⚙` : online ? `${store.rounds} rounds · Settings ⚙` : `${store.mode === 'pass' ? 'Pass & play' : 'Split screen'} · ${store.rounds} rounds · Settings ⚙`;
 }
 
 function renderCats() {
-	const n = (id) => GAMES.filter((g) => g.group === id).length;
-	$('#cats').innerHTML = `<div class="grid">${CATS.map((c) => card(c, 'data-go', c.id, `<span class="count-pill"><b>${n(c.id)}</b> games</span>`, c.icon)).join('')}</div>`;
+	const n = (id) => gamesIn(id).length;
+	$('#cats').innerHTML = `<div class="grid">${CATS.filter((c) => n(c.id)).map((c) => card(c, 'data-go', c.id, `<span class="count-pill"><b>${n(c.id)}</b> games</span>`, c.icon)).join('')}</div>`;
 }
 
 function renderList() {
 	const c = CATS.find((x) => x.id === catId);
-	const played = (g) => (store.plays[g.id] && mode !== 'online' ? `played <b>${store.plays[g.id]}</b>×` : 'not played yet');
+	const played = (g) => (solo() ? (bestOf(g) ? `best <b>${bestOf(g)}</b>` : 'no score yet') : store.plays[g.id] && mode !== 'online' ? `played <b>${store.plays[g.id]}</b>×` : 'not played yet');
 	$('#listTtl').dataset.cat = c.id;
 	$('#listTtl').innerHTML = `${gameIcon(c.icon)} ${c.name}`;
 	$('#listSub').textContent = c.blurb;
 	$('#games').dataset.cat = c.id;
-	$('#games').innerHTML = `<div class="grid">${GAMES.filter((g) => g.group === c.id).map((g) => card(g, 'data-game', '', `<span class="best">${mode === 'online' ? '&nbsp;' : played(g)}</span>`)).join('')}</div>`;
+	$('#games').innerHTML = `<div class="grid">${gamesIn(c.id).map((g) => card(g, 'data-game', '', `<span class="best">${mode === 'online' ? '&nbsp;' : played(g)}</span>`)).join('')}</div>`;
 }
 
 function renderParty() {
@@ -157,7 +174,7 @@ function renderRoom() {
 const inviteUrl = (code) => `${location.origin}${location.pathname.replace(/index\.html$/, '')}?join=${code}`;
 const loadQr = () => (window.qrcode ? Promise.resolve() : new Promise((ok, fail) => {
 	const s = document.createElement('script');
-	s.src = 'js/vendor/qrcode.js?v=16';
+	s.src = 'js/vendor/qrcode.js?v=17';
 	s.onload = ok;
 	s.onerror = fail;
 	document.head.append(s);
@@ -170,7 +187,7 @@ function qrSvg(text) {
 	const n = q.getModuleCount(), pad = 3;
 	let d = '';
 	for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
-	return `<svg viewBox="${-pad} ${-pad} ${n + pad * 2} ${n + pad * 2}" shape-rendering="crispEdges" role="img" aria-label="QR code to join this room"><path d="${d}" fill="#0d0b1a"/></svg>`;
+	return `<svg viewBox="${-pad} ${-pad} ${n + pad * 2} ${n + pad * 2}" shape-rendering="crispEdges" role="img" aria-label="QR code to join this room"><path d="${d}" fill="#050409"/></svg>`;
 }
 
 $('#room').oninput = (e) => {
@@ -189,10 +206,12 @@ $('#room').onclick = async (e) => {
 };
 lobby.onchange = renderHub;
 
-$('#modes').onclick = (e) => {
+$('#modes').onclick = $('#modes2').onclick = (e) => {
 	const id = e.target.closest('[data-mode]')?.dataset.mode;
 	if (!id) return;
 	lobby.note = '';
+	if (id === 'solo') go('cats', { mode: 'solo' });
+	if (id === 'two') go('two');
 	if (id === 'phone') go('cats', { mode: 'phone' });
 	if (id === 'online') go(net ? 'cats' : 'room', { mode: 'online' });
 	if (id === 'party') go('party', { mode: 'party' });
@@ -201,20 +220,20 @@ $('#cats').onclick = (e) => {
 	const id = e.target.closest('[data-go]')?.dataset.go;
 	if (id) go('list', { cat: id });
 };
-$('#onbar').onclick = (e) => { if (e.target.closest('button')) { netLeave(); go('home'); } };
+$('#onbar').onclick = (e) => { if (e.target.closest('button')) { netLeave(); go('two'); } };
 $('#hubBack').onclick = () => {
-	if (step === 'room') { netCancel(); lobbySet('idle'); return go('home'); }
+	if (step === 'room') { netCancel(); lobbySet('idle'); return go('two'); }
 	if (step === 'list') return go('cats');
 	if (step === 'cats' && net && !confirm('Leave this room?')) return;
 	if (step === 'cats' && net) netLeave();
-	go('home');
+	go(step === 'cats' && !solo() ? 'two' : 'home');
 };
 
 $('#games').onclick = (e) => {
 	const id = e.target.closest('[data-game]')?.dataset.game;
 	if (!id) return;
 	if (net?.role === 'guest') return net.send({ t: 'pick', id }); // the host starts it
-	startMatch(GAMES.find((g) => g.id === id));
+	startMatch(GAMES.find((g) => g.id === id), undefined, solo());
 };
 $('#partyList').onclick = (e) => {
 	const id = e.target.closest('[data-party]')?.dataset.party;
@@ -257,26 +276,42 @@ $('#quit').onclick = (e) => {
 	quitTimer = setTimeout(() => { btn.classList.remove('sure'); btn.textContent = 'Quit'; }, 2000);
 };
 
-/* Stats: totals, a row per game, and the last matches, all from this device's history. */
+/* History: totals, personal bests, and every match and game played on this device, newest first. */
+let histTab = 'all';
+const HIST_TABS = [['all', 'All'], ['solo', 'Solo'], ['duo', '2 players'], ['party', 'Party']];
+const kindOf = (x) => (x.c === -3 ? 'solo' : x.c === -4 ? 'party' : 'duo');
 function renderStats() {
 	const h = store.history;
-	const wins = [0, 1].map((p) => h.filter((x) => x.c === p).length);
+	const duo = h.filter((x) => kindOf(x) === 'duo');
+	const wins = [0, 1].map((p) => duo.filter((x) => x.c === p).length);
 	const tile = (n, label, c = '') => `<div class="tile"${c ? ` style="--c:${c}"` : ''}><b>${n}</b><small>${label}</small></div>`;
-	const byGame = GAMES.map((g) => {
-		const mine = h.filter((x) => x.g === g.id);
-		return `<div class="srow"><b>${gameIcon(g.id)} ${g.name}</b><span>${store.plays[g.id] || 0}×</span><span>${[0, 1].map((p) => mine.filter((x) => x.c === p).length).join(' – ')}</span></div>`;
+	const gameOf = (id) => GAMES.find((y) => y.id === id) || PARTY.find((y) => y.id === id);
+	const bests = GAMES.filter((g) => store.best[g.id]).map((g) => `<div class="srow"><b>${gameIcon(g.id)} ${g.name}</b><span>${esc(store.best[g.id].l)}</span><span>★</span></div>`).join('');
+	const day = (t) => new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
+	const time = (t) => new Date(t).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
+	const line = (x) => {
+		const k = kindOf(x), g = gameOf(x.g);
+		const who = k === 'solo' ? `${esc(x.n[0])} · solo` : k === 'party' ? esc(x.s) : x.c === -2 ? `${esc(x.n[0])} &amp; ${esc(x.n[1])}` : `${esc(x.n[0])} ${x.p[0]} – ${x.p[1]} ${esc(x.n[1])}`;
+		const out = k === 'solo' ? `best ${esc(x.s || '–')}` : k === 'party' ? 'played' : x.c === -2 ? esc(x.s || 'together') : x.c === -1 ? 'draw' : `${esc(x.n[x.c])} won`;
+		return `<div class="srow hrow"><b>${g ? gameIcon(g.id) : ''} ${g ? g.name : esc(x.g)}</b><span>${out}</span><small>${who} · ${time(x.t)}</small></div>`;
+	};
+	const shown = h.filter((x) => histTab === 'all' || kindOf(x) === histTab).reverse();
+	let last = '';
+	const rows = shown.map((x) => {
+		const d = day(x.t), head = d === last ? '' : `<h4 class="hday">${d}</h4>`;
+		last = d;
+		return head + line(x);
 	}).join('');
-	const recent = h.slice(-8).reverse().map((x) => {
-		const g = GAMES.find((y) => y.id === x.g);
-		const when = new Date(x.t).toLocaleDateString(undefined, { month: 'short', day: 'numeric' });
-		return `<div class="srow"><b>${g ? gameIcon(g.id) : ''} ${x.c === -2 ? `${esc(x.n[0])} &amp; ${esc(x.n[1])}` : `${esc(x.n[0])} ${x.p[0]} – ${x.p[1]} ${esc(x.n[1])}`}</b><span>${x.c === -2 ? esc(x.s || 'together') : x.c === -1 ? 'draw' : `${esc(x.n[x.c])} won`}</span><span>${when}</span></div>`;
-	}).join('');
-	$('#statsBody').innerHTML = h.length || Object.keys(store.plays).length
-		? `<div class="tiles">${tile(h.length, 'matches')}${tile(wins[0], `${esc(nameOf(0))} wins`, 'var(--p0)')}${tile(wins[1], `${esc(nameOf(1))} wins`, 'var(--p1)')}${tile(h.filter((x) => x.c === -1).length, 'draws')}</div>
-			<div class="stat-list"><h3>By game · played · wins (${esc(nameOf(0))} – ${esc(nameOf(1))})</h3>${byGame}</div>
-			${recent ? `<div class="stat-list"><h3>Recent matches</h3>${recent}</div>` : ''}`
-		: '<p class="empty">No matches yet. Play one and it shows up here.</p>';
+	$('#statsBody').innerHTML = h.length
+		? `<div class="tiles">${tile(h.length, 'plays')}${tile(h.filter((x) => kindOf(x) === 'solo').length, 'solo runs', 'var(--win)')}${tile(wins[0], `${esc(nameOf(0))} wins`, 'var(--p0)')}${tile(wins[1], `${esc(nameOf(1))} wins`, 'var(--p1)')}</div>
+			${bests ? `<div class="stat-list"><h3>Personal bests</h3>${bests}</div>` : ''}
+			<div class="stat-list"><h3>Everything you played</h3><div class="seg htabs" role="group" aria-label="Filter">${HIST_TABS.map(([id, n]) => `<button type="button" data-t="${id}" aria-pressed="${id === histTab}">${n}</button>`).join('')}</div>${rows || '<p class="empty">Nothing here yet.</p>'}</div>`
+		: '<p class="empty">Nothing played yet. Finish a game and it shows up here.</p>';
 }
+$('#statsBody').onclick = (e) => {
+	const t = e.target.closest('[data-t]')?.dataset.t;
+	if (t) { histTab = t; renderStats(); }
+};
 $('#statsBtn').onclick = () => { document.body.dataset.screen = 'stats'; window.scrollTo(0, 0); renderStats(); };
 $('#statsBack').onclick = toHub;
 
@@ -286,9 +321,10 @@ $('#settingsBtn').onclick = openSettings;
 $('#settingsChip').onclick = openSettings;
 $('#settingsBack').onclick = toHub;
 $('#statsReset').onclick = () => {
-	if (!confirm('Clear all match history and played counts on this device?')) return;
+	if (!confirm('Clear all history, personal bests and played counts on this device?')) return;
 	store.history = [];
 	store.plays = {};
+	store.best = {};
 	store.series = [0, 0];
 	save();
 	renderStats();

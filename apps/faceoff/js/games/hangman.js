@@ -7,10 +7,10 @@ const HANG_MS = 90000;
    Typing uses the phone's own keyboard through a real <input>. One phone has one keyboard, so this game
    is always pass-and-play (passOnly), whatever mode the hub is set to. */
 GAMES.push({
-	id: 'hangman', name: 'Hangman Duel', icon: '🪢', group: 'brain', lowerIsBetter: true, duel: true, words: true, passOnly: true,
-	blurb: 'Pick a secret word for your partner, then crack theirs. Uses your phone\'s keyboard, so it is pass-and-play.',
+	id: 'hangman', name: 'Hangman Duel', icon: '🪢', group: 'brain', lowerIsBetter: true, duel: true, words: true, passOnly: true, soloOk: true,
+	blurb: 'Pick a secret word for your partner, then crack theirs. Indian and world words count. Pass-and-play, or crack a random word alone.',
 	config: () => ({}),
-	intro: () => `Each of you picks a <b>secret word</b> (4–10 letters) for the other<br><small>Then guess theirs, one letter at a time. ${HANG_MISSES} misses and you hang. Fewest misses wins, speed breaks ties.</small>`,
+	intro: () => (m.solo ? `Crack a random <b>fun word</b>, Indian or from the world<br><small>${HANG_MISSES} misses and you hang. Fewer misses and a faster time score better.</small>` : `Each of you picks a <b>secret word</b> (4–10 letters) for the other<br><small>Then guess theirs, one letter at a time. Tip: tap 🎲 for a fun word. ${HANG_MISSES} misses and you hang. Fewest misses wins, speed breaks ties.</small>`),
 	play(c0, c1) {
 		const cs = [c0, c1];
 		const secret = [null, null]; // secret[p] is the word p chose, for 1 - p to guess
@@ -21,7 +21,7 @@ GAMES.push({
 			st.innerHTML = `<div class="dhead"><b>${esc(nameOf(p))}</b>: pick a secret word for <b>${esc(nameOf(1 - p))}</b></div>
 				<input class="typein mask" type="text" maxlength="10" placeholder="secret word" enterkeyhint="done" autocomplete="off" autocapitalize="none" autocorrect="off" spellcheck="false">
 				<div class="msg"></div>
-				<div class="btns"><button class="btn" type="button" data-a="lock">Lock in</button><button class="btn ghost" type="button" data-a="show">Show</button></div>`;
+				<div class="btns"><button class="btn" type="button" data-a="lock">Lock in</button><button class="btn ghost" type="button" data-a="show">Show</button><button class="btn ghost" type="button" data-a="dice" aria-label="Random fun word">🎲</button></div>`;
 			const box = $('.typein', st), msg = $('.msg', st);
 			box.oninput = () => { box.value = box.value.toLowerCase().replace(/[^a-z]/g, ''); };
 			const lock = () => {
@@ -39,6 +39,7 @@ GAMES.push({
 			};
 			box.onkeydown = (e) => { if (e.key === 'Enter') lock(); };
 			$('[data-a="lock"]', st).onclick = lock;
+			$('[data-a="dice"]', st).onclick = () => { box.value = choice(FUN_LIST); box.classList.remove('mask'); msg.textContent = ''; sfx.key(); };
 			$('[data-a="show"]', st).onclick = () => { box.classList.toggle('mask'); box.focus(); };
 			box.focus(); // opens the keyboard when we arrive from a tap; otherwise one tap on the box does
 		}
@@ -85,6 +86,7 @@ GAMES.push({
 			});
 		}
 
+		if (m.solo) { secret[1] = choice(FUN_LIST); return guessStep(0, () => {}); } // alone: crack a random fun word
 		turns(setStep, () => turns(guessStep, () => {}, true));
 	},
 });

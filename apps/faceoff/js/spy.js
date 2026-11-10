@@ -9,7 +9,7 @@
    - everyone on their own phone: table.js. No server; every phone deals from the same seeded random (seeded() in core.js).
    Built on the party framework in party.js (draw, pass, pname, finish...). */
 
-const SPY_DATA = 1; // bump when a word list or a deal() changes, so phones on different versions refuse each other's table codes
+const SPY_DATA = 2; // bump when a word list or a deal() changes, so phones on different versions refuse each other's table codes
 
 const SPY_WORDS = {
 	Food: ['biryani', 'dosa', 'samosa', 'paneer tikka', 'masala chai', 'jalebi', 'idli', 'butter chicken', 'pani puri', 'vada pav', 'gulab jamun', 'naan', 'chole bhature', 'mango lassi', 'rasgulla', 'pav bhaji'],
@@ -19,6 +19,7 @@ const SPY_WORDS = {
 	Things: ['saree', 'diya', 'rangoli', 'cricket bat', 'tiffin box', 'bindi', 'harmonium', 'tabla', 'kite', 'charpai', 'pressure cooker', 'chappal', 'scooter', 'ceiling fan', 'gold bangle', 'firecracker'],
 	Festivals: ['Diwali', 'Holi', 'Eid', 'Ganesh Chaturthi', 'Navratri', 'Pongal', 'Onam', 'Raksha Bandhan', 'Dussehra', 'Christmas', 'Lohri', 'Baisakhi', 'Makar Sankranti', 'Durga Puja', 'Karva Chauth', 'Ugadi'],
 	Games: ['cricket', 'kabaddi', 'hockey', 'badminton', 'kho-kho', 'carrom', 'chess', 'wrestling', 'football', 'tennis', 'gilli danda', 'ludo', 'snakes and ladders', 'kite flying', 'marbles', 'antakshari'],
+	'World fun': ['pizza', 'sushi', 'kangaroo', 'Eiffel Tower', 'penguin', 'volcano', 'pirate', 'robot', 'rollercoaster', 'snowman', 'trampoline', 'pyramid', 'ninja', 'unicorn', 'spaghetti', 'jellyfish'],
 	Cities: ['Mumbai', 'Delhi', 'Bengaluru', 'Chennai', 'Kolkata', 'Hyderabad', 'Jaipur', 'Goa', 'Pune', 'Kochi', 'Varanasi', 'Agra', 'Mysuru', 'Shimla', 'Udaipur', 'Amritsar'],
 };
 const SPY_CATS = ['Mixed', ...Object.keys(SPY_WORDS)];

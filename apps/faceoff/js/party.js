@@ -144,6 +144,7 @@ const pickHeat = (levels, then) => draw(`<div class="hero">${gameIcon(ps.game.id
 function finish(score, fmt, verb = ['wins', 'tie']) {
 	const g = ps.game;
 	store.plays[g.id] = (store.plays[g.id] || 0) + 1;
+	logHistory({ g: g.id, n: [], p: [], c: -4, s: `${ps.names.length} players` });
 	save();
 	sfx.win();
 	const ids = ps.names.map((_, i) => i);

@@ -139,6 +139,7 @@ function tReveal() {
 		back: () => tHome(),
 		go() {
 			store.plays[ps.game.id] = (store.plays[ps.game.id] || 0) + 1;
+			logHistory({ g: ps.game.id, n: [], p: [], c: -4, s: `${ps.names.length} players` });
 			save();
 			sfx.win();
 			draw(`<div class="gname">Round ${t.round} · the answer</div><p class="psub">${def.reveal(tDeal())}</p>${btn('next', 'Next round')}`, { next() { t.round++; tKeep(); tCard(); } });

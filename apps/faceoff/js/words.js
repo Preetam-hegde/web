@@ -11,4 +11,4 @@ async function loadWords() {
 	WORDS.ready = true;
 }
 
-const isWord = (w) => WORDS.valid.has(w);
+const isWord = (w) => WORDS.valid.has(w) || FUN.has(w); // FUN: the Indian and world fun words in funwords.js

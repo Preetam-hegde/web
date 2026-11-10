@@ -56,7 +56,7 @@ const tsOf = (e) => (Math.abs(e.timeStamp - performance.now()) < 1000 ? e.timeSt
 /* ── settings ────────────────────────────────────────── */
 const STORE_KEY = 'faceoff:v1';
 const store = (() => {
-	const d = { names: ['', ''], rounds: 5, mode: 'split', flip: true, series: [0, 0], sound: true, dares: true, plays: {}, history: [], custom: { dares: [], truths: [] } };
+	const d = { names: ['', ''], rounds: 5, mode: 'split', flip: true, series: [0, 0], sound: true, dares: true, plays: {}, history: [], custom: { dares: [], truths: [] }, best: {}, big: true };
 	try { return { ...d, ...JSON.parse(localStorage.getItem(STORE_KEY)) }; } catch { return d; }
 })();
 const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { /* private mode: play works, settings just won't persist */ } };
@@ -70,6 +70,11 @@ function judge(a, b, lowerIsBetter) {
 	if (a === b) return -1;
 	return (lowerIsBetter ? a < b : a > b) ? 0 : 1;
 }
+
+/* Games anyone can play alone: plain games score each player separately, so one player is enough. soloOk opts a duel in. */
+const canSolo = (g) => (!g.duel && !g.coop) || !!g.soloOk;
+const logHistory = (e) => { store.history = [...store.history.slice(-299), { t: Date.now(), ...e }]; }; // last 300 plays, for the History screen
+const plainText = (html) => html.replace(/<[^>]*>/g, '');
 
 /* ── match engine ────────────────────────────────────── */
 let m = null; // the match in progress, or null on the hub
@@ -101,14 +106,14 @@ function head(p) {
 	$('.pname', el).textContent = nameOf(p);
 	$('.av', el).textContent = initialOf(p);
 	$('.ppts', el).textContent = m.game.headScore ? m.game.headScore(m.pts[p], m.round) : m.pts[p];
-	$('.prnd', el).textContent = `Round ${m.round + 1}/${m.rounds}${m.pass ? ` · ${nameOf(1 - p)}: ${m.pts[1 - p]}` : ''}`;
+	$('.prnd', el).textContent = `Round ${m.round + 1}/${m.rounds}${m.pass && !m.solo ? ` · ${nameOf(1 - p)}: ${m.pts[1 - p]}` : ''}`;
 }
 
 const introHtml = () => `<div class="hero">${gameIcon(m.game.id)}</div><div class="gtitle">${m.game.name}</div><div class="lbl">${m.game.intro(m.cfg)}</div>`;
 
-function startMatch(game, rounds = store.rounds) {
+function startMatch(game, rounds = store.rounds, solo = false) {
 	rounds = game.rounds || rounds; // some games fix their own length
-	const mine = (m = { game, rounds, round: 0, pts: [0, 0], token: ++epoch, cfg: null, res: [null, null], ready: [false, false], final: null, pass: !net && !game.splitOnly && (store.mode === 'pass' || !!game.passOnly) });
+	const mine = (m = { game, rounds, round: 0, pts: [0, 0], token: ++epoch, cfg: null, res: [null, null], ready: [false, false], final: null, solo, run: [], pass: solo || (!net && !game.splitOnly && (store.mode === 'pass' || !!game.passOnly)) });
 	document.body.dataset.screen = 'match';
 	document.body.dataset.mode = net ? 'online' : mine.pass ? 'pass' : 'split'; // phone-keyboard games are always pass-and-play, sync games always split. Two phones: split rules, one half each
 	document.body.dataset.seat = 0;
@@ -247,6 +252,7 @@ function makeCtx(p) {
 		m.res[p] = { score, label };
 		buzz(20);
 		sfx.lock();
+		if (m.solo) return soloReveal();
 		paint(p, `<div class="res tie">Locked in ✓</div><div class="hint">Waiting for ${esc(nameOf(1 - p))}…</div>`);
 			if (net?.role === 'guest') netReport(score, label); // the host owns the scoreboard
 		if (m.res[1 - p]) reveal();
@@ -300,7 +306,7 @@ function reveal() {
 	if (!net) { // the stats are for the two regulars on this phone, not for an online opponent
 		if (champ >= 0) store.series[champ]++;
 		store.plays[m.game.id] = (store.plays[m.game.id] || 0) + 1;
-		store.history = [...store.history.slice(-99), { g: m.game.id, t: Date.now(), n: [nameOf(0), nameOf(1)], p: [...m.pts], c: champ, s: sum ? sum.title : '' }]; // last 100 matches, for the stats screen
+		logHistory({ g: m.game.id, n: [nameOf(0), nameOf(1)], p: [...m.pts], c: champ, s: sum ? sum.title : '' });
 		save();
 	}
 	const dare = champ >= 0 && store.dares ? choice(allDares()).replace('{w}', nameOf(champ)) : '';
@@ -321,8 +327,35 @@ function reveal() {
 	});
 }
 
+/* Single player: each round is you against your own best, saved per game on this device. */
+function soloReveal() {
+	bump();
+	const g = m.game, r = m.res[0], ok = Number.isFinite(r.score), prev = store.best[g.id];
+	const beats = ok && (!prev || (g.lowerIsBetter ? r.score < prev.s : r.score > prev.s));
+	if (beats) { store.best[g.id] = { s: r.score, l: plainText(r.label) }; m.pts[0]++; sfx.win(); }
+	m.run.push(r.label);
+	save();
+	both(head);
+	const bestTxt = store.best[g.id] ? `Your best: <b>${esc(store.best[g.id].l)}</b>` : 'No score yet. Keep going!';
+	const result = `<div class="res ${beats ? 'win' : 'tie'}">${beats ? '★ New personal best' : ok ? 'Round done' : 'No score'}</div><div class="rows"><div class="row me"><span>This round</span><b>${r.label}</b></div></div><div class="hint">${bestTxt}</div>`;
+	if (m.round < m.rounds - 1) {
+		m.round++;
+		m.cfg = g.config(m.round);
+		both(head);
+		return showReady(() => `${result}<hr>${introHtml()}`, 'Next', startRound);
+	}
+	store.plays[g.id] = (store.plays[g.id] || 0) + 1;
+	logHistory({ g: g.id, n: [nameOf(0)], p: [m.pts[0], 0], c: -3, s: store.best[g.id]?.l || '' });
+	save();
+	if (m.pts[0]) confetti(['#ffd24d', '#fff', '#ff7a59']);
+	focus(0);
+	const s = paint(0, `${result}<div class="rows">${m.run.map((l, i) => `<div class="row"><span>Round ${i + 1}</span><b>${l}</b></div>`).join('')}</div>
+		<div class="btns"><button class="btn" type="button" data-act="again">Play again</button><button class="btn ghost" type="button" data-act="hub">Hub</button></div>`);
+	$$('button', s).forEach((b) => (b.onclick = () => FINAL[b.dataset.act]()));
+}
+
 const FINAL = {
-	again: () => startMatch(m.game, m.rounds),
+	again: () => startMatch(m.game, m.rounds, m.solo),
 	hub: quit,
 	sudden() {
 		m.rounds++;
