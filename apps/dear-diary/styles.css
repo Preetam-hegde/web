@@ -1,25 +1,41 @@
-/* Dear Diary — Styling, Themes & Scrapbook Crafting (v2) */
+/* Dear Diary — retro anime theme shared with the DSA Visualizer:
+   dusk sky, painted-paper cards, ink outlines, cel-shaded pastel accents. */
 :root {
-	--bg-desk: #2b2520;
-	--book-cover: #5a3e2e;
-	--book-spine: #3d291e;
-	--page-bg: #fcf9f2;
-	--page-text: #2c2523;
-	--page-sub: #786b66;
-	--line-color: rgba(180, 160, 140, 0.35);
-	--accent: #d97757;
-	--accent-hover: #c26143;
-	--accent-subtle: rgba(217, 119, 87, 0.12);
+	/* dusk sky (page themes below tint --bg-desk, the top of the sky) */
+	--bg-desk: #1d2147;
+	--sky-mid: #4a3a76;
+	--sky-low: #c77d96;
+	--on-sky: #fdf3ea;
+
+	/* shared palette */
+	--paper: #fbf3e6;
+	--paper-2: #f3e7d3;
+	--ink: #2a2745;
+	--ink-soft: #5d5879;
+	--line: #d9c9ad;
+	--sakura: #f4a9bd;
+	--gold: #f2c879;
+	--lav: #bba9ea;
+
+	--book-cover: #4a3a76;
+	--book-spine: #2f2552;
+	--page-bg: #fbf3e6;
+	--page-text: #2a2745;
+	--page-sub: #5d5879;
+	--line-color: rgba(190, 168, 132, 0.45);
+	--accent: #6b4fb0;
+	--accent-hover: #563d94;
+	--accent-subtle: rgba(187, 169, 234, 0.35);
 	--tape-shadow: rgba(0, 0, 0, 0.1);
-	--ui-surface: #1e1b18;
-	--ui-card: #2a2622;
-	--ui-border: #3d3732;
-	--ui-text: #f5f0ea;
-	--ui-text-muted: #9e9389;
-	--selection-ring: #d97757;
+	--ui-surface: var(--paper);
+	--ui-card: var(--paper-2);
+	--ui-border: var(--ink);
+	--ui-text: var(--ink);
+	--ui-text-muted: var(--ink-soft);
+	--selection-ring: #6b4fb0;
+	--font-retro: "DotGothic16", "Zen Maru Gothic", sans-serif;
 	--font-ui:
-		"Bricolage Grotesque", -apple-system, BlinkMacSystemFont, "Segoe UI",
-		Roboto, sans-serif;
+		"Zen Maru Gothic", system-ui, -apple-system, "Segoe UI", sans-serif;
 	--font-handwriting:
 		"Caveat", "Patrick Hand", "Comic Sans MS", cursive, sans-serif;
 	--font-serif: "Georgia", "Cambria", "Times New Roman", serif;
@@ -30,7 +46,7 @@
 	--radius-sm: 6px;
 	--radius-md: 10px;
 	--radius-lg: 16px;
-	--shadow-book: 0 20px 50px rgba(0, 0, 0, 0.45), 0 5px 15px rgba(0, 0, 0, 0.3);
+	--shadow-book: 0 10px 30px rgba(18, 14, 48, 0.35);
 	--shadow-page: 0 4px 15px rgba(0, 0, 0, 0.08);
 }
 
@@ -139,23 +155,48 @@ body {
 
 body {
 	font-family: var(--font-ui);
-	background-color: var(--bg-desk);
+	background:
+		radial-gradient(1.5px 1.5px at 12% 14%, #fff8 50%, transparent 52%),
+		radial-gradient(1.5px 1.5px at 38% 8%, #fff7 50%, transparent 52%),
+		radial-gradient(2px 2px at 67% 18%, #fff9 50%, transparent 52%),
+		radial-gradient(1.5px 1.5px at 86% 7%, #fff7 50%, transparent 52%),
+		radial-gradient(1.5px 1.5px at 24% 30%, #fff6 50%, transparent 52%),
+		radial-gradient(1.5px 1.5px at 93% 32%, #fff6 50%, transparent 52%),
+		linear-gradient(
+				180deg,
+				var(--bg-desk) 0%,
+				var(--sky-mid) 55%,
+				var(--sky-low) 100%
+			)
+			fixed;
 	color: var(--ui-text);
 	display: flex;
 	flex-direction: column;
-	transition: background-color 0.3s ease;
 	user-select: none;
+	-webkit-font-smoothing: antialiased;
+}
+
+/* old-film grain */
+body::after {
+	content: "";
+	position: fixed;
+	inset: 0;
+	z-index: 50;
+	pointer-events: none;
+	opacity: 0.08;
+	background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)'/%3E%3C/svg%3E");
 }
 
 /* Top App Header */
 .app-header {
-	height: 56px;
-	background: var(--ui-surface);
-	border-bottom: 1px solid var(--ui-border);
+	min-height: 60px;
+	color: var(--on-sky);
 	display: flex;
+	flex-wrap: wrap;
 	align-items: center;
 	justify-content: space-between;
-	padding: 0 16px;
+	gap: 6px 12px;
+	padding: 6px 16px;
 	z-index: 50;
 	flex-shrink: 0;
 	transition:
@@ -170,46 +211,47 @@ body {
 }
 
 .portfolio-back-btn {
-	color: var(--ui-text-muted);
+	color: var(--on-sky);
 	text-decoration: none;
 	font-size: 0.85rem;
-	padding: 6px 10px;
-	border-radius: var(--radius-sm);
-	border: 1px solid var(--ui-border);
-	transition: all 0.2s;
+	font-weight: 500;
+	padding: 6px 14px;
+	border-radius: 999px;
+	border: 1.5px solid rgba(253, 243, 234, 0.45);
+	transition: background 0.15s;
 	display: flex;
 	align-items: center;
 	gap: 6px;
 }
 
 .portfolio-back-btn:hover {
-	color: var(--ui-text);
-	border-color: var(--accent);
-	background: var(--accent-subtle);
+	background: rgba(253, 243, 234, 0.14);
 }
 
 .app-title {
-	font-size: 1.15rem;
-	font-weight: 700;
-	color: var(--ui-text);
+	font: 400 1.35rem var(--font-retro);
+	letter-spacing: 0.04em;
+	white-space: nowrap;
+	color: var(--on-sky);
+	text-shadow: 0 0 18px rgba(244, 169, 189, 0.6);
 	display: flex;
 	align-items: center;
-	gap: 8px;
+	gap: 10px;
 }
 
 .title-badge {
-	font-size: 0.72rem;
-	background: var(--accent-subtle);
-	color: var(--accent);
-	border: 1px solid var(--accent);
-	padding: 2px 7px;
-	border-radius: 12px;
-	font-weight: 600;
+	font: 400 0.75rem var(--font-retro);
+	letter-spacing: 0.08em;
+	color: var(--sakura);
+	text-shadow: none;
+	border: 1.5px solid var(--sakura);
+	padding: 1px 8px;
+	border-radius: 999px;
 }
 
 .status-pill {
 	font-size: 0.78rem;
-	color: var(--ui-text-muted);
+	color: rgba(253, 243, 234, 0.75);
 	display: flex;
 	align-items: center;
 	gap: 6px;
@@ -245,51 +287,63 @@ body {
 }
 
 .btn-icon {
-	background: var(--ui-card);
-	color: var(--ui-text);
-	border: 1px solid var(--ui-border);
-	border-radius: var(--radius-sm);
-	padding: 7px 12px;
+	background: var(--paper-2);
+	color: var(--ink);
+	border: 1.5px solid var(--ink);
+	border-radius: 999px;
+	padding: 6px 11px;
 	font-size: 0.85rem;
-	font-weight: 500;
+	font-weight: 700;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	gap: 6px;
-	transition: all 0.2s;
+	transition:
+		background 0.15s,
+		transform 0.1s;
 }
 
 .btn-icon:hover {
-	border-color: var(--accent);
-	background: var(--ui-surface);
-	color: var(--accent);
+	background: var(--sakura);
+}
+
+.btn-icon:active {
+	transform: scale(0.97);
 }
 
 .btn-primary {
-	background: var(--accent);
-	color: #ffffff;
-	border: none;
-	border-radius: var(--radius-sm);
-	padding: 7px 14px;
+	background: var(--gold);
+	color: var(--ink);
+	border: 1.5px solid var(--ink);
+	border-radius: 999px;
+	padding: 6px 13px;
 	font-size: 0.85rem;
-	font-weight: 600;
+	font-weight: 700;
 	cursor: pointer;
 	display: flex;
 	align-items: center;
 	gap: 6px;
-	transition: all 0.2s;
+	transition:
+		background 0.15s,
+		transform 0.1s;
 }
 
 .btn-primary:hover {
-	background: var(--accent-hover);
-	transform: translateY(-1px);
+	background: #f7d796;
 }
 
-/* Secondary Tool Ribbon */
+.btn-primary:active {
+	transform: scale(0.97);
+}
+
+/* Secondary Tool Ribbon — a painted-paper card, like the DSA controls */
 .craft-ribbon {
 	background: var(--ui-surface);
-	border-bottom: 1px solid var(--ui-border);
-	padding: 8px 16px;
+	border: 2px solid var(--ink);
+	border-radius: var(--radius-lg);
+	box-shadow: var(--shadow-book);
+	margin: 0 16px;
+	padding: 8px 14px;
 	display: flex;
 	align-items: center;
 	justify-content: space-between;
@@ -309,17 +363,18 @@ body {
 }
 
 .tool-divider {
-	width: 1px;
+	width: 2px;
 	height: 24px;
-	background: var(--ui-border);
+	background: var(--line);
+	border-radius: 2px;
 	margin: 0 4px;
 }
 
 .tool-btn {
 	background: transparent;
-	border: 1px solid transparent;
+	border: 1.5px solid transparent;
 	color: var(--ui-text-muted);
-	border-radius: var(--radius-sm);
+	border-radius: 10px;
 	padding: 6px 10px;
 	font-size: 0.82rem;
 	cursor: pointer;
@@ -335,25 +390,28 @@ body {
 }
 
 .tool-btn.active {
-	background: var(--accent-subtle);
-	color: var(--accent);
-	border-color: var(--accent);
-	font-weight: 600;
+	background: var(--gold);
+	color: var(--ink);
+	border-color: var(--ink);
+	font-weight: 700;
 }
 
 .select-control {
-	background: var(--ui-card);
-	border: 1px solid var(--ui-border);
+	background: #fff;
+	border: 1.5px solid var(--ink);
 	color: var(--ui-text);
-	padding: 5px 8px;
-	border-radius: var(--radius-sm);
+	padding: 5px 10px;
+	border-radius: 10px;
+	font-family: inherit;
 	font-size: 0.8rem;
+	font-weight: 500;
 	cursor: pointer;
 	outline: none;
 }
 
 .select-control:focus {
-	border-color: var(--accent);
+	border-color: var(--lav);
+	box-shadow: 0 0 0 3px rgba(187, 169, 234, 0.45);
 }
 
 /* Main Studio Stage */
@@ -374,6 +432,7 @@ body {
 	max-width: 1140px;
 	min-height: 660px;
 	background: var(--book-cover);
+	border: 2px solid var(--ink);
 	border-radius: var(--radius-lg);
 	box-shadow: var(--shadow-book);
 	padding: 16px;
@@ -402,17 +461,10 @@ body {
 .ring {
 	width: 30px;
 	height: 12px;
-	background: linear-gradient(
-		to bottom,
-		#d6d3d1 0%,
-		#78716c 40%,
-		#292524 80%,
-		#a8a29e 100%
-	);
+	background: var(--gold);
+	border: 1.5px solid var(--ink);
 	border-radius: 6px;
-	box-shadow:
-		0 4px 6px rgba(0, 0, 0, 0.4),
-		inset 0 1px 2px rgba(255, 255, 255, 0.7);
+	box-shadow: inset 0 2px 0 rgba(255, 255, 255, 0.5);
 }
 
 /* Pages Spread */
@@ -420,6 +472,7 @@ body {
 	width: 100%;
 	display: flex;
 	background: var(--page-bg);
+	border: 1.5px solid var(--ink);
 	border-radius: calc(var(--radius-lg) - 4px);
 	overflow: hidden;
 	box-shadow: inset 0 0 30px rgba(0, 0, 0, 0.08);
@@ -1138,8 +1191,8 @@ body {
 	transform: translateX(-50%);
 	width: 18px;
 	height: 18px;
-	background: var(--accent);
-	border: 2px solid #ffffff;
+	background: var(--sakura);
+	border: 2px solid var(--ink);
 	border-radius: 50%;
 	cursor: grab;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -1152,8 +1205,8 @@ body {
 	right: -8px;
 	width: 18px;
 	height: 18px;
-	background: var(--accent);
-	border: 2px solid #ffffff;
+	background: var(--sakura);
+	border: 2px solid var(--ink);
 	border-radius: 50%;
 	cursor: se-resize;
 	box-shadow: 0 2px 5px rgba(0, 0, 0, 0.3);
@@ -1175,7 +1228,7 @@ body {
 	height: 14px;
 	border-radius: 50%;
 	cursor: pointer;
-	border: 1px solid rgba(255, 255, 255, 0.4);
+	border: 1px solid rgba(42, 39, 69, 0.45);
 	transition: transform 0.15s;
 }
 
@@ -1200,7 +1253,7 @@ body {
 	align-items: center;
 	gap: 8px;
 	background: var(--ui-surface);
-	border: 1px solid var(--ui-border);
+	border: 1.5px solid var(--ui-border);
 	padding: 4px 12px;
 	border-radius: 20px;
 }
@@ -1230,7 +1283,7 @@ body {
 	font-size: 0.8rem;
 	color: var(--ui-text-muted);
 	background: var(--ui-surface);
-	border: 1px solid var(--ui-border);
+	border: 1.5px solid var(--ui-border);
 	padding: 4px 12px;
 	border-radius: 20px;
 	display: flex;
@@ -1283,8 +1336,9 @@ body.zen-focus .zen-exit-btn {
 	left: 0;
 	right: 0;
 	background: var(--ui-surface);
-	border-top: 1px solid var(--ui-border);
-	box-shadow: 0 -10px 30px rgba(0, 0, 0, 0.4);
+	border-top: 2px solid var(--ink);
+	border-radius: var(--radius-lg) var(--radius-lg) 0 0;
+	box-shadow: 0 -10px 30px rgba(18, 14, 48, 0.35);
 	padding: 16px 24px;
 	z-index: 1000;
 	transform: translateY(105%);
@@ -1315,9 +1369,9 @@ body.zen-focus .zen-exit-btn {
 }
 
 .drawer-search-box {
-	background: var(--ui-card);
-	border: 1px solid var(--ui-border);
-	border-radius: 20px;
+	background: #fff;
+	border: 1.5px solid var(--ink);
+	border-radius: 999px;
 	padding: 5px 14px;
 	color: var(--ui-text);
 	font-size: 0.82rem;
@@ -1332,9 +1386,10 @@ body.zen-focus .zen-exit-btn {
 
 .drawer-tabs {
 	display: flex;
-	gap: 6px;
-	border-bottom: 1px solid var(--ui-border);
-	padding-bottom: 8px;
+	gap: 4px;
+	padding: 3px;
+	background: var(--paper-2);
+	border-radius: 999px;
 	margin-bottom: 12px;
 	overflow-x: auto;
 }
@@ -1351,9 +1406,9 @@ body.zen-focus .zen-exit-btn {
 }
 
 .drawer-tab.active {
-	background: var(--accent);
-	color: #ffffff;
-	font-weight: 600;
+	background: var(--sakura);
+	color: var(--ink);
+	font-weight: 700;
 }
 
 .sticker-grid {
@@ -1365,8 +1420,8 @@ body.zen-focus .zen-exit-btn {
 }
 
 .sticker-option {
-	background: var(--ui-card);
-	border: 1px solid var(--ui-border);
+	background: #fff;
+	border: 1.5px solid var(--line);
 	border-radius: var(--radius-md);
 	font-size: 2rem;
 	display: flex;
@@ -1392,7 +1447,7 @@ body.zen-focus .zen-exit-btn {
 	background: var(--ui-card);
 	padding: 6px 14px;
 	border-radius: var(--radius-md);
-	border: 1px solid var(--ui-border);
+	border: 1.5px solid var(--line);
 }
 
 .doodle-bar.show {
@@ -1409,7 +1464,7 @@ body.zen-focus .zen-exit-btn {
 }
 
 .color-dot.active {
-	border-color: #ffffff;
+	border-color: var(--ink);
 	transform: scale(1.2);
 }
 
@@ -1419,9 +1474,9 @@ body.zen-focus .zen-exit-btn {
 	bottom: 24px;
 	left: 50%;
 	transform: translateX(-50%) translateY(100px);
-	background: #18181b;
-	color: #fafafa;
-	border: 1px solid #3f3f46;
+	background: var(--ink);
+	color: var(--on-sky);
+	border: 1.5px solid var(--ink);
 	padding: 10px 20px;
 	border-radius: 30px;
 	box-shadow: 0 10px 25px rgba(0, 0, 0, 0.4);
@@ -1472,10 +1527,27 @@ body.zen-focus .zen-exit-btn {
 	}
 
 	.app-header {
-		padding: 0 10px;
+		padding: 6px 10px;
+	}
+
+	.brand-section,
+	.tool-group {
+		flex-wrap: wrap;
+	}
+
+	/* one swipeable row instead of five stacked ones */
+	.header-actions {
+		width: 100%;
+		overflow-x: auto;
+		padding-bottom: 4px;
+	}
+
+	.header-actions > * {
+		flex: none;
 	}
 
 	.craft-ribbon {
+		margin: 0 10px;
 		padding: 6px 10px;
 		gap: 6px;
 	}
