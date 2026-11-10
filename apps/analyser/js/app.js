@@ -227,7 +227,7 @@
 
 	// ── info panel ──
 	function highlight(line) {
-		return esc(line).replace(/(\/\/.*$)|(for|while|if|else|return|break|and|or|not|in|from|to|down|each|is|until|then|new)|([A-Za-z]\w*)(?=\()|(\d+)/g, function (m, comment, kw, fn, num) {
+		return esc(line).replace(/(\/\/.*$)|\b(for|while|if|else|return|break|and|or|not|in|from|to|down|each|is|until|then|new)\b|\b([A-Za-z]\w*)(?=\()|(\b\d+\b)/g, function (m, comment, kw, fn, num) {
 			if (comment) {
 				return '<span class="t-c">' + comment + '</span>';
 			}
@@ -401,8 +401,11 @@
 	});
 
 	document.addEventListener('keydown', function (ev) {
+		if (document.body.dataset.mode !== 'lab' || ev.target.isContentEditable) {
+			return;
+		}
 		const tag = ev.target.tagName;
-		if (tag === 'INPUT' && ev.target.type !== 'range' || tag === 'SELECT' || ev.metaKey || ev.ctrlKey || ev.altKey) {
+		if (tag === 'INPUT' || tag === 'TEXTAREA' || tag === 'SELECT' || tag === 'SUMMARY' || tag === 'A' || ev.metaKey || ev.ctrlKey || ev.altKey) {
 			return;
 		}
 		if (ev.key === ' ' && tag !== 'BUTTON') {
@@ -442,7 +445,7 @@
 		$('stage').classList.toggle('solo', a.views.length === 1 && a.views[0] === 'strip');
 		document.body.dataset.group = a.group;
 		try {
-			history.replaceState(null, '', '#' + a.id);
+			if (document.body.dataset.mode === 'lab') history.replaceState(null, '', '#' + a.id);
 		} catch (e) {
 			// file:// or sandboxed frames can refuse history updates
 		}
@@ -452,9 +455,6 @@
 		rebuild();
 	}
 
-	const wanted = DSA.algos.filter(function (a) {
-		return a.id === location.hash.slice(1);
-	})[0];
 	$('info-tabs').addEventListener('click', function (ev) {
 		const tab = ev.target.dataset && ev.target.dataset.tab;
 		if (!tab) {
@@ -462,6 +462,7 @@
 		}
 		Array.prototype.forEach.call($('info-tabs').children, function (b) {
 			b.classList.toggle('on', b.dataset.tab === tab);
+			b.setAttribute('aria-pressed', String(b.dataset.tab === tab));
 		});
 		Array.prototype.forEach.call(document.querySelectorAll('.pane'), function (p) {
 			p.hidden = p.dataset.pane !== tab;
@@ -470,5 +471,6 @@
 	el.speed.max = SPEEDS.length - 1;
 	el.speed.value = 3;
 	el.speedLabel.textContent = '1×';
-	selectAlgo(wanted || DSA.algos[0]);
+	DSA.selectAlgo = selectAlgo;
+	DSA.pause = pause;
 })();

@@ -186,7 +186,7 @@
 		controls: [{ id: 'queens', type: 'range', label: 'Board size', min: 4, max: 8, value: 6 }],
 		legend: [['', 'Square'], ['cur', 'Trying'], ['swap', 'Conflict'], ['done', 'Solution']],
 		blurb: 'Place one queen per row so none attack each other. Try a column; if it clashes, move on; if a row runs out of columns, backtrack and move the previous queen.',
-		complexity: [['Time', 'O(n!) worst'], ['Space', 'O(n)'], ['Pattern', 'Backtracking'], ['Prunes', 'Early on conflict']],
+		complexity: [['Search', 'Exponential'], ['Core space', 'O(n)'], ['Pattern', 'Backtracking'], ['Lab stops at', 'First solution']],
 		code: [
 			'place(row):',
 			'  if row == n: solution found',

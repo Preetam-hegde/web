@@ -251,7 +251,7 @@
 		id: 'dijkstra', group: 'graphs', name: "Dijkstra's Shortest Path", views: ['net', 'strip'], controls: controls, reroll: 'New graph',
 		legend: [['', 'Unreached'], ['queued', 'Frontier'], ['cur', 'Settling'], ['done', 'Settled'], ['tree', 'Shortest path']],
 		blurb: 'Always settle the closest unsettled node, then relax its edges: if going through it is shorter, update the neighbour. Numbers under nodes are distances from the start.',
-		complexity: [['Time', 'O((V+E) log V)'], ['Space', 'O(V)'], ['Uses', 'Priority queue'], ['Needs', 'Non-negative weights']],
+		complexity: [['With binary heap', 'O((V+E) log V)'], ['Core space', 'O(V)'], ['Lab frontier', 'Sorted array'], ['Needs', 'Non-negative weights']],
 		code: [
 			'dist[start] = 0; others = ∞',
 			'pq = [start]',
@@ -330,7 +330,7 @@
 		id: 'prim', group: 'graphs', name: "Prim's Minimum Spanning Tree", views: ['net', 'strip'], controls: controls, reroll: 'New graph',
 		legend: [['', 'Outside tree'], ['queued', 'Candidate'], ['cur', 'Joining'], ['done', 'In the tree'], ['tree', 'MST edge']],
 		blurb: 'Grow one tree outward from the start: repeatedly add the cheapest edge that connects a new node, so the whole graph is linked at minimum total weight.',
-		complexity: [['Time', 'O(E log V)'], ['Space', 'O(V)'], ['Uses', 'Priority queue'], ['Result', 'Min total weight']],
+		complexity: [['Edge-scan time', 'O(V · E)'], ['With binary heap', 'O(E log V)'], ['Core space', 'O(V)'], ['Result', 'Min total weight']],
 		code: [
 			'tree = {start}',
 			'while tree does not cover every node:',
@@ -357,7 +357,7 @@
 				g.edges.forEach(function (e, k) {
 					if (inTree[e.a] !== inTree[e.b]) {
 						candidates.push(k);
-						if (!best || e.w < g.edges[best].w) {
+						if (best === null || e.w < g.edges[best].w) {
 							best = k;
 						}
 					}

@@ -221,7 +221,7 @@
 	DSA.register({
 		id: 'quick', group: 'sorting', name: 'Quick Sort', views: ['bars'], controls: controls, reroll: 'New array', legend: legend,
 		blurb: 'Picks a pivot, partitions smaller values to its left and larger to its right, then recurses. Fast in practice; Lomuto partition shown.',
-		complexity: [['Best', 'O(n log n)'], ['Average', 'O(n log n)'], ['Worst', 'O(n²)'], ['Space', 'O(log n)'], ['Stable', 'No']],
+		complexity: [['Best', 'O(n log n)'], ['Average', 'O(n log n)'], ['Worst', 'O(n²)'], ['Stack (average)', 'O(log n)'], ['Stack (worst)', 'O(n)'], ['Stable', 'No']],
 		code: [
 			'quickSort(lo, hi):',
 			'  if lo >= hi: return',

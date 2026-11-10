@@ -267,14 +267,14 @@ const projects = [
 
 	// ── Interactive Studies & Visualizers (FCC) ──────────────────────────────
 	{
-		name: "DSA Visualizer",
+		name: "DSA Study Studio",
 		shot: "resource/Image/projects/analyser.jpg",
-		blurb: "Step through 24 algorithms and data structures with scrubbable playback and live pseudocode.",
+		blurb: "An all-in-one DSA study guide with worked examples, interview practice and 24 visual explorations.",
 		category: "fcc",
 		icon: "chart-no-axes-column-increasing",
 		link: "apps/analyser/index.html",
 		description:
-			"Step through 24 data structures and algorithms — sorting, searching, stacks, queues, linked lists, BSTs, heaps, graphs, pathfinding, dynamic programming and N-Queens — with scrubbable playback, live pseudocode and complexity cards.",
+			"Learn DSA through detailed lessons, reusable coding patterns, worked examples and important interview questions with progressive hints and solutions. Connect the ideas to 24 interactive visualizations with scrubbable playback and live pseudocode.",
 		tech: [
 			"HTML5",
 			"CSS3",
@@ -286,15 +286,15 @@ const projects = [
 		],
 	},
 	{
-		name: "Verilog Vectors Playground",
-		shot: "resource/Image/projects/vector-01.jpg",
-		blurb: "Interactive bit-width, indexing and part-select practice for Verilog vectors.",
+		name: "AI & ML Visualizer",
+		shot: "resource/Image/projects/ai-ml-lab.jpg",
+		blurb: "Learn AI and ML through 35 story-first lessons, interactive experiments, and 140 interview questions.",
 		category: "fcc",
-		icon: "cpu",
-		link: "apps/vector-01/index.html",
+		icon: "brain",
+		link: "apps/ai-ml-lab/index.html",
 		description:
-			"A visual learning tool that demystifies Verilog vector operations — manipulate bit-widths, indexing, and part-selects interactively to reinforce digital design concepts.",
-		tech: ["HTML5", "CSS3", "JavaScript", "Digital Design", "Verilog"],
+			"A visual AI and machine learning study companion: step through gradient descent, regression, clustering, neural networks, convolution and attention; study classical ML, LLMs, RAG and production systems; and practice 140 interview questions with answers and follow-ups.",
+		tech: ["HTML5", "CSS3", "JavaScript", "SVG", "Machine Learning", "AI"],
 	},
 	{
 		name: "Pomodoro Timer",

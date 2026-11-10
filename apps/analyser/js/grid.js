@@ -239,8 +239,8 @@
 
 	DSA.register({
 		id: 'grid-astar', group: 'pathfinding', name: 'A* Search', views: ['grid'], controls: controls, legend: legend,
-		blurb: 'Always expands the cell with the lowest f = g + h, where g is the cost so far and h is the straight-line (Manhattan) guess to the goal. Optimal and usually far fewer cells than BFS.',
-		complexity: [['Time', 'O(E) typical'], ['Space', 'O(V)'], ['Shortest', 'Yes (admissible h)'], ['Uses', 'Priority queue']],
+		blurb: 'Expands the cell with the lowest f = g + h. Here g counts steps and h is Manhattan distance, a consistent estimate for four-direction unit-cost moves. It finds a shortest path and may explore fewer cells than BFS.',
+		complexity: [['Grid lab time', 'O(V²) worst'], ['Core space', 'O(V)'], ['Shortest', 'Yes (consistent h)'], ['Lab frontier', 'Array scan']],
 		code: [
 			'open = {start}; g[start] = 0',
 			'while open not empty:',
@@ -259,7 +259,7 @@
 	DSA.register({
 		id: 'grid-greedy', group: 'pathfinding', name: 'Greedy Best-First', views: ['grid'], controls: controls, legend: legend,
 		blurb: 'Like A* but ignores the cost so far and chases the goal using only the heuristic. Blazing fast on open ground, but it can be led into dead ends and take longer paths.',
-		complexity: [['Time', 'O(E) typical'], ['Space', 'O(V)'], ['Shortest', 'No'], ['Uses', 'Priority queue']],
+		complexity: [['Grid lab time', 'O(V²) worst'], ['Core space', 'O(V)'], ['Shortest', 'No'], ['Lab frontier', 'Array scan']],
 		code: [
 			'open = {start}',
 			'while open not empty:',

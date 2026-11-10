@@ -1,122 +1,240 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1">
-	<title>DSA Visualizer</title>
-	<meta name="description" content="Step-by-step visualizations of sorting, searching, stacks, queues, linked lists, trees, heaps, graphs, pathfinding, dynamic programming and backtracking.">
-	<link rel="preconnect" href="https://fonts.googleapis.com">
-	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=DotGothic16&family=JetBrains+Mono:wght@400;600&family=Zen+Maru+Gothic:wght@400;500;700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="style.css">
-	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
-</head>
-<body>
-	<div class="app">
-		<header class="topbar">
-			<a class="back" href="../../index.html">&larr; Portfolio</a>
-			<div class="brand">
-				<h1>DSA Visualizer</h1>
-				<span class="kana">アルゴリズム・ビジュアライザー</span>
-			</div>
-			<p class="tagline">Watch data structures and algorithms think. Step, rewind and scrub every move.</p>
-		</header>
-
-		<div class="layout">
-			<nav class="sidebar" id="nav" aria-label="Topics and algorithms"></nav>
-
-			<main class="main">
-				<section class="controls" id="controls" aria-label="Controls"></section>
-
-				<section class="stage-card">
-					<div class="stage-head">
-						<h2 id="stage-title"></h2>
-						<div class="legend" id="legend"></div>
-					</div>
-
-					<div class="stage" id="stage">
-						<div class="view v-bars" id="v-bars" hidden></div>
-						<div class="view v-net" id="v-net" hidden></div>
-						<div class="view v-lin" id="v-lin" hidden></div>
-						<div class="view v-table" id="v-table" hidden></div>
-						<div class="view v-board" id="v-board" hidden></div>
-						<div class="view v-grid" id="v-grid" hidden></div>
-						<div class="view v-strip" id="v-strip" hidden></div>
-					</div>
-
-					<p class="narration" id="narration" aria-live="polite"></p>
-					<div class="stats" id="stats"></div>
-
-					<div class="player">
-						<button type="button" class="icon-btn" id="btn-first" aria-label="Restart" title="Restart (Home)">
-							<svg viewBox="0 0 24 24"><path d="M6 5v14M19 5.5v13L9 12z"/></svg>
-						</button>
-						<button type="button" class="icon-btn" id="btn-prev" aria-label="Step back" title="Step back (←)">
-							<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6"/></svg>
-						</button>
-						<button type="button" class="icon-btn play" id="btn-play" aria-label="Play" title="Play / pause (Space)">
-							<svg class="i-play" viewBox="0 0 24 24"><path d="M8 5.5v13L19 12z"/></svg>
-							<svg class="i-pause" viewBox="0 0 24 24"><path d="M8 5v14M16 5v14"/></svg>
-						</button>
-						<button type="button" class="icon-btn" id="btn-next" aria-label="Step forward" title="Step forward (→)">
-							<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6"/></svg>
-						</button>
-						<button type="button" class="icon-btn" id="btn-last" aria-label="Jump to end" title="Jump to end (End)">
-							<svg viewBox="0 0 24 24"><path d="M18 5v14M5 5.5v13L15 12z"/></svg>
-						</button>
-						<input type="range" id="scrub" class="scrub" min="0" max="0" value="0" aria-label="Timeline">
-						<span class="step-count" id="step-count">1 / 1</span>
-						<label class="speed">
-							<span>Speed</span>
-							<input type="range" id="speed" min="0" max="8" value="3">
-							<output id="speed-label">1×</output>
-						</label>
-					</div>
-				</section>
-			</main>
-
-			<aside class="info-card">
-				<h3 id="info-name"></h3>
-				<div class="info-tabs" id="info-tabs" role="tablist">
-					<button type="button" role="tab" data-tab="story" class="on">Story</button>
-					<button type="button" role="tab" data-tab="code">Code</button>
-					<button type="button" role="tab" data-tab="speed">Speed</button>
-					<button type="button" role="tab" data-tab="real">Real life</button>
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<title>DSA Study Studio — Learn, Visualize &amp; Interview</title>
+		<meta
+			name="description"
+			content="An all-in-one DSA study guide with detailed lessons, worked examples, coding patterns, interview questions with hints and solutions, and 24 interactive visualizations."
+		/>
+		<link rel="preconnect" href="https://fonts.googleapis.com" />
+		<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+		<link
+			href="https://fonts.googleapis.com/css2?family=DotGothic16&family=JetBrains+Mono:wght@400;600&family=Zen+Maru+Gothic:wght@400;500;700&display=swap"
+			rel="stylesheet"
+		/>
+		<link rel="stylesheet" href="style.css" />
+		<script
+			data-goatcounter="https://ptwo.goatcounter.com/count"
+			async
+			src="//gc.zgo.at/count.js"
+		></script>
+	</head>
+	<body data-mode="study">
+		<a class="skip-link" href="#main-content">Skip to learning content</a>
+		<div class="app">
+			<header class="topbar">
+				<a class="back" href="../../index.html">&larr; Portfolio</a>
+				<div class="brand">
+					<h1>DSA Study Studio</h1>
 				</div>
-				<section class="pane" data-pane="story">
-					<div class="eli5" id="eli5"></div>
-					<p class="blurb" id="info-blurb"></p>
-				</section>
-				<section class="pane" data-pane="code" hidden>
-					<div class="codebox">
-						<ol class="code" id="code"></ol>
+				<p class="tagline">
+					Understand the idea. Trace the steps. Solve it yourself.
+				</p>
+			</header>
+			<nav class="mode-nav" aria-label="Learning modes">
+				<a href="#study/start" data-mode-link="study">Study guide</a>
+				<a href="#study/questions" data-mode-link="questions"
+					>Interview practice</a
+				>
+				<a href="#bubble" data-mode-link="lab"
+					>Visual lab <span>24 explorations</span></a
+				>
+			</nav>
+
+			<div class="layout">
+				<nav
+					class="sidebar study-nav"
+					id="study-nav"
+					aria-label="Study chapters"
+				></nav>
+				<nav
+					class="sidebar"
+					id="nav"
+					aria-label="Topics and algorithms"
+					hidden
+				></nav>
+
+				<main class="main" id="main-content" tabindex="-1">
+					<article class="study-card" id="study-content"></article>
+					<div class="lab-content" id="lab-content" hidden>
+						<div class="lab-intro">
+							<p class="eyebrow">Learn by doing</p>
+							<p>
+								Predict the next move, step once, then explain why it happened.
+								Use the full-width notes below to connect the picture to the
+								code.
+							</p>
+						</div>
+						<section
+							class="controls"
+							id="controls"
+							aria-label="Controls"
+						></section>
+
+						<section class="stage-card">
+							<div class="stage-head">
+								<h2 id="stage-title"></h2>
+								<div class="legend" id="legend"></div>
+							</div>
+
+							<div class="stage" id="stage">
+								<div class="view v-bars" id="v-bars" hidden></div>
+								<div class="view v-net" id="v-net" hidden></div>
+								<div class="view v-lin" id="v-lin" hidden></div>
+								<div class="view v-table" id="v-table" hidden></div>
+								<div class="view v-board" id="v-board" hidden></div>
+								<div class="view v-grid" id="v-grid" hidden></div>
+								<div class="view v-strip" id="v-strip" hidden></div>
+							</div>
+
+							<p class="narration" id="narration" aria-live="polite"></p>
+							<div class="stats" id="stats"></div>
+
+							<div class="player">
+								<button
+									type="button"
+									class="icon-btn"
+									id="btn-first"
+									aria-label="Restart"
+									title="Restart (Home)"
+								>
+									<svg viewBox="0 0 24 24">
+										<path d="M6 5v14M19 5.5v13L9 12z" />
+									</svg>
+								</button>
+								<button
+									type="button"
+									class="icon-btn"
+									id="btn-prev"
+									aria-label="Step back"
+									title="Step back (←)"
+								>
+									<svg viewBox="0 0 24 24"><path d="M15 6l-6 6 6 6" /></svg>
+								</button>
+								<button
+									type="button"
+									class="icon-btn play"
+									id="btn-play"
+									aria-label="Play"
+									title="Play / pause (Space)"
+								>
+									<svg class="i-play" viewBox="0 0 24 24">
+										<path d="M8 5.5v13L19 12z" />
+									</svg>
+									<svg class="i-pause" viewBox="0 0 24 24">
+										<path d="M8 5v14M16 5v14" />
+									</svg>
+								</button>
+								<button
+									type="button"
+									class="icon-btn"
+									id="btn-next"
+									aria-label="Step forward"
+									title="Step forward (→)"
+								>
+									<svg viewBox="0 0 24 24"><path d="M9 6l6 6-6 6" /></svg>
+								</button>
+								<button
+									type="button"
+									class="icon-btn"
+									id="btn-last"
+									aria-label="Jump to end"
+									title="Jump to end (End)"
+								>
+									<svg viewBox="0 0 24 24">
+										<path d="M18 5v14M5 5.5v13L15 12z" />
+									</svg>
+								</button>
+								<input
+									type="range"
+									id="scrub"
+									class="scrub"
+									min="0"
+									max="0"
+									value="0"
+									aria-label="Timeline"
+								/>
+								<span class="step-count" id="step-count">1 / 1</span>
+								<label class="speed">
+									<span>Speed</span>
+									<input type="range" id="speed" min="0" max="8" value="3" />
+									<output id="speed-label">1×</output>
+								</label>
+							</div>
+						</section>
+						<section class="info-card" aria-label="Algorithm study notes">
+							<h3 id="info-name"></h3>
+							<div
+								class="info-tabs"
+								id="info-tabs"
+								role="group"
+								aria-label="Study note sections"
+							>
+								<button
+									type="button"
+									data-tab="story"
+									class="on"
+									aria-pressed="true"
+								>
+									Understand
+								</button>
+								<button type="button" data-tab="code" aria-pressed="false">
+									Pseudocode
+								</button>
+								<button type="button" data-tab="speed" aria-pressed="false">
+									Complexity
+								</button>
+								<button type="button" data-tab="real" aria-pressed="false">
+									Applications
+								</button>
+							</div>
+							<section class="pane" data-pane="story">
+								<div class="eli5" id="eli5"></div>
+								<p class="blurb" id="info-blurb"></p>
+							</section>
+							<section class="pane" data-pane="code" hidden>
+								<div class="codebox">
+									<ol class="code" id="code"></ol>
+								</div>
+							</section>
+							<section class="pane" data-pane="speed" hidden>
+								<div class="complexity" id="complexity"></div>
+								<p class="blurb">
+									These bounds describe the core algorithm and the
+									implementation named on each card. This teaching lab also
+									records full playback frames, which add time and memory
+									overhead.
+								</p>
+							</section>
+							<section class="pane" data-pane="real" hidden>
+								<div class="real" id="real"></div>
+							</section>
+						</section>
 					</div>
-				</section>
-				<section class="pane" data-pane="speed" hidden>
-					<div class="complexity" id="complexity"></div>
-				</section>
-				<section class="pane" data-pane="real" hidden>
-					<div class="real" id="real"></div>
-				</section>
-			</aside>
+				</main>
+			</div>
+
+			<footer class="foot">
+				Built with love by Preetam Ptwo &middot; Learn a little. Practice
+				deliberately. Come back tomorrow.
+			</footer>
 		</div>
 
-		<footer class="foot">
-			Built with love by Preetam Ptwo &middot; Space plays &middot; &larr; &rarr; step &middot; Home / End jump
-		</footer>
-	</div>
-
-	<script src="js/core.js"></script>
-	<script src="js/eli5.js"></script>
-	<script src="js/real.js"></script>
-	<script src="js/views.js"></script>
-	<script src="js/sorting.js"></script>
-	<script src="js/searching.js"></script>
-	<script src="js/structures.js"></script>
-	<script src="js/trees.js"></script>
-	<script src="js/graphs.js"></script>
-	<script src="js/grid.js"></script>
-	<script src="js/dp.js"></script>
-	<script src="js/app.js"></script>
-</body>
+		<script src="js/core.js"></script>
+		<script src="js/eli5.js"></script>
+		<script src="js/real.js"></script>
+		<script src="js/views.js"></script>
+		<script src="js/sorting.js"></script>
+		<script src="js/searching.js"></script>
+		<script src="js/structures.js"></script>
+		<script src="js/trees.js"></script>
+		<script src="js/graphs.js"></script>
+		<script src="js/grid.js"></script>
+		<script src="js/dp.js"></script>
+		<script src="js/app.js"></script>
+		<script src="js/guide.js"></script>
+		<script src="js/study.js"></script>
+	</body>
 </html>
