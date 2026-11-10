@@ -19,11 +19,17 @@
 			<a
 				class="brand"
 				href="../../index.html"
-				aria-label="Back to Preetam's portfolio"
-				><img src="assets/emblem.svg" alt="" width="30" height="30" /><span
-					>WYRDBOARD</span
-				></a
+				aria-label="Wyrdboard. Back to Preetam's portfolio"
+				><img src="assets/emblem.svg" alt="" width="30" height="30" />
+				<h1 id="title">
+					Wyrd<em>board</em><span class="title-star" aria-hidden="true">✳</span>
+				</h1></a
 			>
+			<p class="meta">
+				<span id="edition" class="tiny-label">EXCAVATION IN PROGRESS</span
+				><span id="date-label">Preparing the daily tablet…</span>
+			</p>
+			<ol id="stages" class="stages" aria-label="Your path"></ol>
 			<nav aria-label="Game tools">
 				<button id="streak-chip" type="button" title="Daily streak">
 					<span aria-hidden="true">♨</span> <b id="streak-count">0</b
@@ -60,28 +66,10 @@
 			</nav>
 		</header>
 		<main>
-			<section class="masthead" aria-labelledby="title">
-				<div class="masthead-note">
-					<span class="tiny-label">A DAILY DEDUCTION</span
-					><span>Unearth what was forgotten.</span>
-				</div>
-				<div class="title-block">
-					<p class="eyebrow">A GAME LOST TO TIME. A MYSTERY FOR YOU.</p>
-					<h1 id="title">
-						Wyrd<em>board</em
-						><span class="title-star" aria-hidden="true">✳</span>
-					</h1>
-				</div>
-				<div class="masthead-note edition">
-					<span id="edition" class="tiny-label">EXCAVATION IN PROGRESS</span
-					><span id="date-label">Preparing the daily tablet…</span>
-				</div>
-			</section>
 			<div id="loading" class="loading" role="status">
 				Brushing the dust from today's discovery…
 			</div>
 			<div id="game" hidden>
-				<ol id="stages" class="stages" aria-label="Your path"></ol>
 				<section id="coach" class="coach" aria-live="polite"></section>
 				<div class="workspace">
 					<section class="arena" id="arena" aria-labelledby="board-title">
@@ -124,83 +112,98 @@
 								>
 							</div>
 						</div>
-						<div
-							class="oracle-line"
-							role="status"
-							aria-live="polite"
-							aria-atomic="true"
-						>
-							<span id="oracle-glyph" class="oracle-glyph" aria-hidden="true"
-								>⌁</span
+						<div class="oracle-zone">
+							<div
+								class="oracle-line"
+								role="status"
+								aria-live="polite"
+								aria-atomic="true"
 							>
-							<div class="oracle-text">
-								<strong id="oracle-title">The stone is listening.</strong>
-								<p id="oracle-detail"></p>
-							</div>
-							<span id="oracle-gain" class="gain" hidden></span>
-							<button id="reset-probe" class="text-button" type="button" hidden>
-								Back to fragment ↶
-							</button>
-						</div>
-						<div id="foresight-prompt" class="foresight-prompt" hidden>
-							<p id="foresight-question">Will the stone accept it?</p>
-							<div>
-								<button id="predict-yes" type="button">✓ Accepted</button>
-								<button id="predict-no" type="button">× Refused</button>
-								<button id="predict-cancel" class="text-button" type="button">
-									Cancel
+								<span id="oracle-glyph" class="oracle-glyph" aria-hidden="true"
+									>⌁</span
+								>
+								<div class="oracle-text">
+									<strong id="oracle-title">The stone is listening.</strong>
+									<p id="oracle-detail"></p>
+								</div>
+								<span id="oracle-gain" class="gain" hidden></span>
+								<button
+									id="reset-probe"
+									class="text-button"
+									type="button"
+									hidden
+								>
+									Back to fragment ↶
 								</button>
 							</div>
+							<div id="foresight-prompt" class="foresight-prompt" hidden>
+								<p id="foresight-question">Will the stone accept it?</p>
+								<div>
+									<button id="predict-yes" type="button">✓ Accepted</button>
+									<button id="predict-no" type="button">× Refused</button>
+									<button id="predict-cancel" class="text-button" type="button">
+										Cancel
+									</button>
+								</div>
+							</div>
 						</div>
-						<div class="panel-head">
-							<h3>
-								Excavated fragments <span id="echo-count">0 / 8 watched</span>
-							</h3>
-							<span class="hint">Replays are always free</span>
+						<div class="strip">
+							<div class="strip-fragments">
+								<div class="panel-head">
+									<h3>
+										Excavated fragments
+										<span id="echo-count">0 / 8 watched</span>
+									</h3>
+									<span class="hint">Replays are free</span>
+								</div>
+								<div
+									id="fragments"
+									class="fragment-strip"
+									role="group"
+									aria-label="Choose a fragment"
+								></div>
+								<div class="replay-controls">
+									<button
+										id="play-replay"
+										class="replay-button"
+										type="button"
+										aria-label="Play fragment"
+									>
+										▶</button
+									><input
+										id="scrubber"
+										aria-label="Fragment move"
+										type="range"
+										min="0"
+										max="6"
+										value="0"
+									/><span id="frame-label">01 / 07</span
+									><button
+										id="previous-frame"
+										type="button"
+										aria-label="Previous move"
+									>
+										←</button
+									><button id="next-frame" type="button" aria-label="Next move">
+										→
+									</button>
+								</div>
+							</div>
+							<div class="strip-log">
+								<div class="panel-head">
+									<h3>Your dig log <span id="probe-count">00</span></h3>
+									<span id="score" class="hint">SCORE 0 · PAR —</span>
+								</div>
+								<div id="dig-log" class="dig-log"></div>
+							</div>
 						</div>
-						<div
-							id="fragments"
-							class="fragment-strip"
-							role="group"
-							aria-label="Choose a fragment"
-						></div>
-						<div class="replay-controls">
-							<button
-								id="play-replay"
-								class="replay-button"
-								type="button"
-								aria-label="Play fragment"
-							>
-								▶</button
-							><input
-								id="scrubber"
-								aria-label="Fragment move"
-								type="range"
-								min="0"
-								max="6"
-								value="0"
-							/><span id="frame-label">01 / 07</span
-							><button
-								id="previous-frame"
-								type="button"
-								aria-label="Previous move"
-							>
-								←</button
-							><button id="next-frame" type="button" aria-label="Next move">
-								→
-							</button>
-						</div>
-						<div class="panel-head">
-							<h3>Your dig log <span id="probe-count">00</span></h3>
-							<span id="score" class="hint">SCORE 0 · PAR —</span>
-						</div>
-						<div id="dig-log" class="dig-log"></div>
 					</section>
 					<aside class="ledger notebook" aria-labelledby="ledger-title">
 						<div class="ledger-head">
 							<div>
 								<span class="tiny-label">THE FIELD NOTES</span>
 								<h2 id="ledger-title">A theory in five parts.</h2>
+								<p id="briefing" class="briefing"></p>
 							</div>
 							<div
 								class="clarity"
@@ -233,7 +236,6 @@
 							>
 						</div>
 						<div id="slots"></div>
-						<p id="briefing" class="briefing"></p>
 						<div
 							id="submission-feedback"
 							class="submission-feedback"
@@ -243,35 +245,53 @@
 						<button id="submit" class="primary-button" type="button" disabled>
 							Inscribe your rules <span aria-hidden="true">↗</span>
 						</button>
-						<div class="submission-meta">
-							<span id="attempts">3 inscriptions remain</span
-							><span>WRONG GUESS +3</span>
+						<div class="ledger-foot">
+							<button id="hint" class="hint-button" type="button">
+								✧ Ask the Scribe <span>+2</span>
+							</button>
+							<span id="attempts">3 inscriptions remain</span>
 						</div>
-						<button id="hint" class="hint-button" type="button">
-							✧ Ask the Scribe <span>+2 points</span>
-						</button>
 						<p id="assist-note" class="assist-note" hidden>
 							Assisted expedition · explore freely, without a rank.
 						</p>
 					</aside>
 				</div>
-				<section
-					id="result"
-					class="result"
-					hidden
-					aria-labelledby="result-title"
-				></section>
-				<div class="page-footnote">
-					<span>OBSERVATION IS YOUR ONLY INSTRUMENT.</span>
-					<span>No timer. No luck. Just a little curiosity.</span>
-					<span id="streak-label"></span>
-				</div>
 			</div>
 		</main>
+		<section
+			id="result"
+			class="result"
+			hidden
+			aria-labelledby="result-title"
+		></section>
 		<footer>
-			<a href="../../index.html">← BACK TO THE PORTFOLIO</a
-			><span>MADE FOR THE CURIOUS.</span><span>WYRDBOARD · VOL. I</span>
+			<span id="streak-label">♨ A new expedition begins.</span
+			><span>OBSERVATION IS YOUR ONLY INSTRUMENT. NO TIMER. NO LUCK.</span>
 		</footer>
+		<div id="tour" class="tour" hidden>
+			<div id="tour-spot" class="tour-spot"></div>
+			<div
+				id="tour-card"
+				class="tour-card"
+				role="dialog"
+				aria-labelledby="tour-title"
+				aria-describedby="tour-body"
+			>
+				<span id="tour-count" class="tiny-label"></span>
+				<h3 id="tour-title"></h3>
+				<p id="tour-body"></p>
+				<div class="tour-actions">
+					<button id="tour-skip" class="text-button" type="button">
+						Skip tour
+					</button>
+					<span id="tour-dots" class="tour-dots" aria-hidden="true"></span>
+					<button id="tour-back" type="button">Back</button>
+					<button id="tour-next" class="primary-button" type="button">
+						Next
+					</button>
+				</div>
+			</div>
+		</div>
 		<dialog id="modal">
 			<button
 				id="close-modal"

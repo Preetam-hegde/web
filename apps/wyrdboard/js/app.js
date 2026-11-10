@@ -45,6 +45,7 @@ let saved = {
 	reduced: null,
 	skin: false,
 	foresight: false,
+	tour: false,
 };
 let storageAvailable = true;
 try {
@@ -59,6 +60,7 @@ try {
 			reduced: typeof raw.reduced === "boolean" ? raw.reduced : null,
 			skin: raw.skin === true,
 			foresight: raw.foresight === true,
+			tour: raw.tour === true,
 		};
 } catch {
 	storageAvailable = false;
@@ -208,7 +210,8 @@ function renderStages() {
 function renderCoach(active) {
 	const coach = $("coach");
 	if (active < 0) {
-		coach.hidden = true;
+		coach.hidden = false;
+		coach.innerHTML = `<span class="coach-step">${run.finished === "solved" ? "SOLVED" : "REVEALED"}</span><div><strong>This tablet is finished.</strong><p>Explore the fragments, dig log and the Scribe's review, or open your result again.</p></div><button type="button" class="coach-cta" data-coach="result">View result</button>`;
 		return;
 	}
 	coach.hidden = false;
@@ -592,8 +595,11 @@ async function loadPuzzle(date) {
 			"The stone is listening.",
 			`Select ${displayState.turn === "A" ? "a shell" : "an onyx"} piece, then any square to test a move.`,
 		);
-		if (run.finished) renderResult(null);
+		if (run.finished) renderResult(null, false);
 		renderChrome();
+		// A brand-new player gets the guided tour once.
+		if (!saved.tour && !run.finished && !run.probes.length)
+			window.setTimeout(() => startTour(0), 600);
 		if (!storageAvailable)
 			setStatus(
 				"⌁",
@@ -621,19 +627,18 @@ function finish(won) {
 	renderSlots();
 	atmosphere.setFog(1);
 	renderClarity();
-	renderResult({
-		xp: xpOf(entry),
-		levelUp: after.level.level > before.level.level,
-		level: `Level ${after.level.level} · ${after.level.title}`,
-		badges: earnedBadges(after).filter((id) => !known.has(id)),
-	});
+	renderResult(
+		{
+			xp: xpOf(entry),
+			levelUp: after.level.level > before.level.level,
+			level: `Level ${after.level.level} · ${after.level.title}`,
+			badges: earnedBadges(after).filter((id) => !known.has(id)),
+		},
+		true,
+	);
 	atmosphere.play("reveal");
 	if (won) atmosphere.burst($("burst"), run.assisted ? 0.5 : 1);
 	renderChrome();
-	$("result").scrollIntoView({
-		behavior: atmosphere.reduced ? "auto" : "smooth",
-		block: "start",
-	});
 }
 function countUp(el, to) {
 	if (atmosphere.reduced || !to) {
@@ -648,7 +653,7 @@ function countUp(el, to) {
 	};
 	requestAnimationFrame(step);
 }
-function renderResult(reward) {
+function renderResult(reward, open) {
 	const answer = getAnswer(),
 		score = scoreRun(run),
 		won = run.finished === "solved",
@@ -661,9 +666,10 @@ function renderResult(reward) {
 			: won
 				? `${rank(score, puzzle.par)}.`
 				: "The rules, rediscovered.";
-	$("result").hidden = false;
+	$("result").hidden = !open;
+	renderCoach(-1);
 	$("result").innerHTML =
-		`<div class="result-card"><span class="tiny-label">${won ? "THE TABLET IS WHOLE AGAIN" : "EVERY EXPEDITION UNCOVERS SOMETHING"}</span><h2 id="result-title" class="rank-title">${title}</h2><div class="stars" aria-label="${earned} of 3 stars">${[0, 1, 2].map((i) => `<span class="star ${i < earned ? "on" : ""}" style="--i:${i}" aria-hidden="true">★</span>`).join("")}</div><p class="result-sub">${score} points · ${run.probes.length} tests · ${run.wrong} wrong · ${run.hints.length} hints · par ${puzzle.par}</p><div class="reveal-tablet">${slots.map((slot, i) => `<div class="revealed-rule" style="--i:${i}"><small>${slotNames[slot].toUpperCase()}</small><b><span aria-hidden="true">${ruleInfo[slot][answer[slot]][0]}</span> ${ruleInfo[slot][answer[slot]][1]}</b></div>`).join("")}</div><div class="reward-row"><div class="reward"><span>XP EARNED</span><b>+<span id="xp-count">0</span></b></div><div class="reward level"><span>${reward?.levelUp ? "LEVEL UP!" : "LEVEL"}</span><b>${reward?.level ?? `Level ${stats.level.level} · ${stats.level.title}`}</b><i class="level-bar"><u style="width:${(100 * stats.level.into) / stats.level.need}%"></u></i></div><div class="reward"><span>STREAK</span><b>♨ ${stats.current}</b></div></div>${
+		`<div class="result-card"><button type="button" class="close-result" data-close-result aria-label="Close result">×</button><span class="tiny-label">${won ? "THE TABLET IS WHOLE AGAIN" : "EVERY EXPEDITION UNCOVERS SOMETHING"}</span><h2 id="result-title" class="rank-title">${title}</h2><div class="stars" aria-label="${earned} of 3 stars">${[0, 1, 2].map((i) => `<span class="star ${i < earned ? "on" : ""}" style="--i:${i}" aria-hidden="true">★</span>`).join("")}</div><p class="result-sub">${score} points · ${run.probes.length} tests · ${run.wrong} wrong · ${run.hints.length} hints · par ${puzzle.par}</p><div class="reveal-tablet">${slots.map((slot, i) => `<div class="revealed-rule" style="--i:${i}"><small>${slotNames[slot].toUpperCase()}</small><b><span aria-hidden="true">${ruleInfo[slot][answer[slot]][0]}</span> ${ruleInfo[slot][answer[slot]][1]}</b></div>`).join("")}</div><div class="reward-row"><div class="reward"><span>XP EARNED</span><b>+<span id="xp-count">0</span></b></div><div class="reward level"><span>${reward?.levelUp ? "LEVEL UP!" : "LEVEL"}</span><b>${reward?.level ?? `Level ${stats.level.level} · ${stats.level.title}`}</b><i class="level-bar"><u style="width:${(100 * stats.level.into) / stats.level.need}%"></u></i></div><div class="reward"><span>STREAK</span><b>♨ ${stats.current}</b></div></div>${
 			reward?.badges.length
 				? `<div class="new-badges"><span>NEW BADGE${reward.badges.length > 1 ? "S" : ""}</span>${reward.badges
 						.map((id) => BADGES.find((b) => b.id === id))
@@ -827,7 +833,7 @@ function showMuseum(tab = "records") {
 }
 function showHelp() {
 	openModal(
-		`<span class="tiny-label">HOW TO PLAY</span><h2>Find the five rules.</h2><p>A forgotten game has five hidden rules. You never see them, only what they do.</p><ol><li><strong>Observe.</strong> Watch the eight fragments: recorded games where every move was legal. Shell is ○, onyx is ◇, ✳ marks rosettes.</li><li><strong>Test.</strong> Tap a piece, then any square. Drag works too. The stone says whether the move is allowed and what happens. Each test costs one point, so choose carefully. The clarity ring shows how much you have narrowed it down.</li><li><strong>Deduce.</strong> In the field notes, pick one option per row. Use <em>Cross out</em> to mark what the evidence has ruled out.</li><li><strong>Inscribe.</strong> Submit all five. A wrong guess costs 3 points and shows which rows were right. Three wrong guesses reveal the answer.</li></ol><p><strong>Ask the Scribe</strong> reveals one rule for 2 points. <strong>Scribe assist</strong> crosses out impossible options for you, but earns less XP and no rank. <strong>Foresight</strong> asks you to predict each answer first; every hit is +10 XP.</p><p>Score = tests + 3 × wrong guesses + 2 × hints. Under par: Champollion. Par: Decipherer. +1: Epigrapher. +2 to 4: Scribe. +5 or more: Digger. Par is a greedy benchmark, not proven optimal, so beating it is a feat. Three stars need par or better with no hints.</p><label class="settings-row"><input type="checkbox" id="reduce-motion" ${atmosphere.reduced ? "checked" : ""}> Reduce motion and dust</label><div class="rule-guide">${slots.map((slot) => `<h3>${slotNames[slot]}</h3>${options[slot].map((value) => `<p><strong>${ruleInfo[slot][value][0]} ${ruleInfo[slot][value][1]}.</strong> ${ruleInfo[slot][value][2]}</p>`).join("")}`).join("")}</div><p class="note">These are invented deterministic games inspired by ancient boards. No account or timer is needed. Progress stays in this browser.</p>`,
+		`<span class="tiny-label">HOW TO PLAY</span><h2>Find the five rules.</h2><button type="button" id="start-tour" class="primary-button tour-launch">Take the guided tour</button><p>A forgotten game has five hidden rules. You never see them, only what they do.</p><ol><li><strong>Observe.</strong> Watch the eight fragments: recorded games where every move was legal. Shell is ○, onyx is ◇, ✳ marks rosettes.</li><li><strong>Test.</strong> Tap a piece, then any square. Drag works too. The stone says whether the move is allowed and what happens. Each test costs one point, so choose carefully. The clarity ring shows how much you have narrowed it down.</li><li><strong>Deduce.</strong> In the field notes, pick one option per row. Use <em>Cross out</em> to mark what the evidence has ruled out.</li><li><strong>Inscribe.</strong> Submit all five. A wrong guess costs 3 points and shows which rows were right. Three wrong guesses reveal the answer.</li></ol><p><strong>Ask the Scribe</strong> reveals one rule for 2 points. <strong>Scribe assist</strong> crosses out impossible options for you, but earns less XP and no rank. <strong>Foresight</strong> asks you to predict each answer first; every hit is +10 XP.</p><p>Score = tests + 3 × wrong guesses + 2 × hints. Under par: Champollion. Par: Decipherer. +1: Epigrapher. +2 to 4: Scribe. +5 or more: Digger. Par is a greedy benchmark, not proven optimal, so beating it is a feat. Three stars need par or better with no hints.</p><label class="settings-row"><input type="checkbox" id="reduce-motion" ${atmosphere.reduced ? "checked" : ""}> Reduce motion and dust</label><div class="rule-guide">${slots.map((slot) => `<h3>${slotNames[slot]}</h3>${options[slot].map((value) => `<p><strong>${ruleInfo[slot][value][0]} ${ruleInfo[slot][value][1]}.</strong> ${ruleInfo[slot][value][2]}</p>`).join("")}`).join("")}</div><p class="note">These are invented deterministic games inspired by ancient boards. No account or timer is needed. Progress stays in this browser.</p>`,
 	);
 	$("reduce-motion").onchange = (event) => {
 		atmosphere.reduced = event.target.checked;
@@ -836,13 +842,184 @@ function showHelp() {
 		save();
 	};
 }
+const TOUR = [
+	{
+		title: "Welcome to Wyrdboard",
+		body: "Every board follows five hidden rules. You can never read them, only watch what they do and test them. This short tour shows you how. It takes about thirty seconds.",
+		targets: [],
+	},
+	{
+		title: "Watch the fragments",
+		body: "These are eight recorded games, and every move in them was legal. Watch at least three to the end and look for patterns. Replays are always free.",
+		targets: ["#fragments", ".replay-controls"],
+	},
+	{
+		title: "This is the board",
+		body: "Shell ○ and onyx ◇ pieces. ✳ marks rosettes and the ◇ squares in the middle are the centre. Tap a piece, then any square, even one you think is illegal. Dragging works too.",
+		targets: ["#board-frame"],
+	},
+	{
+		title: "Ask the stone",
+		body: "The stone answers every test: allowed, refused, or what happened. Each test costs 1 point, so pick the ones that tell you the most. Your tests collect in the dig log.",
+		targets: [".oracle-zone"],
+	},
+	{
+		title: "Watch your clarity",
+		body: "The ring shows how much the evidence has narrowed the rules down. After every test you will see what you gained. At 100% only one answer is left.",
+		targets: ["#clarity"],
+		phone: ["#ledger-open"],
+	},
+	{
+		title: "Build your theory",
+		body: "Choose one option in each row. Hover an option to read what it means. Use Cross out for rules you have ruled out. Scribe assist can do it for you, for less reward.",
+		targets: [".ledger"],
+		phone: ["#ledger-open"],
+	},
+	{
+		title: "Inscribe your rules",
+		body: "When you are sure, submit. A wrong guess costs 3 points and shows which rows were right. Ask the Scribe reveals one rule for 2 points. Fewer points means a better rank.",
+		targets: ["#submit"],
+		phone: ["#ledger-open"],
+	},
+	{
+		title: "Follow the path",
+		body: "These four steps track your progress, and the bar under them always says what to do next. Try Foresight on the board for bonus XP: predict each answer before you ask.",
+		targets: ["#stages"],
+	},
+];
+let tourStep = -1;
+function visibleTarget(selector) {
+	const el = document.querySelector(selector);
+	if (!el) return null;
+	const r = el.getBoundingClientRect();
+	return r.width > 0 && r.height > 0 ? el : null;
+}
+function startTour(step) {
+	stopReplay();
+	cancelPending();
+	if (ledgerSheet.open) ledgerSheet.close();
+	showTourStep(step);
+}
+function endTour() {
+	$("tour").hidden = true;
+	tourStep = -1;
+	saved.tour = true;
+	save();
+}
+function showTourStep(i) {
+	const step = TOUR[i];
+	tourStep = i;
+	const els = (phone.matches && step.phone ? step.phone : step.targets)
+		.map(visibleTarget)
+		.filter((el) => el !== null);
+	if (phone.matches && els.length)
+		els[0].scrollIntoView({ block: "center", behavior: "auto" });
+	const rects = els.map((el) => el.getBoundingClientRect());
+	const box = rects.length
+		? {
+				left: Math.min(...rects.map((r) => r.left)) - 8,
+				top: Math.min(...rects.map((r) => r.top)) - 8,
+				right: Math.max(...rects.map((r) => r.right)) + 8,
+				bottom: Math.max(...rects.map((r) => r.bottom)) + 8,
+			}
+		: null;
+	const spot = $("tour-spot"),
+		card = $("tour-card");
+	spot.classList.toggle("empty", !box);
+	Object.assign(spot.style, {
+		left: `${box ? box.left : innerWidth / 2}px`,
+		top: `${box ? box.top : innerHeight / 2}px`,
+		width: `${box ? box.right - box.left : 0}px`,
+		height: `${box ? box.bottom - box.top : 0}px`,
+	});
+	$("tour-count").textContent = `STEP ${i + 1} OF ${TOUR.length}`;
+	$("tour-title").textContent = step.title;
+	$("tour-body").textContent = step.body;
+	$("tour-dots").innerHTML = TOUR.map(
+		(_, n) => `<i class="${n === i ? "on" : n < i ? "past" : ""}"></i>`,
+	).join("");
+	$("tour-back").hidden = i === 0;
+	$("tour-skip").hidden = i === TOUR.length - 1;
+	$("tour-next").textContent = i === TOUR.length - 1 ? "Let's dig in" : "Next";
+	$("tour").hidden = false;
+	const margin = 12,
+		cw = card.offsetWidth,
+		ch = card.offsetHeight;
+	let x = (innerWidth - cw) / 2,
+		y = (innerHeight - ch) / 2;
+	if (phone.matches) {
+		// Phones: a full-width card on whichever edge the target is not on.
+		const low = box ? (box.top + box.bottom) / 2 > innerHeight / 2 : false;
+		y = low ? margin : innerHeight - ch - margin;
+		x = margin;
+		card.style.width = `${innerWidth - margin * 2}px`;
+	} else {
+		card.style.width = "";
+		if (box) {
+			const fit = [
+				[
+					box.right + margin,
+					box.top,
+					box.right + margin + cw <= innerWidth - margin,
+				],
+				[box.left - margin - cw, box.top, box.left - margin - cw >= margin],
+				[
+					box.left,
+					box.bottom + margin,
+					box.bottom + margin + ch <= innerHeight - margin,
+				],
+				[box.left, box.top - margin - ch, box.top - margin - ch >= margin],
+			].find((p) => p[2]);
+			if (fit) [x, y] = [fit[0], fit[1]];
+			else y = innerHeight - ch - margin;
+		}
+		x = Math.max(margin, Math.min(x, innerWidth - cw - margin));
+		y = Math.max(margin, Math.min(y, innerHeight - ch - margin));
+	}
+	card.style.left = `${x}px`;
+	card.style.top = `${y}px`;
+	$("tour-next").focus({ preventScroll: true });
+}
+$("tour-next").onclick = () => {
+	if (tourStep >= TOUR.length - 1) endTour();
+	else showTourStep(tourStep + 1);
+};
+$("tour-back").onclick = () => showTourStep(Math.max(0, tourStep - 1));
+$("tour-skip").onclick = endTour;
+document.addEventListener("keydown", (event) => {
+	if (tourStep < 0) return;
+	if (event.key === "Escape") endTour();
+	else if (event.key === "ArrowRight") $("tour-next").click();
+	else if (event.key === "ArrowLeft" && tourStep > 0) $("tour-back").click();
+});
+window.addEventListener("resize", () => {
+	if (tourStep >= 0) showTourStep(tourStep);
+});
 /* ── Events ─────────────────────────────────────────────────────────────── */
+const phone = matchMedia("(max-width: 900px)");
+/** On a phone the page scrolls to the area; on a desktop window everything is
+ * already visible, so it only flashes. */
+function reveal(el) {
+	if (phone.matches)
+		el.scrollIntoView({
+			behavior: atmosphere.reduced ? "auto" : "smooth",
+			block: "center",
+		});
+	else if (!atmosphere.reduced)
+		el.animate(
+			[
+				{ boxShadow: "0 0 0 3px #947235" },
+				{ boxShadow: "0 0 0 3px transparent" },
+			],
+			{ duration: 900, easing: "ease-out" },
+		);
+}
 function openLedger() {
 	if (matchMedia("(max-width: 900px)").matches) {
 		stopReplay();
 		ledgerSheet.append(ledger);
 		ledgerSheet.showModal();
-	} else ledger.scrollIntoView({ behavior: "smooth", block: "center" });
+	} else reveal(ledger);
 }
 $("slots").addEventListener("click", (event) => {
 	const button = event.target.closest("[data-slot]");
@@ -921,10 +1098,8 @@ $("submit").onclick = () => {
 };
 $("stages").addEventListener("click", (event) => {
 	const id = event.target.closest("[data-stage]")?.dataset.stage;
-	if (id === "observe")
-		$("fragments").scrollIntoView({ behavior: "smooth", block: "center" });
-	else if (id === "test")
-		$("board-frame").scrollIntoView({ behavior: "smooth", block: "center" });
+	if (id === "observe") reveal($("fragments"));
+	else if (id === "test") reveal($("board-frame"));
 	else if (id) openLedger();
 });
 $("coach").addEventListener("click", (event) => {
@@ -943,9 +1118,10 @@ $("coach").addEventListener("click", (event) => {
 			selected = null;
 			selectSquare(mine[Math.floor(Math.random() * mine.length)][0]);
 		}
-		$("board-frame").scrollIntoView({ behavior: "smooth", block: "center" });
+		reveal($("board-frame"));
 	} else if (id === "deduce") openLedger();
 	else if (id === "inscribe") $("submit").click();
+	else if (id === "result") $("result").hidden = false;
 });
 $("fragments").onclick = (event) => {
 	const button = event.target.closest("[data-fragment]");
@@ -986,15 +1162,21 @@ $("dig-log").onclick = (event) => {
 	if (button) showExperiment(run.probes[Number(button.dataset.log)], false);
 };
 $("result").onclick = (event) => {
-	const button = event.target.closest("[data-review]");
+	const target = event.target;
+	if (target === $("result") || target.closest("[data-close-result]")) {
+		$("result").hidden = true;
+		return;
+	}
+	const button = target.closest("[data-review]");
 	if (button) {
+		$("result").hidden = true;
 		showExperiment(puzzle.path[Number(button.dataset.review)].probe, false);
-		$("board-frame").scrollIntoView({
-			behavior: atmosphere.reduced ? "auto" : "smooth",
-			block: "center",
-		});
 	}
 };
+document.addEventListener("keydown", (event) => {
+	if (event.key === "Escape" && !$("result").hidden && !modal.open)
+		$("result").hidden = true;
+});
 svg.addEventListener("click", (event) => {
 	if (Date.now() < ignoreClick) return;
 	const node = event.target.closest("[data-sq]");
@@ -1116,6 +1298,10 @@ modal.addEventListener("click", (event) => {
 		document.body.classList.toggle("gold-leaf", saved.skin);
 		save();
 		$("museum-body").innerHTML = museumBody("collection");
+	}
+	if (target.id === "start-tour") {
+		modal.close();
+		startTour(0);
 	}
 	if (target.id === "export-records") {
 		const blob = new Blob(

@@ -14,6 +14,10 @@ Open [Wyrdboard](http://localhost:4173/apps/wyrdboard/index.html). Both portfoli
 
 ## How a day plays
 
+A first-time player gets an eight-step spotlight tour on their first visit (skippable, shown once, replayable from the ? dialog): fragments, the board, the stone, clarity, field notes, inscribing, and the path. The coach bar then guides each next action.
+
+On a desktop window the whole game fits one screen with no page scrolling: the header carries the path, the board and fragments sit on the left, and the field notes on the right. The board scales to the height available, and very short windows drop the descriptive text first. Phones use a stacked layout with the field notes in a bottom sheet. The result opens as a full-window card that closes back to the board.
+
 A four-step path guides every board, and a coach bar always says what to do next:
 
 1. **Observe** – watch at least three of eight recorded fragments (replays are free).
