@@ -58,7 +58,7 @@ const MARGIN = 0.04; // keeps rotated shapes off the canvas edge
 const SCALE = 1 - MARGIN * 2;
 
 GAMES.push({
-	id: 'cut', name: 'Cut in Half', icon: '✂️', group: 'Cut', lowerIsBetter: true,
+	id: 'cut', name: 'Cut in Half', icon: '✂️', group: 'perception', lowerIsBetter: true,
 	blurb: 'Draw one straight cut that splits the shape into equal halves.',
 	config(i) {
 		const [name, make] = SHAPES[i % SHAPES.length];

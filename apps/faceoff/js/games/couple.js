@@ -15,7 +15,7 @@ function tttWinner(board) {
 }
 
 GAMES.push({
-	id: 'ttt', name: 'Tic-Tac-Toe', icon: '❌', group: 'Couple', lowerIsBetter: false, duel: true,
+	id: 'ttt', name: 'Tic-Tac-Toe', icon: '❌', group: 'brain', lowerIsBetter: false, duel: true,
 	blurb: 'Three in a row. The starter swaps every round.',
 	config: (i) => ({ first: i % 2 }),
 	intro: (c) => `Get three in a row<br><small>${esc(nameOf(c.first))} starts as X this round.</small>`,
@@ -75,7 +75,7 @@ const MEMORY_SHAPES = [
 ];
 
 GAMES.push({
-	id: 'memory', name: 'Memory Match', icon: '🧠', group: 'Couple', lowerIsBetter: false, duel: true,
+	id: 'memory', name: 'Memory Match', icon: '🧠', group: 'brain', lowerIsBetter: false, duel: true,
 	blurb: 'Flip two cards to find a pair. A match earns another go.',
 	config: (i) => ({ first: i % 2 }),
 	intro: () => 'Flip two cards at a time and find the pairs<br><small>A match scores a point and you go again. Most pairs wins.</small>',
@@ -149,7 +149,7 @@ const FLAG_NAMES = ['Green flag', 'Red flag'];
 let flagPool = [];
 
 GAMES.push({
-	id: 'flags', name: 'Green Flag, Red Flag', icon: '🚩', group: 'Couple', lowerIsBetter: false, duel: true, quickNext: true,
+	id: 'flags', name: 'Green Flag, Red Flag', icon: '🚩', group: 'couple', lowerIsBetter: false, duel: true, quickNext: true,
 	blurb: 'Rate it in secret, then guess how your partner rated it.',
 	config(i) {
 		if (!i) flagPool = shuffle(FLAGS); // a new match gets a new order, and no statement repeats within it
@@ -209,7 +209,7 @@ function c4Winner(board) {
 }
 
 GAMES.push({
-	id: 'connect4', name: 'Connect 4', icon: '🔴', group: 'Couple', lowerIsBetter: false, duel: true,
+	id: 'connect4', name: 'Connect 4', icon: '🔴', group: 'brain', lowerIsBetter: false, duel: true,
 	blurb: 'Drop discs, line up four. The starter swaps every round.',
 	config: (i) => ({ first: i % 2 }),
 	intro: (c) => `Line up four discs<br><small>${esc(nameOf(c.first))} drops first this round. Tap a column.</small>`,

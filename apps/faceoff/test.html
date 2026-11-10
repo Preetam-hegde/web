@@ -11,6 +11,7 @@
 	<script src="js/words.js"></script>
 	<script src="js/games/couple.js"></script>
 	<script src="js/games/cut.js"></script>
+	<script src="js/games/perceive.js"></script>
 	<script src="js/games/quiz.js"></script>
 	<script src="js/games/duo.js"></script>
 	<script>
@@ -48,6 +49,13 @@
 		eq('square, diagonal is half', cutSplit(sq, [0, 0], [1, 1]).err, 0);
 		eq('L shape, cut at the notch', Math.round(cutSplit(L_SHAPE, [0, 0.55], [1, 0.55]).err * 1e3), Math.round((0.045 / 0.255) * 100 * 1e3));
 		SHAPES.forEach(([name, make]) => eq(`${name} has area`, polyArea(make()) > 0.01, true));
+
+		// perception: angles wrap the circle, tempo averages the miss per beat
+		eq('angle: 359 vs 1 is 2 apart', angleErr(359, 1), 2);
+		eq('angle: 90 vs 270 is 180 apart', angleErr(90, 270), 180);
+		eq('tempo: perfect taps', tempoErr([600, 1200, 1800, 2400, 3000, 3600, 4200, 4800], 0, 600), 0);
+		eq('tempo: all 50ms late', tempoErr([650, 1250, 1850, 2450, 3050, 3650, 4250, 4850], 0, 600), 50);
+		eq('tempo: 4 missing taps = half miss penalty', tempoErr([600, 1200, 1800, 2400], 0, 600), TEMPO_MISS_MS / 2);
 
 		// connect 4
 		const empty = () => Array(42).fill(null);

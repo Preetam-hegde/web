@@ -13,7 +13,7 @@ Source for [preetamhegde.in](https://preetamhegde.in): two portfolio front-ends 
 | [Bharatvarsha](apps/bharatvarsha/index.html) | Vedic-era strategy simulation with economy, events and progression |
 | [Reflex Arena](apps/aim-trainer/index.html) | Three.js FPS aim trainer with accuracy and session analytics |
 | [Keystorm](apps/keystorm/index.html) | Typing game with five modes and per-key analytics |
-| [Faceoff](apps/faceoff/index.html) | Two-player duels on one phone: timing, hangman, couple games, shareable result card |
+| [Faceoff](apps/faceoff/index.html) | Two-player duels on one phone or two (room code): reflex, timing, perception, board and couple games, couple games, shareable result card |
 | [VectorDrift](apps/vectordrift/index.html) | Bullet-hell cursor-grazing game with post-run telemetry |
 | [Particle Life](apps/particle-life/index.html) | Artificial life & emergent ecosystem with multi-species physics and sound synthesis |
 | [DevPulse](apps/live-analytics-dashboard/index.html) | Real-time developer and systems telemetry dashboard |

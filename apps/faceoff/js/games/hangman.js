@@ -7,7 +7,7 @@ const HANG_MS = 90000;
    Typing uses the phone's own keyboard through a real <input>. One phone has one keyboard, so this game
    is always pass-and-play (passOnly), whatever mode the hub is set to. */
 GAMES.push({
-	id: 'hangman', name: 'Hangman Duel', icon: '🪢', group: 'Words', lowerIsBetter: true, duel: true, words: true, passOnly: true,
+	id: 'hangman', name: 'Hangman Duel', icon: '🪢', group: 'brain', lowerIsBetter: true, duel: true, words: true, passOnly: true,
 	blurb: 'Pick a secret word for your partner, then crack theirs. Uses your phone\'s keyboard, so it is pass-and-play.',
 	config: () => ({}),
 	intro: () => `Each of you picks a <b>secret word</b> (4–10 letters) for the other<br><small>Then guess theirs, one letter at a time. ${HANG_MISSES} misses and you hang. Fewest misses wins, speed breaks ties.</small>`,

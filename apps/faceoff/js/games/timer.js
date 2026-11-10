@@ -13,7 +13,7 @@ function stopAt(ctx, ms) {
 const pick = (list, i) => list[i % list.length];
 
 GAMES.push({
-	id: 'stop', name: 'Stop the Timer', icon: '⏱️', group: 'Timing', lowerIsBetter: true,
+	id: 'stop', name: 'Stop the Timer', icon: '⏱️', group: 'timing', lowerIsBetter: true,
 	blurb: 'Stop it on target. The digits vanish after 2s.',
 	config: (i) => ({ target: pick([10, 7, 12, 5, 15, 9, 6], i) * 1000, hideAt: 2000 }),
 	intro: (c) => `Stop the timer at <b>${secs(c.target)}</b><br><small>Digits vanish after ${c.hideAt / 1000}s. Tap anywhere.</small>`,
@@ -32,7 +32,7 @@ GAMES.push({
 });
 
 GAMES.push({
-	id: 'liar', name: 'Liar Clock', icon: '🤥', group: 'Timing', lowerIsBetter: true,
+	id: 'liar', name: 'Liar Clock', icon: '🤥', group: 'timing', lowerIsBetter: true,
 	blurb: 'The clock runs at the wrong speed. Trust your gut, not the screen.',
 	config: (i) => ({ target: pick([8, 6, 10, 5, 12], i) * 1000, speed: pick([1.7, 0.6, 1.4, 0.7, 1.9], i) }),
 	intro: (c) => `Stop at <b>${secs(c.target)}</b> real seconds<br><small>The clock is lying about its speed.</small>`,
@@ -51,7 +51,7 @@ GAMES.push({
 });
 
 GAMES.push({
-	id: 'feel', name: 'Feel the Time', icon: '🙈', group: 'Timing', lowerIsBetter: true,
+	id: 'feel', name: 'Feel the Time', icon: '🙈', group: 'timing', lowerIsBetter: true,
 	blurb: 'Start your own clock, then stop it by feel. The screen goes dark.',
 	config: (i) => ({ target: pick([10, 15, 7, 20, 12], i) * 1000 }),
 	intro: (c) => `Tap to start, tap again at <b>${secs(c.target)}</b><br><small>No clock. Close your eyes if you dare.</small>`,
@@ -71,7 +71,7 @@ GAMES.push({
 });
 
 GAMES.push({
-	id: 'hold', name: 'Hold It', icon: '✊', group: 'Timing', lowerIsBetter: true,
+	id: 'hold', name: 'Hold It', icon: '✊', group: 'timing', lowerIsBetter: true,
 	blurb: 'Press and hold for exactly the right time, then let go.',
 	config: (i) => ({ target: pick([5, 3, 7, 10, 4], i) * 1000, hideAt: 1000 }),
 	intro: (c) => `Press and hold for <b>${secs(c.target)}</b>, then let go<br><small>The clock hides after ${c.hideAt / 1000}s.</small>`,
@@ -97,7 +97,7 @@ GAMES.push({
 });
 
 GAMES.push({
-	id: 'centre', name: 'Dead Centre', icon: '🎯', group: 'Timing', lowerIsBetter: true,
+	id: 'centre', name: 'Dead Centre', icon: '🎯', group: 'reflex', lowerIsBetter: true,
 	blurb: 'A dot sweeps the bar. Freeze it in the middle.',
 	config: (i) => ({ period: pick([1600, 1300, 1000, 800, 650], i) }),
 	intro: () => 'Tap to freeze the dot on the <b>centre</b><br><small>It gets faster every round.</small>',
@@ -119,7 +119,7 @@ GAMES.push({
 });
 
 GAMES.push({
-	id: 'frenzy', name: 'Tap Frenzy', icon: '👆', group: 'Timing', lowerIsBetter: false,
+	id: 'frenzy', name: 'Tap Frenzy', icon: '👆', group: 'reflex', lowerIsBetter: false,
 	blurb: 'Most taps before time runs out wins.',
 	config: (i) => ({ secs: pick([8, 10, 6, 10, 8], i) }),
 	intro: (c) => `Tap as fast as you can for <b>${c.secs}s</b><br><small>Any finger counts.</small>`,

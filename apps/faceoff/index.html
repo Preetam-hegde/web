@@ -5,41 +5,48 @@
 	<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, interactive-widget=resizes-content">
 	<meta name="theme-color" content="#0d0b1a">
 	<title>Faceoff — Two Players, One Phone</title>
-	<meta name="description" content="Games for two on one phone, split screen or pass-and-play: timing duels, cut it in half, Hangman Duel and couple games, plus party games for 2 or more players. No sign-up.">
+	<meta name="description" content="Games for two on one phone, split screen or pass-and-play: timing duels, cut it in half, five perception tests, Hangman Duel and couple games, plus party games for 2 or more players. No sign-up.">
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="styles.css?v=13">
+	<link rel="stylesheet" href="styles.css?v=15">
 	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
 <body data-screen="hub" data-flip="1">
 	<canvas id="fx" aria-hidden="true"></canvas>
 
-	<main id="hub" class="screen">
+	<main id="hub" class="screen" data-step="home">
 		<header class="topbar">
-			<span class="brand">faceoff</span>
+			<div class="lead"><span class="brand" id="brand">faceoff</span><button type="button" class="backbtn" id="hubBack" hidden>← Back</button></div>
 			<nav aria-label="Primary"><button type="button" id="settingsBtn">Settings</button><button type="button" id="statsBtn">Stats</button><a href="../../index.html">Portfolio ↗</a></nav>
 		</header>
 
-		<h1 class="logo" aria-label="Faceoff">
-			<span style="--i:0">F</span><span style="--i:1">A</span><span style="--i:2">C</span><span style="--i:3">E</span><span style="--i:4">O</span><span style="--i:5">F</span><span style="--i:6">F</span>
-		</h1>
-		<p class="tag">Two players. One phone. Settle it.</p>
-		<a class="jump" href="#partyGames">Group of 3 or more? Party games ↓</a>
+		<div class="step" data-for="home">
+			<h1 class="logo" aria-label="Faceoff">
+				<span style="--i:0">F</span><span style="--i:1">A</span><span style="--i:2">C</span><span style="--i:3">E</span><span style="--i:4">O</span><span style="--i:5">F</span><span style="--i:6">F</span>
+			</h1>
+			<p class="tag">Settle it. On one phone, or on two.</p>
+		</div>
 
-		<section class="setup" aria-label="Players and options">
-			<div class="names">
+		<section class="step modes" data-for="home" id="modes" aria-label="How do you want to play"></section>
+		<section class="step room" data-cat="online" data-for="room" id="room" aria-label="Play on two phones"></section>
+
+		<section class="step setup" data-for="cats list" id="setup" aria-label="Players and options">
+			<div class="names" id="names">
 				<label class="who" style="--c: var(--p0)"><i></i><input id="n0" maxlength="14" placeholder="Player 1" autocomplete="off" aria-label="Player 1 name"></label>
 				<label class="who" style="--c: var(--p1)"><i></i><input id="n1" maxlength="14" placeholder="Player 2" autocomplete="off" aria-label="Player 2 name"></label>
 			</div>
+			<div class="onbar" id="onbar" hidden></div>
 			<div class="series" id="series" hidden></div>
 			<button type="button" class="chipbtn" id="settingsChip" aria-label="Open settings"></button>
 		</section>
 
-		<section id="games" aria-label="Games"></section>
+		<section class="step" data-for="cats" id="cats" aria-label="Categories"></section>
+		<section class="step" data-for="list" aria-label="Games"><h2 class="stepttl" id="listTtl"></h2><p class="stepsub" id="listSub"></p><div id="games"></div></section>
+		<section class="step" data-for="party" id="partyList" aria-label="Party games"></section>
 
-		<p class="hint">Pick a game to start · you can quit any match from the pill at the top</p>
+		<p class="hint step" data-for="list">Pick a game to start · you can quit any match from the pill at the top</p>
 		<div class="menu-watermark">Made with <span class="watermark-heart">❤️</span> by <strong>Preetam Ptwo</strong></div>
 	</main>
 
@@ -99,30 +106,32 @@
 
 	<main id="match" class="screen">
 		<section class="pane" id="pane1">
-			<div class="phead"><b class="pname"></b><span class="prnd"></span><span class="ppts">0</span></div>
+			<div class="phead"><span class="av" aria-hidden="true"></span><b class="pname"></b><span class="prnd"></span><span class="ppts">0</span></div>
 			<div class="stage"></div>
 		</section>
 		<div class="mid"><button id="share" type="button" hidden>Share</button><button id="quit" type="button">Quit</button></div>
 		<section class="pane" id="pane0">
-			<div class="phead"><b class="pname"></b><span class="prnd"></span><span class="ppts">0</span></div>
+			<div class="phead"><span class="av" aria-hidden="true"></span><b class="pname"></b><span class="prnd"></span><span class="ppts">0</span></div>
 			<div class="stage"></div>
 		</section>
 	</main>
 
-	<script src="js/core.js?v=13"></script>
-	<script src="js/extras.js?v=13"></script>
-	<script src="js/words.js?v=13"></script>
-	<script src="js/games/timer.js?v=13"></script>
-	<script src="js/games/reaction.js?v=13"></script>
-	<script src="js/games/cut.js?v=13"></script>
-	<script src="js/games/hangman.js?v=13"></script>
-	<script src="js/games/couple.js?v=13"></script>
-	<script src="js/games/quiz.js?v=13"></script>
-	<script src="js/games/duo.js?v=13"></script>
-	<script src="js/party.js?v=13"></script>
-	<script src="js/spy.js?v=13"></script>
-	<script src="js/table.js?v=13"></script>
-	<script src="js/fx.js?v=13"></script>
-	<script src="js/main.js?v=13"></script>
+	<script src="js/core.js?v=15"></script>
+	<script src="js/extras.js?v=15"></script>
+	<script src="js/words.js?v=15"></script>
+	<script src="js/games/timer.js?v=15"></script>
+	<script src="js/games/reaction.js?v=15"></script>
+	<script src="js/games/cut.js?v=15"></script>
+	<script src="js/games/perceive.js?v=15"></script>
+	<script src="js/games/hangman.js?v=15"></script>
+	<script src="js/games/couple.js?v=15"></script>
+	<script src="js/games/quiz.js?v=15"></script>
+	<script src="js/games/duo.js?v=15"></script>
+	<script src="js/party.js?v=15"></script>
+	<script src="js/spy.js?v=15"></script>
+	<script src="js/table.js?v=15"></script>
+	<script src="js/net.js?v=15"></script>
+	<script src="js/fx.js?v=15"></script>
+	<script src="js/main.js?v=15"></script>
 </body>
 </html>

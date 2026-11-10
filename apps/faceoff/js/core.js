@@ -13,7 +13,11 @@
 
    Two optional game flags:
    - duel: true   play(ctx0, ctx1) is called once, for games where the halves talk to each other (turns, secrets).
-   - words: true  the word lists are loaded before round 1, so config() and play() can use WORDS. */
+   - words: true  the word lists are loaded before round 1, so config() and play() can use WORDS.
+
+   Two phones (net.js): the host runs this engine exactly as in split screen. The second half is shown on the other phone, which
+   mirrors it and sends its taps back. Plain games (not duel) are different: the other phone plays its own turn locally, so
+   its timing is its own, and only the result travels back. */
 
 const GAMES = [];
 
@@ -56,7 +60,10 @@ const store = (() => {
 	try { return { ...d, ...JSON.parse(localStorage.getItem(STORE_KEY)) }; } catch { return d; }
 })();
 const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { /* private mode: play works, settings just won't persist */ } };
-const nameOf = (p) => (store.names[p] || '').trim() || `Player ${p + 1}`;
+let net = null; // the live link to the other phone (net.js), or null when both play on this one
+const rawName = (p) => (net ? net.names[p] : store.names[p]) || ''; // online, the names come from the two phones, never from this phone's saved ones
+const nameOf = (p) => rawName(p).trim() || `Player ${p + 1}`;
+const initialOf = (p) => (rawName(p).trim()[0] || String(p + 1)).toUpperCase();
 
 /* 0 or 1 = index of the winner, -1 = tie. Failed attempts score +-Infinity so they lose to any real score. */
 function judge(a, b, lowerIsBetter) {
@@ -92,17 +99,21 @@ function focus(p) {
 function head(p) {
 	const el = pane(p);
 	$('.pname', el).textContent = nameOf(p);
+	$('.av', el).textContent = initialOf(p);
 	$('.ppts', el).textContent = m.game.headScore ? m.game.headScore(m.pts[p], m.round) : m.pts[p];
 	$('.prnd', el).textContent = `Round ${m.round + 1}/${m.rounds}${m.pass ? ` · ${nameOf(1 - p)}: ${m.pts[1 - p]}` : ''}`;
 }
 
-const introHtml = () => `<div class="gname">${gameIcon(m.game.id)} ${m.game.name}</div><div class="lbl">${m.game.intro(m.cfg)}</div>`;
+const introHtml = () => `<div class="hero">${gameIcon(m.game.id)}</div><div class="gtitle">${m.game.name}</div><div class="lbl">${m.game.intro(m.cfg)}</div>`;
 
 function startMatch(game, rounds = store.rounds) {
 	rounds = game.rounds || rounds; // some games fix their own length
-	const mine = (m = { game, rounds, round: 0, pts: [0, 0], token: ++epoch, cfg: null, res: [null, null], ready: [false, false], final: null, pass: !game.splitOnly && (store.mode === 'pass' || !!game.passOnly) });
+	const mine = (m = { game, rounds, round: 0, pts: [0, 0], token: ++epoch, cfg: null, res: [null, null], ready: [false, false], final: null, pass: !net && !game.splitOnly && (store.mode === 'pass' || !!game.passOnly) });
 	document.body.dataset.screen = 'match';
-	document.body.dataset.mode = mine.pass ? 'pass' : 'split'; // phone-keyboard games are always pass-and-play, sync games always split
+	document.body.dataset.mode = net ? 'online' : mine.pass ? 'pass' : 'split'; // phone-keyboard games are always pass-and-play, sync games always split. Two phones: split rules, one half each
+	document.body.dataset.seat = 0;
+	$('#match').dataset.cat = game.group;
+	net?.send({ t: 'match', cat: game.group });
 	$('#share').hidden = true;
 	window.scrollTo(0, 0);
 	focus(0);
@@ -125,11 +136,18 @@ function startMatch(game, rounds = store.rounds) {
 	);
 }
 
-function quit() {
+function toHub() {
 	if (m) bump();
 	m = null;
 	document.body.dataset.screen = 'hub';
 	renderHub();
+}
+
+/* The guest can't end the match itself: it asks the host, who sends both phones back to the menu. */
+function quit() {
+	if (net?.role === 'guest') return net.send({ t: 'quit' });
+	toHub();
+	net?.send({ t: 'hub' });
 }
 
 /* Split: each player taps Ready on their own half and the round starts when both have. Pass: one Ready. */
@@ -159,7 +177,7 @@ function countdown(go, panes = [0, 1]) {
 	const tick = () => {
 		if (!m || m.token !== tok) return;
 		if (!n) { sfx.go(); return go(); }
-		panes.forEach((p) => paint(p, `<div class="count">${n}</div>`));
+		panes.forEach((p) => paint(p, `<div class="count" data-key="${n}">${n}</div>`));
 		sfx.tick();
 		n--;
 		setTimeout(tick, 700);
@@ -186,7 +204,7 @@ function seatPlay(p) {
 function begin() {
 	both((p) => paint(p, ''));
 	if (m.game.duel) m.game.play(makeCtx(0), makeCtx(1));
-	else both((p) => m.game.play(makeCtx(p)));
+	else both((p) => (net && p === 1 ? netPlay() : m.game.play(makeCtx(p)))); // two phones: the guest plays seat 1 on its own phone
 }
 
 /* "Pass the phone to ..." screen; then() runs when that player taps in. */
@@ -230,6 +248,7 @@ function makeCtx(p) {
 		buzz(20);
 		sfx.lock();
 		paint(p, `<div class="res tie">Locked in ✓</div><div class="hint">Waiting for ${esc(nameOf(1 - p))}…</div>`);
+			if (net?.role === 'guest') netReport(score, label); // the host owns the scoreboard
 		if (m.res[1 - p]) reveal();
 		else if (m.pass && !m.game.duel) handoff(1 - p, () => seatPlay(1 - p), `<div class="hint">✓ ${esc(nameOf(p))} is locked in. Result stays hidden.</div>${introHtml()}`);
 	};
@@ -270,7 +289,7 @@ function reveal() {
 		m.round++;
 		m.cfg = m.game.config(m.round);
 		both(head);
-		const next = m.game.quickNext ? `<div class="gname">${gameIcon(m.game.id)} ${m.game.name}</div><div class="lbl">Round <b>${m.round + 1}</b> of ${m.rounds}</div>` : introHtml();
+		const next = m.game.quickNext ? `<div class="hero">${gameIcon(m.game.id)}</div><div class="gtitle">${m.game.name}</div><div class="lbl">Round <b>${m.round + 1}</b> of ${m.rounds}</div>` : introHtml();
 		showReady((p) => `${result(p)}<hr>${next}`, 'Next', startRound);
 		return;
 	}
@@ -278,10 +297,12 @@ function reveal() {
 	both(head);
 	const champ = coop ? -2 : m.pts[0] === m.pts[1] ? -1 : m.pts[0] > m.pts[1] ? 0 : 1; // -1 draw, -2 together
 	const sum = coop ? m.game.summary(m.pts[0], m.rounds) : null;
-	if (champ >= 0) store.series[champ]++;
-	store.plays[m.game.id] = (store.plays[m.game.id] || 0) + 1;
-	store.history = [...store.history.slice(-99), { g: m.game.id, t: Date.now(), n: [nameOf(0), nameOf(1)], p: [...m.pts], c: champ, s: sum ? sum.title : '' }]; // last 100 matches, for the stats screen
-	save();
+	if (!net) { // the stats are for the two regulars on this phone, not for an online opponent
+		if (champ >= 0) store.series[champ]++;
+		store.plays[m.game.id] = (store.plays[m.game.id] || 0) + 1;
+		store.history = [...store.history.slice(-99), { g: m.game.id, t: Date.now(), n: [nameOf(0), nameOf(1)], p: [...m.pts], c: champ, s: sum ? sum.title : '' }]; // last 100 matches, for the stats screen
+		save();
+	}
 	const dare = champ >= 0 && store.dares ? choice(allDares()).replace('{w}', nameOf(champ)) : '';
 	m.final = { champ, dare, coop: sum };
 	m.final.card = renderCard(); // built now so the Share tap can hand it straight to the share sheet

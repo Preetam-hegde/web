@@ -8,7 +8,7 @@
 function agreeGame(o) {
 	let pool = [];
 	GAMES.push({
-		id: o.id, name: o.name, icon: o.icon, group: 'Couple', lowerIsBetter: false, duel: true, coop: true, quickNext: true, rounds: o.rounds,
+		id: o.id, name: o.name, icon: o.icon, group: 'couple', lowerIsBetter: false, duel: true, coop: true, quickNext: true, rounds: o.rounds,
 		blurb: o.blurb,
 		config(i) {
 			if (!i) pool = shuffle(o.deck); // a new match gets a new order, and nothing repeats within it
@@ -108,7 +108,7 @@ const RATHER = [
 let ratherPool = [];
 
 GAMES.push({
-	id: 'rather', name: 'Would You Rather', icon: '🤔', group: 'Couple', lowerIsBetter: false, duel: true, quickNext: true,
+	id: 'rather', name: 'Would You Rather', icon: '🤔', group: 'couple', lowerIsBetter: false, duel: true, quickNext: true,
 	blurb: 'Pick yours, then guess your partner\'s pick. Who knows who better?',
 	config(i) {
 		if (!i) ratherPool = shuffle(RATHER);
@@ -159,7 +159,7 @@ const TRUTHS = [
 ];
 
 GAMES.push({
-	id: 'roulette', name: 'Truth or Dare', icon: '🎡', group: 'Couple', lowerIsBetter: false, duel: true, coop: true,
+	id: 'roulette', name: 'Truth or Dare', icon: '🎡', group: 'couple', lowerIsBetter: false, duel: true, coop: true,
 	blurb: 'Spin for a truth or a dare, one turn each. Nobody loses.',
 	config(i) {
 		const who = i % 2;
@@ -208,7 +208,7 @@ const SYNC_LEAD_MS = 900; // a moment to get thumbs ready before the first beat
 const SYNC_MISS_MS = 500; // a missing tap counts as this far off
 
 GAMES.push({
-	id: 'sync', name: 'Sync Tap', icon: '🥁', group: 'Couple', lowerIsBetter: false, duel: true, coop: true, splitOnly: true, rounds: 3,
+	id: 'sync', name: 'Sync Tap', icon: '🥁', group: 'couple', lowerIsBetter: false, duel: true, coop: true, splitOnly: true, rounds: 3,
 	blurb: 'Watch four beats, then tap four more together. Win as a pair.',
 	config: (i) => ({ beat: [640, 520, 420][i % 3] }),
 	intro: () => 'Watch the four beats, then both tap four more <b>in the same rhythm</b><br><small>Tap on your own half. The closer your taps land, the higher the score.</small>',

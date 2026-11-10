@@ -1,7 +1,7 @@
 'use strict';
 
 GAMES.push({
-	id: 'green', name: 'Green Light', icon: '🚦', group: 'Timing', lowerIsBetter: true,
+	id: 'green', name: 'Green Light', icon: '🚦', group: 'reflex', lowerIsBetter: true,
 	blurb: 'Wait for green, tap first. Jump the light and you lose the round.',
 	config: () => ({ delay: rand(1500, 4500) }),
 	intro: () => 'Wait for <b>green</b>, then tap!<br><small>Tap early and you lose the round.</small>',
