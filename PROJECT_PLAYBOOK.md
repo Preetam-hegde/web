@@ -33,7 +33,8 @@ App folders are lowercase kebab-case: `apps/aim-trainer`, `apps/natural-selectio
 Project catalog:
 
 - `index.html` and `index-classic.html` both load `projects.js`
-- `v1/script.js` renders `#projectContainer` from it
+- `v1/script.js` renders `#loom-featured` (projects with a `story`) and `#loom-grid` (the rest) from it
+- Each entry should add `shot` (a 16:10 JPEG in `resource/Image/projects/`, 960x600 for `story` projects and 640x400 for the rest) and a one-line `blurb` (or a two-sentence `story` for a featured build). Cards fall back to the icon when `shot` is missing.
 
 Resume:
 

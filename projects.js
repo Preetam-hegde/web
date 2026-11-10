@@ -2,6 +2,8 @@ const projects = [
 	// ── Featured (pinned to top) ────────────────────────────────────────────
 	{
 		name: "Inkwell Editorial",
+		shot: "resource/Image/projects/inkwell.jpg",
+		story: "A live reading-and-writing platform, not a demo: feed, topics, search, bookmarks and notifications, an AI drafting assistant, and an admin analytics dashboard, all on a Supabase backend.",
 		category: "personal",
 		featured: true,
 		icon: "feather",
@@ -19,6 +21,8 @@ const projects = [
 	},
 	{
 		name: "System Design Prototype",
+		shot: "resource/Image/projects/sysdesign.jpg",
+		story: "A whiteboard for sketching distributed architectures. Drag in components, wire them together, annotate, and export the diagram for your next design review.",
 		category: "personal",
 		featured: true,
 		icon: "network",
@@ -31,6 +35,8 @@ const projects = [
 	// ── Games & Simulations ──────────────────────────────────────────────────
 	{
 		name: "Bag & Blade",
+		shot: "resource/Image/projects/bag-and-blade.jpg",
+		blurb: "Tetris-grid inventory roguelike: rotate and place gear so adjacency synergies win fights.",
 		category: "games",
 		icon: "backpack",
 		link: "apps/bag-and-blade/index.html",
@@ -47,6 +53,8 @@ const projects = [
 	},
 	{
 		name: "VectorDrift",
+		shot: "resource/Image/projects/vectordrift.jpg",
+		blurb: "Bullet-hell grazing game. Dodge close to score, across four arenas and one brutal Hell Mode.",
 		category: "games",
 		icon: "zap",
 		link: "apps/vectordrift/index.html",
@@ -63,6 +71,8 @@ const projects = [
 	},
 	{
 		name: "Reflex Arena",
+		shot: "resource/Image/projects/aim-trainer.jpg",
+		blurb: "Browser aim trainer with six drills, tunable FOV, target size and difficulty, and personal records.",
 		category: "games",
 		icon: "crosshair",
 		link: "apps/aim-trainer/index.html",
@@ -79,6 +89,8 @@ const projects = [
 	},
 	{
 		name: "Keystorm",
+		shot: "resource/Image/projects/keystorm.jpg",
+		blurb: "Typing game with five modes, combo particles and a per-key WPM heatmap.",
 		category: "games",
 		icon: "keyboard",
 		link: "apps/keystorm/index.html",
@@ -95,6 +107,8 @@ const projects = [
 	},
 	{
 		name: "Faceoff",
+		shot: "resource/Image/projects/faceoff.jpg",
+		blurb: "Two-player games for one phone: timing duels, Connect 4, party and couple games. No sign-up.",
 		category: "games",
 		icon: "swords",
 		link: "apps/faceoff/index.html",
@@ -112,6 +126,8 @@ const projects = [
 	},
 	{
 		name: "Synapse",
+		shot: "resource/Image/projects/synapse.jpg",
+		blurb: "Seven brain-training modes, from Stroop Duel to N-Back, for fast working-memory drills.",
 		category: "games",
 		icon: "brain",
 		link: "apps/synapse/index.html",
@@ -129,6 +145,8 @@ const projects = [
 	},
 	{
 		name: "Idle Empire Builder",
+		shot: "resource/Image/projects/dreamscape.jpg",
+		blurb: "Real-estate idle game where reflex mini-challenges feed long-term strategy.",
 		category: "games",
 		icon: "building-2",
 		link: "apps/dreamscape/index.html",
@@ -138,6 +156,8 @@ const projects = [
 	},
 	{
 		name: "Bharatvarsha",
+		shot: "resource/Image/projects/bharatvarsha.jpg",
+		blurb: "A nine-chapter story: guide a Vedic clan from a river village to a Mahajanapada.",
 		category: "games",
 		icon: "tent",
 		link: "apps/bharatvarsha/index.html",
@@ -147,6 +167,8 @@ const projects = [
 	},
 	{
 		name: "Natural Selection Simulator",
+		shot: "resource/Image/projects/natural-selection-sim.jpg",
+		story: "Organisms with polygenic traits compete across biomes and trophic tiers while you watch. Trigger a meteor, inspect any creature's genes, and track the population live. A spatial hash grid keeps neighbour queries cheap.",
 		category: "games",
 		icon: "dna",
 		link: "apps/natural-selection-sim/index.html",
@@ -163,6 +185,8 @@ const projects = [
 	},
 	{
 		name: "Particle Life",
+		shot: "resource/Image/projects/particle-life.jpg",
+		blurb: "Tune species attraction rules and watch cells, serpents and orbiting swarms emerge.",
 		category: "games",
 		icon: "sparkles",
 		link: "apps/particle-life/index.html",
@@ -180,6 +204,8 @@ const projects = [
 	},
 	{
 		name: "Illusion Museum",
+		shot: "resource/Image/projects/illusion-museum.jpg",
+		blurb: "Nine interactive exhibits: living orbs, a warp-speed starfield and classic optical illusions.",
 		category: "games",
 		icon: "atom",
 		link: "apps/illusion-museum/index.html",
@@ -191,6 +217,8 @@ const projects = [
 	// ── Web Apps & Platforms ────────────────────────────────────────────────
 	{
 		name: "DevPulse: Live Telemetry Matrix",
+		shot: "resource/Image/projects/live-analytics-dashboard.jpg",
+		story: "Five live data sources (GitHub analytics, client Web Vitals, global edge latency probes, a synthetic stream and Plausible metrics) fused into one real-time telemetry matrix.",
 		category: "personal",
 		icon: "activity",
 		link: "apps/live-analytics-dashboard/index.html",
@@ -209,6 +237,8 @@ const projects = [
 	},
 	{
 		name: "GeoLocation Explorer",
+		shot: "resource/Image/projects/geo-location.jpg",
+		blurb: "Coordinates, altitude and accuracy from the Geolocation API, with a shareable map link.",
 		category: "personal",
 		icon: "map-pin",
 		link: "apps/geo-location/index.html",
@@ -218,6 +248,8 @@ const projects = [
 	},
 	{
 		name: "Dear Diary",
+		shot: "resource/Image/projects/dear-diary.jpg",
+		blurb: "A scrapbook studio: stickers, washi tape and doodles, with whole pages saved in the URL.",
 		category: "personal",
 		icon: "notebook-pen",
 		link: "apps/dear-diary/index.html",
@@ -236,6 +268,8 @@ const projects = [
 	// ── Interactive Studies & Visualizers (FCC) ──────────────────────────────
 	{
 		name: "DSA Visualizer",
+		shot: "resource/Image/projects/analyser.jpg",
+		blurb: "Step through 24 algorithms and data structures with scrubbable playback and live pseudocode.",
 		category: "fcc",
 		icon: "chart-no-axes-column-increasing",
 		link: "apps/analyser/index.html",
@@ -253,6 +287,8 @@ const projects = [
 	},
 	{
 		name: "Verilog Vectors Playground",
+		shot: "resource/Image/projects/vector-01.jpg",
+		blurb: "Interactive bit-width, indexing and part-select practice for Verilog vectors.",
 		category: "fcc",
 		icon: "cpu",
 		link: "apps/vector-01/index.html",
@@ -262,6 +298,8 @@ const projects = [
 	},
 	{
 		name: "Pomodoro Timer",
+		shot: "resource/Image/projects/pomodoro.jpg",
+		blurb: "Work and break cycles with audio alerts and session history.",
 		category: "fcc",
 		icon: "timer",
 		link: "apps/pomodoro/index.html",
@@ -271,6 +309,8 @@ const projects = [
 	},
 	{
 		name: "Random Quote Generator",
+		shot: "resource/Image/projects/quote.jpg",
+		blurb: "A quote on demand from a public REST API, with one-click sharing.",
 		category: "fcc",
 		icon: "quote",
 		link: "apps/quote/index.html",
