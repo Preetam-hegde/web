@@ -1,0 +1,305 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="UTF-8" />
+		<meta name="viewport" content="width=device-width, initial-scale=1" />
+		<meta name="theme-color" content="#eeebe3" />
+		<meta
+			name="description"
+			content="Wyrdboard is a daily deduction game. Watch eight excavated fragments, question the stone, and name the five hidden rules."
+		/>
+		<title>Wyrdboard — A daily game of deduction</title>
+		<link rel="icon" type="image/svg+xml" href="assets/emblem.svg" />
+		<link rel="stylesheet" href="style.css" />
+		<script type="module" src="js/app.js"></script>
+	</head>
+	<body>
+		<canvas id="burst" aria-hidden="true"></canvas>
+		<header class="topbar">
+			<a
+				class="brand"
+				href="../../index.html"
+				aria-label="Back to Preetam's portfolio"
+				><img src="assets/emblem.svg" alt="" width="30" height="30" /><span
+					>WYRDBOARD</span
+				></a
+			>
+			<nav aria-label="Game tools">
+				<button id="streak-chip" type="button" title="Daily streak">
+					<span aria-hidden="true">♨</span> <b id="streak-count">0</b
+					><span class="sr-only"> day streak. Open your museum.</span>
+				</button>
+				<button id="level-chip" type="button" title="Your level">
+					Lv <b id="level-num">1</b
+					><span class="xp-bar" aria-hidden="true"><i id="xp-fill"></i></span
+					><span class="sr-only"> Open your museum.</span>
+				</button>
+				<button id="museum-button" type="button">
+					<span aria-hidden="true">▥</span> Museum
+				</button>
+				<button id="archive-button" type="button">
+					<span aria-hidden="true">▦</span> Archive
+				</button>
+				<button
+					id="help-button"
+					class="icon-button"
+					type="button"
+					aria-label="How to play"
+				>
+					?
+				</button>
+				<button
+					id="sound-button"
+					class="icon-button"
+					type="button"
+					aria-label="Turn sound on"
+					aria-pressed="false"
+				>
+					♪<span class="sound-off" aria-hidden="true">/</span>
+				</button>
+			</nav>
+		</header>
+		<main>
+			<section class="masthead" aria-labelledby="title">
+				<div class="masthead-note">
+					<span class="tiny-label">A DAILY DEDUCTION</span
+					><span>Unearth what was forgotten.</span>
+				</div>
+				<div class="title-block">
+					<p class="eyebrow">A GAME LOST TO TIME. A MYSTERY FOR YOU.</p>
+					<h1 id="title">
+						Wyrd<em>board</em
+						><span class="title-star" aria-hidden="true">✳</span>
+					</h1>
+				</div>
+				<div class="masthead-note edition">
+					<span id="edition" class="tiny-label">EXCAVATION IN PROGRESS</span
+					><span id="date-label">Preparing the daily tablet…</span>
+				</div>
+			</section>
+			<div id="loading" class="loading" role="status">
+				Brushing the dust from today's discovery…
+			</div>
+			<div id="game" hidden>
+				<ol id="stages" class="stages" aria-label="Your path"></ol>
+				<section id="coach" class="coach" aria-live="polite"></section>
+				<div class="workspace">
+					<section class="arena" id="arena" aria-labelledby="board-title">
+						<div class="section-top">
+							<div>
+								<span id="era-label" class="tiny-label"
+									>MESOPOTAMIA · C. 2600 BCE</span
+								>
+								<h2 id="board-title">The board remembers.</h2>
+							</div>
+							<span id="daily-badge" class="daily-badge"></span>
+						</div>
+						<div class="board-frame" id="board-frame">
+							<div class="slab-top">
+								<span id="board-name">THE ROYAL GAME OF UR</span>
+								<label
+									class="foresight"
+									title="Predict each answer before you ask. Every hit earns bonus XP."
+								>
+									<input id="foresight" type="checkbox" />
+									<span class="switch" aria-hidden="true"></span>
+									<span>Foresight <small id="foresight-score"></small></span>
+								</label>
+							</div>
+							<div class="board-surface">
+								<svg
+									id="board"
+									role="group"
+									aria-label="Excavated board. Select a piece, then a destination."
+									viewBox="0 0 690 258"
+								></svg
+								><canvas id="dust" aria-hidden="true"></canvas>
+							</div>
+							<div class="slab-bottom">
+								<span class="side"
+									><i class="piece-key shell-key"></i> SHELL ○</span
+								><span id="turn-label">SHELL TO MOVE</span
+								><span class="side"
+									><i class="piece-key onyx-key"></i> ONYX ◇</span
+								>
+							</div>
+						</div>
+						<div
+							class="oracle-line"
+							role="status"
+							aria-live="polite"
+							aria-atomic="true"
+						>
+							<span id="oracle-glyph" class="oracle-glyph" aria-hidden="true"
+								>⌁</span
+							>
+							<div class="oracle-text">
+								<strong id="oracle-title">The stone is listening.</strong>
+								<p id="oracle-detail"></p>
+							</div>
+							<span id="oracle-gain" class="gain" hidden></span>
+							<button id="reset-probe" class="text-button" type="button" hidden>
+								Back to fragment ↶
+							</button>
+						</div>
+						<div id="foresight-prompt" class="foresight-prompt" hidden>
+							<p id="foresight-question">Will the stone accept it?</p>
+							<div>
+								<button id="predict-yes" type="button">✓ Accepted</button>
+								<button id="predict-no" type="button">× Refused</button>
+								<button id="predict-cancel" class="text-button" type="button">
+									Cancel
+								</button>
+							</div>
+						</div>
+						<div class="panel-head">
+							<h3>
+								Excavated fragments <span id="echo-count">0 / 8 watched</span>
+							</h3>
+							<span class="hint">Replays are always free</span>
+						</div>
+						<div
+							id="fragments"
+							class="fragment-strip"
+							role="group"
+							aria-label="Choose a fragment"
+						></div>
+						<div class="replay-controls">
+							<button
+								id="play-replay"
+								class="replay-button"
+								type="button"
+								aria-label="Play fragment"
+							>
+								▶</button
+							><input
+								id="scrubber"
+								aria-label="Fragment move"
+								type="range"
+								min="0"
+								max="6"
+								value="0"
+							/><span id="frame-label">01 / 07</span
+							><button
+								id="previous-frame"
+								type="button"
+								aria-label="Previous move"
+							>
+								←</button
+							><button id="next-frame" type="button" aria-label="Next move">
+								→
+							</button>
+						</div>
+						<div class="panel-head">
+							<h3>Your dig log <span id="probe-count">00</span></h3>
+							<span id="score" class="hint">SCORE 0 · PAR —</span>
+						</div>
+						<div id="dig-log" class="dig-log"></div>
+					</section>
+					<aside class="ledger notebook" aria-labelledby="ledger-title">
+						<div class="ledger-head">
+							<div>
+								<span class="tiny-label">THE FIELD NOTES</span>
+								<h2 id="ledger-title">A theory in five parts.</h2>
+							</div>
+							<div
+								class="clarity"
+								role="img"
+								id="clarity"
+								aria-label="Clarity 0 percent"
+							>
+								<svg viewBox="0 0 44 44" aria-hidden="true">
+									<circle class="clarity-track" cx="22" cy="22" r="18" />
+									<circle
+										id="clarity-ring"
+										class="clarity-ring"
+										cx="22"
+										cy="22"
+										r="18"
+									/>
+								</svg>
+								<b id="clarity-num">0</b><small>CLARITY</small>
+							</div>
+						</div>
+						<div class="note-tools">
+							<button id="strike-button" type="button" aria-pressed="false">
+								⌫ Cross out</button
+							><label
+								><input id="assist" type="checkbox" /> Scribe assist
+								<span
+									title="Automatically cross out rules the evidence rules out. Marks this run Assisted: it earns reduced XP and no rank."
+									>ⓘ</span
+								></label
+							>
+						</div>
+						<div id="slots"></div>
+						<p id="briefing" class="briefing"></p>
+						<div
+							id="submission-feedback"
+							class="submission-feedback"
+							role="status"
+							aria-live="polite"
+						></div>
+						<button id="submit" class="primary-button" type="button" disabled>
+							Inscribe your rules <span aria-hidden="true">↗</span>
+						</button>
+						<div class="submission-meta">
+							<span id="attempts">3 inscriptions remain</span
+							><span>WRONG GUESS +3</span>
+						</div>
+						<button id="hint" class="hint-button" type="button">
+							✧ Ask the Scribe <span>+2 points</span>
+						</button>
+						<p id="assist-note" class="assist-note" hidden>
+							Assisted expedition · explore freely, without a rank.
+						</p>
+					</aside>
+				</div>
+				<section
+					id="result"
+					class="result"
+					hidden
+					aria-labelledby="result-title"
+				></section>
+				<div class="page-footnote">
+					<span>OBSERVATION IS YOUR ONLY INSTRUMENT.</span>
+					<span>No timer. No luck. Just a little curiosity.</span>
+					<span id="streak-label"></span>
+				</div>
+			</div>
+		</main>
+		<footer>
+			<a href="../../index.html">← BACK TO THE PORTFOLIO</a
+			><span>MADE FOR THE CURIOUS.</span><span>WYRDBOARD · VOL. I</span>
+		</footer>
+		<dialog id="modal">
+			<button
+				id="close-modal"
+				class="close-modal"
+				type="button"
+				aria-label="Close dialog"
+			>
+				×
+			</button>
+			<div id="modal-content"></div>
+		</dialog>
+		<button id="ledger-open" class="mobile-ledger-button" type="button">
+			<span>Open field notes</span> <span id="ledger-progress">0 / 5 ↑</span>
+		</button>
+		<dialog id="ledger-sheet" aria-label="Field notes">
+			<button
+				id="ledger-close"
+				class="close-modal"
+				type="button"
+				aria-label="Close field notes"
+			>
+				×
+			</button>
+		</dialog>
+		<noscript
+			><p class="loading">
+				Wyrdboard needs JavaScript to examine the board. Enable it to begin.
+			</p></noscript
+		>
+	</body>
+</html>

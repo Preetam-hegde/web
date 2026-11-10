@@ -1,0 +1,14 @@
+{
+	"name": "lost-rules",
+	"private": true,
+	"type": "module",
+	"scripts": {
+		"build": "tsc -p tsconfig.json && prettier js --write --use-tabs",
+		"test": "node --test tests/*.test.mjs",
+		"generate": "node scripts/generate.mjs"
+	},
+	"devDependencies": {
+		"typescript": "4.9.5",
+		"prettier": "3.9.6"
+	}
+}

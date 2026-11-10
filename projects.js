@@ -34,6 +34,18 @@ const projects = [
 
 	// ── Games & Simulations ──────────────────────────────────────────────────
 	{
+		name: "Wyrdboard",
+		shot: "apps/wyrdboard/assets/preview.png",
+		blurb:
+			"Eight excavated fragments. Five hidden rules. Question the stone and name them to decipher a new tablet every day.",
+		category: "games",
+		icon: "notebook-pen",
+		link: "apps/wyrdboard/index.html",
+		description:
+			"A daily deduction game: watch eight replayable fragments, probe a deterministic stone, and infer five hidden rules from 3,500 possible rulesets. A guided four-step path, clarity gauge, optional foresight predictions, XP, levels, badges, a records museum with export and a year of generated, solver-verified puzzles.",
+		tech: ["TypeScript", "SVG", "Canvas API", "Web Audio API", "Game Design"],
+	},
+	{
 		name: "Bag & Blade",
 		shot: "resource/Image/projects/bag-and-blade.jpg",
 		blurb: "Tetris-grid inventory roguelike: rotate and place gear so adjacency synergies win fights.",

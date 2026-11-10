@@ -8,6 +8,7 @@ Source for [preetamhegde.in](https://preetamhegde.in): two portfolio front-ends 
 
 | App | What it is |
 |---|---|
+| [Wyrdboard](apps/wyrdboard/index.html) | Daily deduction game: question an oracle and name five hidden rules from 3,500 possibilities, with XP, badges and a records codex |
 | [Inkwell Editorial](https://inkwell.preetamhegde.in) | Full-stack editorial blog with AI-assisted writing, Supabase backend and admin analytics |
 | [System Design Prototype](https://sysdesign.preetamhegde.in) | Whiteboard for sketching distributed architectures, with diagram export |
 | [Bharatvarsha](apps/bharatvarsha/index.html) | Vedic-era strategy simulation with economy, events and progression |
