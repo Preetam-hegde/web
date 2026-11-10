@@ -23,6 +23,7 @@ Object.assign(GAME_ICONS, {
 /* ── Whack: targets pop up and shrink away ─────────────── */
 const WHACK_MS = 15000;
 const WHACK_LIFE = 900;
+const WHACK_REACH = 52; // px from a target's centre that still counts as a hit
 
 GAMES.push({
 	id: 'whack', name: 'Whack', icon: '🔨', group: 'reflex', lowerIsBetter: false,
@@ -35,22 +36,36 @@ GAMES.push({
 	intro: () => `Tap each target before it shrinks away<br><small>${WHACK_MS / 1000} seconds. You both get the same targets.</small>`,
 	play(ctx) {
 		const { stage, cfg } = ctx;
-		const H = Math.max(140, Math.min(stage.clientHeight - 90, 380));
-		stage.innerHTML = `<div class="readout">0</div><div class="arena" style="height:${H}px"></div><div class="bar"><i></i></div>`;
+		stage.classList.add('fill');
+		stage.innerHTML = '<div class="arena"></div><div class="readout">0</div><div class="bar"><i></i></div>';
 		const ro = $('.readout', stage), arena = $('.arena', stage);
 		let hits = 0;
 		cfg.seq.forEach((t) => ctx.after(t.at, () => {
 			const el = document.createElement('i');
 			el.className = 'tgt';
-			el.style.cssText = `left:${t.x * 100}%;top:${t.y * 100}%`;
+			el.style.cssText = `left:calc(var(--tr) + (100% - 2 * var(--tr)) * ${t.x.toFixed(3)});top:calc(var(--tr) + (100% - 2 * var(--tr)) * ${t.y.toFixed(3)})`;
 			arena.append(el);
 			setTimeout(() => el.remove(), WHACK_LIFE);
 		}));
+		// A tap hits the nearest live target within reach, so a thumb that lands beside a shrinking ring still counts.
 		arena.onpointerdown = (e) => {
-			const el = e.target.closest('.tgt');
-			if (!el || el.dataset.hit) return;
-			el.dataset.hit = 1;
-			el.classList.add('pop');
+			e.preventDefault();
+			let best = null, bd = WHACK_REACH;
+			for (const el of arena.children) {
+				if (!el.classList.contains('tgt') || el.dataset.hit) continue;
+				const r = el.getBoundingClientRect(), d = Math.hypot(e.clientX - (r.left + r.width / 2), e.clientY - (r.top + r.height / 2));
+				if (d < bd) { bd = d; best = el; }
+			}
+			if (!best) {
+				const ar = arena.getBoundingClientRect(), rip = document.createElement('i');
+				rip.className = 'miss';
+				rip.style.cssText = `left:${e.clientX - ar.left}px;top:${e.clientY - ar.top}px`;
+				arena.append(rip);
+				setTimeout(() => rip.remove(), 350);
+				return;
+			}
+			best.dataset.hit = 1;
+			best.classList.add('pop');
 			ro.textContent = ++hits;
 			buzz(10);
 			sfx.key();

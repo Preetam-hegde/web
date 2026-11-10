@@ -91,7 +91,7 @@ const myName = () => (store.names[0] || '').trim().slice(0, 14);
 function startLink(role, conn, peer) {
 	const link = {
 		role, conn, peer, me: role === 'host' ? 0 : 1, names: ['', ''],
-		local: false, remote: false, tok: 0, offset: undefined, lat: 0, rtt: Infinity, seen: performance.now(), dead: false, timers: [],
+		board: { rows: [] }, local: false, remote: false, tok: 0, offset: undefined, lat: 0, rtt: Infinity, seen: performance.now(), dead: false, timers: [],
 		send: (msg) => { if (conn.open) conn.send(msg); },
 	};
 	conn.on('data', (msg) => { link.seen = performance.now(); handle(link, msg); });
@@ -156,11 +156,6 @@ function handle(link, msg) {
 /* ── host ────────────────────────────────────────────── */
 function hostHandle(link, msg) {
 	switch (msg.t) {
-		case 'pick': { // either phone can choose the game
-			const g = GAMES.find((x) => x.id === msg.id);
-			if (g && !m && document.body.dataset.screen !== 'match') startMatch(g);
-			break;
-		}
 		case 'ev': replay(msg); break;
 		case 'res': // the guest finished its own turn of a plain game
 			if (!m || !link.remote || msg.tok !== m.token) break;
@@ -237,6 +232,19 @@ function guestHandle(link, msg) {
 			game.play(makeCtx(1));
 			break;
 		}
+		case 'board': {
+			link.board = msg.b;
+			const rows = msg.b.rows;
+			for (; (link.logged ||= 0) < rows.length; link.logged++) { // the guest's own History screen keeps the room's matches too
+				const r = rows[link.logged];
+				logHistory({ g: r.g, n: [link.names[0] || 'Player 1', link.names[1] || 'Player 2'], p: r.p, c: r.c, s: r.s });
+				store.plays[r.g] = (store.plays[r.g] || 0) + 1;
+			}
+			save();
+			if (document.body.dataset.screen === 'hub') renderHub();
+			break;
+		}
+		case 'timeout': if (link.local && m) makeCtx(1).fail('Timed out'); break;
 		case 'hub': link.local = false; toHub(); break;
 	}
 }

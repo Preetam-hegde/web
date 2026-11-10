@@ -20,6 +20,7 @@
    its timing is its own, and only the result travels back. */
 
 const GAMES = [];
+const STRAGGLE_MS = 20000; // Timing on, two phones: this long for the second player once the first has locked in
 
 const $ = (s, r = document) => r.querySelector(s);
 const $$ = (s, r = document) => [...r.querySelectorAll(s)];
@@ -56,7 +57,7 @@ const tsOf = (e) => (Math.abs(e.timeStamp - performance.now()) < 1000 ? e.timeSt
 /* ── settings ────────────────────────────────────────── */
 const STORE_KEY = 'faceoff:v1';
 const store = (() => {
-	const d = { names: ['', ''], rounds: 5, mode: 'split', flip: true, series: [0, 0], sound: true, dares: true, plays: {}, history: [], custom: { dares: [], truths: [] }, best: {}, big: true };
+	const d = { names: ['', ''], rounds: 5, mode: 'split', flip: true, series: [0, 0], sound: true, dares: true, plays: {}, history: [], custom: { dares: [], truths: [] }, best: {}, big: true, groupRounds: 3, timed: true };
 	try { return { ...d, ...JSON.parse(localStorage.getItem(STORE_KEY)) }; } catch { return d; }
 })();
 const save = () => { try { localStorage.setItem(STORE_KEY, JSON.stringify(store)); } catch { /* private mode: play works, settings just won't persist */ } };
@@ -142,6 +143,7 @@ function startMatch(game, rounds = store.rounds, solo = false) {
 }
 
 function toHub() {
+	if (document.fullscreenElement) document.exitFullscreen?.().catch(() => {});
 	if (m) bump();
 	m = null;
 	document.body.dataset.screen = 'hub';
@@ -150,6 +152,7 @@ function toHub() {
 
 /* The guest can't end the match itself: it asks the host, who sends both phones back to the menu. */
 function quit() {
+	if (typeof grp !== 'undefined' && grp) return grQuit();
 	if (net?.role === 'guest') return net.send({ t: 'quit' });
 	toHub();
 	net?.send({ t: 'hub' });
@@ -250,10 +253,16 @@ function makeCtx(p) {
 	const finish = (score, label) => {
 		if (!alive()) return;
 		m.res[p] = { score, label };
+		if (m.onDone) return m.onDone(score, label); // 3+ room: group.js takes it from here
 		buzz(20);
 		sfx.lock();
 		if (m.solo) return soloReveal();
-		paint(p, `<div class="res tie">Locked in ✓</div><div class="hint">Waiting for ${esc(nameOf(1 - p))}…</div>`);
+		const lockRow = store.timed ? '' : `<div class="locks">${[p, 1 - p].map((q) => `<span class="${m.res[q] ? 'on' : ''}">${m.res[q] ? '✓' : '…'} ${q === p ? 'You' : esc(nameOf(q))}</span>`).join('')}</div>`;
+		paint(p, `<div class="res tie">Locked in ✓</div><div class="hint">Waiting for ${esc(nameOf(1 - p))}…${store.timed ? '' : ' (no time limit)'}</div>${lockRow}`);
+		if (net?.role === 'host' && store.timed && !m.res[1 - p]) { // Timing on: the other phone gets a few seconds once one has locked in
+			const mine = m, other = 1 - p;
+			setTimeout(() => { if (m !== mine || mine.res[other]) return; if (other === 0) makeCtx(0).fail('Timed out'); else net.send({ t: 'timeout' }); }, STRAGGLE_MS);
+		}
 			if (net?.role === 'guest') netReport(score, label); // the host owns the scoreboard
 		if (m.res[1 - p]) reveal();
 		else if (m.pass && !m.game.duel) handoff(1 - p, () => seatPlay(1 - p), `<div class="hint">✓ ${esc(nameOf(p))} is locked in. Result stays hidden.</div>${introHtml()}`);
@@ -311,6 +320,11 @@ function reveal() {
 		logHistory({ g: m.game.id, n: [nameOf(0), nameOf(1)], p: [...m.pts], c: champ, s: sum ? sum.title : '' });
 		save();
 	}
+	if (net?.role === 'host') { // the room scoreboard: every match played on this link, kept by the host and copied to the guest
+		const row = { g: m.game.id, n: m.game.name, p: [...m.pts], c: champ, s: sum ? sum.title : '' };
+		if (m.boardRow === undefined) m.boardRow = net.board.rows.push(row) - 1; else net.board.rows[m.boardRow] = row; // sudden death re-ends the same match
+		net.send({ t: 'board', b: net.board });
+	}
 	const dare = champ >= 0 && store.dares ? choice(allDares()).replace('{w}', nameOf(champ)) : '';
 	m.final = { champ, dare, coop: sum };
 	const insight = coop ? '' : insights(champ, h2h);
@@ -319,11 +333,13 @@ function reveal() {
 	if (champ !== -1) confetti(champ >= 0 ? [['#ff7a59', '#35d6c8'][champ], '#ffd24d', '#fff'] : ['#ff7a59', '#35d6c8', '#ffd24d', '#b794f6']);
 	focus(0);
 	(pass ? [0] : [0, 1]).forEach((p) => {
-		const title = coop ? `💞 ${esc(sum.title)}` : champ < 0 ? 'Match drawn' : pass ? `🏆 ${esc(nameOf(champ))} wins the match` : champ === p ? '🏆 You win the match' : `${esc(nameOf(champ))} wins the match`;
+		const big = !pass && !coop; // split screen and two phones: say it loud, in the player's own words
+		const state = champ < 0 ? 'draw' : champ === p ? 'win' : 'lose';
+		const title = big ? `<span class="bigv ${state}">${{ win: 'YOU WIN', lose: 'YOU LOSE', draw: 'DRAW' }[state]}</span><small>${state === 'win' ? '🏆 You win the match' : state === 'lose' ? `${esc(nameOf(champ))} wins the match` : 'Match drawn'}</small>` : coop ? `💞 ${esc(sum.title)}` : champ < 0 ? 'Match drawn' : pass ? `🏆 ${esc(nameOf(champ))} wins the match` : champ === p ? '🏆 You win the match' : `${esc(nameOf(champ))} wins the match`;
 		const score = coop ? esc(sum.sub) : pass ? `${esc(nameOf(0))} · ${m.pts[0]} – ${m.pts[1]} · ${esc(nameOf(1))}` : `${m.pts[p]} – ${m.pts[1 - p]}`;
 		const again = champ === -1 ? 'sudden' : 'again';
 		const s = paint(p, `<div class="hint">${verdict(p)[1]}</div>
-			<div class="res ${champ === p || (pass && champ >= 0) || coop ? 'win' : 'tie'}">${title}</div><div class="hint">${score}</div>
+			<div class="res ${champ === p || (pass && champ >= 0) || coop ? 'win' : !pass && champ >= 0 ? 'lose' : 'tie'}">${title}</div><div class="hint">${score}</div>
 			${insight}
 			${dare ? `<div class="dare"><b>Dare</b> ${esc(dare)}</div>` : ''}
 			<div class="btns"><button class="btn" type="button" data-act="${again}">${champ === -1 ? 'Sudden death' : 'Rematch'}</button><button class="btn ghost" type="button" data-act="hub">Hub</button></div>`);
@@ -369,7 +385,7 @@ function headToHead() {
 /* Result screen insights: who won each round, the swing of the match, and the all-time record for this pair. */
 function insights(champ, h2h) {
 	const log = m.rlog || [];
-	if (log.length < 2) return '';
+	if (!log.length) return '';
 	const dot = (w) => (w < 0 ? '<i class="rd tie"></i>' : `<i class="rd" style="background:var(--p${w})"></i>`);
 	const rounds = log.map((r, i) => `<div class="irow"><span>R${i + 1}</span><span>${esc(plainText(r.l[0]))}</span>${dot(r.w)}<span>${esc(plainText(r.l[1]))}</span></div>`).join('');
 	const lines = [];

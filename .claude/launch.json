@@ -4,8 +4,22 @@
 		{
 			"name": "web",
 			"runtimeExecutable": "python3",
-			"runtimeArgs": ["-m", "http.server", "4173"],
+			"runtimeArgs": [
+				"-m",
+				"http.server",
+				"4173"
+			],
 			"port": 4173
+		},
+		{
+			"name": "faceoff-test",
+			"runtimeExecutable": "python3",
+			"runtimeArgs": [
+				"-m",
+				"http.server",
+				"4180"
+			],
+			"port": 4180
 		}
 	]
 }

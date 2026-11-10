@@ -48,7 +48,11 @@ Object.assign(GAME_ICONS, { solo: '<circle cx="12" cy="8" r="4"/><path d="M4 21a
 const MODES = [
 	{ id: 'solo', name: 'Single player', blurb: 'Just you. Beat your own best in timing, reflex, brain and match games.', cat: 'reflex' },
 	{ id: 'two', name: '2 players', blurb: 'Face off on one phone, or each on your own phone.', cat: 'phone' },
-	{ id: 'party', name: '3 + players', blurb: 'Party and spy games for the whole table.', cat: 'party' },
+	{ id: 'three', name: '3 + players', blurb: 'Party games on one phone, or everyone on their own phone.', cat: 'party' },
+];
+const MODES3 = [
+	{ id: 'party', name: 'One phone', blurb: 'Pass it round: party and spy games for the whole table.' },
+	{ id: 'group', name: 'Own phones', blurb: 'Live room for up to 10. The host picks reflex, timing and brain games; everyone plays at once.' },
 ];
 const MODES2 = [
 	{ id: 'phone', name: 'One phone', blurb: 'Split screen or pass and play. Two players, one device.' },
@@ -58,9 +62,12 @@ const MODES2 = [
 let mode = 'phone'; // which way of playing was picked: solo, phone, online or party
 let step = 'home'; // home, two, room, cats, list or party
 const solo = () => mode === 'solo';
-const gamesIn = (id) => GAMES.filter((g) => g.group === id && (!solo() || canSolo(g)));
+const gamesIn = (id) => GAMES.filter((g) => g.group === id && (!solo() || canSolo(g)) && (mode !== 'group' || groupOk(g)));
+const isGuest = () => net?.role === 'guest' || grp?.role === 'guest';
+const isRoom = () => mode === 'online' || mode === 'group';
 const bestOf = (g) => store.best[g.id]?.l;
 let catId = 'reflex';
+let setTab = 'two'; // which mode's settings the settings page shows
 
 function go(next, opts = {}) {
 	step = next;
@@ -78,11 +85,17 @@ function renderHub() {
 	document.body.dataset.big = store.big ? '1' : '0';
 	if (net && step === 'room') step = 'cats'; // the other phone just joined
 	if (mode === 'online' && !net && (step === 'cats' || step === 'list')) step = 'two'; // the link dropped
+	if (mode === 'group' && !grp && (step === 'cats' || step === 'list')) step = 'three';
 	$('#hub').dataset.step = step;
 	$$('[data-for]').forEach((el) => { el.hidden = !el.dataset.for.split(' ').includes(step); });
 	$('#hubBack').hidden = step === 'home';
 	[0, 1].forEach((p) => { $(`#n${p}`).value = store.names[p]; });
 
+	seg($('#setTab'), [['solo', 'Single'], ['two', '2 players'], ['group', '3 +']], setTab, (v) => (setTab = v));
+	$$('[data-set]').forEach((el) => { el.hidden = !el.dataset.set.split(' ').includes(setTab); });
+	seg($('#groupRoundsSeg'), [[3, '3'], [5, '5'], [7, '7']], store.groupRounds, (v) => (store.groupRounds = v));
+	seg($('#timedSeg'), ON_OFF, store.timed, (v) => (store.timed = v));
+	$('#timedNote').textContent = store.timed ? 'On: once one player locks in, the others get 20 seconds, then their turn ends.' : 'Off: no time limit. The round waits for everyone and shows who has locked in.';
 	seg($('#modeSeg'), [['split', 'Split screen'], ['pass', 'Pass & play']], store.mode, (v) => (store.mode = v));
 	seg($('#seatSeg'), [[true, 'Face to face'], [false, 'Side by side']], store.flip, (v) => (store.flip = v));
 	seg($('#roundsSeg'), [[3, '3'], [5, '5'], [7, '7']], store.rounds, (v) => (store.rounds = v));
@@ -99,7 +112,8 @@ function renderHub() {
 
 	if (step === 'home') renderHome();
 	if (step === 'two') renderTwo();
-	if (step === 'room') renderRoom();
+	if (step === 'room') (mode === 'group' ? renderGroupRoom() : renderRoom());
+	if (step === 'three') renderThree();
 	if (step === 'cats' || step === 'list') renderSetup();
 	if (step === 'cats') renderCats();
 	if (step === 'list') renderList();
@@ -111,26 +125,45 @@ const modeCard = (o) => `<button class="mode" type="button" data-mode="${o.id}" 
 function renderHome() {
 	$('#modes').innerHTML = (lobby.note ? `<p class="oops">${esc(lobby.note)}</p>` : '') + MODES.map(modeCard).join('');
 }
+function renderThree() {
+	$('#modes3').innerHTML = `<h2 class="stepttl">3 + players</h2><p class="stepsub">How are you playing?</p>${MODES3.map(modeCard).join('')}`;
+}
 function renderTwo() {
 	$('#modes2').innerHTML = `<h2 class="stepttl">2 players</h2><p class="stepsub">How are you playing?</p>${MODES2.map(modeCard).join('')}`;
 }
 
+/* Two phones: every match played in this room, and the running win count. Seat 0 is the host. */
+function roomBoard() {
+	const rows = net.board.rows, w = [0, 1].map((p) => rows.filter((r) => r.c === p).length);
+	if (!rows.length) return '<div class="rb-empty">No games played in this room yet</div>';
+	const me = net.me, you = 1 - me;
+	const line = (r) => {
+		const res = r.c === me ? '<b class="win">WIN</b>' : r.c === you ? '<b class="lose">LOSS</b>' : r.c === -2 ? '<b>TEAM</b>' : '<b>DRAW</b>';
+		return `<div class="rb-row"><span>${gameIcon(r.g)}${esc(r.n)}</span><span>${r.p[me]} – ${r.p[you]}</span>${res}</div>`;
+	};
+	return `<div class="rb-tot"><span style="color:var(--p${me})">You <b>${w[me]}</b></span><small>wins · ${rows.length} played</small><span style="color:var(--p${you})"><b>${w[you]}</b> ${esc(nameOf(you))}</span></div><div class="rb-rows">${[...rows].reverse().map(line).join('')}</div>`;
+}
+
 /* Names and tally for one phone; who you are playing for two phones. */
 function renderSetup() {
-	const online = mode === 'online';
+	const online = isRoom();
 	$('#names').hidden = online;
 	$('#n1').closest('label').hidden = solo();
 	$('#n0').placeholder = solo() ? 'Your name' : 'Player 1';
 	$('#onbar').hidden = !online;
-	if (online) $('#onbar').innerHTML = `<i class="live"></i><span style="color:var(--p0)">${esc(nameOf(0))}</span> vs <span style="color:var(--p1)">${esc(nameOf(1))}</span><button type="button">leave</button>`;
+	if (online) {
+		const who = mode === 'group' ? (grp?.names || []).filter((_, i) => !grp.gone[i]).map(esc).join(' · ') : `<span style="color:var(--p0)">${esc(nameOf(0))}</span> vs <span style="color:var(--p1)">${esc(nameOf(1))}</span>`;
+		$('#onbar').innerHTML = `<i class="live"></i><span>${who}</span><button type="button">leave</button>${isGuest() ? '<small class="guestnote">Only the host picks games. Tap a game to read its rules.</small>' : ''}`;
+	}
+	$('#roomboard').innerHTML = mode === 'group' && grp ? grBoardHtml() : online && net ? roomBoard() : '';
 	const [a, b] = store.series;
 	const series = $('#series');
 	series.hidden = online || solo() || !(a + b);
 	series.innerHTML = `<span style="color:var(--p0)"><b>${esc(nameOf(0))} ${a}</b></span> – <span style="color:var(--p1)"><b>${b} ${esc(nameOf(1))}</b></span><button type="button">reset</button>`;
 	$('button', series).onclick = () => { store.series = [0, 0]; save(); renderHub(); };
 	const chip = $('#settingsChip');
-	chip.hidden = online && net?.role === 'guest'; // the host sets the rounds
-	chip.textContent = solo() ? `${store.rounds} rounds · Settings ⚙` : online ? `${store.rounds} rounds · Settings ⚙` : `${store.mode === 'pass' ? 'Pass & play' : 'Split screen'} · ${store.rounds} rounds · Settings ⚙`;
+	chip.hidden = online && isGuest(); // the host sets the rounds and timing
+	chip.textContent = solo() ? `${store.rounds} rounds · Settings ⚙` : mode === 'group' ? `${store.groupRounds} rounds · ${store.timed ? 'Timed' : 'No timer'} · Settings ⚙` : online ? `${store.rounds} rounds · Settings ⚙` : `${store.mode === 'pass' ? 'Pass & play' : 'Split screen'} · ${store.rounds} rounds · Settings ⚙`;
 }
 
 function renderCats() {
@@ -140,7 +173,7 @@ function renderCats() {
 
 function renderList() {
 	const c = CATS.find((x) => x.id === catId);
-	const played = (g) => (solo() ? (bestOf(g) ? `best <b>${bestOf(g)}</b>` : 'no score yet') : store.plays[g.id] && mode !== 'online' ? `played <b>${store.plays[g.id]}</b>×` : 'not played yet');
+	const played = (g) => (mode === 'group' ? '&nbsp;' : solo() ? (bestOf(g) ? `best <b>${bestOf(g)}</b>` : 'no score yet') : store.plays[g.id] && mode !== 'online' ? `played <b>${store.plays[g.id]}</b>×` : 'not played yet');
 	$('#listTtl').dataset.cat = c.id;
 	$('#listTtl').innerHTML = `${gameIcon(c.icon)} ${c.name}`;
 	$('#listSub').textContent = c.blurb;
@@ -217,7 +250,7 @@ $('#room').onclick = async (e) => {
 };
 lobby.onchange = renderHub;
 
-$('#modes').onclick = $('#modes2').onclick = (e) => {
+$('#modes').onclick = $('#modes2').onclick = $('#modes3').onclick = (e) => {
 	const id = e.target.closest('[data-mode]')?.dataset.mode;
 	if (!id) return;
 	lobby.note = '';
@@ -225,15 +258,24 @@ $('#modes').onclick = $('#modes2').onclick = (e) => {
 	if (id === 'two') go('two');
 	if (id === 'phone') go('cats', { mode: 'phone' });
 	if (id === 'online') go(net ? 'cats' : 'room', { mode: 'online' });
+	if (id === 'three') go('three');
 	if (id === 'party') go('party', { mode: 'party' });
+	if (id === 'group') go(grp ? 'cats' : 'room', { mode: 'group' });
 };
 $('#cats').onclick = (e) => {
 	const id = e.target.closest('[data-go]')?.dataset.go;
 	if (id) go('list', { cat: id });
 };
-$('#onbar').onclick = (e) => { if (e.target.closest('button')) { netLeave(); go('two'); } };
+$('#onbar').onclick = (e) => {
+	if (!e.target.closest('button')) return;
+	if (mode === 'group') { grLeave(); go('three'); } else { netLeave(); go('two'); }
+};
 $('#hubBack').onclick = () => {
-	if (step === 'room') { netCancel(); lobbySet('idle'); return go('two'); }
+	if (step === 'room') { if (mode === 'group') { grp ? grLeave() : grCancel(); glSet('idle'); return go('three'); } netCancel(); lobbySet('idle'); return go('two'); }
+	if (step === 'three') return go('home');
+	if (step === 'party') return go('three');
+	if (step === 'cats' && grp && !confirm('Leave this room?')) return;
+	if (step === 'cats' && grp) { grLeave(); return go('three'); }
 	if (step === 'list') return go('cats');
 	if (step === 'cats' && net && !confirm('Leave this room?')) return;
 	if (step === 'cats' && net) netLeave();
@@ -243,8 +285,10 @@ $('#hubBack').onclick = () => {
 $('#games').onclick = (e) => {
 	const id = e.target.closest('[data-game]')?.dataset.game;
 	if (!id) return;
-	if (net?.role === 'guest') return net.send({ t: 'pick', id }); // the host starts it
-	startMatch(GAMES.find((g) => g.id === id), undefined, solo());
+	const g = GAMES.find((x) => x.id === id);
+	if (isGuest()) return showRules(g); // only the host starts games; everyone else can read the rules
+	if (mode === 'group') return grStart(g);
+	startMatch(g, undefined, solo());
 };
 $('#partyList').onclick = (e) => {
 	const id = e.target.closest('[data-party]')?.dataset.party;
@@ -363,8 +407,29 @@ if ('serviceWorker' in navigator) addEventListener('load', () => navigator.servi
 
 document.addEventListener('contextmenu', (e) => e.preventDefault()); // long-press must not open menus mid-game
 
+/* Rules sheet: what a game is and how it is scored. Guests in a room see this instead of starting the game. */
+function showRules(g) {
+	let how = g.blurb;
+	try { how = g.intro(g.config(0)); } catch { /* a game whose intro needs a live config: the blurb will do */ }
+	const dlg = $('#rules');
+	dlg.innerHTML = `<div class="hero">${gameIcon(g.id)}</div><h3>${g.name}</h3><p>${g.blurb}</p><p class="how">${how}</p><p class="how">${g.lowerIsBetter ? 'Lowest score wins the round.' : 'Highest score wins the round.'}</p><button class="btn" type="button">Got it</button>`;
+	$('button', dlg).onclick = () => dlg.close();
+	dlg.showModal();
+}
+
+/* Rooms: the first tap in a match asks for the whole screen (a browser only allows it from a tap). */
+let fsTried = false;
+document.addEventListener('pointerdown', () => {
+	if (document.body.dataset.screen !== 'match') { fsTried = false; return; }
+	if (fsTried || document.body.dataset.mode !== 'online' || document.fullscreenElement) return;
+	fsTried = true;
+	document.documentElement.requestFullscreen?.({ navigationUI: 'hide' }).catch(() => { /* iOS Safari has none: the page is already edge to edge */ });
+}, true);
+
 renderHub();
 
 // A friend's invite link opens straight into joining their room.
 const invite = new URLSearchParams(location.search).get('join');
+const groupInvite = new URLSearchParams(location.search).get('room');
+if (groupInvite) { gl.invite = groupInvite.toUpperCase().slice(0, 4); go('room', { mode: 'group' }); }
 if (invite) { lobby.invite = invite.toUpperCase().slice(0, 4); go('room', { mode: 'online' }); } // ask for a name before joining

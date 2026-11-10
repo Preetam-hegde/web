@@ -9,7 +9,7 @@
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 	<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
-	<link rel="stylesheet" href="styles.css?v=17">
+	<link rel="stylesheet" href="styles.css?v=24">
 	<link rel="icon" type="image/svg+xml" href="../../v1/favicon.svg">
 	<script data-goatcounter="https://ptwo.goatcounter.com/count" async src="//gc.zgo.at/count.js"></script>
 </head>
@@ -31,6 +31,7 @@
 
 		<section class="step modes" data-for="home" id="modes" aria-label="How do you want to play"></section>
 		<section class="step modes" data-for="two" id="modes2" aria-label="Two players"></section>
+		<section class="step modes" data-for="three" id="modes3" aria-label="3 or more players"></section>
 		<section class="step room" data-cat="online" data-for="room" id="room" aria-label="Play on two phones"></section>
 
 		<section class="step setup" data-for="cats list" id="setup" aria-label="Players and options">
@@ -39,6 +40,7 @@
 				<label class="who" style="--c: var(--p1)"><i></i><input id="n1" maxlength="14" placeholder="Player 2" autocomplete="off" aria-label="Player 2 name"></label>
 			</div>
 			<div class="onbar" id="onbar" hidden></div>
+			<div class="roomboard" id="roomboard"></div>
 			<div class="series" id="series" hidden></div>
 			<button type="button" class="chipbtn" id="settingsChip" aria-label="Open settings"></button>
 		</section>
@@ -60,14 +62,17 @@
 		<div id="statsBody"></div>
 	</main>
 
+	<dialog id="rules"></dialog>
+
 	<main id="settings" class="screen">
 		<header class="topbar">
 			<button type="button" class="brand" id="settingsBack">← faceoff</button>
 			<span></span>
 		</header>
 		<h2 class="stats-title">Settings</h2>
+		<div class="seg settab" id="setTab" role="group" aria-label="Settings for"><span>For</span></div>
 		<div id="settingsBody">
-			<section class="panel">
+			<section class="panel" data-set="two">
 				<h3>How you play</h3>
 				<div class="opts">
 					<div class="seg" id="modeSeg" role="group" aria-label="Play mode"><span>Play</span></div>
@@ -78,13 +83,17 @@
 			<section class="panel">
 				<h3>Matches</h3>
 				<div class="opts">
-					<div class="seg" id="roundsSeg" role="group" aria-label="Rounds"><span>Rounds</span></div>
-					<div class="seg" id="dareSeg" role="group" aria-label="Loser dares"><span>Loser dares</span></div>
+					<div class="seg" id="roundsSeg" role="group" aria-label="Rounds" data-set="solo two"><span>Rounds</span></div>
+					<div class="seg" id="groupRoundsSeg" role="group" aria-label="Rounds" data-set="group"><span>Rounds</span></div>
+					<div class="seg" id="timedSeg" role="group" aria-label="Timing" data-set="two group"><span>Timing</span></div>
+					<div class="seg" id="dareSeg" role="group" aria-label="Loser dares" data-set="two"><span>Loser dares</span></div>
 					<div class="seg" id="soundSeg" role="group" aria-label="Sound"><span>Sound</span></div>
 					<div class="seg" id="bigSeg" role="group" aria-label="Text size"><span>Text size</span></div>
 				</div>
+				<p class="note" id="timedNote" data-set="two group"></p>
+				<p class="note" data-set="two group">On two phones and in rooms only the host can change these.</p>
 			</section>
-			<section class="panel custom" id="custom">
+			<section class="panel custom" id="custom" data-set="two">
 				<h3>Your own dares and truths</h3>
 				<label>Dares <small>one per line · use {w} for the other person's name</small>
 					<textarea id="cDares" rows="4" maxlength="3000" placeholder="Give {w} a 30-second hug" aria-label="Your own dares"></textarea></label>
@@ -118,25 +127,26 @@
 		</section>
 	</main>
 
-	<script src="js/core.js?v=17"></script>
-	<script src="js/extras.js?v=17"></script>
-	<script src="js/funwords.js?v=17"></script>
-	<script src="js/words.js?v=17"></script>
-	<script src="js/games/timer.js?v=17"></script>
-	<script src="js/games/reaction.js?v=17"></script>
-	<script src="js/games/cut.js?v=17"></script>
-	<script src="js/games/perceive.js?v=17"></script>
-	<script src="js/games/more.js?v=17"></script>
-	<script src="js/games/match.js?v=17"></script>
-	<script src="js/games/hangman.js?v=17"></script>
-	<script src="js/games/couple.js?v=17"></script>
-	<script src="js/games/quiz.js?v=17"></script>
-	<script src="js/games/duo.js?v=17"></script>
-	<script src="js/party.js?v=17"></script>
-	<script src="js/spy.js?v=17"></script>
-	<script src="js/table.js?v=17"></script>
-	<script src="js/net.js?v=17"></script>
-	<script src="js/fx.js?v=17"></script>
-	<script src="js/main.js?v=17"></script>
+	<script src="js/core.js?v=24"></script>
+	<script src="js/extras.js?v=24"></script>
+	<script src="js/funwords.js?v=24"></script>
+	<script src="js/words.js?v=24"></script>
+	<script src="js/games/timer.js?v=24"></script>
+	<script src="js/games/reaction.js?v=24"></script>
+	<script src="js/games/cut.js?v=24"></script>
+	<script src="js/games/perceive.js?v=24"></script>
+	<script src="js/games/more.js?v=24"></script>
+	<script src="js/games/match.js?v=24"></script>
+	<script src="js/games/hangman.js?v=24"></script>
+	<script src="js/games/couple.js?v=24"></script>
+	<script src="js/games/quiz.js?v=24"></script>
+	<script src="js/games/duo.js?v=24"></script>
+	<script src="js/party.js?v=24"></script>
+	<script src="js/spy.js?v=24"></script>
+	<script src="js/table.js?v=24"></script>
+	<script src="js/net.js?v=24"></script>
+	<script src="js/group.js?v=24"></script>
+	<script src="js/fx.js?v=24"></script>
+	<script src="js/main.js?v=24"></script>
 </body>
 </html>
