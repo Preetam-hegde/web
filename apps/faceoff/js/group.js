@@ -38,8 +38,10 @@ async function grHost() {
 			conn.on('close', () => grGone(conn));
 			conn.on('error', () => grGone(conn));
 		});
+		// The broker link drops when the host switches apps to share the code; without it nobody new can find the room.
+		peer.on('disconnected', () => { if (!peer.destroyed) peer.reconnect(); });
 		peer.on('error', (e) => {
-			if (grp) return; // the room carries on peer to peer
+			if (grp) { if (peer.disconnected && !peer.destroyed) setTimeout(() => peer.reconnect(), 2000); return; } // the room carries on peer to peer
 			peer.destroy();
 			if (e.type === 'unavailable-id') open();
 			else glSet('error', { msg: 'Couldn’t open a room. Check your internet and try again.' });
@@ -58,10 +60,10 @@ async function grJoin(raw) {
 	gl.peer = peer;
 	let timer = 0;
 	const bail = (msg) => { clearTimeout(timer); peer.destroy(); grp = null; glSet('error', { msg }); };
-	timer = setTimeout(() => bail('Couldn’t reach that room. Check the code and your connection.'), 15000);
-	peer.on('error', (e) => bail(e.type === 'peer-unavailable' ? 'No room with that code. Check it and try again.' : 'Couldn’t connect. Try again.'));
-	peer.on('open', () => {
-		const conn = peer.connect(grRoomId(code), { reliable: true, serialization: 'json' });
+	timer = setTimeout(() => bail('Couldn’t reach that room. Check the code and your connection.'), 20000);
+	let tries = 0, conn = null;
+	const dial = () => {
+		conn = peer.connect(grRoomId(code), { reliable: true, serialization: 'json' });
 		conn.on('open', () => {
 			clearTimeout(timer);
 			grp = { role: 'guest', peer, conn, code, me: -1, names: [], gone: [], board: { rows: [] }, opened: false };
@@ -70,7 +72,13 @@ async function grJoin(raw) {
 		conn.on('data', (msg) => grGuestMsg(msg, bail));
 		conn.on('close', () => (grp ? grDrop('The host left the room.') : bail('Couldn’t connect. Try again.')));
 		conn.on('error', () => (grp ? grDrop('The connection dropped.') : bail('Couldn’t connect. Try again.')));
+	};
+	// "No such room" can be the host a moment away from reconnecting, so ask a few times before giving up.
+	peer.on('error', (e) => {
+		if (e.type === 'peer-unavailable' && !grp && ++tries < 4) return void setTimeout(dial, 2500);
+		bail(e.type === 'peer-unavailable' ? 'No room with that code. Check it, and that the host still has the room screen open.' : `Couldn’t connect (${e.type}). Try again.`);
 	});
+	peer.on('open', dial);
 }
 
 function grDrop(why) {
@@ -389,3 +397,5 @@ $('#room').addEventListener('click', async (e) => {
 		try { await navigator.share({ title: 'Faceoff', text: `Join my Faceoff room: ${grp.code}`, url }); } catch { navigator.clipboard?.writeText(url); e.target.textContent = 'Link copied ✓'; }
 	}
 });
+
+addEventListener('visibilitychange', () => { if (!document.hidden && gl.peer?.disconnected && !gl.peer.destroyed) gl.peer.reconnect(); }); // back from sharing the code

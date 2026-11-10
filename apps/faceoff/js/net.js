@@ -55,6 +55,7 @@ async function netHost() {
 			lobby.conn = conn;
 			conn.on('open', () => startLink('host', conn, peer));
 		});
+		peer.on('disconnected', () => { if (!peer.destroyed) peer.reconnect(); }); // keep the room findable while waiting
 		peer.on('error', (e) => {
 			if (net) return; // the match carries on peer to peer; only the introductions stopped
 			peer.destroy();
