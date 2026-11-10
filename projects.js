@@ -46,22 +46,6 @@ const projects = [
 		],
 	},
 	{
-		name: "ComicClash",
-		category: "games",
-		icon: "sparkles",
-		link: "apps/comic-clash/index.html",
-		description:
-			"A retro comic-book gacha game with authentic Ben-Day halftone visuals, foil booster pack tearing, 16 collectible superheroes, and tactical comic strip turn-based combat.",
-		tech: [
-			"HTML5",
-			"CSS3",
-			"JavaScript",
-			"Web Audio API",
-			"Game Design",
-			"SVG Art",
-		],
-	},
-	{
 		name: "VectorDrift",
 		category: "games",
 		icon: "zap",
