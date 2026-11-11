@@ -2,143 +2,236 @@
 
 /* Hub: names, options, series tally and the game list. */
 
-const MODE_NOTES = {
-	split: 'Both of you play at the same time, each on your own half of the screen.',
-	pass: 'One player at a time on the full screen. Play, then pass the phone.',
-};
-const SEAT_NOTES = {
-	true: 'Phone flat between you: the top player\'s half is turned to face them.',
-	false: 'Everyone reads the screen the same way up.',
-};
-
-function seg(el, options, current, onPick) {
-	$$('button', el).forEach((b) => b.remove());
-	options.forEach(([value, label]) => {
-		const b = document.createElement('button');
-		b.type = 'button';
-		b.textContent = label;
-		b.setAttribute('aria-pressed', String(value === current));
-		b.onclick = () => { onPick(value); save(); renderHub(); };
-		el.append(b);
-	});
-}
-
-const ON_OFF = [[true, 'On'], [false, 'Off']];
-
-/* The menu is a short walk: home (one phone, two phones or party) → room (two phones only) → categories → games. */
-const CATS = [
-	{ id: 'reflex', name: 'Reflex', icon: 'frenzy', blurb: 'Fast fingers. Who reacts first?' },
-	{ id: 'timing', name: 'Timing', icon: 'stop', blurb: 'Feel the clock and stop it on the mark.' },
-	{ id: 'rhythm', name: 'Rhythm', icon: 'tempo', blurb: 'Keep the beat, copy the groove, tap in sync.' },
-	{ id: 'perception', name: 'Perception', icon: 'track', blurb: 'Count, track and judge it by eye.' },
-	{ id: 'match', name: 'Match', icon: 'pitch', blurb: 'Hear it, see it, size it. Then match it from memory.' },
-	{ id: 'brain', name: 'Brain & Board', icon: 'memory', blurb: 'Tic-Tac-Toe, Connect 4, memory and word duels.' },
-	{ id: 'couple', name: 'Couple', icon: 'know', blurb: 'Questions, dares and games to share.' },
-];
+/* Same-device sessions can start from home; rooms always ask before connecting. */
+const CATS = gameCatalog.categories;
 const PARTY_GROUPS = [
-	{ id: 'party', name: 'Party cards', sub: 'One shared screen, passed round the group.', pick: (g) => !SPYDEF[g.id] },
-	{ id: 'spy', name: 'Spy & secrets', sub: 'Hidden roles and words. Also playable on everyone’s own phone.', pick: (g) => !!SPYDEF[g.id] },
+	{
+		id: 'party',
+		name: 'Party cards',
+		sub: 'One shared screen, passed round the group.',
+		pick: (g) => !SPYDEF[g.id],
+	},
+	{
+		id: 'spy',
+		name: 'Spy & secrets',
+		sub: 'Hidden roles and words. Also playable on everyone’s own phone.',
+		pick: (g) => !!SPYDEF[g.id],
+	},
 ];
 Object.assign(GAME_ICONS, {
-	phone: '<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
-	online: '<path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/>',
+	phone:
+		'<rect width="14" height="20" x="5" y="2" rx="2" ry="2"/><path d="M12 18h.01"/>',
+	online:
+		'<path d="M12 20h.01"/><path d="M2 8.82a15 15 0 0 1 20 0"/><path d="M5 12.859a10 10 0 0 1 14 0"/><path d="M8.5 16.429a5 5 0 0 1 7 0"/>',
 });
-GAME_ICONS.party = GAME_ICONS.likely;
-Object.assign(GAME_ICONS, { solo: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>', two: '<circle cx="9" cy="8" r="3.5"/><path d="M2 21a7 7 0 0 1 14 0"/><circle cx="17" cy="9" r="3"/><path d="M17 14a6 6 0 0 1 5 7"/>' });
-const MODES = [
-	{ id: 'solo', name: 'Single player', blurb: 'Just you. Beat your own best in timing, reflex, brain and match games.', cat: 'reflex' },
-	{ id: 'two', name: '2 players', blurb: 'Face off on one phone, or each on your own phone.', cat: 'phone' },
-	{ id: 'three', name: '3 + players', blurb: 'Party games on one phone, or everyone on their own phone.', cat: 'party' },
-];
+GAME_ICONS.party = GAME_ICONS.three = GAME_ICONS.likely;
+GAME_ICONS.group = GAME_ICONS.online;
+Object.assign(GAME_ICONS, {
+	solo: '<circle cx="12" cy="8" r="4"/><path d="M4 21a8 8 0 0 1 16 0"/>',
+	two: '<circle cx="9" cy="8" r="3.5"/><path d="M2 21a7 7 0 0 1 14 0"/><circle cx="17" cy="9" r="3"/><path d="M17 14a6 6 0 0 1 5 7"/>',
+});
 const MODES3 = [
-	{ id: 'party', name: 'One phone', blurb: 'Pass it round: party and spy games for the whole table.' },
-	{ id: 'group', name: 'Own phones', blurb: 'Live room for up to 10. The host picks reflex, timing and brain games; everyone plays at once.' },
+	{
+		id: 'party',
+		name: 'One phone',
+		blurb: 'Pass it round: party and spy games for the whole table.',
+	},
+	{
+		id: 'group',
+		name: 'Own phones',
+		blurb:
+			'Live room for up to 10. The host picks reflex, timing and brain games; everyone plays at once.',
+	},
 ];
 const MODES2 = [
-	{ id: 'phone', name: 'One phone', blurb: 'Split screen or pass and play. Two players, one device.' },
-	{ id: 'online', name: 'Two phones', blurb: 'Each of you on your own phone. Share a 4-letter room code.' },
+	{
+		id: 'phone',
+		name: 'One phone',
+		blurb: 'Split screen or pass and play. Two players, one device.',
+	},
+	{
+		id: 'online',
+		name: 'Two phones',
+		blurb: 'Each of you on your own phone. Share a 4-letter room code.',
+	},
 ];
 
-let mode = 'phone'; // which way of playing was picked: solo, phone, online or party
-let step = 'home'; // home, two, room, cats, list or party
+let mode = store.lobbyMode === 'solo' ? 'solo' : 'phone';
+let step = 'home'; // home, session, two, three, room, cats, list or party
 const solo = () => mode === 'solo';
-const gamesIn = (id) => GAMES.filter((g) => g.group === id && (!solo() || canSolo(g)) && (mode !== 'group' || groupOk(g)));
+const gamesIn = (id) =>
+	GAMES.filter(
+		(g) =>
+			g.group === id &&
+			(!solo() || canSolo(g)) &&
+			(mode !== 'group' || groupOk(g)),
+	);
 const isGuest = () => net?.role === 'guest' || grp?.role === 'guest';
 const isRoom = () => mode === 'online' || mode === 'group';
 const bestOf = (g) => store.best[g.id]?.l;
 let catId = 'reflex';
-let setTab = 'two'; // which mode's settings the settings page shows
 
 function go(next, opts = {}) {
 	step = next;
 	if (opts.mode) mode = opts.mode;
+	if (next === 'home' && !opts.mode)
+		mode = store.lobbyMode === 'solo' ? 'solo' : 'phone';
+	if (opts.mode === 'solo' || opts.mode === 'phone') {
+		store.lobbyMode = opts.mode;
+		save();
+	}
 	if (opts.cat) catId = opts.cat;
 	renderHub();
 	window.scrollTo(0, 0);
 }
 
-const card = (g, attr, cat, extra, ic = g.id) => `<button class="card" type="button" ${attr}="${g.id}"${cat ? ` data-cat="${cat}"` : ''}><span class="ic">${gameIcon(ic)}</span><h3>${g.name}</h3><p>${g.blurb}</p>${extra}</button>`;
+const card = (g, attr, cat, extra, ic = g.id) => {
+	const kind =
+		attr === 'data-game'
+			? g.coop
+				? 'PLAY TOGETHER'
+				: g.passOnly
+					? 'PASS & PLAY'
+					: g.duel
+						? 'TWO PLAYERS'
+						: 'QUICK PLAY'
+			: '';
+	return `<button class="card" type="button" ${attr}="${g.id}"${cat ? ` data-cat="${cat}"` : ''}><span class="card-top"><span class="ic">${gameIcon(ic)}</span><span class="card-arrow" aria-hidden="true">↗</span></span>${kind ? `<span class="game-kind">${kind}</span>` : ''}<h3>${g.name}</h3><p>${g.blurb}</p>${extra}</button>`;
+};
 
 function renderHub() {
-	if (document.body.dataset.screen !== 'match') document.body.dataset.mode = store.mode;
+	if (document.body.dataset.screen !== 'match')
+		document.body.dataset.mode = store.mode;
 	document.body.dataset.flip = store.flip ? '1' : '0';
 	document.body.dataset.big = store.big ? '1' : '0';
-	if (net && step === 'room') step = 'cats'; // the other phone just joined
-	if (mode === 'online' && !net && (step === 'cats' || step === 'list')) step = 'two'; // the link dropped
-	if (mode === 'group' && !grp && (step === 'cats' || step === 'list')) step = 'three';
+	if (net && step === 'room') step = 'session'; // the other phone just joined
+	if (mode === 'online' && !net && ['session', 'cats', 'list'].includes(step))
+		step = 'two'; // the link dropped
+	if (mode === 'group' && !grp && ['session', 'cats', 'list'].includes(step))
+		step = 'three';
 	$('#hub').dataset.step = step;
-	$$('[data-for]').forEach((el) => { el.hidden = !el.dataset.for.split(' ').includes(step); });
-	$('#hubBack').hidden = step === 'home';
-	[0, 1].forEach((p) => { $(`#n${p}`).value = store.names[p]; });
-
-	seg($('#setTab'), [['solo', 'Single'], ['two', '2 players'], ['group', '3 +']], setTab, (v) => (setTab = v));
-	$$('[data-set]').forEach((el) => { el.hidden = !el.dataset.set.split(' ').includes(setTab); });
-	seg($('#groupRoundsSeg'), [[3, '3'], [5, '5'], [7, '7']], store.groupRounds, (v) => (store.groupRounds = v));
-	seg($('#timedSeg'), ON_OFF, store.timed, (v) => (store.timed = v));
-	$('#timedNote').textContent = store.timed ? 'On: once one player locks in, the others get 20 seconds, then their turn ends.' : 'Off: no time limit. The round waits for everyone and shows who has locked in.';
-	seg($('#modeSeg'), [['split', 'Split screen'], ['pass', 'Pass & play']], store.mode, (v) => (store.mode = v));
-	seg($('#seatSeg'), [[true, 'Face to face'], [false, 'Side by side']], store.flip, (v) => (store.flip = v));
-	seg($('#roundsSeg'), [[3, '3'], [5, '5'], [7, '7']], store.rounds, (v) => (store.rounds = v));
-	seg($('#soundSeg'), ON_OFF, store.sound, (v) => (store.sound = v));
-	seg($('#bigSeg'), [[true, 'Large'], [false, 'Normal']], store.big, (v) => (store.big = v));
-	seg($('#dareSeg'), ON_OFF, store.dares, (v) => (store.dares = v));
-	$('#seatSeg').hidden = store.mode === 'pass'; // seating only matters when two halves share the screen
-	$('#seatNote').textContent = `${MODE_NOTES[store.mode]} ${store.mode === 'split' ? SEAT_NOTES[store.flip] : ''}`.trim();
-
-	// The text boxes are only rewritten when not being typed in, so the cursor never jumps.
-	[['cDares', 'dares'], ['cTruths', 'truths']].forEach(([id, key]) => {
-		if (document.activeElement !== $(`#${id}`)) $(`#${id}`).value = store.custom[key].join('\n');
+	$$('[data-for]').forEach((el) => {
+		el.hidden = !el.dataset.for.split(' ').includes(step);
 	});
+	$('#hubBack').hidden = step === 'home';
+	[0, 1].forEach((p) => {
+		$(`#n${p}`).value = store.names[p];
+	});
+
+	renderSettings();
 
 	if (step === 'home') renderHome();
 	if (step === 'two') renderTwo();
-	if (step === 'room') (mode === 'group' ? renderGroupRoom() : renderRoom());
+	if (step === 'room') mode === 'group' ? renderGroupRoom() : renderRoom();
 	if (step === 'three') renderThree();
-	if (step === 'cats' || step === 'list') renderSetup();
+	if (['session', 'cats', 'list'].includes(step)) renderSetup();
+	if (['home', 'session', 'cats'].includes(step)) renderSession();
 	if (step === 'cats') renderCats();
 	if (step === 'list') renderList();
 	if (step === 'party') renderParty();
-	fx.start();
 }
 
-const modeCard = (o) => `<button class="mode" type="button" data-mode="${o.id}" data-cat="${o.cat || o.id}">${gameIcon(o.id)}<span><b>${o.name}</b><small>${o.blurb}</small></span></button>`;
+const modeCard = (o) => {
+	const label = {
+		solo: `${GAMES.filter(canSolo).length} games`,
+		two: 'One phone or two',
+		three: 'Party games & hidden roles',
+		phone: 'Split screen or pass & play',
+		online: 'One screen each',
+		party: `${PARTY.length} party games`,
+		group: 'A room for the table',
+	}[o.id];
+	return `<button class="mode" type="button" data-mode="${o.id}" data-cat="${o.cat || o.id}"><span class="mode-icon">${gameIcon(o.id)}</span><span class="mode-content"><span class="mode-count">${label}</span><b>${o.name}</b><small>${o.blurb}</small></span><span class="mode-arrow" aria-hidden="true">↗</span></button>`;
+};
 function renderHome() {
-	$('#modes').innerHTML = (lobby.note ? `<p class="oops">${esc(lobby.note)}</p>` : '') + MODES.map(modeCard).join('');
+	$('#modes').innerHTML =
+		(lobby.note ? `<p class="oops">${esc(lobby.note)}</p>` : '') +
+		`<div class="player-choice" role="group" aria-label="Players"><button type="button" data-mode="solo" aria-pressed="${solo()}">${gameIcon('solo')}<span>Solo</span></button><button type="button" data-mode="two" aria-pressed="${mode === 'phone'}">${gameIcon('two')}<span>2 players</span></button><button type="button" data-mode="three" aria-pressed="false">${gameIcon('three')}<span>3 + players</span></button></div><div class="device-choice"><span>${solo() ? 'Your own personal bests' : 'One phone · split screen or pass & play'}</span><button type="button" data-room-setup="online">Two phones ↗</button></div>`;
 }
+
+function quickGames() {
+	// Tempo and rhythm show their beats visually; pitch matching still needs sound.
+	return GAMES.filter(
+		(g) =>
+			!g.duel &&
+			!g.coop &&
+			!g.words &&
+			g.group !== 'couple' &&
+			(!solo() || canSolo(g)) &&
+			(mode !== 'group' || groupOk(g)) &&
+			(store.sound || (!g.requiresSound && g.id !== 'pitch')),
+	);
+}
+
+function startQuickMatch() {
+	if (isGuest()) return;
+	const games = quickGames();
+	if (!games.length) return;
+	const fresh = games.filter((g) => g.id !== store.lastQuick);
+	const game = choice(fresh.length ? fresh : games);
+	store.lastQuick = game.id;
+	save();
+	launchGame(game);
+}
+
+function renderSession() {
+	const room = isRoom(),
+		guest = isGuest(),
+		available = GAMES.filter(
+			(g) => (!solo() || canSolo(g)) && (mode !== 'group' || groupOk(g)),
+		),
+		featured = ['stack', 'golf']
+			.map((id) => available.find((g) => g.id === id))
+			.filter(Boolean),
+		recent = [...new Set([...store.history].reverse().map((entry) => entry.g))]
+			.map((id) => available.find((g) => g.id === id))
+			.filter((g) => g && !featured.includes(g))
+			.slice(0, 3),
+		presets = typeof CUP_PRESETS === 'undefined' ? [] : CUP_PRESETS,
+		title = solo()
+			? 'Your solo session'
+			: mode === 'group'
+				? 'The room is ready'
+				: room
+					? 'Two phones. One faceoff.'
+					: 'Your next faceoff';
+	$('#session').innerHTML =
+		`<div class="session-heading"><h2>${title}</h2>${step === 'home' ? '<button class="text-action" type="button" data-session-setup>Names & options</button>' : ''}</div><div class="session-actions"><button class="session-quick" type="button" data-quick${guest || !quickGames().length ? ' disabled' : ''}><span class="session-action-title">Quick Match <span aria-hidden="true">↗</span></span><small>A game picked for you. Rules before play.</small></button><section class="session-cup" aria-label="Faceoff Cup"><div class="cup-heading"><h3>Faceoff Cup</h3><small>5 games · ${solo() ? 'personal bests' : 'one winner'}</small></div><div class="cup-presets">${presets.map((preset) => `<button type="button" data-cup="${preset.id}" title="${esc(preset.blurb)}"${guest ? ' disabled' : ''}>${esc(preset.name.replace(/ Cup$/, ''))}<span aria-hidden="true">↗</span></button>`).join('')}</div></section></div><button class="session-browse" type="button" data-browse><span>Browse games</span><small>${available.length} games, your choice</small><span aria-hidden="true">→</span></button>${guest ? '<p class="session-note">Your host starts the games and Cups. Browse to read the rules.</p>' : ''}${featured.length ? `<div class="session-discovery"><div class="discovery-heading"><h3>New to the room</h3><span>Tap a game to start</span></div><div class="featured-games">${featured.map((g) => `<button type="button" class="fast-game" data-launch="${g.id}"><span class="fast-game-art" aria-hidden="true">${gameIcon(g.id)}</span><span><small>NEW GAME</small><b>${esc(g.name)}</b><span>${esc(g.blurb)}</span></span><span class="fast-game-arrow" aria-hidden="true">↗</span></button>`).join('')}</div></div>` : ''}${recent.length ? `<div class="recent-games"><h3>Play again</h3><div>${recent.map((g) => `<button type="button" data-launch="${g.id}">${gameIcon(g.id)}${esc(g.name)}<span aria-hidden="true">↗</span></button>`).join('')}</div></div>` : ''}`;
+}
+
+function launchGame(g) {
+	if (!g) return;
+	if (isGuest()) return showGameRules(g);
+	if (mode === 'group') return grStart(g);
+	startMatch(g, undefined, solo());
+}
+
 function renderThree() {
-	$('#modes3').innerHTML = `<h2 class="stepttl">3 + players</h2><p class="stepsub">How are you playing?</p>${MODES3.map(modeCard).join('')}`;
+	$('#modes3').innerHTML =
+		`<h2 class="stepttl">3 + players</h2><p class="stepsub">How are you playing?</p>${MODES3.map(modeCard).join('')}`;
 }
 function renderTwo() {
-	$('#modes2').innerHTML = `<h2 class="stepttl">2 players</h2><p class="stepsub">How are you playing?</p>${MODES2.map(modeCard).join('')}`;
+	$('#modes2').innerHTML =
+		`<h2 class="stepttl">2 players</h2><p class="stepsub">How are you playing?</p>${MODES2.map(modeCard).join('')}`;
 }
 
 /* Two phones: every match played in this room, and the running win count. Seat 0 is the host. */
 function roomBoard() {
-	const rows = net.board.rows, w = [0, 1].map((p) => rows.filter((r) => r.c === p).length);
-	if (!rows.length) return '<div class="rb-empty">No games played in this room yet</div>';
-	const me = net.me, you = 1 - me;
+	const rows = net.board.rows,
+		w = [0, 1].map((p) => rows.filter((r) => r.c === p).length);
+	if (!rows.length)
+		return '<div class="rb-empty">No games played in this room yet</div>';
+	const me = net.me,
+		you = 1 - me;
 	const line = (r) => {
-		const res = r.c === me ? '<b class="win">WIN</b>' : r.c === you ? '<b class="lose">LOSS</b>' : r.c === -2 ? '<b>TEAM</b>' : '<b>DRAW</b>';
+		const res =
+			r.c === me
+				? '<b class="win">WIN</b>'
+				: r.c === you
+					? '<b class="lose">LOSS</b>'
+					: r.c === -2
+						? '<b>TEAM</b>'
+						: '<b>DRAW</b>';
 		return `<div class="rb-row"><span>${gameIcon(r.g)}${esc(r.n)}</span><span>${r.p[me]} – ${r.p[you]}</span>${res}</div>`;
 	};
 	return `<div class="rb-tot"><span style="color:var(--p${me})">You <b>${w[me]}</b></span><small>wins · ${rows.length} played</small><span style="color:var(--p${you})"><b>${w[you]}</b> ${esc(nameOf(you))}</span></div><div class="rb-rows">${[...rows].reverse().map(line).join('')}</div>`;
@@ -152,38 +245,96 @@ function renderSetup() {
 	$('#n0').placeholder = solo() ? 'Your name' : 'Player 1';
 	$('#onbar').hidden = !online;
 	if (online) {
-		const who = mode === 'group' ? (grp?.names || []).filter((_, i) => !grp.gone[i]).map(esc).join(' · ') : `<span style="color:var(--p0)">${esc(nameOf(0))}</span> vs <span style="color:var(--p1)">${esc(nameOf(1))}</span>`;
-		$('#onbar').innerHTML = `<i class="live"></i><span>${who}</span><button type="button">leave</button>${isGuest() ? '<small class="guestnote">Only the host picks games. Tap a game to read its rules.</small>' : ''}`;
+		const who =
+			mode === 'group'
+				? (grp?.names || [])
+						.filter((_, i) => !grp.gone[i])
+						.map(esc)
+						.join(' · ')
+				: `<span style="color:var(--p0)">${esc(nameOf(0))}</span> vs <span style="color:var(--p1)">${esc(nameOf(1))}</span>`;
+		$('#onbar').innerHTML =
+			`<i class="live"></i><span>${who}</span><button type="button">leave</button>${isGuest() ? '<small class="guestnote">Only the host picks games. Tap a game to read its rules.</small>' : ''}`;
 	}
-	$('#roomboard').innerHTML = mode === 'group' && grp ? grBoardHtml() : online && net ? roomBoard() : '';
+	$('#roomboard').innerHTML =
+		mode === 'group' && grp ? grBoardHtml() : online && net ? roomBoard() : '';
 	const [a, b] = store.series;
 	const series = $('#series');
 	series.hidden = online || solo() || !(a + b);
 	series.innerHTML = `<span style="color:var(--p0)"><b>${esc(nameOf(0))} ${a}</b></span> – <span style="color:var(--p1)"><b>${b} ${esc(nameOf(1))}</b></span><button type="button">reset</button>`;
-	$('button', series).onclick = () => { store.series = [0, 0]; save(); renderHub(); };
+	$('button', series).onclick = () => {
+		store.series = [0, 0];
+		save();
+		renderHub();
+	};
 	const chip = $('#settingsChip');
 	chip.hidden = online && isGuest(); // the host sets the rounds and timing
-	chip.textContent = solo() ? `${store.rounds} rounds · Settings ⚙` : mode === 'group' ? `${store.groupRounds} rounds · ${store.timed ? 'Timed' : 'No timer'} · Settings ⚙` : online ? `${store.rounds} rounds · Settings ⚙` : `${store.mode === 'pass' ? 'Pass & play' : 'Split screen'} · ${store.rounds} rounds · Settings ⚙`;
+	chip.textContent = solo()
+		? `${store.rounds} rounds · Settings ⚙`
+		: mode === 'group'
+			? `${store.groupRounds} rounds · ${store.timed ? 'Timed' : 'No timer'} · Settings ⚙`
+			: online
+				? `${store.rounds} rounds · Settings ⚙`
+				: `${store.mode === 'pass' ? 'Pass & play' : 'Split screen'} · ${store.rounds} rounds · Settings ⚙`;
 }
 
 function renderCats() {
 	const n = (id) => gamesIn(id).length;
-	$('#cats').innerHTML = `<div class="grid">${CATS.filter((c) => n(c.id)).map((c) => card(c, 'data-go', c.id, `<span class="count-pill"><b>${n(c.id)}</b> games</span>`, c.icon)).join('')}</div>`;
+	$('#cats').innerHTML = `<div class="grid">${CATS.filter((c) => n(c.id))
+		.map((c) =>
+			card(
+				c,
+				'data-go',
+				c.id,
+				`<span class="count-pill"><b>${n(c.id)}</b> games</span>`,
+				c.icon,
+			),
+		)
+		.join('')}</div>`;
 }
 
 function renderList() {
 	const c = CATS.find((x) => x.id === catId);
-	const played = (g) => (mode === 'group' ? '&nbsp;' : solo() ? (bestOf(g) ? `best <b>${bestOf(g)}</b>` : 'no score yet') : store.plays[g.id] && mode !== 'online' ? `played <b>${store.plays[g.id]}</b>×` : 'not played yet');
+	const played = (g) =>
+		mode === 'group'
+			? '&nbsp;'
+			: solo()
+				? bestOf(g)
+					? `best <b>${bestOf(g)}</b>`
+					: 'no score yet'
+				: store.plays[g.id] && mode !== 'online'
+					? `played <b>${store.plays[g.id]}</b>×`
+					: 'not played yet';
 	$('#listTtl').dataset.cat = c.id;
 	$('#listTtl').innerHTML = `${gameIcon(c.icon)} ${c.name}`;
 	$('#listSub').textContent = c.blurb;
 	$('#games').dataset.cat = c.id;
-	$('#games').innerHTML = `<div class="grid">${gamesIn(c.id).map((g) => card(g, 'data-game', '', `<span class="best">${mode === 'online' ? '&nbsp;' : played(g)}</span>`)).join('')}</div>`;
+	$('#games').innerHTML = `<div class="grid">${gamesIn(c.id)
+		.map((g) =>
+			card(
+				g,
+				'data-game',
+				'',
+				`<span class="best">${mode === 'online' ? '&nbsp;' : played(g)}</span>`,
+			),
+		)
+		.join('')}</div>`;
 }
 
 function renderParty() {
-	const played = (g) => (store.plays[g.id] ? `played <b>${store.plays[g.id]}</b>×` : 'not played yet');
-	$('#partyList').innerHTML = PARTY_GROUPS.map((grp) => `<div data-cat="${grp.id}"><h2 class="stepttl">${grp.name}</h2><p class="stepsub">${grp.sub}</p><div class="grid">${PARTY.filter(grp.pick).map((g) => card(g, 'data-party', '', `<span class="best">${played(g)}</span>`)).join('')}</div></div>`).join('');
+	const played = (g) =>
+		store.plays[g.id]
+			? `played <b>${store.plays[g.id]}</b>×`
+			: 'not played yet';
+	$('#partyList').innerHTML = PARTY_GROUPS.map(
+		(grp) =>
+			`<div data-cat="${grp.id}"><h2 class="stepttl">${grp.name}</h2><p class="stepsub">${grp.sub}</p><div class="grid">${PARTY.filter(
+				grp.pick,
+			)
+				.map((g) =>
+					card(g, 'data-party', '', `<span class="best">${played(g)}</span>`),
+				)
+				.join('')}</div></div>`,
+	).join('');
 }
 
 /* Two phones: make a room or join one. Everything after that is in net.js. */
@@ -194,38 +345,60 @@ function renderRoom() {
 	room.dataset.key = key;
 	const L = lobby;
 	const name = `<label class="who" style="--c: var(--p0)"><i></i><input id="myName" maxlength="14" placeholder="Your name" autocomplete="off" value="${esc(store.names[0])}" aria-label="Your name"${L.invite ? ' autofocus' : ''}></label>`;
-	const wait = (txt) => `<h2 class="stepttl">${txt}</h2><button class="btn ghost" type="button" data-a="cancel">Cancel</button>`;
-	room.innerHTML = L.state === 'hosting'
-		? `<h2 class="stepttl">Your room</h2><p class="stepsub">Your friend scans this with their camera, or opens Faceoff, picks <b>Two phones</b> and types the code.</p><div class="qr" id="qr"></div><div class="tcode">${L.code}</div><button class="btn" type="button" data-a="share">Send invite link</button><p class="stepsub">Waiting for your friend…</p><button class="btn ghost" type="button" data-a="cancel">Cancel</button>`
-		: L.state === 'starting' ? wait('Opening a room…')
-		: L.state === 'joining' ? wait(`Joining ${L.code}…`)
-		: L.invite ? `<h2 class="stepttl">Join room ${esc(L.invite)}</h2><p class="stepsub">Your friend invited you. What should they call you?</p>${L.state === 'error' ? `<p class="oops">${esc(L.msg)}</p>` : ''}${name}<button class="btn" type="button" data-a="accept">Join</button><button class="btn ghost" type="button" data-a="decline">Not now</button>`
-		: `<h2 class="stepttl">Two phones</h2><p class="stepsub">One of you makes a room, the other joins it with the code. You each play on your own phone.</p>${L.state === 'error' ? `<p class="oops">${esc(L.msg)}</p>` : ''}${name}<button class="btn" type="button" data-a="create">Make a room</button><div class="or">or join a friend</div><input class="tinput" id="joinCode" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Room code"><button class="btn ghost" type="button" data-a="join">Join</button>`;
-	if (L.state === 'hosting') loadQr().then(() => { if (lobby.state === 'hosting' && $('#qr')) $('#qr').innerHTML = qrSvg(inviteUrl(L.code)); }).catch(() => { /* no QR: the code and link still work */ });
+	const wait = (txt) =>
+		`<h2 class="stepttl">${txt}</h2><button class="btn ghost" type="button" data-a="cancel">Cancel</button>`;
+	room.innerHTML =
+		L.state === 'hosting'
+			? `<h2 class="stepttl">Your room</h2><p class="stepsub">Your friend scans this with their camera, or opens Faceoff, picks <b>Two phones</b> and types the code.</p><div class="qr" id="qr"></div><div class="tcode">${L.code}</div><button class="btn" type="button" data-a="share">Send invite link</button><p class="stepsub">Waiting for your friend…</p><button class="btn ghost" type="button" data-a="cancel">Cancel</button>`
+			: L.state === 'starting'
+				? wait('Opening a room…')
+				: L.state === 'joining'
+					? wait(`Joining ${L.code}…`)
+					: L.invite
+						? `<h2 class="stepttl">Join room ${esc(L.invite)}</h2><p class="stepsub">Your friend invited you. What should they call you?</p>${L.state === 'error' ? `<p class="oops">${esc(L.msg)}</p>` : ''}${name}<button class="btn" type="button" data-a="accept">Join</button><button class="btn ghost" type="button" data-a="decline">Not now</button>`
+						: `<h2 class="stepttl">Two phones</h2><p class="stepsub">One of you makes a room, the other joins it with the code. You each play on your own phone.</p>${L.state === 'error' ? `<p class="oops">${esc(L.msg)}</p>` : ''}${name}<button class="btn" type="button" data-a="create">Make a room</button><div class="or">or join a friend</div><input class="tinput" id="joinCode" maxlength="4" placeholder="CODE" autocapitalize="characters" autocomplete="off" spellcheck="false" aria-label="Room code"><button class="btn ghost" type="button" data-a="join">Join</button>`;
+	if (L.state === 'hosting')
+		loadQr()
+			.then(() => {
+				if (lobby.state === 'hosting' && $('#qr'))
+					$('#qr').innerHTML = qrSvg(inviteUrl(L.code));
+			})
+			.catch(() => {
+				/* no QR: the code and link still work */
+			});
 }
 
 /* The link a friend opens to join: this page's own address, so it works wherever Faceoff is hosted. */
-const inviteUrl = (code) => `${location.origin}${location.pathname.replace(/index\.html$/, '')}?join=${code}`;
-const loadQr = () => (window.qrcode ? Promise.resolve() : new Promise((ok, fail) => {
-	const s = document.createElement('script');
-	s.src = 'js/vendor/qrcode.js?v=17';
-	s.onload = ok;
-	s.onerror = fail;
-	document.head.append(s);
-}));
+const inviteUrl = (code) =>
+	`${location.origin}${location.pathname.replace(/index\.html$/, '')}?join=${code}`;
+const loadQr = () =>
+	window.qrcode
+		? Promise.resolve()
+		: new Promise((ok, fail) => {
+				const s = document.createElement('script');
+				s.src = 'js/vendor/qrcode.js?v=17';
+				s.onload = ok;
+				s.onerror = fail;
+				document.head.append(s);
+			});
 /* A QR code as inline SVG: one square per dark module, on a white card with a quiet border. */
 function qrSvg(text) {
 	const q = qrcode(0, 'M');
 	q.addData(text);
 	q.make();
-	const n = q.getModuleCount(), pad = 3;
+	const n = q.getModuleCount(),
+		pad = 3;
 	let d = '';
-	for (let r = 0; r < n; r++) for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
+	for (let r = 0; r < n; r++)
+		for (let c = 0; c < n; c++) if (q.isDark(r, c)) d += `M${c} ${r}h1v1h-1z`;
 	return `<svg viewBox="${-pad} ${-pad} ${n + pad * 2} ${n + pad * 2}" shape-rendering="crispEdges" role="img" aria-label="QR code to join this room"><path d="${d}" fill="#050409"/></svg>`;
 }
 
 $('#room').oninput = (e) => {
-	if (e.target.id === 'myName') { store.names[0] = e.target.value; save(); }
+	if (e.target.id === 'myName') {
+		store.names[0] = e.target.value;
+		save();
+	}
 	if (e.target.id === 'joinCode') e.target.value = e.target.value.toUpperCase();
 };
 $('#room').onclick = async (e) => {
@@ -240,27 +413,59 @@ $('#room').onclick = async (e) => {
 	};
 	if (act === 'create' && named()) netHost();
 	if (act === 'join' && named()) netJoin($('#joinCode').value);
-	if (act === 'accept' && named()) { const c = lobby.invite; lobby.invite = ''; netJoin(c); }
-	if (act === 'decline') { lobby.invite = ''; lobbySet('idle'); }
-	if (act === 'cancel') { netCancel(); lobbySet('idle'); }
+	if (act === 'accept' && named()) {
+		const c = lobby.invite;
+		lobby.invite = '';
+		netJoin(c);
+	}
+	if (act === 'decline') {
+		lobby.invite = '';
+		lobbySet('idle');
+	}
+	if (act === 'cancel') {
+		netCancel();
+		lobbySet('idle');
+	}
 	if (act === 'share') {
 		const url = inviteUrl(lobby.code);
-		try { await navigator.share({ title: 'Faceoff', text: `Join my Faceoff room: ${lobby.code}`, url }); } catch { navigator.clipboard?.writeText(url); e.target.textContent = 'Link copied ✓'; }
+		try {
+			await navigator.share({
+				title: 'Faceoff',
+				text: `Join my Faceoff room: ${lobby.code}`,
+				url,
+			});
+		} catch {
+			navigator.clipboard?.writeText(url);
+			e.target.textContent = 'Link copied ✓';
+		}
 	}
 };
 lobby.onchange = renderHub;
 
-$('#modes').onclick = $('#modes2').onclick = $('#modes3').onclick = (e) => {
-	const id = e.target.closest('[data-mode]')?.dataset.mode;
-	if (!id) return;
-	lobby.note = '';
-	if (id === 'solo') go('cats', { mode: 'solo' });
-	if (id === 'two') go('two');
-	if (id === 'phone') go('cats', { mode: 'phone' });
-	if (id === 'online') go(net ? 'cats' : 'room', { mode: 'online' });
-	if (id === 'three') go('three');
-	if (id === 'party') go('party', { mode: 'party' });
-	if (id === 'group') go(grp ? 'cats' : 'room', { mode: 'group' });
+$('#modes').onclick =
+	$('#modes2').onclick =
+	$('#modes3').onclick =
+		(e) => {
+			const pick = e.target.closest('[data-mode], [data-room-setup]');
+			const id = pick?.dataset.mode || pick?.dataset.roomSetup;
+			if (!id) return;
+			lobby.note = '';
+			if (id === 'solo') go('session', { mode: 'solo' });
+			if (id === 'two') go('two');
+			if (id === 'phone') go('session', { mode: 'phone' });
+			if (id === 'online') go(net ? 'session' : 'room', { mode: 'online' });
+			if (id === 'three') go('three');
+			if (id === 'party') go('party', { mode: 'party' });
+			if (id === 'group') go(grp ? 'session' : 'room', { mode: 'group' });
+		};
+$('#session').onclick = (e) => {
+	if (e.target.closest('[data-quick]')) return startQuickMatch();
+	if (e.target.closest('[data-browse]')) return go('cats');
+	if (e.target.closest('[data-session-setup]')) return go('session');
+	const preset = e.target.closest('[data-cup]')?.dataset.cup;
+	if (preset && !isGuest()) return startCup(preset, solo());
+	const id = e.target.closest('[data-launch]')?.dataset.launch;
+	if (id) launchGame(GAMES.find((g) => g.id === id));
 };
 $('#cats').onclick = (e) => {
 	const id = e.target.closest('[data-go]')?.dataset.go;
@@ -268,27 +473,47 @@ $('#cats').onclick = (e) => {
 };
 $('#onbar').onclick = (e) => {
 	if (!e.target.closest('button')) return;
-	if (mode === 'group') { grLeave(); go('three'); } else { netLeave(); go('two'); }
+	if (mode === 'group') {
+		grLeave();
+		go('three');
+	} else {
+		netLeave();
+		go('two');
+	}
 };
 $('#hubBack').onclick = () => {
-	if (step === 'room') { if (mode === 'group') { grp ? grLeave() : grCancel(); glSet('idle'); return go('three'); } netCancel(); lobbySet('idle'); return go('two'); }
+	if (step === 'room') {
+		if (mode === 'group') {
+			grp ? grLeave() : grCancel();
+			glSet('idle');
+			return go('three');
+		}
+		netCancel();
+		lobbySet('idle');
+		return go('two');
+	}
 	if (step === 'three') return go('home');
+	if (step === 'two') return go('home');
 	if (step === 'party') return go('three');
-	if (step === 'cats' && grp && !confirm('Leave this room?')) return;
-	if (step === 'cats' && grp) { grLeave(); return go('three'); }
 	if (step === 'list') return go('cats');
-	if (step === 'cats' && net && !confirm('Leave this room?')) return;
-	if (step === 'cats' && net) netLeave();
-	go(step === 'cats' && !solo() ? 'two' : 'home');
+	if (step === 'cats') return go('session');
+	if (step === 'session' && grp && !confirm('Leave this room?')) return;
+	if (step === 'session' && grp) {
+		grLeave();
+		return go('three');
+	}
+	if (step === 'session' && net && !confirm('Leave this room?')) return;
+	if (step === 'session' && net) {
+		netLeave();
+		return go('two');
+	}
+	go('home');
 };
 
 $('#games').onclick = (e) => {
 	const id = e.target.closest('[data-game]')?.dataset.game;
 	if (!id) return;
-	const g = GAMES.find((x) => x.id === id);
-	if (isGuest()) return showGameRules(g); // only the host starts games; everyone else can read the rules
-	if (mode === 'group') return grStart(g);
-	startMatch(g, undefined, solo());
+	launchGame(GAMES.find((x) => x.id === id));
 };
 $('#partyList').onclick = (e) => {
 	const id = e.target.closest('[data-party]')?.dataset.party;
@@ -297,120 +522,76 @@ $('#partyList').onclick = (e) => {
 
 /* Cards tilt toward the pointer and a soft spotlight follows it, as on Keystorm's menu. */
 const calm = matchMedia('(prefers-reduced-motion: reduce)').matches;
-[$('#games'), $('#cats'), $('#partyList')].forEach((box) => box.addEventListener('pointermove', (e) => {
-	const c = e.target.closest('.card');
-	if (!c) return;
-	const r = c.getBoundingClientRect();
-	const x = (e.clientX - r.left) / r.width, y = (e.clientY - r.top) / r.height;
-	c.style.setProperty('--mx', `${x * 100}%`);
-	c.style.setProperty('--my', `${y * 100}%`);
-	if (!calm) {
-		c.style.setProperty('--rx', `${(0.5 - y) * 10}deg`);
-		c.style.setProperty('--ry', `${(x - 0.5) * 12}deg`);
-	}
-}));
-[$('#games'), $('#cats'), $('#partyList')].forEach((box) => box.addEventListener('pointerout', (e) => {
-	const c = e.target.closest('.card');
-	if (c && !c.contains(e.relatedTarget)) {
-		c.style.setProperty('--rx', '0deg');
-		c.style.setProperty('--ry', '0deg');
-	}
-}));
+[$('#games'), $('#cats'), $('#partyList')].forEach((box) =>
+	box.addEventListener('pointermove', (e) => {
+		const c = e.target.closest('.card');
+		if (!c) return;
+		const r = c.getBoundingClientRect();
+		const x = (e.clientX - r.left) / r.width,
+			y = (e.clientY - r.top) / r.height;
+		c.style.setProperty('--mx', `${x * 100}%`);
+		c.style.setProperty('--my', `${y * 100}%`);
+		if (!calm) {
+			c.style.setProperty('--rx', `${(0.5 - y) * 4}deg`);
+			c.style.setProperty('--ry', `${(x - 0.5) * 4}deg`);
+		}
+	}),
+);
+[$('#games'), $('#cats'), $('#partyList')].forEach((box) =>
+	box.addEventListener('pointerout', (e) => {
+		const c = e.target.closest('.card');
+		if (c && !c.contains(e.relatedTarget)) {
+			c.style.setProperty('--rx', '0deg');
+			c.style.setProperty('--ry', '0deg');
+		}
+	}),
+);
 
 [0, 1].forEach((p) => {
-	$(`#n${p}`).oninput = (e) => { store.names[p] = e.target.value; save(); };
+	$(`#n${p}`).oninput = (e) => {
+		store.names[p] = e.target.value;
+		save();
+	};
 });
 
 /* Quit needs two taps so a stray thumb can't end the match. */
 let quitTimer = 0;
 $('#quit').onclick = (e) => {
 	const btn = e.currentTarget;
-	if (btn.classList.contains('sure')) { clearTimeout(quitTimer); btn.classList.remove('sure'); btn.textContent = 'Quit'; return quit(); }
+	if (btn.classList.contains('sure')) {
+		clearTimeout(quitTimer);
+		btn.classList.remove('sure');
+		btn.textContent = 'Quit';
+		return quit();
+	}
 	btn.classList.add('sure');
 	btn.textContent = 'Sure?';
-	quitTimer = setTimeout(() => { btn.classList.remove('sure'); btn.textContent = 'Quit'; }, 2000);
+	quitTimer = setTimeout(() => {
+		btn.classList.remove('sure');
+		btn.textContent = 'Quit';
+	}, 2000);
 };
-
-/* History: totals, personal bests, and every match and game played on this device, newest first. */
-let histTab = 'all';
-const HIST_TABS = [['all', 'All'], ['solo', 'Solo'], ['duo', '2 players'], ['party', 'Party']];
-const kindOf = (x) => (x.c === -3 ? 'solo' : x.c === -4 ? 'party' : 'duo');
-function renderStats() {
-	const h = store.history;
-	const duo = h.filter((x) => kindOf(x) === 'duo');
-	const wins = [0, 1].map((p) => duo.filter((x) => x.c === p).length);
-	const tile = (n, label, c = '') => `<div class="tile"${c ? ` style="--c:${c}"` : ''}><b>${n}</b><small>${label}</small></div>`;
-	const gameOf = (id) => GAMES.find((y) => y.id === id) || PARTY.find((y) => y.id === id);
-	const bests = GAMES.filter((g) => store.best[g.id]).map((g) => `<div class="srow"><b>${gameIcon(g.id)} ${g.name}</b><span>${esc(store.best[g.id].l)}</span><span>★</span></div>`).join('');
-	const names = [...new Set(duo.flatMap((x) => x.n))];
-	const perGame = GAMES.map((g) => {
-		const mine = duo.filter((x) => x.g === g.id);
-		if (!mine.length) return '';
-		const tally = names.map((n) => [n, mine.filter((x) => x.c >= 0 && x.n[x.c] === n).length]).filter(([, w]) => w).sort((a, b) => b[1] - a[1]);
-		const draws = mine.filter((x) => x.c < 0).length;
-		return `<div class="srow"><b>${gameIcon(g.id)} ${g.name}</b><span>${mine.length}×</span><small>${tally.map(([n, w]) => `${esc(n)} ${w}`).join(' · ') || 'no wins yet'}${draws ? ` · ${draws} draw${draws > 1 ? 's' : ''}` : ''}</small></div>`;
-	}).join('');
-	const day = (t) => new Date(t).toLocaleDateString(undefined, { weekday: 'short', month: 'short', day: 'numeric' });
-	const time = (t) => new Date(t).toLocaleTimeString(undefined, { hour: 'numeric', minute: '2-digit' });
-	const line = (x) => {
-		const k = kindOf(x), g = gameOf(x.g);
-		const who = k === 'solo' ? `${esc(x.n[0])} · solo` : k === 'party' ? esc(x.s) : x.c === -2 ? `${esc(x.n[0])} &amp; ${esc(x.n[1])}` : `${esc(x.n[0])} ${x.p[0]} – ${x.p[1]} ${esc(x.n[1])}`;
-		const out = k === 'solo' ? `best ${esc(x.s || '–')}` : k === 'party' ? 'played' : x.c === -2 ? esc(x.s || 'together') : x.c === -1 ? 'draw' : `${esc(x.n[x.c])} won`;
-		return `<div class="srow hrow"><b>${g ? gameIcon(g.id) : ''} ${g ? g.name : esc(x.g)}</b><span>${out}</span><small>${who} · ${time(x.t)}</small></div>`;
-	};
-	const shown = h.filter((x) => histTab === 'all' || kindOf(x) === histTab).reverse();
-	let last = '';
-	const rows = shown.map((x) => {
-		const d = day(x.t), head = d === last ? '' : `<h4 class="hday">${d}</h4>`;
-		last = d;
-		return head + line(x);
-	}).join('');
-	$('#statsBody').innerHTML = h.length
-		? `<div class="tiles">${tile(h.length, 'plays')}${tile(h.filter((x) => kindOf(x) === 'solo').length, 'solo runs', 'var(--win)')}${tile(wins[0], `${esc(nameOf(0))} wins`, 'var(--p0)')}${tile(wins[1], `${esc(nameOf(1))} wins`, 'var(--p1)')}</div>
-			${bests ? `<div class="stat-list"><h3>Personal bests</h3>${bests}</div>` : ''}
-			${perGame ? `<div class="stat-list"><h3>Wins by game</h3>${perGame}</div>` : ''}
-			<div class="stat-list"><h3>Everything you played</h3><div class="seg htabs" role="group" aria-label="Filter">${HIST_TABS.map(([id, n]) => `<button type="button" data-t="${id}" aria-pressed="${id === histTab}">${n}</button>`).join('')}</div>${rows || '<p class="empty">Nothing here yet.</p>'}</div>`
-		: '<p class="empty">Nothing played yet. Finish a game and it shows up here.</p>';
-}
-$('#statsBody').onclick = (e) => {
-	const t = e.target.closest('[data-t]')?.dataset.t;
-	if (t) { histTab = t; renderStats(); }
-};
-$('#statsBtn').onclick = () => { document.body.dataset.screen = 'stats'; window.scrollTo(0, 0); renderStats(); };
-$('#statsBack').onclick = toHub;
-
-/* Settings: every option lives on this page; changes save as you tap. */
-const openSettings = () => { document.body.dataset.screen = 'settings'; window.scrollTo(0, 0); renderHub(); };
-$('#settingsBtn').onclick = openSettings;
-$('#settingsChip').onclick = openSettings;
-$('#settingsBack').onclick = toHub;
-$('#statsReset').onclick = () => {
-	if (!confirm('Clear all history, personal bests and played counts on this device?')) return;
-	store.history = [];
-	store.plays = {};
-	store.best = {};
-	store.series = [0, 0];
-	save();
-	renderStats();
-};
-
-/* One line per entry, trimmed and capped, so a pasted essay can't bloat storage. */
-const toLines = (text) => text.split('\n').map((l) => l.trim().slice(0, 140)).filter(Boolean).slice(0, 30);
-[['cDares', 'dares'], ['cTruths', 'truths']].forEach(([id, key]) => {
-	$(`#${id}`).oninput = (e) => { store.custom[key] = toLines(e.target.value); save(); };
-});
-
-$('#share').onclick = shareResult;
 
 /* Offline and repeat visits: the service worker keeps the app and word lists cached. */
-if ('serviceWorker' in navigator) addEventListener('load', () => navigator.serviceWorker.register('sw.js').catch(() => { /* private mode or http: it just loads from the network */ }));
+if ('serviceWorker' in navigator) {
+	const registerOffline = () =>
+		navigator.serviceWorker.register('sw.js').catch(() => {
+			/* private mode: load from the network */
+		});
+	if (document.readyState === 'complete') registerOffline();
+	else addEventListener('load', registerOffline, { once: true });
+}
 
 document.addEventListener('contextmenu', (e) => e.preventDefault()); // long-press must not open menus mid-game
 
 /* Rules sheet: what a game is and how it is scored. Guests in a room see this instead of starting the game. */
 function showGameRules(g) {
 	let how = g.blurb;
-	try { how = g.intro(g.config(0)); } catch { /* a game whose intro needs a live config: the blurb will do */ }
+	try {
+		how = g.intro(g.config(0));
+	} catch {
+		/* a game whose intro needs a live config: the blurb will do */
+	}
 	const dlg = $('#rules');
 	dlg.innerHTML = `<div class="hero">${gameIcon(g.id)}</div><h3>${g.name}</h3><p>${g.blurb}</p><p class="how">${how}</p><p class="how">${g.lowerIsBetter ? 'Lowest score wins the round.' : 'Highest score wins the round.'}</p><button class="btn" type="button">Got it</button>`;
 	$('button', dlg).onclick = () => dlg.close();
@@ -419,17 +600,39 @@ function showGameRules(g) {
 
 /* Rooms: the first tap in a match asks for the whole screen (a browser only allows it from a tap). */
 let fsTried = false;
-document.addEventListener('pointerdown', () => {
-	if (document.body.dataset.screen !== 'match') { fsTried = false; return; }
-	if (fsTried || document.body.dataset.mode !== 'online' || document.fullscreenElement) return;
-	fsTried = true;
-	document.documentElement.requestFullscreen?.({ navigationUI: 'hide' }).catch(() => { /* iOS Safari has none: the page is already edge to edge */ });
-}, true);
+document.addEventListener(
+	'pointerdown',
+	() => {
+		if (document.body.dataset.screen !== 'match') {
+			fsTried = false;
+			return;
+		}
+		if (
+			fsTried ||
+			document.body.dataset.mode !== 'online' ||
+			document.fullscreenElement
+		)
+			return;
+		fsTried = true;
+		document.documentElement
+			.requestFullscreen?.({ navigationUI: 'hide' })
+			.catch(() => {
+				/* iOS Safari has none: the page is already edge to edge */
+			});
+	},
+	true,
+);
 
 renderHub();
 
 // A friend's invite link opens straight into joining their room.
 const invite = new URLSearchParams(location.search).get('join');
 const groupInvite = new URLSearchParams(location.search).get('room');
-if (groupInvite) { gl.invite = groupInvite.toUpperCase().slice(0, 4); go('room', { mode: 'group' }); }
-if (invite) { lobby.invite = invite.toUpperCase().slice(0, 4); go('room', { mode: 'online' }); } // ask for a name before joining
+if (groupInvite) {
+	gl.invite = groupInvite.toUpperCase().slice(0, 4);
+	go('room', { mode: 'group' });
+}
+if (invite) {
+	lobby.invite = invite.toUpperCase().slice(0, 4);
+	go('room', { mode: 'online' });
+} // ask for a name before joining

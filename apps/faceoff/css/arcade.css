@@ -1,0 +1,96 @@
+/* The board takes the space left by real controls, even in a phone's half pane. */
+.stage.arcade-game {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr);
+	grid-template-rows: auto minmax(0, 1fr) auto auto;
+	align-content: stretch;
+	justify-content: stretch;
+	justify-items: center;
+	gap: 6px;
+	padding: 8px 14px 12px;
+}
+.arcade-head {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 10px;
+	width: 100%;
+	font: 500 11px var(--mono);
+	color: var(--ink);
+}
+.arcade-time {
+	color: var(--mute);
+	font-size: 10px;
+}
+.arcade-board {
+	display: grid;
+	place-items: center;
+	width: 100%;
+	max-width: 720px;
+	height: 100%;
+	min-width: 0;
+	min-height: 0;
+	overflow: hidden;
+}
+.arcade-board canvas {
+	display: block;
+	touch-action: none;
+	border-radius: 5px;
+	outline: none;
+}
+.arcade-note {
+	font-size: 10px;
+	color: var(--mute);
+}
+body[data-big='1'] .stage.arcade-game .btn,
+.stage.arcade-game .btn {
+	width: min(100%, 360px);
+	min-height: 44px;
+	padding: 8px 16px;
+	font-size: 13px;
+}
+.golf-controls {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 16px;
+	width: min(100%, 480px);
+}
+.golf-controls label {
+	display: grid;
+	grid-template-columns: 1fr auto;
+	text-align: left;
+	color: var(--mute);
+	font-size: 10px;
+}
+.golf-controls output {
+	font: 500 10px var(--mono);
+	color: var(--ink);
+}
+.golf-controls input {
+	grid-column: 1 / -1;
+	width: 100%;
+	height: 26px;
+	margin: 0;
+	accent-color: var(--c);
+	touch-action: pan-x;
+}
+.golf-controls input:disabled {
+	opacity: 0.4;
+}
+@media (max-height: 620px) and (max-aspect-ratio: 11/10) {
+	.stage.arcade-game {
+		gap: 4px;
+		padding: 4px 14px 7px;
+	}
+	.arcade-head {
+		font-size: 10px;
+	}
+	body[data-big='1'] .stage.arcade-game .btn,
+	.stage.arcade-game .btn {
+		padding: 6px 12px;
+		font-size: 12px;
+	}
+	.golf-controls input {
+		height: 24px;
+	}
+}

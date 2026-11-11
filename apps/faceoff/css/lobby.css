@@ -1,0 +1,418 @@
+/* A compact arcade lobby, using the same paper-white action and matte surfaces as play. */
+#hub[data-step='home'] .home-intro {
+	padding-top: clamp(18px, 3vh, 36px);
+}
+#hub[data-step='home'] .logo {
+	margin-top: 12px;
+	font-size: clamp(64px, 9vw, 100px);
+}
+#hub[data-step='home'] .tag {
+	margin: 12px 0 26px;
+	font-size: 14px;
+}
+#modes {
+	display: block;
+	margin-bottom: 16px;
+}
+.player-choice {
+	display: flex;
+	gap: 6px;
+	padding-bottom: 14px;
+	border-bottom: 1px solid var(--line);
+}
+.player-choice button {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 9px;
+	min-height: 48px;
+	padding: 10px 18px;
+	border: 1px solid transparent;
+	border-radius: 6px;
+	background: transparent;
+	color: var(--mute);
+	font-size: 14px;
+	transition:
+		background 120ms,
+		color 120ms;
+}
+.player-choice button[aria-pressed='true'] {
+	border-color: var(--line);
+	background: #1b1d20;
+	color: var(--ink);
+}
+.player-choice .gi {
+	width: 19px;
+	height: 19px;
+	stroke-width: 1.6;
+}
+.device-choice {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	padding-top: 10px;
+	color: var(--mute);
+	font-size: 12px;
+}
+.device-choice button,
+.text-action {
+	min-height: 40px;
+	border: 0;
+	padding: 8px 0 8px 8px;
+	background: transparent;
+	color: var(--ink);
+	font-size: 12px;
+	white-space: nowrap;
+}
+.session {
+	margin-bottom: 24px;
+	animation: session-enter 180ms var(--ease-out) both;
+}
+.session-heading {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 12px;
+	margin: 8px 0 14px;
+}
+.session-heading h2 {
+	margin: 0;
+	font-size: 20px;
+	font-weight: 500;
+	letter-spacing: -0.04em;
+}
+.session-actions {
+	display: grid;
+	grid-template-columns: 1fr 1.2fr;
+	gap: 14px;
+}
+.session-quick {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 22px;
+	min-height: 160px;
+	padding: 24px;
+	border: 1px solid #e7e3d9;
+	border-radius: 8px;
+	background: #e7e3d9;
+	color: #111316;
+	text-align: left;
+	transition:
+		background 120ms,
+		transform 100ms;
+}
+.session-action-title {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 18px;
+	width: 100%;
+	font-size: 26px;
+	font-weight: 500;
+	letter-spacing: -0.045em;
+}
+.session-quick small {
+	font-size: 12px;
+	line-height: 1.5;
+	color: #4b4c4b;
+}
+.session-quick:hover {
+	background: #f1eee6;
+}
+.session-quick:active {
+	transform: translateY(1px);
+	background: #d2cfc6;
+}
+.session-cup {
+	display: flex;
+	flex-direction: column;
+	justify-content: space-between;
+	gap: 22px;
+	min-width: 0;
+	padding: 24px;
+	border: 1px solid var(--line);
+	border-radius: 8px;
+	background: #141619;
+}
+.cup-heading {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 12px;
+	flex-wrap: wrap;
+}
+.cup-heading h3 {
+	margin: 0;
+	font-size: 24px;
+	font-weight: 500;
+	letter-spacing: -0.04em;
+}
+.cup-heading small {
+	color: var(--mute);
+	font-size: 12px;
+}
+.cup-presets {
+	display: grid;
+	grid-template-columns: repeat(3, 1fr);
+	gap: 6px;
+}
+.cup-presets button {
+	display: flex;
+	justify-content: space-between;
+	align-items: center;
+	gap: 6px;
+	min-height: 44px;
+	padding: 10px;
+	border: 1px solid var(--line);
+	border-radius: 5px;
+	background: transparent;
+	font-size: 12px;
+	transition:
+		background 120ms,
+		border-color 120ms;
+}
+.cup-presets button span {
+	color: var(--mute);
+}
+.cup-presets button:hover,
+.player-choice button:hover,
+.fast-game:hover,
+.recent-games button:hover {
+	background: #1d2023;
+}
+.session-browse {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: 100%;
+	min-height: 58px;
+	margin-top: 8px;
+	padding: 12px 0;
+	border: 0;
+	border-bottom: 1px solid var(--line);
+	background: transparent;
+	text-align: left;
+}
+.session-browse > span:first-child {
+	font-size: 15px;
+}
+.session-browse small {
+	flex: 1;
+	color: var(--mute);
+	font-size: 12px;
+}
+.session-browse > span:last-child {
+	font-size: 22px;
+}
+.session-browse:hover > span:last-child {
+	transform: translateX(3px);
+}
+.session-note {
+	color: var(--mute);
+	font-size: 12px;
+	line-height: 1.6;
+}
+.session button:disabled {
+	cursor: default;
+	opacity: 0.45;
+}
+.session-discovery {
+	margin-top: 26px;
+}
+.discovery-heading {
+	display: flex;
+	justify-content: space-between;
+	align-items: baseline;
+	gap: 12px;
+	margin-bottom: 14px;
+}
+.discovery-heading h3,
+.recent-games h3 {
+	margin: 0;
+	font-size: 13px;
+	font-weight: 500;
+}
+.discovery-heading > span {
+	color: var(--mute);
+	font-size: 11px;
+}
+.featured-games {
+	display: grid;
+	grid-template-columns: repeat(2, minmax(0, 1fr));
+	gap: 14px;
+}
+.fast-game {
+	display: flex;
+	align-items: center;
+	gap: 18px;
+	min-width: 0;
+	padding: 16px 0;
+	border: 0;
+	border-top: 1px solid var(--line);
+	background: transparent;
+	text-align: left;
+	transition: background 120ms;
+}
+.fast-game-art {
+	display: grid;
+	place-items: center;
+	flex: 0 0 72px;
+	height: 86px;
+	border-radius: 6px;
+	background: #191c1e;
+	color: #d2cec5;
+}
+.fast-game-art .gi {
+	width: 42px;
+	height: 42px;
+	stroke-width: 1.2;
+}
+.fast-game > span:nth-child(2) {
+	display: grid;
+	gap: 6px;
+	flex: 1;
+	min-width: 0;
+}
+.fast-game small {
+	color: var(--mute);
+	font: 500 9px var(--mono);
+	letter-spacing: 0.08em;
+}
+.fast-game b {
+	font-size: 20px;
+	font-weight: 500;
+	letter-spacing: -0.04em;
+}
+.fast-game > span:nth-child(2) > span {
+	color: var(--mute);
+	font-size: 12px;
+	line-height: 1.55;
+}
+.fast-game-arrow {
+	align-self: flex-start;
+	color: var(--mute);
+	font-size: 20px;
+}
+.recent-games {
+	margin-top: 24px;
+}
+.recent-games > div {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 6px;
+	margin-top: 12px;
+}
+.recent-games button {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	min-height: 44px;
+	padding: 10px 12px;
+	border: 1px solid var(--line);
+	border-radius: 5px;
+	background: transparent;
+	font-size: 12px;
+}
+.recent-games .gi {
+	width: 18px;
+	height: 18px;
+}
+.recent-games button > span {
+	color: var(--mute);
+}
+#hub[data-step='cats'] .session {
+	margin-bottom: 14px;
+}
+#hub[data-step='cats'] .session-discovery,
+#hub[data-step='cats'] .recent-games,
+#hub[data-step='cats'] .session-browse {
+	display: none;
+}
+#hub[data-step='session'] .setup {
+	margin: 24px 0 14px;
+}
+@keyframes session-enter {
+	from {
+		opacity: 0;
+		transform: translateY(5px);
+	}
+	to {
+		opacity: 1;
+		transform: none;
+	}
+}
+@media (max-width: 700px) {
+	.session-actions {
+		grid-template-columns: 1fr;
+		gap: 10px;
+	}
+	.session-quick {
+		min-height: 104px;
+		padding: 18px;
+		gap: 10px;
+	}
+	.session-action-title {
+		font-size: 24px;
+	}
+	.session-cup {
+		gap: 16px;
+		padding: 18px;
+	}
+	.cup-heading h3 {
+		font-size: 22px;
+	}
+	.featured-games {
+		grid-template-columns: 1fr;
+		gap: 0;
+	}
+	.fast-game-art {
+		flex-basis: 64px;
+		height: 72px;
+	}
+	.session-browse small {
+		font-size: 11px;
+	}
+	.player-choice button {
+		flex: 1;
+		gap: 6px;
+		padding: 10px 8px;
+		font-size: 13px;
+	}
+	.device-choice {
+		font-size: 11px;
+	}
+}
+@media (max-width: 360px) {
+	.player-choice .gi {
+		display: none;
+	}
+	.session-heading h2 {
+		font-size: 18px;
+	}
+	.cup-presets button {
+		padding: 10px 8px;
+		font-size: 11px;
+	}
+	.cup-heading small,
+	.session-browse small {
+		font-size: 10px;
+	}
+	.discovery-heading > span {
+		display: none;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	#hub,
+	.session {
+		animation: none;
+	}
+	.session button {
+		transition: none;
+	}
+	.session button:active,
+	.session-browse:hover > span:last-child {
+		transform: none;
+	}
+}

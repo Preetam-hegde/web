@@ -1,0 +1,427 @@
+/* Precision and perception surfaces. Game values stay in the game, not decorative UI. */
+canvas {
+	border-radius: 6px;
+	background: #15191c;
+	outline: 1px solid #292e32;
+}
+.stage {
+	gap: 10px;
+}
+.stage .quote {
+	font-weight: 400;
+	line-height: 1.5;
+}
+.stage .dhead {
+	font-size: 12px;
+	color: var(--mute);
+	padding: 5px 0;
+}
+.stage .readout {
+	color: var(--ink);
+	font-variant-numeric: tabular-nums;
+}
+.pane .btn {
+	background: #e7e3d9;
+	color: #111316;
+}
+.pane .btn.ghost {
+	color: var(--ink);
+	background: transparent;
+}
+.stage .typein {
+	font-weight: 500;
+}
+.track {
+	height: 5px;
+	border-radius: 0;
+	background: #3b4247;
+}
+.dot {
+	width: 17px;
+	height: 17px;
+	margin: -8.5px 0 0 -8.5px;
+	background: var(--c);
+	border: 3px solid #101214;
+	outline: 1px solid var(--c);
+}
+.zone {
+	width: 2px;
+	margin-left: -1px;
+	top: -8px;
+	bottom: -8px;
+	border-radius: 0;
+	background: #e7e3d9;
+}
+.bar {
+	height: 3px;
+	border-radius: 0;
+	background: #2c3237;
+}
+.bar i {
+	background: var(--c);
+}
+.instrument-label {
+	color: var(--mute);
+	font: 500 10px var(--sans);
+	letter-spacing: 0.05em;
+}
+
+/* Colour Match / Recall: reference, mix and the actual RGB controls. */
+.colour-game .swatch {
+	flex: none;
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 10px;
+	width: min(100%, 360px);
+	height: auto;
+	overflow: visible;
+	border: 0;
+	border-radius: 0;
+}
+.colour-game .color-cell {
+	margin: 0;
+	min-width: 0;
+}
+.colour-game .color-cell figcaption {
+	display: flex;
+	justify-content: space-between;
+	gap: 6px;
+	color: var(--mute);
+	font-size: 10px;
+	margin-bottom: 7px;
+}
+.colour-game .swatch i {
+	display: block;
+	height: clamp(58px, 10vh, 94px);
+	border-radius: 6px;
+	border: 1px solid #ffffff1c;
+}
+.colour-game .rgb-readout {
+	color: var(--ink);
+	text-align: right;
+	font: 500 10px var(--mono);
+	white-space: nowrap;
+}
+.colour-game .sliders {
+	width: min(100%, 360px);
+	gap: 7px;
+	margin: 2px 0;
+}
+.rgb-control {
+	display: grid;
+	grid-template-columns: 24px 1fr 32px;
+	align-items: center;
+	gap: 10px;
+}
+.rgb-control .rgb-channel {
+	color: var(--mute);
+	text-align: left;
+	font: 500 11px var(--mono);
+}
+.rgb-control output {
+	color: var(--ink);
+	font: 500 11px var(--mono);
+	text-align: right;
+}
+.rgb-control input,
+.size-control input,
+.pitch-control input {
+	appearance: none;
+	-webkit-appearance: none;
+	height: 28px;
+	width: 100%;
+	margin: 0;
+	background: transparent;
+	cursor: ew-resize;
+}
+.rgb-control input::-webkit-slider-runnable-track {
+	height: 5px;
+	border-radius: 3px;
+	background: var(--channel-track);
+}
+.rgb-control input::-moz-range-track {
+	height: 5px;
+	border-radius: 3px;
+	background: var(--channel-track);
+}
+.rgb-control input::-webkit-slider-thumb,
+.size-control input::-webkit-slider-thumb,
+.pitch-control input::-webkit-slider-thumb {
+	appearance: none;
+	-webkit-appearance: none;
+	width: 13px;
+	height: 21px;
+	margin-top: -8px;
+	border: 2px solid #171a1d;
+	border-radius: 3px;
+	background: #e9e4d9;
+	box-shadow: 0 0 0 1px #686c70;
+}
+.rgb-control input::-moz-range-thumb,
+.size-control input::-moz-range-thumb,
+.pitch-control input::-moz-range-thumb {
+	width: 10px;
+	height: 18px;
+	border: 2px solid #171a1d;
+	border-radius: 3px;
+	background: #e9e4d9;
+}
+.colour-game .btn {
+	min-width: 180px;
+	margin-top: 2px;
+}
+.colour-game[data-memory='hidden'] .reference-cell {
+	position: relative;
+}
+.colour-game[data-memory='hidden'] .reference-cell::after {
+	content: 'Recall it';
+	position: absolute;
+	inset: 24px 0 0;
+	display: grid;
+	place-items: center;
+	color: var(--mute);
+	font-size: 11px;
+	border: 1px dashed #373d42;
+	border-radius: 6px;
+}
+
+/* Size memory: the same centre and frame are used in both phases. */
+.size-game .memory-phase {
+	display: flex;
+	align-items: center;
+	width: min(100%, 340px);
+	gap: 12px;
+	text-align: left;
+}
+.size-game .phase-index {
+	color: var(--c);
+	font: 400 28px var(--mono);
+}
+.size-game .memory-phase .lbl {
+	font-size: 13px;
+	font-weight: 500;
+}
+.size-game .memory-phase small {
+	display: block;
+	margin-top: 3px;
+	font-size: 10px;
+	color: var(--mute);
+}
+.size-game .sizebox {
+	position: relative;
+	isolation: isolate;
+	flex: none;
+	border: 1px solid #30373c;
+	border-radius: 6px;
+	background: #161b1f;
+	overflow: hidden;
+}
+.size-game .sizebox::before,
+.size-game .sizebox::after {
+	content: '';
+	position: absolute;
+	z-index: -1;
+	background: #242b30;
+}
+.size-game .sizebox::before {
+	top: 50%;
+	left: 0;
+	width: 100%;
+	height: 1px;
+}
+.size-game .sizebox::after {
+	left: 50%;
+	top: 0;
+	height: 100%;
+	width: 1px;
+}
+.size-game .sizebox i {
+	background: #e2e0d7;
+	opacity: 1;
+	border: 1px solid #f2f0e7;
+	box-shadow: none;
+}
+.size-control,
+.pitch-control {
+	display: flex;
+	align-items: center;
+	gap: 12px;
+	width: min(100%, 340px);
+}
+.size-control span,
+.pitch-control span {
+	flex: none;
+	color: var(--mute);
+	font: 400 10px var(--sans);
+}
+.size-control input::-webkit-slider-runnable-track,
+.pitch-control input::-webkit-slider-runnable-track {
+	height: 3px;
+	background: #50575d;
+	border-radius: 0;
+}
+.size-control input::-moz-range-track,
+.pitch-control input::-moz-range-track {
+	height: 3px;
+	background: #50575d;
+	border-radius: 0;
+}
+.size-control input:disabled {
+	opacity: 0.3;
+	cursor: default;
+}
+.size-game .btn {
+	min-width: 180px;
+}
+
+/* Pitch: reference listening and a deliberately unnumbered tuning rail. */
+.pitch-game .pitch-reference {
+	display: flex;
+	align-items: center;
+	justify-content: center;
+	gap: 14px;
+	width: min(100%, 340px);
+	min-height: 100px;
+	background: #191d20;
+	border: 1px solid #353d43;
+	color: var(--ink);
+}
+.pitch-reference .gi {
+	width: 27px;
+	height: 27px;
+	color: var(--c);
+}
+.pitch-reference span {
+	text-align: left;
+}
+.pitch-reference small {
+	display: block;
+	margin-top: 5px;
+	font-size: 10px;
+	font-weight: 400;
+}
+.pitch-game .pitch-control {
+	margin: 20px 0;
+}
+.pitch-game .pitch-guide {
+	color: var(--mute);
+	font-size: 11px;
+}
+
+/* Whack: a target with a useful retiring ring, rather than glow and scanlines. */
+.arena {
+	border: 1px solid #282f34;
+	background: #11171b;
+}
+.arena::after {
+	display: none;
+}
+.tgt::before {
+	inset: 29%;
+	border: 0;
+	background: var(--c);
+	box-shadow: none;
+}
+.tgt::after {
+	inset: 12%;
+	border: 1px solid var(--c);
+	background: none;
+	animation: target-retire 900ms linear forwards;
+	box-shadow: none;
+}
+@keyframes target-retire {
+	from {
+		transform: scale(1.25);
+		opacity: 0.8;
+	}
+	to {
+		transform: scale(0.55);
+		opacity: 0.1;
+	}
+}
+.stage.fill > .readout {
+	top: 10px;
+	right: 14px;
+	left: auto;
+	font-size: 32px;
+	color: var(--ink);
+	opacity: 1;
+}
+.clashword {
+	font-weight: 500;
+	letter-spacing: -0.04em;
+}
+.clashgrid .choice {
+	border-radius: 6px;
+}
+.shades {
+	padding: 8px;
+	background: #191e22;
+	border: 1px solid #30373c;
+	border-radius: 7px;
+	gap: 5px;
+}
+.shades button {
+	border-radius: 3px;
+}
+
+@media (max-height: 700px) and (max-aspect-ratio: 11/10) {
+	.colour-game {
+		gap: 5px;
+	}
+	.colour-game .swatch i {
+		height: 44px;
+	}
+	.colour-game .color-cell figcaption {
+		font-size: 9px;
+		margin-bottom: 4px;
+	}
+	.colour-game .rgb-readout {
+		font-size: 8px;
+	}
+	.colour-game .sliders {
+		gap: 0;
+	}
+	.rgb-control input {
+		height: 21px;
+	}
+	.rgb-control output,
+	.rgb-control .rgb-channel {
+		font-size: 10px;
+	}
+	.size-game {
+		gap: 5px;
+	}
+	.size-game .memory-phase {
+		gap: 8px;
+	}
+	.size-game .memory-phase .lbl {
+		font-size: 11px;
+	}
+	.size-game .phase-index {
+		font-size: 21px;
+	}
+	.size-game .memory-phase small {
+		display: none;
+	}
+	.size-control input {
+		height: 22px;
+	}
+	.pitch-game .pitch-reference {
+		min-height: 70px;
+	}
+	.pitch-game .pitch-control {
+		margin: 6px 0;
+	}
+	.pitch-game .pitch-guide {
+		display: none;
+	}
+	.stage.fill > .readout {
+		font-size: 24px;
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.tgt::after {
+		animation: none;
+	}
+}

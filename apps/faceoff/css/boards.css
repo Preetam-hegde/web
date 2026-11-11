@@ -1,0 +1,439 @@
+/* Board games use the space left below the player header, including short split panes. */
+.stage:has(> :is(.ttt, .memgrid, .c4, .dab, .simon, .rush, .pad)) {
+	container-type: size;
+}
+.stage:has(> :is(.ttt, .memgrid, .c4, .dab)) > .dhead {
+	padding: 2px 0;
+	font-size: 12px;
+	line-height: 1.4;
+	color: #a5aaa7;
+}
+.stage:has(> :is(.ttt, .memgrid, .c4, .dab)) > .dhead b {
+	font-family: var(--sans);
+	font-weight: 500;
+}
+.ttt {
+	width: min(100%, 286px, calc(100cqh - 46px));
+	gap: 1px;
+	padding: 7px;
+	border: 1px solid #303537;
+	border-radius: 10px;
+	background: #303537;
+}
+.ttt .cell {
+	min-width: 0;
+	border: 0;
+	border-radius: 3px;
+	background: #15191b;
+	transition:
+		background 100ms,
+		transform 100ms;
+}
+.ttt .cell .gi {
+	width: 55%;
+	height: 55%;
+	stroke-width: 2.2;
+}
+.ttt .cell:empty:active {
+	background: #242a2d;
+	transform: scale(0.97);
+}
+.ttt .cell.win {
+	background: color-mix(in srgb, var(--c) 15%, #15191b);
+	outline: 1px solid var(--c);
+	outline-offset: -1px;
+}
+.memgrid {
+	width: min(100%, 336px, calc((100cqh - 40px) * 4 / 3));
+	gap: 6px;
+}
+.memgrid .mem {
+	position: relative;
+	min-width: 0;
+	border: 1px solid #3a4042;
+	border-radius: 8px;
+	background: #1c2123;
+	box-shadow: inset 0 -3px 0 #111517;
+	transition:
+		background 120ms,
+		border-color 120ms;
+}
+.memgrid .mem:not(.up)::before {
+	content: '';
+	width: 18%;
+	aspect-ratio: 1;
+	border: 1px solid #737c7b;
+	transform: rotate(45deg);
+}
+.memgrid .mem.up {
+	border-color: #666e6d;
+	background: #292f31;
+	box-shadow: none;
+}
+.memgrid .mem.got {
+	border-color: #343b3d;
+	background: #121719;
+	opacity: 0.55;
+}
+.memgrid .mem svg {
+	width: 48%;
+	height: 48%;
+}
+.c4 {
+	width: min(100%, 342px, calc((100cqh - 48px) * 7 / 6));
+	gap: 5px;
+	padding: 10px;
+	border: 1px solid #424a4d;
+	border-bottom-width: 3px;
+	border-radius: 10px;
+	background: #242c2f;
+	box-shadow: none;
+}
+.c4 .col {
+	gap: 5px;
+	min-width: 0;
+	border-radius: 4px;
+}
+.c4 .disc {
+	border: 1px solid #0c1012;
+	background: #101517;
+	box-shadow: inset 0 2px 1px #090c0d;
+}
+.c4 .disc.p0 {
+	background: var(--p0);
+}
+.c4 .disc.p1 {
+	background: var(--p1);
+}
+.c4 .disc:is(.p0, .p1) {
+	border-color: #111719;
+	box-shadow: inset 0 -3px 0 #0003;
+}
+.c4 .disc.win {
+	outline: 2px solid #f0ede4;
+	outline-offset: -5px;
+}
+.dab {
+	--d: 16px;
+	width: min(100%, 304px, calc(100cqh - 42px));
+	padding: 5px;
+	border: 1px solid #343c3e;
+	border-radius: 9px;
+	background: #151b1d;
+}
+.dab .pt {
+	z-index: 1;
+	width: 6px;
+	height: 6px;
+	background: #d3d8d4;
+	box-shadow: none;
+	pointer-events: none;
+}
+.dab .edge::before {
+	border-radius: 2px;
+	background: #384245;
+}
+.dab .edge.h::before {
+	left: 0;
+	right: 0;
+	height: 3px;
+	margin-top: -1.5px;
+}
+.dab .edge.v::before {
+	top: 0;
+	bottom: 0;
+	width: 3px;
+	margin-left: -1.5px;
+}
+.dab .edge::after {
+	content: '';
+	position: absolute;
+	inset: -5px;
+}
+.dab .edge.on::before {
+	background: var(--c);
+}
+.dab .box {
+	border-radius: 3px;
+	font: 500 13px var(--sans);
+}
+.dab .box.own {
+	background: color-mix(in srgb, var(--c) 18%, #151b1d);
+}
+
+/* A keypad beside its question keeps twelve useful keys in a short pane. */
+.stage:has(> .pad) {
+	display: grid;
+	grid-template-columns: minmax(0, 1fr) minmax(144px, 48%);
+	grid-template-rows: auto auto auto;
+	align-content: center;
+	justify-content: stretch;
+	column-gap: 14px;
+	row-gap: 8px;
+	padding: 12px 16px;
+}
+.stage:has(> .pad) > .lbl {
+	grid-column: 1;
+	grid-row: 1;
+	align-self: end;
+	font-size: 12px;
+	line-height: 1.5;
+	color: #a5aaa7;
+}
+.stage:has(> .pad) > .sum {
+	grid-column: 1;
+	grid-row: 2;
+	font: 500 clamp(22px, 7vw, 32px) / 1.2 var(--sans);
+	white-space: nowrap;
+	letter-spacing: -0.035em;
+}
+.stage:has(> .pad) > .numout {
+	grid-column: 1;
+	grid-row: 3;
+	align-self: start;
+	padding-bottom: 8px;
+	border-bottom: 1px solid #3b4446;
+	color: var(--c);
+	font: 500 28px / 1.2 var(--mono);
+}
+.stage:has(> .pad):not(:has(> .sum)) > .numout {
+	grid-row: 2;
+}
+.stage:has(> .pad) > .bar {
+	grid-column: 1;
+	grid-row: 3;
+	align-self: start;
+	width: 100%;
+	height: 3px;
+}
+.stage > .pad {
+	grid-column: 2;
+	grid-row: 1 / 4;
+	width: 100%;
+	height: min(248px, calc(100cqh - 26px));
+	gap: 5px;
+}
+.pad button {
+	min-width: 0;
+	min-height: 40px;
+	padding: 0;
+	border: 1px solid #40494b;
+	border-bottom-width: 2px;
+	border-radius: 7px;
+	background: #252c2f;
+	font: 500 20px / 1 var(--sans);
+	color: #f0ede5;
+}
+.pad button:nth-last-child(3) {
+	color: #aab3af;
+	background: #1c2224;
+}
+.pad button:last-child {
+	border-color: color-mix(in srgb, var(--c) 45%, #40494b);
+	background: color-mix(in srgb, var(--c) 16%, #202729);
+	color: var(--c);
+}
+.pad button:active {
+	border-color: var(--c);
+	background: #374145;
+	transform: translateY(1px);
+}
+.simon {
+	width: min(100%, 272px, calc(100cqh - 55px));
+	gap: 7px;
+	padding: 7px;
+	border: 1px solid #3a4244;
+	border-radius: 12px;
+	background: #101618;
+}
+.simon button {
+	border: 1px solid color-mix(in srgb, var(--k) 55%, #263033);
+	border-bottom-width: 3px;
+	border-radius: 7px;
+	background: color-mix(in srgb, var(--k) 25%, #141a1c);
+	box-shadow: none;
+	transition:
+		background 80ms,
+		transform 80ms;
+}
+.simon button.lit {
+	border-color: var(--k);
+	background: var(--k);
+	box-shadow: none;
+	transform: translateY(2px);
+}
+.rush {
+	width: min(100%, 316px, calc(100cqh - 36px)) !important;
+	height: auto !important;
+	aspect-ratio: 1;
+	gap: 4px;
+}
+.rush button {
+	min-width: 0;
+	min-height: 0;
+	border: 1px solid #414b4e;
+	border-bottom-width: 2px;
+	border-radius: 6px;
+	background: #242d30;
+	color: #f0ede5;
+	font: 500 clamp(17px, 5vw, 24px) / 1 var(--sans);
+	font-variant-numeric: tabular-nums;
+}
+.rush button.got {
+	border-color: #1e272a;
+	background: #151d20;
+	color: #5c696c;
+	opacity: 1;
+}
+.rush button.bad {
+	border-color: var(--lose);
+	background: color-mix(in srgb, var(--lose) 20%, #242d30);
+}
+
+/* Hangman gives the secret word the clearest hierarchy, above the phone keyboard. */
+.stage.hangman {
+	gap: 12px;
+	padding-top: clamp(18px, 4vh, 34px);
+}
+.stage.hangman .dhead {
+	padding: 0;
+	font-size: 13px;
+	line-height: 1.6;
+}
+.stage.hangman .word {
+	display: flex;
+	justify-content: center;
+	gap: 4px;
+	width: 100%;
+	margin: 16px 0 4px;
+	font: 500 clamp(22px, 5vw, 30px) / 1.5 var(--mono);
+	letter-spacing: 0;
+}
+.hangman .letter {
+	width: clamp(17px, 6.5vw, 30px);
+	display: grid;
+	place-items: center;
+	padding: 2px 0;
+	border: 1px solid #3b4748;
+	border-bottom: 2px solid #7d8988;
+	border-radius: 4px;
+	background: #1a2225;
+	color: transparent;
+}
+.hangman .letter.revealed {
+	border-color: var(--c);
+	color: #f0ede5;
+}
+.stage.hangman .used {
+	min-height: 28px;
+	gap: 5px;
+	margin: 4px 0 12px;
+}
+.stage.hangman .used span {
+	display: grid;
+	place-items: center;
+	min-width: 24px;
+	padding: 3px 5px;
+	border: 1px solid #3b4748;
+	border-radius: 4px;
+	font: 500 13px var(--mono);
+}
+.stage.hangman .used .g {
+	border-color: color-mix(in srgb, var(--c) 35%, #3b4748);
+	background: color-mix(in srgb, var(--c) 12%, #161d20);
+	color: var(--c);
+}
+.stage.hangman .used .x {
+	background: #1a2225;
+	color: #a1aaa6;
+}
+.stage.hangman .typein {
+	width: min(100%, 360px);
+	min-height: 50px;
+	padding: 12px;
+	border: 1px solid #596365;
+	border-radius: 7px;
+	background: #1a2225;
+	font: 500 22px var(--mono);
+	letter-spacing: 0.08em;
+}
+.stage.hangman .typein:focus {
+	border-color: var(--c);
+	outline: 1px solid var(--c);
+	outline-offset: 2px;
+}
+.stage.hangman .typein::placeholder {
+	font: 400 14px var(--sans);
+	letter-spacing: 0;
+}
+.hangman .msg:empty {
+	display: none;
+}
+.hangman .btns {
+	display: grid;
+	grid-template-columns: minmax(0, 1.4fr) minmax(0, 1fr) 46px;
+	width: min(100%, 360px);
+	gap: 6px;
+}
+.hangman .btns .btn {
+	min-width: 0;
+	min-height: 46px;
+	padding: 10px;
+	font-size: 14px;
+}
+@media (hover: hover) {
+	.ttt .cell:empty:hover,
+	.memgrid .mem:not(.up):hover,
+	.pad button:hover,
+	.rush button:not(.got):hover {
+		border-color: #7b8788;
+		background: #303a3d;
+	}
+	.c4 .col:hover .disc:not(.p0):not(.p1) {
+		border-color: #637375;
+	}
+	.dab .edge:not(.on):hover::before {
+		background: #8b9998;
+	}
+}
+@media (max-height: 700px) and (max-aspect-ratio: 11/10) {
+	body[data-mode='split'] .stage:has(> .pad) {
+		column-gap: 10px;
+		padding: 8px 12px;
+	}
+	body[data-mode='split'] .stage > .pad {
+		height: min(210px, calc(100cqh - 18px));
+	}
+	body[data-mode='split'] .stage > .pad button {
+		min-height: 36px;
+		padding: 0;
+		font-size: 19px;
+		line-height: 1;
+	}
+	body[data-mode='split'] .stage > .ttt {
+		gap: 1px;
+		width: min(100%, 286px, calc(100cqh - 40px));
+	}
+	body[data-mode='split'] .stage > .c4 {
+		width: min(100%, 342px, calc((100cqh - 42px) * 7 / 6));
+	}
+	body[data-mode='split'] .stage > .simon {
+		width: min(100%, 272px, calc(100cqh - 42px));
+	}
+	body[data-mode='split'] .stage > .dab {
+		--d: 14px;
+		width: min(100%, 304px, calc(100cqh - 38px));
+	}
+}
+@media (prefers-reduced-motion: reduce) {
+	.ttt .cell,
+	.memgrid .mem,
+	.simon button {
+		transition: none;
+	}
+	.pad button:active,
+	.simon button.lit,
+	.ttt .cell:empty:active {
+		transform: none;
+	}
+}

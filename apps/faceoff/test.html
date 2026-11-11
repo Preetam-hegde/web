@@ -1,109 +1,322 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<title>Faceoff — logic checks</title>
-</head>
-<body style="font: 14px ui-monospace, monospace; background: #0d0b1a; color: #f4f1ff; padding: 16px">
-	<pre id="out">running…</pre>
-	<script src="js/core.js"></script>
-	<script src="js/extras.js"></script>
-	<script src="js/words.js"></script>
-	<script src="js/games/couple.js"></script>
-	<script src="js/games/cut.js"></script>
-	<script src="js/games/perceive.js"></script>
-	<script src="js/games/more.js"></script>
-	<script src="js/games/quiz.js"></script>
-	<script src="js/games/duo.js"></script>
-	<script>
-	'use strict';
-	(async () => {
-		const out = [];
-		let fails = 0;
-		const eq = (name, got, want) => {
-			const ok = got === want;
-			if (!ok) fails++;
-			out.push(`${ok ? 'PASS' : 'FAIL'}  ${name}  (got ${got}, want ${want})`);
-		};
+	<head>
+		<meta charset="UTF-8" />
+		<title>Faceoff — logic checks</title>
+	</head>
+	<body
+		style="
+			font:
+				14px ui-monospace,
+				monospace;
+			background: #0d0b1a;
+			color: #f4f1ff;
+			padding: 16px;
+		"
+	>
+		<pre id="out">running…</pre>
+		<script src="js/registry.js"></script>
+		<script src="js/rules.js"></script>
+		<script src="js/arcade-rules.js"></script>
+		<script src="js/runtime.js"></script>
+		<script src="js/core.js"></script>
+		<script src="js/icons.js"></script>
+		<script src="js/audio.js"></script>
+		<script src="js/extras.js"></script>
+		<script src="js/funwords.js"></script>
+		<script src="js/words.js"></script>
+		<script src="js/game-ui.js"></script>
+		<script src="js/question-deck.js"></script>
+		<script src="js/games/timer.js"></script>
+		<script src="js/games/reaction.js"></script>
+		<script src="js/games/cut.js"></script>
+		<script src="js/games/perceive.js"></script>
+		<script src="js/games/more.js"></script>
+		<script src="js/games/match.js"></script>
+		<script src="js/games/hangman.js"></script>
+		<script src="js/games/couple.js"></script>
+		<script src="js/games/quiz.js"></script>
+		<script src="js/games/duo.js"></script>
+		<script src="js/games/arcade.js"></script>
+		<script>
+			'use strict';
+			(async () => {
+				const out = [];
+				let fails = 0;
+				const eq = (name, got, want) => {
+					const ok = got === want;
+					if (!ok) fails++;
+					out.push(
+						`${ok ? 'PASS' : 'FAIL'}  ${name}  (got ${got}, want ${want})`,
+					);
+				};
 
-		// judge: 0/1 = winner index, -1 = tie
-		eq('lower wins (p0)', judge(100, 200, true), 0);
-		eq('lower wins (p1)', judge(200, 100, true), 1);
-		eq('equal is a tie', judge(5, 5, true), -1);
-		eq('both failed is a tie', judge(Infinity, Infinity, true), -1);
-		eq('a miss loses to a score', judge(Infinity, 3, true), 1);
-		eq('higher wins', judge(30, 20, false), 0);
-		eq('0 vs 0 is a tie', judge(0, 0, false), -1);
+				// judge: 0/1 = winner index, -1 = tie
+				eq('lower wins (p0)', judge(100, 200, true), 0);
+				eq('lower wins (p1)', judge(200, 100, true), 1);
+				eq('equal is a tie', judge(5, 5, true), -1);
+				eq('both failed is a tie', judge(Infinity, Infinity, true), -1);
+				eq('a miss loses to a score', judge(Infinity, 3, true), 1);
+				eq('higher wins', judge(30, 20, false), 0);
+				eq('0 vs 0 is a tie', judge(0, 0, false), -1);
 
-		// tic-tac-toe
-		eq('empty board: no winner', tttWinner(Array(9).fill(null)), null);
-		eq('top row', tttWinner([0, 0, 0, null, 1, 1, null, null, null]).p, 0);
-		eq('diagonal for player 1', tttWinner([0, 0, 1, null, 1, 0, 1, null, null]).p, 1);
-		eq('player 0 in a corner is not a win', tttWinner([0, null, null, null, null, null, null, null, null]), null);
-		eq('mixed row is not a win', tttWinner([0, 1, 0, 1, 0, 1, 1, 0, 1]), null);
+				// tic-tac-toe
+				eq('empty board: no winner', tttWinner(Array(9).fill(null)), null);
+				eq('top row', tttWinner([0, 0, 0, null, 1, 1, null, null, null]).p, 0);
+				eq(
+					'diagonal for player 1',
+					tttWinner([0, 0, 1, null, 1, 0, 1, null, null]).p,
+					1,
+				);
+				eq(
+					'player 0 in a corner is not a win',
+					tttWinner([0, null, null, null, null, null, null, null, null]),
+					null,
+				);
+				eq(
+					'mixed row is not a win',
+					tttWinner([0, 1, 0, 1, 0, 1, 1, 0, 1]),
+					null,
+				);
 
-		// cut in half: unit square, vertical cut through the middle / off-centre / missing the shape
-		const sq = [[0, 0], [1, 0], [1, 1], [0, 1]];
-		eq('square, centre cut', cutSplit(sq, [0.5, -1], [0.5, 2]).err, 0);
-		eq('square, cut at x=.25', cutSplit(sq, [0.25, -1], [0.25, 2]).err, 50);
-		eq('square, line misses', cutSplit(sq, [2, -1], [2, 2]).err, 100);
-		eq('square, diagonal is half', cutSplit(sq, [0, 0], [1, 1]).err, 0);
-		eq('L shape, cut at the notch', Math.round(cutSplit(L_SHAPE, [0, 0.55], [1, 0.55]).err * 1e3), Math.round((0.045 / 0.255) * 100 * 1e3));
-		SHAPES.forEach(([name, make]) => eq(`${name} has area`, polyArea(make()) > 0.01, true));
+				// cut in half: unit square, vertical cut through the middle / off-centre / missing the shape
+				const sq = [
+					[0, 0],
+					[1, 0],
+					[1, 1],
+					[0, 1],
+				];
+				eq('square, centre cut', cutSplit(sq, [0.5, -1], [0.5, 2]).err, 0);
+				eq('square, cut at x=.25', cutSplit(sq, [0.25, -1], [0.25, 2]).err, 50);
+				eq('square, line misses', cutSplit(sq, [2, -1], [2, 2]).err, 100);
+				eq('square, diagonal is half', cutSplit(sq, [0, 0], [1, 1]).err, 0);
+				const lShape = [
+					[0.2, 0.2],
+					[0.5, 0.2],
+					[0.5, 0.55],
+					[0.8, 0.55],
+					[0.8, 0.8],
+					[0.2, 0.8],
+				];
+				eq(
+					'L shape, cut at the notch',
+					Math.round(cutSplit(lShape, [0, 0.55], [1, 0.55]).err * 1e3),
+					Math.round((0.045 / 0.255) * 100 * 1e3),
+				);
+				for (let i = 0; i < 7; i++) {
+					const { name, poly } = GAMES.find((g) => g.id === 'cut').config(i);
+					eq(`${name} has area`, polyArea(poly) > 0.01, true);
+				}
 
-		// perception: angles wrap the circle, tempo averages the miss per beat
-		eq('angle: 359 vs 1 is 2 apart', angleErr(359, 1), 2);
-		eq('angle: 90 vs 270 is 180 apart', angleErr(90, 270), 180);
-		eq('tempo: perfect taps', tempoErr([600, 1200, 1800, 2400, 3000, 3600, 4200, 4800], 0, 600), 0);
-		eq('tempo: all 50ms late', tempoErr([650, 1250, 1850, 2450, 3050, 3650, 4250, 4850], 0, 600), 50);
-		eq('tempo: 4 missing taps = half miss penalty', tempoErr([600, 1200, 1800, 2400], 0, 600), TEMPO_MISS_MS / 2);
+				// perception: angles wrap the circle, tempo averages the miss per beat
+				eq('angle: 359 vs 1 is 2 apart', angleErr(359, 1), 2);
+				eq('angle: 90 vs 270 is 180 apart', angleErr(90, 270), 180);
+				eq(
+					'tempo: perfect taps',
+					tempoErr([600, 1200, 1800, 2400, 3000, 3600, 4200, 4800], 0, 600),
+					0,
+				);
+				eq(
+					'tempo: all 50ms late',
+					tempoErr([650, 1250, 1850, 2450, 3050, 3650, 4250, 4850], 0, 600),
+					50,
+				);
+				eq(
+					'tempo: 4 missing taps = half miss penalty',
+					tempoErr([600, 1200, 1800, 2400], 0, 600),
+					TEMPO_MISS_MS / 2,
+				);
 
-		// more games: colours, rhythm copying, dots and boxes bookkeeping
-		eq('hsl: pure red', hslToRgb(0, 100, 50).join(), '255,0,0');
-		eq('hsl: grey', hslToRgb(200, 0, 50).join(), '128,128,128');
-		eq('colour distance: identical', rgbDist([10, 20, 30], [10, 20, 30]), 0);
-		eq('colour distance: black to white', Math.round(rgbDist([0, 0, 0], [255, 255, 255])), 100);
-		eq('rhythm: exact copy', rhythmErr([0, 500, 1000, 2000], [1, 1, 2], 500), 0);
-		eq('rhythm: start time does not matter', rhythmErr([777, 1277, 1777, 2777], [1, 1, 2], 500), 0);
-		eq('rhythm: 40ms long on every gap', rhythmErr([0, 540, 1080, 2120], [1, 1, 2], 500), 40);
-		eq('rhythm: a missing tap costs the miss penalty', rhythmErr([0, 500], [1, 1], 500), TEMPO_MISS_MS / 2);
+				// more games: colours, rhythm copying, dots and boxes bookkeeping
+				eq('hsl: pure red', hslToRgb(0, 100, 50).join(), '255,0,0');
+				eq('hsl: grey', hslToRgb(200, 0, 50).join(), '128,128,128');
+				eq(
+					'colour distance: identical',
+					rgbDist([10, 20, 30], [10, 20, 30]),
+					0,
+				);
+				eq(
+					'colour distance: black to white',
+					Math.round(rgbDist([0, 0, 0], [255, 255, 255])),
+					100,
+				);
+				eq(
+					'rhythm: exact copy',
+					rhythmErr([0, 500, 1000, 2000], [1, 1, 2], 500),
+					0,
+				);
+				eq(
+					'rhythm: start time does not matter',
+					rhythmErr([777, 1277, 1777, 2777], [1, 1, 2], 500),
+					0,
+				);
+				eq(
+					'rhythm: 40ms long on every gap',
+					rhythmErr([0, 540, 1080, 2120], [1, 1, 2], 500),
+					40,
+				);
+				eq(
+					'rhythm: a missing tap costs the miss penalty',
+					rhythmErr([0, 500], [1, 1], 500),
+					TEMPO_MISS_MS / 2,
+				);
 
-		// connect 4
-		const empty = () => Array(42).fill(null);
-		const put = (b, cells, p) => cells.forEach(([r, c]) => (b[r * 7 + c] = p));
-		eq('c4: empty board', c4Winner(empty()), null);
-		let b = empty(); put(b, [[5, 0], [5, 1], [5, 2], [5, 3]], 0);
-		eq('c4: horizontal four', c4Winner(b).p, 0);
-		b = empty(); put(b, [[2, 4], [3, 4], [4, 4], [5, 4]], 1);
-		eq('c4: vertical four', c4Winner(b).p, 1);
-		b = empty(); put(b, [[5, 0], [4, 1], [3, 2], [2, 3]], 0);
-		eq('c4: diagonal up', c4Winner(b).p, 0);
-		b = empty(); put(b, [[2, 0], [3, 1], [4, 2], [5, 3]], 1);
-		eq('c4: diagonal down', c4Winner(b).p, 1);
-		b = empty(); put(b, [[5, 0], [5, 1], [5, 2]], 0);
-		eq('c4: three is not four', c4Winner(b), null);
-		b = empty(); put(b, [[5, 0], [5, 1], [5, 2]], 0); put(b, [[5, 3]], 1);
-		eq('c4: a break stops the line', c4Winner(b), null);
+				// connect 4
+				const empty = () => Array(42).fill(null);
+				const put = (b, cells, p) =>
+					cells.forEach(([r, c]) => (b[r * 7 + c] = p));
+				eq('c4: empty board', c4Winner(empty()), null);
+				let b = empty();
+				put(
+					b,
+					[
+						[5, 0],
+						[5, 1],
+						[5, 2],
+						[5, 3],
+					],
+					0,
+				);
+				eq('c4: horizontal four', c4Winner(b).p, 0);
+				b = empty();
+				put(
+					b,
+					[
+						[2, 4],
+						[3, 4],
+						[4, 4],
+						[5, 4],
+					],
+					1,
+				);
+				eq('c4: vertical four', c4Winner(b).p, 1);
+				b = empty();
+				put(
+					b,
+					[
+						[5, 0],
+						[4, 1],
+						[3, 2],
+						[2, 3],
+					],
+					0,
+				);
+				eq('c4: diagonal up', c4Winner(b).p, 0);
+				b = empty();
+				put(
+					b,
+					[
+						[2, 0],
+						[3, 1],
+						[4, 2],
+						[5, 3],
+					],
+					1,
+				);
+				eq('c4: diagonal down', c4Winner(b).p, 1);
+				b = empty();
+				put(
+					b,
+					[
+						[5, 0],
+						[5, 1],
+						[5, 2],
+					],
+					0,
+				);
+				eq('c4: three is not four', c4Winner(b), null);
+				b = empty();
+				put(
+					b,
+					[
+						[5, 0],
+						[5, 1],
+						[5, 2],
+					],
+					0,
+				);
+				put(b, [[5, 3]], 1);
+				eq('c4: a break stops the line', c4Winner(b), null);
 
-		// content
-		eq('together games have a summary', GAMES.filter((g) => g.coop).every((g) => typeof g.summary === 'function' && typeof g.verdict === 'function'), true);
-		eq('prompt lists have no duplicates', [MORE_LIKELY, NEVER_EVER, TRUTHS].every((l) => new Set(l).size === l.length), true);
-		eq('would-you-rather pairs are pairs', RATHER.every((q) => q.length === 2 && q[0] !== q[1]), true);
-		eq('quiz pairs are pairs', QUIZ.every((q) => q.length === 2 && q[0] !== q[1]), true);
-		eq('shuffle keeps the cards', shuffle([0, 1, 2, 3, 4, 5]).sort().join(''), '012345');
-		eq('flag statements are unique', new Set(FLAGS).size, FLAGS.length);
-		eq('dares only use the {w} placeholder', DARES.every((d) => !/\{(?!w\})/.test(d)), true);
+				// Public configs exercise private decks without exposing their pools globally.
+				const deck = (id, key, count) => {
+					const g = GAMES.find((g) => g.id === id);
+					return Array.from({ length: count }, (_, i) => g.config(i)[key]);
+				};
+				const likely = deck('likely', 'item', 30),
+					never = deck('never', 'item', 30);
+				const rather = deck('rather', 'q', 30),
+					quiz = deck('know', 'q', 40),
+					flags = deck('flags', 's', 32);
+				const random = Math.random,
+					customTruths = store.custom.truths;
+				let truths;
+				try {
+					store.custom.truths = [];
+					truths = Array.from({ length: 25 }, (_, i) => {
+						let call = 0;
+						Math.random = () => (call++ ? (i + 0.5) / 25 : 0); // choose truth, then each built-in prompt
+						return GAMES.find((g) => g.id === 'roulette').config(i).text;
+					});
+				} finally {
+					Math.random = random;
+					store.custom.truths = customTruths;
+				}
+				eq('all 39 games registered', GAMES.length, 39);
+				eq(
+					'game IDs are unique',
+					new Set(GAMES.map((g) => g.id)).size,
+					GAMES.length,
+				);
+				eq(
+					'together games have a summary',
+					GAMES.filter((g) => g.coop).every(
+						(g) =>
+							typeof g.summary === 'function' &&
+							typeof g.verdict === 'function',
+					),
+					true,
+				);
+				eq(
+					'prompt lists have no duplicates',
+					[likely, never, truths].every((l) => new Set(l).size === l.length),
+					true,
+				);
+				eq(
+					'would-you-rather pairs are pairs',
+					rather.every((q) => q.length === 2 && q[0] !== q[1]),
+					true,
+				);
+				eq(
+					'quiz pairs are pairs',
+					quiz.every((q) => q.length === 2 && q[0] !== q[1]),
+					true,
+				);
+				eq(
+					'shuffle keeps the cards',
+					shuffle([0, 1, 2, 3, 4, 5]).sort().join(''),
+					'012345',
+				);
+				eq('flag statements are unique', new Set(flags).size, flags.length);
+				eq(
+					'dares only use the {w} placeholder',
+					DARES.every((d) => !/\{(?!w\})/.test(d)),
+					true,
+				);
 
-		// dictionary
-		await loadWords();
-		eq('dictionary loaded', WORDS.valid.size > 100000, true);
-		eq('real word', isWord('planet'), true);
-		eq('nonsense', isWord('zzxqv'), false);
+				// dictionary
+				await loadWords();
+				eq('dictionary loaded', WORDS.valid.size > 100000, true);
+				eq('real word', isWord('planet'), true);
+				eq('nonsense', isWord('zzxqv'), false);
 
-		out.push('', fails ? `${fails} FAILED` : 'ALL PASSED');
-		document.getElementById('out').textContent = out.join('\n');
-		document.title = fails ? 'FAIL' : 'PASS';
-	})().catch((e) => { document.getElementById('out').textContent = `ERROR ${e.stack || e}`; document.title = 'ERROR'; });
-	</script>
-</body>
+				out.push('', fails ? `${fails} FAILED` : 'ALL PASSED');
+				document.getElementById('out').textContent = out.join('\n');
+				document.title = fails ? 'FAIL' : 'PASS';
+			})().catch((e) => {
+				document.getElementById('out').textContent = `ERROR ${e.stack || e}`;
+				document.title = 'ERROR';
+			});
+		</script>
+	</body>
 </html>

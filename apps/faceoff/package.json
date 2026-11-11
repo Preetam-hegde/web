@@ -1,0 +1,17 @@
+{
+	"name": "faceoff",
+	"private": true,
+	"version": "1.0.0",
+	"description": "Static solo, duel and party games. Dependencies are for development checks only.",
+	"scripts": {
+		"test": "node --test tests/*.test.mjs",
+		"test:browser": "node tests/run-browser.cjs",
+		"check": "npm test && npm run test:browser",
+		"format:check": "prettier --check \"**/*.{html,css,js,cjs,mjs}\" --ignore-path .prettierignore",
+		"format": "prettier --write \"**/*.{html,css,js,cjs,mjs}\" --ignore-path .prettierignore"
+	},
+	"devDependencies": {
+		"playwright": "1.59.1",
+		"prettier": "3.9.6"
+	}
+}
