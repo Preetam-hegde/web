@@ -1,5 +1,5 @@
 "use strict";
-import { mkdir, writeFile } from "node:fs/promises";
+import { mkdir, readFile, writeFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import {
 	allRules,
@@ -12,6 +12,8 @@ import {
 } from "../js/engine.js";
 import {
 	candidateProbes,
+	filterEvidence,
+	matchesPuzzle,
 	snapshotsFromFragments,
 	solveGreedy,
 } from "../js/solver.js";
@@ -26,6 +28,8 @@ const shuffle = (list) => [...list].sort(() => random() - 0.5);
 const root = fileURLToPath(new URL("../data/", import.meta.url));
 const count = Number(process.argv[2] || 365);
 const first = process.argv[3] || "2026-11-01";
+// "easy" replans a stretch of days: three rules announced, par 4, few survivors.
+const easy = process.argv[4] === "easy";
 if (
 	!Number.isInteger(count) ||
 	count < 1 ||
@@ -123,8 +127,29 @@ function solve(b, fragments, survivors, target) {
 	return { par: path.length, path, outcomes: dictionary, oracle };
 }
 
+const dayKey = (offset) => {
+	const date = new Date(`${first}T00:00:00Z`);
+	date.setUTCDate(date.getUTCDate() + offset);
+	return date.toISOString().slice(0, 10);
+};
+const readJson = async (path) =>
+	JSON.parse(await readFile(path, "utf8").catch(() => "null"));
+
+// A partial run must not repeat a combination used within 30 days of it.
 const index = [],
 	recent = [];
+if (count < 365) {
+	for (let d = -30; d < count + 30; d++) {
+		if (d >= 0 && d < count) continue;
+		const k = dayKey(d),
+			old = await readJson(`${root}${k.slice(0, 7)}/${k}.json`);
+		if (!old) continue;
+		const answer = filterEvidence(createBoard(old.board), old.fragments).find(
+			(r) => matchesPuzzle(createBoard(old.board), old, r),
+		);
+		recent.push(allRules.indexOf(answer));
+	}
+}
 for (let day = 0; day < count; day++) {
 	const date = new Date(`${first}T00:00:00Z`);
 	date.setUTCDate(date.getUTCDate() + day);
@@ -144,8 +169,9 @@ for (let day = 0; day < count; day++) {
 		if (!draft) continue;
 		const solved = solve(b, draft.fragments, draft.survivors, target);
 		if (!solved) continue;
+		if (easy && (solved.par > 4 || draft.survivors.length > 200)) continue;
 		const given = {};
-		const reveals = [3, 2, 2, 1, 1, 0, 0][weekday];
+		const reveals = easy ? 3 : [3, 2, 2, 1, 1, 0, 0][weekday];
 		shuffle(slots)
 			.slice(0, reveals)
 			.forEach((slot) => (given[slot] = target[slot]));
@@ -158,7 +184,7 @@ for (let day = 0; day < count; day++) {
 			...solved,
 		};
 		recent.push(allRules.indexOf(target));
-		if (recent.length > 30) recent.shift();
+		if (count === 365 && recent.length > 30) recent.shift();
 	}
 	if (!puzzle)
 		throw new Error(
@@ -175,5 +201,15 @@ for (let day = 0; day < count; day++) {
 		`${key} ${b.id}: ${puzzle.survivors} survivors, par ${puzzle.par} (${attempts} attempts)`,
 	);
 }
-await writeFile(`${root}index.json`, JSON.stringify(index));
+// A partial run replaces only its own days in the catalog.
+const old = (await readJson(`${root}index.json`)) ?? [];
+await writeFile(
+	`${root}index.json`,
+	JSON.stringify(
+		[
+			...old.filter((e) => !index.some((n) => n.date === e.date)),
+			...index,
+		].sort((a, b) => (a.date < b.date ? -1 : 1)),
+	),
+);
 console.log(`Validated ${index.length} puzzles.`);

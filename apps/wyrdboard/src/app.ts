@@ -503,7 +503,7 @@ function requestProbe(probe: Probe): void {
 	showExperiment(probe, true);
 }
 function predict(allowed: boolean): void {
-	if (!pending) return;
+	if (!pending || run.finished) return;
 	const probe = pending,
 		actual = oracleOutcome(puzzle, probe).kind === "legal",
 		hit = actual === allowed;
@@ -663,6 +663,7 @@ interface Reward {
 }
 function finish(won: boolean): void {
 	if (ledgerSheet.open) ledgerSheet.close();
+	cancelPending();
 	const before = summarize(entries(), today);
 	run.finished = won ? "solved" : "revealed";
 	run.at = Date.now();
@@ -1398,10 +1399,13 @@ modal.addEventListener("click", (event) => {
 modal.addEventListener("change", (event) => {
 	const input = event.target as HTMLInputElement;
 	if (input.id !== "import-records" || !input.files?.[0]) return;
-	void input.files[0].text().then((text) => {
+	void input.files[0].text().then(async (text) => {
 		try {
 			const { runs, added } = mergeImport(saved.runs, JSON.parse(text));
+			// save() writes the active run over today's record: reload it from the merge first.
+			const replaced = puzzle && runs[puzzle.date] !== saved.runs[puzzle.date];
 			saved.runs = runs;
+			if (replaced) await loadPuzzle(puzzle.date);
 			save();
 			renderChrome();
 			$("museum-body").innerHTML = museumBody("records");

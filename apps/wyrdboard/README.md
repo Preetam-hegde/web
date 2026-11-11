@@ -85,6 +85,12 @@ Daily JSON holds fragment positions and outcomes, dictionary-coded oracle tables
 
 Par is a **greedy benchmark**, not a proof of optimal play. Monday announces three rules; Tuesday and Wednesday two; Thursday and Friday one; weekends none.
 
+**Easy stretch.** 2026-11-07 to 2026-11-16 were replanned as an easy window: three rules announced every day, par 4, and at most 200 survivors after the fragments. To make another stretch easy, regenerate just those days; the run replaces only its own days in `data/index.json` and avoids combinations used within 30 days either side:
+
+```sh
+npm run generate -- 10 2026-11-07 easy
+```
+
 ## Validation
 
 `npm test` covers rule fixtures for every option, purity and invalid input, outcome reconstruction, the greedy solver, corrupt saved progress, ranks, records, streaks, badges, import merging, and every puzzle in the year (survivors, uniqueness, all oracle responses, slot coverage, repeat window).
