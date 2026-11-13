@@ -1,0 +1,10 @@
+.ftog{display:none;height:34px;border:1px solid var(--line);background:var(--soft);color:var(--ink);border-radius:999px;padding:0 .8rem;font:inherit;font-weight:700;font-size:.85rem;cursor:pointer;white-space:nowrap}
+@media(max-width:820px){
+	.ftog{display:inline-block}
+	.fbar.fcol{flex-wrap:wrap}
+	.fbar.fcol:not(.open)>*:not(input[type=search]):not(.ftog):not(.cnt):not(.back){display:none!important}
+	.fbar.fcol.open>.fg,.fbar.fcol.open>select{display:inline-flex}
+	.fbar.fcol input[type=search]{flex:1 1 120px;max-width:none}
+	.fbar.fcol .cnt{margin-left:auto}
+	.fbar.fcol.open{max-height:70vh;overflow:auto}
+}

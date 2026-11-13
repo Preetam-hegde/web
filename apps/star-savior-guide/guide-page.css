@@ -1,0 +1,307 @@
+/* Guide page components */
+#gprog {
+	position: fixed;
+	top: 52px;
+	left: 0;
+	height: 3px;
+	width: 0;
+	background: #ffb020;
+	z-index: 30;
+}
+.g-head {
+	margin-bottom: 0.7rem;
+}
+.g-crumb {
+	color: var(--on-blue-soft);
+	font-size: 0.82rem;
+}
+.g-crumb a {
+	color: #fff;
+}
+.g-title {
+	margin: 0.2rem 0;
+	color: #fff;
+	font-size: 2rem;
+	font-weight: 800;
+	text-shadow: 0 2px 10px rgba(11, 60, 130, 0.5);
+}
+.g-sub {
+	color: #fff;
+	font-size: 1.05rem;
+	margin: 0.1rem 0 0.4rem;
+	max-width: 720px;
+}
+.g-meta {
+	display: flex;
+	gap: 0.5rem;
+	flex-wrap: wrap;
+}
+.g-meta span {
+	background: var(--glass);
+	border: 1px solid #fff5;
+	color: #fff;
+	border-radius: 999px;
+	padding: 0 0.7rem;
+	font-size: 0.78rem;
+	line-height: 1.7;
+}
+.g-body {
+	padding: 1.1rem 1.4rem;
+}
+.g-body h2 {
+	display: flex;
+	align-items: center;
+	gap: 0.5rem;
+	text-transform: uppercase;
+	letter-spacing: 0.04em;
+	font-size: 1.05rem;
+	color: var(--ink);
+	border: 0;
+	padding: 0;
+	margin: 1.6rem 0 0.6rem;
+}
+.g-body h2::before {
+	content: "";
+	width: 5px;
+	height: 1.1em;
+	border-radius: 3px;
+	background: var(--accent);
+}
+.g-body h2:first-child {
+	margin-top: 0;
+}
+.g-body h3 {
+	margin: 1rem 0 0.3rem;
+	color: var(--ink);
+}
+.g-verdict {
+	display: block;
+	background: linear-gradient(90deg, #eaf3ff, #fff);
+	border: 2px solid var(--edge);
+	border-left: 6px solid var(--accent);
+	border-radius: 12px;
+	padding: 0.7rem 1rem;
+	margin: 0 0 1rem;
+	font-size: 1.02rem;
+	color: var(--ink-soft);
+}
+.g-verdict b {
+	display: block;
+	font-size: 0.7rem;
+	letter-spacing: 0.1em;
+	color: var(--accent);
+	margin-bottom: 0.15rem;
+}
+.g-body ul {
+	padding-left: 1.2rem;
+}
+.g-body ul li::marker {
+	color: var(--accent);
+}
+.g-steps {
+	list-style: none;
+	counter-reset: s;
+	padding: 0;
+}
+.g-steps > li {
+	counter-increment: s;
+	position: relative;
+	padding: 0.2rem 0 0.2rem 2.4rem;
+	margin: 0.45rem 0;
+}
+.g-steps > li::before {
+	content: counter(s);
+	position: absolute;
+	left: 0;
+	top: 0.1rem;
+	width: 1.7rem;
+	height: 1.7rem;
+	border-radius: 50%;
+	background: var(--accent);
+	color: #fff;
+	font-weight: 700;
+	font-size: 0.85rem;
+	display: grid;
+	place-items: center;
+}
+.g-body table {
+	border: 1px solid var(--line);
+	border-radius: 10px;
+	overflow: hidden;
+	margin: 0.6rem 0;
+}
+.g-body tr:nth-child(even) td {
+	background: var(--soft);
+}
+.g-badge {
+	display: inline-block;
+	border-radius: 999px;
+	padding: 0 0.7rem;
+	font-size: 0.78rem;
+	font-weight: 700;
+	color: #fff;
+	background: #8aa;
+}
+.g-badge.easy {
+	background: #2fb36b;
+}
+.g-badge.medium {
+	background: #e0a020;
+}
+.g-badge.hard {
+	background: #e0556a;
+}
+.g-card {
+	display: grid;
+	grid-template-columns: 72px 1fr;
+	gap: 0.8rem;
+	background: var(--soft);
+	border: 2px solid var(--line);
+	border-radius: 14px;
+	padding: 0.7rem;
+	margin: 0.7rem 0;
+}
+.g-card > img {
+	width: 72px;
+	height: 72px;
+	border-radius: 12px;
+	object-fit: cover;
+}
+.g-card h3 {
+	margin: 0 0 0.2rem;
+}
+.g-proscons {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.7rem;
+	margin: 0.6rem 0;
+}
+.g-proscons > div {
+	border-radius: 12px;
+	padding: 0.5rem 0.8rem;
+	border: 2px solid;
+}
+.g-proscons .pros {
+	border-color: #2fb36b;
+	background: #effaf3;
+}
+.g-proscons .cons {
+	border-color: #e0556a;
+	background: #fdf0f2;
+}
+.g-proscons h4 {
+	margin: 0.1rem 0 0.2rem;
+	color: var(--ink);
+}
+.g-rating {
+	display: inline-flex;
+	gap: 0.4rem;
+	background: #e6f0fc;
+	color: var(--ink);
+	border-radius: 999px;
+	padding: 0 0.8rem;
+	font-size: 0.82rem;
+	margin: 0.1rem 0.3rem 0.1rem 0;
+}
+.g-rating b {
+	color: var(--accent);
+}
+.callout {
+	border-radius: 12px;
+	padding: 0.6rem 0.9rem;
+	margin: 0.8rem 0;
+	border: 2px solid;
+	background: #f4f8ff;
+	border-color: var(--edge);
+}
+.callout.tip {
+	background: #effaf3;
+	border-color: #2fb36b;
+}
+.callout.warn {
+	background: #fff8e0;
+	border-color: #ffd666;
+}
+.g-faq details {
+	border: 2px solid var(--line);
+	border-radius: 12px;
+	padding: 0.4rem 0.8rem;
+	margin: 0.4rem 0;
+	background: #fff;
+}
+.g-faq summary {
+	font-weight: 700;
+}
+.g-src {
+	font-size: 0.88rem;
+}
+.g-src ul {
+	margin: 0.3rem 0 0;
+}
+.g-next {
+	display: grid;
+	grid-template-columns: 1fr 1fr;
+	gap: 0.6rem;
+	margin-top: 0.5rem;
+}
+.g-next a {
+	display: block;
+	background: #fff;
+	border: 2px solid var(--edge);
+	border-radius: 12px;
+	padding: 0.5rem 0.9rem;
+	color: var(--ink);
+	font-weight: 700;
+	box-shadow: var(--shadow);
+}
+.g-next a:last-child {
+	text-align: right;
+}
+.g-next small {
+	display: block;
+	color: var(--ink-soft);
+	font-weight: 400;
+	font-size: 0.72rem;
+}
+.reader .toc a.on {
+	background: var(--accent);
+	color: #fff;
+}
+@media (max-width: 820px) {
+	.g-proscons {
+		grid-template-columns: 1fr;
+	}
+	.g-title {
+		font-size: 1.6rem;
+	}
+	.g-body {
+		padding: 0.9rem;
+	}
+}
+
+/* stat icons are white glyphs: give them a dark chip so they read on the light tiles */
+.g-body .kw-ic[src*="/jstats/"] {
+	background: var(--accent);
+	border-radius: 50%;
+	padding: 1px;
+	box-sizing: content-box;
+}
+.g-card > div:only-child {
+	grid-column: 1/-1;
+}
+.g-body .g-card p {
+	margin: 0.4rem 0;
+}
+.g-body .g-rating {
+	border-radius: 10px;
+	flex-wrap: wrap;
+}
+@media (max-width: 520px) {
+	.g-card {
+		grid-template-columns: 1fr;
+	}
+	.g-card > img {
+		width: 64px;
+		height: 64px;
+	}
+}

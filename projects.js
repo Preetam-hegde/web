@@ -330,6 +330,24 @@ const projects = [
 			"Fetch and display a new inspirational quote on demand from a public REST API — with smooth transitions and one-click sharing to social platforms.",
 		tech: ["HTML5", "CSS3", "JavaScript", "REST API", "Fetch API"],
 	},
+	{
+		name: "Star Savior Guide",
+		shot: "apps/star-savior-guide/images/journey_bg/ILLUST_BG_JOURNEY_EASTERN_SWORDMASTER_01.webp",
+		blurb: "A read-first Star Savior reference: tier list, team builder, savior guides, arcana, stories and game-system guides.",
+		category: "games",
+		icon: "sparkles",
+		link: "apps/star-savior-guide/index.html",
+		description:
+			"A fast, fan-made companion for Star Savior. Separate PvE and PvP tier lists with usage and investment signals, a team builder that works from the saviors you own, in-depth savior pages (kit, review, build, teams, stats), arcana database, story and game-system guides, hover details, quick search and a mobile-friendly layout. No account, no build step.",
+		tech: [
+			"HTML5",
+			"CSS3",
+			"JavaScript",
+			"Canvas API",
+			"Client-side routing",
+			"JSON data",
+		],
+	},
 ];
 
 // Lucide icons (ISC, https://lucide.dev) — stroke uses currentColor so each UI themes them via CSS `color`.

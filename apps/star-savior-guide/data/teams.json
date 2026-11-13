@@ -1,0 +1,293 @@
+{
+ "source": "Community team lists (12 May 2026)",
+ "url": "",
+ "teams": [
+  {
+   "name": "Starter Team",
+   "attr": "Any",
+   "note": "Easy early-game PvE team. Make BG Charlotte leader and use Omega's Break Skill.",
+   "members": [
+    "bunny-knight",
+    "maid-twohander",
+    "dress-stranis",
+    "maid-bell",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Starter Team (Elemental swap)",
+   "attr": "Any",
+   "note": "Variation when you need elemental advantage on a boss.",
+   "members": [
+    "bunny-spear",
+    "counterside-hilde",
+    "dress-stranis",
+    "recon-knuckle",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Starter Team (Muriel)",
+   "attr": "Any",
+   "note": "Another variation for elemental coverage.",
+   "members": [
+    "saintess-demon",
+    "independent-dragon",
+    "maid-twohander",
+    "counterside-mina",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Sun with Tyria",
+   "attr": "Sun",
+   "note": "Tyria shreds defence lines.",
+   "members": [
+    "bunny-knight",
+    "independent-dragon",
+    "dress-stranis",
+    "apostle-tyria",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Sun",
+   "attr": "Sun",
+   "note": "High ATK-reduction debuffs make this very reliable. BG Charlotte is leader.",
+   "members": [
+    "bunny-knight",
+    "counterside-hilde",
+    "dress-stranis",
+    "saintess-demon",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Sun (no tank)",
+   "attr": "Sun",
+   "note": "Lacy replaces Hilde in the front line and still works.",
+   "members": [
+    "bunny-knight",
+    "independent-dragon",
+    "dress-stranis",
+    "saintess-demon",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Sun F2P",
+   "attr": "Sun",
+   "note": "Easiest version to get the saviors for.",
+   "members": [
+    "kingdom-knight",
+    "counterside-hilde",
+    "eastern-owl",
+    "wild-hog",
+    "starpiercer-omega"
+   ],
+   "f2p": true
+  },
+  {
+   "name": "Moon with Fei",
+   "attr": "Moon",
+   "note": "Fei in the front row works as an evasion tank.",
+   "members": [
+    "independent-vagabond",
+    "maid-twohander",
+    "bunny-spear",
+    "dress-stranis",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Moon",
+   "attr": "Moon",
+   "note": "Harder to unlock but very balanced. Bunnygirl Frey is leader.",
+   "members": [
+    "recon-amulet",
+    "maid-twohander",
+    "bunny-spear",
+    "bunny-pray",
+    "dress-stranis",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Moon (no BG Claire)",
+   "attr": "Moon",
+   "note": "Use Waltz Asherah as a substitute if you lack BG Claire.",
+   "members": [
+    "voyager-stranis",
+    "maid-twohander",
+    "dress-stranis",
+    "bunny-pray",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Moon F2P",
+   "attr": "Moon",
+   "note": "Most accessible Moon version.",
+   "members": [
+    "voyager-stranis",
+    "independent-dragon",
+    "dress-stranis",
+    "recon-amulet",
+    "starpiercer-omega"
+   ],
+   "f2p": true
+  },
+  {
+   "name": "Star with Lyn",
+   "attr": "Star",
+   "note": "Great option if you pulled Lyn.",
+   "members": [
+    "eastern-swordmaster",
+    "incognita-flower",
+    "dress-stranis",
+    "maid-bell",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Star",
+   "attr": "Star",
+   "note": "Likely the easiest elemental team to build.",
+   "members": [
+    "recon-knuckle",
+    "incognita-flower",
+    "dress-stranis",
+    "maid-bell",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Star (alt)",
+   "attr": "Star",
+   "note": "Alternative if your roster is short.",
+   "members": [
+    "magician-druid",
+    "maid-twohander",
+    "dress-stranis",
+    "counterside-mina",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Star F2P",
+   "attr": "Star",
+   "note": "Easiest team to build early.",
+   "members": [
+    "recon-knuckle",
+    "incognita-flower",
+    "kingdom-pray",
+    "construct-gadget",
+    "starpiercer-omega"
+   ],
+   "f2p": true
+  },
+  {
+   "name": "Order vs Chaos bosses",
+   "attr": "Order",
+   "note": "Deals with Chaos-attribute bosses.",
+   "members": [
+    "voyager-oracle",
+    "dress-stranis",
+    "maid-twohander",
+    "nightmare-reaper",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Order (alt)",
+   "attr": "Order",
+   "note": "If you need to replace Luna or Emilly.",
+   "members": [
+    "saintess-demon",
+    "dress-stranis",
+    "independent-dragon",
+    "nightmare-reaper",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Order (no Waltz)",
+   "attr": "Order",
+   "note": "A version without Waltz Asherah.",
+   "members": [
+    "voyager-oracle",
+    "independent-dragon",
+    "maid-twohander",
+    "nightmare-reaper",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Chaos with Rosaria",
+   "attr": "Chaos",
+   "note": "With Rosaria this is the best Chaos team.",
+   "members": [
+    "counterside-rosaria",
+    "maid-twohander",
+    "independent-dragon",
+    "dress-stranis",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Chaos vs Order bosses",
+   "attr": "Chaos",
+   "note": "Deals with Order-attribute bosses.",
+   "members": [
+    "west-rod",
+    "maid-twohander",
+    "independent-dragon",
+    "dress-stranis",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Chaos (alt)",
+   "attr": "Chaos",
+   "note": "If you need to replace Emilly.",
+   "members": [
+    "west-rod",
+    "dress-stranis",
+    "independent-dragon",
+    "saintess-demon",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  },
+  {
+   "name": "Chaos (no Waltz)",
+   "attr": "Chaos",
+   "note": "A version without Waltz Asherah.",
+   "members": [
+    "bunny-knight",
+    "saintess-elf",
+    "independent-dragon",
+    "bunny-pray",
+    "starpiercer-omega"
+   ],
+   "f2p": false
+  }
+ ]
+}

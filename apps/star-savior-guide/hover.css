@@ -1,0 +1,42 @@
+/* Hover effects and detail popover for savior cards */
+@media (hover:hover) and (pointer:fine){
+	.card,.tier .row a,.team .m{transition:transform .18s ease,box-shadow .18s ease}
+	.card:hover{transform:translateY(-4px) scale(1.03);box-shadow:0 12px 26px rgba(3,24,64,.5);z-index:3}
+	.card .im{overflow:hidden}.card .im img{transition:transform .35s ease}
+	.card:hover .im img{transform:scale(1.1)}
+	.tier .row a:hover{transform:translateY(-4px)}
+	.tier .row a:hover .ic>img{box-shadow:0 0 0 3px #fff,0 8px 20px rgba(3,24,64,.5);transform:scale(1.06)}
+	.tier .row .ic>img{transition:transform .2s ease,box-shadow .2s ease}
+	.team .m:hover{transform:translateY(-3px)}.team .m:hover img{box-shadow:0 0 0 3px #fff,0 8px 18px rgba(3,24,64,.45)}
+	.team .m img{transition:box-shadow .2s ease}
+}
+#hv{position:fixed;left:0;top:0;z-index:60;width:340px;background:#fff;border:2px solid var(--edge);border-radius:16px;box-shadow:0 14px 36px rgba(3,24,64,.55);padding:.6rem .7rem;color:var(--ink-soft);font-size:.82rem;line-height:1.4;pointer-events:none;opacity:0;transition:opacity .12s ease;will-change:transform}
+#hv.on{opacity:1}
+#hv .hv-top{display:flex;gap:.6rem}
+#hv .hv-top>img{width:84px;height:124px;object-fit:cover;object-position:top;border-radius:12px;border:2px solid var(--edge);flex:none;background:#dbe9f7}
+#hv .hv-top b{display:block;font-size:1.1rem;color:var(--ink);line-height:1.15}
+#hv .hv-top small{display:block;color:var(--ink-soft);margin-bottom:.25rem}
+#hv .hv-chips{display:flex;flex-wrap:wrap;gap:.2rem}
+#hv .hv-chips span,#hv .hv-tags span{display:inline-flex;align-items:center;gap:.2rem;background:#e6f0fc;color:var(--ink);border-radius:999px;padding:0 .5rem;font-size:.74rem;line-height:1.6}
+#hv .hv-chips img{width:14px;height:14px}
+#hv .hv-chips .hv-g.SSR{background:#ffe9a8}
+#hv .hv-rate{margin-top:.3rem;display:flex;gap:.25rem}
+#hv .hv-r{border-radius:999px;padding:0 .55rem;font-weight:800;font-size:.76rem;color:#111;line-height:1.6}
+#hv .hv-stats{display:grid;grid-template-columns:repeat(4,1fr);gap:.25rem;margin:.5rem 0}
+#hv .hv-stats div{background:var(--soft);border-radius:8px;text-align:center;padding:.1rem 0}
+#hv .hv-stats small{display:block;font-size:.62rem;color:var(--ink-soft)}#hv .hv-stats b{color:var(--ink);font-size:.86rem}
+#hv p{margin:.3rem 0}#hv .hv-w{color:#8a4a00}
+#hv .hv-tags{display:flex;flex-wrap:wrap;gap:.2rem;margin-top:.3rem}
+#hv .hv-go{margin-top:.4rem;color:var(--accent);font-weight:700;font-size:.74rem}
+@media (hover:none),(pointer:coarse){#hv{display:none}}
+
+#hv .hv-sig{background:#f4f8ff;border:1px solid var(--line);border-radius:10px;padding:.35rem .5rem;margin:.3rem 0}
+#hv .hv-use{display:grid;grid-template-columns:66px 1fr 34px;align-items:center;gap:.4rem}
+#hv .hv-use span,#hv .hv-inv span{font-size:.7rem;color:var(--ink-soft)}
+#hv .hv-bar{height:8px;border-radius:6px;background:#dbe6f6;overflow:hidden}#hv .hv-bar i{display:block;height:100%;background:linear-gradient(90deg,#4a8bd8,#1f5bc0)}
+#hv .hv-use b{text-align:right;color:var(--ink)}
+#hv .hv-inv{display:grid;grid-template-columns:66px auto 1fr;align-items:center;gap:.4rem;margin-top:.2rem}
+#hv .hv-inv b{color:var(--ink);letter-spacing:.05em}#hv .hv-inv .inv1{color:#2fb36b}#hv .hv-inv .inv2{color:#d79a14}#hv .hv-inv .inv3{color:#e0556a}
+#hv .hv-inv small{color:var(--ink-soft);font-size:.7rem}
+#hv .hv-sig p{margin:.25rem 0 0;font-size:.78rem}#hv .hv-sig p b{color:var(--ink)}
+#hv .hv-note{display:block;margin-top:.2rem;font-size:.62rem;color:var(--ink-soft);opacity:.8}

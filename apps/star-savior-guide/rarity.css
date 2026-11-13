@@ -1,0 +1,23 @@
+/* Card layout fix + SSR / SR visual grades */
+.card{display:flex;flex-direction:column}
+.card .im{flex:none}
+.card .meta{display:block;padding:.3rem .45rem .4rem}
+.card .meta b{margin:0}.card .meta small{margin-top:1px}
+.rar-hide{display:none!important}
+/* filter buttons */
+.fb.rar-ssr.on{background:#d79a14;border-color:#d79a14;color:#fff}
+.fb.rar-sr.on{background:#7c6bd6;border-color:#7c6bd6;color:#fff}
+/* SSR: warm gold frame and chip. SR: cool silver-violet frame, soft tint, violet chip. */
+.card[data-g="SSR"]{border-color:#e2a93a}
+.card[data-g="SR"]{border-color:#8d97bd;background:#eef0f8}
+.card[data-g="SR"] .im img{filter:saturate(.8)}
+.card[data-g] .im::after,.tier .ic[data-g]::after{position:absolute;left:50%;transform:translateX(-50%);top:3px;font-weight:800;font-size:.62rem;line-height:1.45;padding:0 .35rem;border-radius:6px;letter-spacing:.03em;content:attr(data-g);pointer-events:none}
+.card[data-g="SSR"] .im::after,.tier .ic[data-g="SSR"]::after{background:linear-gradient(135deg,#ffe08a,#e2a93a);color:#4a3000}
+.card[data-g="SR"] .im::after,.tier .ic[data-g="SR"]::after{background:#7c6bd6;color:#fff}
+.tier .ic[data-g="SSR"]>img{box-shadow:0 0 0 2px #e2a93a}
+.tier .ic[data-g="SR"]>img{box-shadow:0 0 0 2px #8d97bd;filter:saturate(.8)}
+.tier .ic{position:relative}
+.team .m[data-g="SSR"] img{box-shadow:0 0 0 2px #e2a93a}
+.team .m[data-g="SR"] img{box-shadow:0 0 0 2px #8d97bd;filter:saturate(.8)}
+.tag.SR{background:#dcd3ff}
+#hv .hv-chips .hv-g.SR{background:#dcd3ff}

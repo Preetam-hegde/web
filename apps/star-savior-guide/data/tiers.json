@@ -1,0 +1,366 @@
+{
+	"source": "Community mode ratings, checked 13 Nov 2026",
+	"url": "",
+	"note": "Published mode ratings are a starting point, not measured results from this guide. Read each kit review for team, investment and enemy conditions. New means no verified mode rating. Within a tier, names are alphabetical.",
+	"tiers": {
+		"maid-twohander": "S+",
+		"eastern-swordmaster": "S+",
+		"apostle-tyria": "S+",
+		"maid-lantern": "S+",
+		"detective-sheriff": "S+",
+		"stranisearl-roseblade": "S+",
+		"detective-professor": "S+",
+		"counterside-rosaria": "S+",
+		"bunny-knight": "S+",
+		"independent-dragon": "S+",
+		"dress-stranis": "S+",
+		"west-beamsword": "S+",
+		"wedding-shielder": "S+",
+		"incognita-landgrave": "S",
+		"summer-oracle": "S",
+		"recon-knuckle": "S",
+		"independent-vagabond": "S",
+		"maid-bell": "S",
+		"bunny-spear": "S",
+		"saintess-demon": "S",
+		"nightmare-reaper": "S",
+		"voyager-oracle": "A+",
+		"bunny-pray": "A+",
+		"summer-smile": "A+",
+		"kingdom-knight": "A+",
+		"saintess-elf": "A+",
+		"mutant-mask": "A+",
+		"incognita-flower": "A",
+		"counterside-hilde": "A",
+		"magician-druid": "A",
+		"recon-amulet": "A",
+		"construct-bomb": "A",
+		"wedding-dualsword": "A",
+		"west-rod": "A",
+		"construct-gadget": "A",
+		"counterside-mina": "A",
+		"wild-hog": "B+",
+		"bunny-scissors": "B+",
+		"voyager-stranis": "B+",
+		"kingdom-pray": "B",
+		"kingdom-shielder": "B",
+		"starpiercer-omega": "B",
+		"voyager-smile": "B",
+		"stellar-thief": "B",
+		"grace-dualsword": "C+",
+		"west-lancer": "C+",
+		"maid-spear": "C+",
+		"magician-sniper": "C+",
+		"detective-watson": "C+",
+		"construct-wrench": "C+",
+		"maid-scissors": "C+",
+		"eastern-owl": "C+",
+		"lpu-post": "C+",
+		"officer-police": "C",
+		"noa-observer": "C",
+		"apostle-gille": "NEW",
+		"dark-unknown": "NEW",
+		"halloween-beamsword": "S+",
+		"halloween-rod": "S"
+	},
+	"checked_at": "2026-11-13",
+	"source_date": "2026-10-30",
+	"methodology": "Published PvE/PvP tiers are kept separate from our analysis of stored skills, effects and stats. Skill explanations use the highest stored skill level unless stated otherwise. Teams are kit-based suggestions, not tested best-in-slot lineups. Journey, equipment, stars, speed order and enemy resistance can change results. Source text may describe older kits; the character guide follows the stored profile and calls out important mismatches.",
+	"ratings": {
+		"maid-twohander": {
+			"pve": "S+",
+			"pvp": "S",
+			"status": "published"
+		},
+		"eastern-swordmaster": {
+			"pve": "S+",
+			"pvp": "S",
+			"status": "published"
+		},
+		"apostle-tyria": {
+			"pve": "S",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"maid-lantern": {
+			"pve": "S",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"detective-sheriff": {
+			"pve": "S",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"stranisearl-roseblade": {
+			"pve": "S",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"detective-professor": {
+			"pve": "S+",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"counterside-rosaria": {
+			"pve": "S+",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"bunny-knight": {
+			"pve": "S+",
+			"pvp": "S",
+			"status": "published"
+		},
+		"independent-dragon": {
+			"pve": "S+",
+			"pvp": "A+",
+			"status": "published"
+		},
+		"dress-stranis": {
+			"pve": "S+",
+			"pvp": "S",
+			"status": "published"
+		},
+		"west-beamsword": {
+			"pve": "A+",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"wedding-shielder": {
+			"pve": "S+",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"incognita-landgrave": {
+			"pve": "S",
+			"pvp": "S",
+			"status": "published"
+		},
+		"summer-oracle": {
+			"pve": "A+",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"recon-knuckle": {
+			"pve": "S",
+			"pvp": "S",
+			"status": "published"
+		},
+		"independent-vagabond": {
+			"pve": "A+",
+			"pvp": "S",
+			"status": "published"
+		},
+		"maid-bell": {
+			"pve": "A",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"bunny-spear": {
+			"pve": "S",
+			"pvp": "A+",
+			"status": "published"
+		},
+		"saintess-demon": {
+			"pve": "S",
+			"pvp": "A+",
+			"status": "published"
+		},
+		"nightmare-reaper": {
+			"pve": "A+",
+			"pvp": "S",
+			"status": "published"
+		},
+		"voyager-oracle": {
+			"pve": "A",
+			"pvp": "S",
+			"status": "published"
+		},
+		"bunny-pray": {
+			"pve": "S",
+			"pvp": "A",
+			"status": "published"
+		},
+		"summer-smile": {
+			"pve": "A+",
+			"pvp": "A",
+			"status": "published"
+		},
+		"kingdom-knight": {
+			"pve": "A",
+			"pvp": "A+",
+			"status": "published"
+		},
+		"saintess-elf": {
+			"pve": "A",
+			"pvp": "A+",
+			"status": "published"
+		},
+		"mutant-mask": {
+			"pve": "A",
+			"pvp": "A+",
+			"status": "published"
+		},
+		"incognita-flower": {
+			"pve": "A",
+			"pvp": "A",
+			"status": "published"
+		},
+		"counterside-hilde": {
+			"pve": "A",
+			"pvp": "A",
+			"status": "published"
+		},
+		"magician-druid": {
+			"pve": "A",
+			"pvp": "A",
+			"status": "published"
+		},
+		"recon-amulet": {
+			"pve": "A",
+			"pvp": "A",
+			"status": "published"
+		},
+		"construct-bomb": {
+			"pve": "A",
+			"pvp": "A",
+			"status": "published"
+		},
+		"wedding-dualsword": {
+			"pve": "B+",
+			"pvp": "A",
+			"status": "published"
+		},
+		"west-rod": {
+			"pve": "A",
+			"pvp": "B+",
+			"status": "published"
+		},
+		"construct-gadget": {
+			"pve": "A",
+			"pvp": "B+",
+			"status": "published"
+		},
+		"counterside-mina": {
+			"pve": "A",
+			"pvp": "B+",
+			"status": "published"
+		},
+		"wild-hog": {
+			"pve": "B+",
+			"pvp": "B+",
+			"status": "published"
+		},
+		"bunny-scissors": {
+			"pve": "B+",
+			"pvp": "B+",
+			"status": "published"
+		},
+		"voyager-stranis": {
+			"pve": "B+",
+			"pvp": "B",
+			"status": "published"
+		},
+		"kingdom-pray": {
+			"pve": "B",
+			"pvp": "B",
+			"status": "published"
+		},
+		"kingdom-shielder": {
+			"pve": "B",
+			"pvp": "C+",
+			"status": "published"
+		},
+		"starpiercer-omega": {
+			"pve": "B+",
+			"pvp": "C",
+			"status": "published"
+		},
+		"voyager-smile": {
+			"pve": "B+",
+			"pvp": "C",
+			"status": "published"
+		},
+		"stellar-thief": {
+			"pve": "C+",
+			"pvp": "B",
+			"status": "published"
+		},
+		"grace-dualsword": {
+			"pve": "B",
+			"pvp": "C",
+			"status": "published"
+		},
+		"west-lancer": {
+			"pve": "C+",
+			"pvp": "C",
+			"status": "published"
+		},
+		"maid-spear": {
+			"pve": "C+",
+			"pvp": "C",
+			"status": "published"
+		},
+		"magician-sniper": {
+			"pve": "C+",
+			"pvp": "C",
+			"status": "published"
+		},
+		"detective-watson": {
+			"pve": "B",
+			"pvp": "D+",
+			"status": "published"
+		},
+		"construct-wrench": {
+			"pve": "C+",
+			"pvp": "C",
+			"status": "published"
+		},
+		"maid-scissors": {
+			"pve": "C+",
+			"pvp": "C",
+			"status": "published"
+		},
+		"eastern-owl": {
+			"pve": "B",
+			"pvp": "D+",
+			"status": "published"
+		},
+		"lpu-post": {
+			"pve": "C+",
+			"pvp": "C",
+			"status": "published"
+		},
+		"officer-police": {
+			"pve": "C+",
+			"pvp": "D+",
+			"status": "published"
+		},
+		"noa-observer": {
+			"pve": "C+",
+			"pvp": "D+",
+			"status": "published"
+		},
+		"apostle-gille": {
+			"pve": "NEW",
+			"pvp": "NEW",
+			"status": "provisional"
+		},
+		"dark-unknown": {
+			"pve": "NEW",
+			"pvp": "NEW",
+			"status": "provisional"
+		},
+		"halloween-beamsword": {
+			"pve": "S+",
+			"pvp": "S+",
+			"status": "published"
+		},
+		"halloween-rod": {
+			"pve": "A+",
+			"pvp": "S",
+			"status": "published"
+		}
+	}
+}

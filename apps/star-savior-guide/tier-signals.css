@@ -1,0 +1,18 @@
+.tier .row a{height:auto}
+.sig{display:grid;grid-template-columns:1fr auto;align-items:center;gap:1px 4px;margin-top:2px;font-size:.62rem;line-height:1.1}
+.sig .bar{height:5px;border-radius:4px;background:#dbe6f6;overflow:hidden}.sig .bar i{display:block;height:100%;background:linear-gradient(90deg,#4a8bd8,#1f5bc0)}
+.sig .num{color:var(--ink);font-weight:700}
+.sig .pip{grid-column:1/-1;letter-spacing:.08em;font-size:.58rem}
+.inv1{color:#2fb36b}.inv2{color:#d79a14}.inv3{color:#e0556a}
+.sig-legend{background:rgba(255,255,255,.14);border:1px solid #fff4;border-radius:12px;color:#fff;font-size:.8rem;padding:.4rem .7rem;margin-bottom:.5rem}.sig-legend b{color:#fff}.sig-legend .inv1{color:#7be0a8}.sig-legend .inv2{color:#ffd166}.sig-legend .inv3{color:#ff8a9a}
+/* tier list: icon legend */
+details.leg summary{font-weight:700}
+.legend-box{background:rgba(255,255,255,.14);border:1px solid #fff4;border-radius:12px;color:#fff;font-size:.82rem;line-height:1.5;padding:.5rem .8rem;margin-top:.35rem}
+.leg-h{margin:0 0 .3rem;color:#d3e3f8}
+.leg-list{margin:0;padding-left:1.1rem}.leg-list li{margin:.35rem 0}
+.leg-list b{color:#fff}
+.leg-a,.leg-t,.leg-s,.leg-r{display:inline-flex;align-items:center;gap:.25rem;margin:.1rem .25rem .1rem 0;background:#0b3d85cc;border-radius:999px;padding:0 .5rem;font-size:.76rem}
+.leg-a img{width:16px;height:16px}
+.leg-r{font-weight:800;font-size:.68rem;padding:0 .45rem;border-radius:6px}
+.leg-r.ssr{background:linear-gradient(135deg,#ffe08a,#e2a93a);color:#4a3000}.leg-r.sr{background:#7c6bd6}
+.leg-t,.leg-s{border-radius:4px}
