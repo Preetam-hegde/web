@@ -1,11 +1,23 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="en" style="--field: #7da0ed">
 <head>
 	<meta charset="UTF-8">
 	<meta name="viewport" content="width=device-width, initial-scale=1.0">
 	<meta name="description" content="Preetam Hegde — backend software engineer at Oracle in Bengaluru. Metadata-driven dashboard systems, AI-assisted tooling, and interactive simulations.">
 	<meta name="author" content="Preetam Hegde">
-	<meta name="theme-color" content="#f2c230">
+	<meta name="theme-color" content="#7da0ed">
+	<script id="loom-theme">
+		'use strict';
+		function updateLoomTheme() {
+			const hour = new Date().getHours();
+			const color = hour >= 6 && hour < 18 ? '#ef624c' : '#7da0ed';
+			document.documentElement.style.setProperty('--field', color);
+			document.querySelector('meta[name="theme-color"]').content = color;
+		}
+		updateLoomTheme();
+		window.setInterval(updateLoomTheme, 60000);
+		document.addEventListener('visibilitychange', () => { if (!document.hidden) updateLoomTheme(); });
+	</script>
 	<meta property="og:type" content="website">
 	<meta property="og:title" content="Preetam Hegde — Systems in Thread">
 	<meta property="og:description" content="Backend engineer at Oracle in Bengaluru. Metadata-driven dashboard systems, AI-assisted tooling, and interactive simulations.">
@@ -15,8 +27,8 @@
 	<title>Preetam Hegde — Systems in Thread</title>
 	<link rel="preconnect" href="https://fonts.googleapis.com">
 	<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-	<link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
-	<noscript><link href="https://fonts.googleapis.com/css2?family=DM+Mono&family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600&display=swap" rel="stylesheet"></noscript>
+	<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600&display=swap" rel="stylesheet" media="print" onload="this.media='all'">
+	<noscript><link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Fraunces:wght@600&display=swap" rel="stylesheet"></noscript>
 	<link rel="stylesheet" href="v1/home.css">
 	<link rel="icon" type="image/svg+xml" href="v1/favicon.svg">
 	<link rel="icon" type="image/x-icon" href="favicon.ico" sizes="32x32">
@@ -54,30 +66,17 @@
 		</section>
 
 		<section class="loom-craft" id="resume" aria-labelledby="craft-title">
-			<div class="loom-craft-main">
-			<div class="loom-craft-copy" data-reveal>
-				<h2 id="craft-title">Backend depth, front-end care.</h2>
-				<p class="loom-lead">I work from the system outward: find the real constraint, make the interface obvious, then sweat the details.</p>
-			</div>
-			<div class="loom-code is-scroll" role="img" aria-label="Example: a dashboard widget described as a small block of metadata, with the tile it produces.">
-				<p class="loom-code-title">widget.json</p>
-				<div class="loom-code-body" aria-hidden="true">
-					<pre class="loom-code-text"><code><span class="loom-code-line" style="--i:0"><span class="tk-dim">{</span></span><span class="loom-code-line" style="--i:1">  <span class="tk-key">"widget"</span><span class="tk-dim">:</span> <span class="tk-str">"latency-p95"</span><span class="tk-dim">,</span></span><span class="loom-code-line" style="--i:2">  <span class="tk-key">"source"</span><span class="tk-dim">:</span> <span class="tk-str">"sql/latency.sql"</span><span class="tk-dim">,</span></span><span class="loom-code-line" style="--i:3">  <span class="tk-key">"refresh"</span><span class="tk-dim">:</span> <span class="tk-str">"30s"</span><span class="tk-dim">,</span></span><span class="loom-code-line" style="--i:4">  <span class="tk-key">"layout"</span><span class="tk-dim">:</span> <span class="tk-str">"multi-metric"</span></span><span class="loom-code-line" style="--i:5"><span class="tk-dim">}</span><span class="loom-caret"></span></span></code></pre>
-					<div class="loom-tile"><p class="loom-tile-name">latency-p95</p><p class="loom-tile-value">142 ms</p><div class="loom-bars"><i style="--h:.4;--i:0"></i><i style="--h:.65;--i:1"></i><i style="--h:.5;--i:2"></i><i style="--h:.9;--i:3"></i><i style="--h:.6;--i:4"></i></div></div>
-				</div>
-				<p class="loom-code-note">An illustrative example of the metadata-driven approach: describe the widget as data, render the tile.</p>
-			</div>
-			</div>
-			<div class="loom-capability-list" aria-label="Capabilities">
-				<article class="loom-capability"><h3>Data and platform systems</h3><p>Metadata-driven dashboards, SQL optimization and a multi-metric visualization engine at Oracle.</p><a class="loom-capability-link" href="#experience">See the experience</a></article>
-				<article class="loom-capability"><h3>AI-assisted tooling</h3><p>A LangGraph and RAG generator that turns a sentence into SQL-driven dashboard widgets.</p><a class="loom-capability-link" href="#experience">See the experience</a></article>
-				<article class="loom-capability"><h3>Full-stack products</h3><p>React, TypeScript and Supabase, shipped live: Inkwell and the System Design Prototype.</p><a class="loom-capability-link" href="#projects">See the products</a></article>
-				<article class="loom-capability"><h3>Interactive simulation</h3><p>Canvas simulations and games where the algorithm is the point.</p><a class="loom-capability-link" href="#playground">Open the playground</a></article>
+			<p class="loom-eyebrow">A little about me</p>
+			<h2 class="loom-statement" id="craft-title"><span>Built for work.</span><span>Made for play.</span></h2>
+			<div class="loom-craft-copy">
+				<p>My day job is making complex systems easier to work with. At Oracle, that means metadata-driven dashboards, faster queries, and tools that turn an idea into a working interface.</p>
+				<p>After hours, curiosity usually wins. I’ll make <a href="apps/natural-selection-sim/index.html">a world of competing organisms</a>, or <a href="apps/wyrdboard/index.html">a game of hidden rules</a>, just to see what happens when someone starts playing.</p>
+				<a class="loom-text-link" href="#projects">Take a look around</a>
 			</div>
 		</section>
 
 		<section class="loom-experience" id="experience" aria-labelledby="experience-title">
-			<div class="loom-experience-head" data-reveal><h2 id="experience-title">Built inside real constraints.</h2><p class="loom-lead">Backend systems at Oracle, and where it started.</p></div>
+			<div class="loom-experience-head" data-reveal><p class="loom-eyebrow">Experience</p><h2 id="experience-title">The day job.</h2><p class="loom-lead">The systems behind the screens.</p><a class="loom-text-link" href="resource/pdf/Preetam_resume_2026.pdf" target="_blank" rel="noopener noreferrer">Read the full résumé</a></div>
 			<div class="loom-experience-body">
 				<ol class="loom-timeline">
 					<li class="loom-job">
@@ -116,11 +115,11 @@
 		</section>
 
 		<section class="loom-work" id="projects" aria-labelledby="work-title">
-			<div class="loom-work-heading" data-reveal><h2 id="work-title">Selected work</h2><p class="loom-lead">Four builds worth opening first, then a playground of smaller ones.</p></div>
+			<div class="loom-work-heading" data-reveal><p class="loom-eyebrow">Selected work</p><h2 id="work-title">From idea<br>to open tab.</h2><p class="loom-lead">A few things I’ve built. All of them are yours to try.</p></div>
 			<div class="loom-featured" id="loom-featured"></div>
 			<div class="loom-playground" id="playground">
 				<h3 class="loom-playground-title">The playground</h3>
-				<p class="loom-lead">Each one is a single page you can open and play with: games, simulations, tools and study aids.</p>
+				<p class="loom-lead">Smaller experiments, games, and useful distractions. Pick one and jump in.</p>
 				<div class="loom-filters" id="loom-filters" role="group" aria-label="Filter the playground"></div>
 			</div>
 			<div class="loom-grid" id="loom-grid"></div>
@@ -130,11 +129,11 @@
 		<section class="loom-contact" id="contact" aria-labelledby="contact-title">
 			<div class="loom-contact-grid">
 				<div class="loom-contact-content" data-reveal>
-					<h2 id="contact-title">Let’s make something worth returning to.</h2>
-					<p class="loom-contact-copy">Have a product, platform, or idea that needs engineering care and a clear point of view? Tell me what you’re building and where it’s stuck.</p>
+					<p class="loom-eyebrow">Keep in touch</p>
+					<h2 id="contact-title">Say hello.</h2>
+					<p class="loom-contact-copy">Working on something interesting, or tried one of the experiments? I’d like to hear about it.</p>
 				</div>
 				<div class="loom-contact-card">
-					<p class="loom-card-kicker">Say hello</p>
 					<div class="loom-mail">
 						<a class="loom-mail-link" href="mailto:preetam@preetamhegde.in">preetam@preetamhegde.in</a>
 						<button class="loom-copy" type="button" data-copy="preetam@preetamhegde.in" aria-live="polite">Copy</button>
@@ -149,7 +148,7 @@
 			</div>
 		</section>
 	</main>
-	<footer class="loom-footer"><p>Built by hand with HTML, CSS and a little JavaScript. <a href="./index-classic.html">Terminal version</a></p><p>© <span id="loom-year"></span> Preetam Hegde</p></footer>
+	<footer class="loom-footer"><p><a href="./index-classic.html">Terminal version</a></p><p>© <span id="loom-year"></span> Preetam Hegde</p></footer>
 	<a class="loom-top" href="#about" aria-label="Back to top"><svg viewBox="0 0 24 24" width="20" height="20" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 19V5M5 12l7-7 7 7"/></svg></a>
 
 	<script src="projects.js" defer></script>
