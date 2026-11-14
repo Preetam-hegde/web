@@ -83,7 +83,7 @@
 		if (title && !panel.querySelector('.mt')) title.insertAdjacentHTML('afterend', ` <span class="mt ${cls}" title="Mode from members' PvE avg ${a.pve.toFixed(1)} vs PvP avg ${a.pvp.toFixed(1)}">${a.mode}</span>`);
 		const box = document.createElement('div');
 		box.className = 'tinsight';
-		box.innerHTML = `<div class="ti-row"><b>Why it works</b><ul>${a.why.map((w) => `<li>${w}</li>`).join('')}</ul></div><div class="ti-row"><b>Tanking</b><p>${a.tank}</p></div><small>Mode tag: ${a.mode} (members' average PvE ${a.pve.toFixed(1)} vs PvP ${a.pvp.toFixed(1)} on a 10-point scale). Explanations are built from the savior guides, not tested team runs.</small>`;
+		box.innerHTML = `<div class="ti-row"><b>Why it works</b><ul>${a.why.map((w) => `<li>${w}</li>`).join('')}</ul></div><div class="ti-row"><b>Tanking</b><p>${a.tank}</p></div><small>Mode tag: ${a.mode}, from the members' PvE and PvP ratings.</small>`;
 		row.after(box);
 		row.dataset.ti = '1';
 	}

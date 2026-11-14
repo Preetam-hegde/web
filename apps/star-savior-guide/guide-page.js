@@ -17,7 +17,8 @@ async function guidePage(k) {
 			)
 			.join("")}`;
 	const box = document.createElement("div");
-	box.innerHTML = g.html;
+	if (g.review) await RV.load();
+	box.innerHTML = g.html + (g.review ? RV.all(g.review) : "");
 	// Turn the first lead paragraph into a QUICK ANSWER box unless the guide already has a verdict.
 	if (!box.querySelector(".g-verdict")) {
 		const lead = box.querySelector("p.lead");

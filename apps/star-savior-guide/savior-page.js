@@ -102,17 +102,18 @@ function spSkill(k, i, s) {
 }
 
 async function savior(slug) {
-	const [s, c, P, A, ST] = await Promise.all([
+	const [s, c, P, A, ST] = (await Promise.all([
 		load(`data/saviors/${slug}.json`),
 		ctx(),
 		load("data/potentials.json"),
 		load("data/arcana.json"),
 		load("data/stories.json"),
-	]);
+			RV.load(),
+	])).slice(0, 5);
 	const me = c.by[slug],
 		g = c.guides[slug],
 		T = c.tiers;
-	const panes = spPanes(s, c);
+	const panes = { kit: "", review: "", play: "" }; // written content now comes from review-render.js
 	const rate = me.ratings
 		? `<span class="tag" style="background:${TIER_COLOR[me.ratings.pve]}">PvE ${me.ratings.pve}</span><span class="tag" style="background:${TIER_COLOR[me.ratings.pvp]}">PvP ${me.ratings.pvp}</span>`
 		: `<span class="tag" style="background:${TIER_COLOR[me.tier]}">Tier ${me.tier}</span>`;
@@ -151,14 +152,12 @@ async function savior(slug) {
 	const kit = `<h2>Profile</h2><div class="panel"><p>${esc(s.description || "")}</p><div class="stats">${info}</div></div>
 	<h2>Active skills</h2>${active.map(([k, i]) => spSkill(k, i, s)).join("")}
 	<h2>Passive skills</h2>${passive.map(([k, i]) => spSkill(k, i, s)).join("")}
-	${panes.kit}
 	<h2>Resonance</h2><div class="panel"><table><tr><th>Grade</th><th>Unlock Lv</th><th>Bonuses</th><th>Journey bonus</th></tr>${(s.resonance || []).map((r) => `<tr><td>${r.grade}</td><td>${r.unlock_level}</td><td>${r.stat_bonuses.map((b) => `${esc(b.stat)} +${fmt(b.value)}`).join(", ")}</td><td>${r.journey_bonus ? `${esc(r.journey_bonus.stat)} +${r.journey_bonus.value}` : "—"}</td></tr>`).join("")}</table></div>
 	<h2>Star grades</h2><div class="panel"><table>${(s.star_grades || []).map((r) => `<tr><td>${"★".repeat(r.star)}</td><td>${(r.stat_bonuses || []).map((b) => `${esc(b.stat)} +${fmt(b.value)}`).join(", ")}</td></tr>`).join("")}</table></div>
 	${mine.length ? `<h2>Potentials</h2>${mine.map((p) => `<div class="panel pot"><img loading="lazy" src="${img(p.icon)}" alt=""><div><b>${esc(p.name)}</b> <span class="tag">${esc(p.category)}</span><div>${rich(p.description)}</div></div></div>`).join("")}` : ""}`;
 
-	const review = `${panes.review}`;
-	const build = `<h2>Journey stat priority</h2><div class="panel"><p>${esc(rb.journey)}</p><p class="muted">Derived from the Journey role multipliers. See the <a href="#/guide/journey">Journey guide</a>.</p></div>
-	<h2>Gear</h2><div class="panel"><p><b>Sets:</b> ${esc(rb.sets)}</p><p><b>Main stats:</b> ${esc(rb.main)}</p>${g ? `<p><b>Kit-specific priority:</b> ${esc(g.build_tip)}</p>` : ""}<p class="muted">Suggested by role and kit. See <a href="#/guide/systems-equipment">Equipment guide</a> and <a href="#/gearscore">gear score</a>.</p></div>
+	const review = RV.review(slug);
+	const build = `${RV.build(slug)}
 	<h2>${esc(s.name)}'s arcana</h2>${arc.length ? `<div class="grid wide">${arc.map((a) => `<div class="card"><span class="im"><img loading="lazy" width="170" height="170" src="${img(a.card)}" alt=""><em class="t" style="background:${{ S: "#ff5d6c", A: "#ffa94d", B: "#ffe066", C: "#8ce99a", D: "#9aa6bd" }[a.tier] || "#c8d3e6"}">${a.tier || "?"}</em></span><span class="meta"><b>${esc(a.name)}</b><small>${esc(a.stat)} · ${esc(a.grade)}</small></span></div>`).join("")}</div><p class="muted">Matching the savior's name gives +5% Training Effect during Journey.</p>` : '<div class="panel"><p class="muted">No arcana is named after this savior.</p></div>'}
 	<h2>Best general arcana (S tier)</h2><div class="grid wide">${topArc
 		.slice(0, 8)
@@ -193,7 +192,7 @@ async function savior(slug) {
 
 	const more = `<h2>Story</h2><div class="panel">${stories ? `<p><a href="#/story/${stories.slug}">Read ${esc(s.name)}'s story</a> · ${stories.chapters.length} chapters</p><ol>${stories.chapters.map((x) => `<li>${esc(x.t)}</li>`).join("")}</ol>` : '<p class="muted">No savior story found.</p>'}</div>${typeof gallery === "function" ? gallery(s) : ""}`;
 
-	const body = { kit, review, build, play: panes.play, stats, more };
+	const body = { kit, review, build, play: RV.teams(slug), stats, more };
 	app.innerHTML = `<a class="back" href="#/saviors">← All saviors</a>
 	<section class="sp-head" ${bg}><div class="sp-over"><div class="sp-text"><h1 class="sp-title">${esc(s.name)} <small>${esc(s.title)}${g?.role_label ? ` [${esc(g.role_label)}]` : ""}</small></h1><div class="sp-sub">BEST BUILD GUIDE</div><div class="sp-upd">Last updated: ${esc(date)}</div><div class="sp-chips"><span class="tag ${s.grade}">${s.grade}</span><span class="tag">${attrImg(s.attribute)}${s.attribute}</span><span class="tag">${roleImg(s.role)}${s.role}${s.sub_role ? " · " + esc(s.sub_role) : ""}</span><span class="tag"><img src="images/ui/UI_CMN_SKILL_TAG_${String(s.attack_type).toUpperCase()}.webp" alt="" onerror="this.remove()">${esc(s.attack_type)}</span><span class="tag">${esc(s.observe_type)}</span>${rate}</div></div><img class="sp-art" src="${img(s.images.portrait)}" alt="${esc(s.name)}"></div></section>
 	<div class="tile sp-intro"><b>INTRODUCTION</b><p>Review the skills, build priorities and team conditions for ${esc(s.name)} (${esc(s.title)}). This profile covers ${s.grade === "SSR" ? "an SSR" : "an SR"} rarity savior of the ${s.attribute} attribute, a ${s.role}${s.sub_role ? ` (${esc(s.sub_role)})` : ""} who uses ${esc(s.attack_type)} attacks.</p></div>

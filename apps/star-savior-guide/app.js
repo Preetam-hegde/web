@@ -285,31 +285,8 @@ async function tiers() {
 	};
 	draw();
 }
-function renderSaviorGuide(s, c) {
-	const g = c.guides[s.slug],
-		rating = c.by[s.slug].ratings;
-	const list = (items) =>
-		`<ul>${items.map((item) => `<li>${esc(item)}</li>`).join("")}</ul>`;
-	const link = (slug) =>
-		`<a href="#/savior/${slug}">${esc(c.by[slug].name)} · ${esc(c.by[slug].title)}</a>`;
-	return `<h2>At a glance${g.role_label ? ` [${esc(g.role_label)}]` : ""}</h2><div class="panel guide-copy">${g.summary
-		.split(/\n\s*\n/)
-		.map((paragraph) => `<p>${esc(paragraph)}</p>`)
-		.join("")}
-	<div>${g.tags.map((x) => `<span class="tag">${TAGS[x][0]} ${TAGS[x][1]}</span>`).join("")}<span class="tag">${DEP[g.dependency][1]}</span></div>
-	<p><b>Team requirement:</b> ${esc(g.dependency_note)}</p><p><b>Main limitation:</b> ${esc(g.watch)}</p></div>
-	<h2>Tier assessment</h2><div class="panel guide-copy"><p><b>PvE ${esc(rating.pve)} · PvP ${esc(rating.pvp)}</b> — ${rating.status === "published" ? "Published community ratings" : "Unranked; provisional kit assessment"}</p>
-	<p>${esc(g.tier_reason)}</p><p><b>PvE:</b> ${esc(g.pve_note)}</p><p><b>PvP:</b> ${esc(g.pvp_note)}</p>
-	<p><b>Investment:</b> ${esc(g.investment)}</p><p class="muted">Reviewed ${esc(c.tiers.checked_at)} against stored stats, skills and effects. Explanations describe the highest stored skill level unless stated otherwise. No combat benchmark or exact copy requirement is implied. Debuff chance still depends on resistance, accuracy and immunity unless the skill explicitly bypasses them.</p>${g.research_note ? `<p class="callout warn">${esc(g.research_note)}</p>` : ""}</div>
-	<h2 id="kit-guide">Kit explained</h2><div class="panel guide-copy"><p class="muted">Action gauge is progress toward the next turn. A stack is a counter a skill builds or spends. An extra turn acts again immediately; a follow-up is an automatic attack when its condition is met. Toughness is the break bar: emptying it creates a damage window. Nova Burst enhances a chosen skill using the shared Nova Force resource.</p>
-	${g.kit_explanation.map((k, i) => `<h3>${i + 1}. ${esc(k.name)}</h3><p>${esc(k.explanation)}</p>`).join("")}</div>
-	<div class="guide-columns"><section><h2>Pros</h2><div class="panel guide-copy">${list(g.pros)}</div></section><section><h2>Cons</h2><div class="panel guide-copy">${list(g.cons)}</div></section></div>
-	<h2 id="usage-guide">How to use her</h2><div class="panel guide-copy"><ol>${g.rotation.map((r) => `<li>${esc(r)}</li>`).join("")}</ol><p><b>Build priorities:</b> ${esc(g.build_tip)}</p></div>
-	<h2>Skill investment priority</h2><div class="panel guide-copy"><p class="muted">Upgrade priorities, not a fixed cast order. Triggered skills activate automatically.</p><ol>${g.skill_order.map((o) => `<li><b>${esc(o.name)}</b> — ${esc(o.why)}</li>`).join("")}</ol></div>
-	<h2 id="teams-guide">Team examples</h2><p class="lead">Recommended starting points from kit synergy, not tested best-in-slot teams. Adjust speed, survival and attributes for the encounter.</p>
-	${g.teams.map((t) => `<div class="panel guide-copy"><h3>${esc(t.name)}</h3>${teamRow(c, t.members)}<p>${esc(t.why)}</p><p><b>How to play:</b> ${esc(t.playstyle)}</p></div>`).join("")}
-	<h2>Partner choices</h2><div class="panel guide-copy">${g.best_partners.map((p) => `<p><b>${link(p.slug)}</b><br>${esc(p.why)}</p>`).join("")}</div>
-	<h2 id="alternatives-guide">Better alternatives?</h2><div class="panel guide-copy"><p class="muted">Choose by the job you need. A higher tier does not guarantee a better result in your team.</p>${g.alternatives.map((a) => `<h3>${link(a.slug)}</h3><p><b>Choose her when:</b> ${esc(a.why)}</p><p><b>Tradeoff:</b> ${esc(a.tradeoff)}</p>`).join("")}</div>`;
+function renderSaviorGuide() {
+	return ""; // replaced by review-render.js
 }
 
 // Extra art (illustration, journey backgrounds, arcana cards) is only stored locally for some saviors; hide the rest.

@@ -1,0 +1,33 @@
+/* Gacha-style character review */
+.rv-verdict{display:flex;gap:.9rem;align-items:center;background:#fff;border:2px solid var(--edge);border-radius:var(--r);box-shadow:var(--shadow);padding:.8rem 1rem;margin-bottom:.4rem}
+.rv-badge{flex:none;min-width:112px;text-align:center;font-weight:800;border-radius:12px;padding:.6rem .5rem;color:#fff;font-size:1rem;line-height:1.15}
+.rv-badge.top{background:linear-gradient(135deg,#ff5d6c,#ff8a5d)}.rv-badge.high{background:linear-gradient(135deg,#ffa94d,#e2a93a)}.rv-badge.mid{background:linear-gradient(135deg,#4a8bd8,#1f5bc0)}.rv-badge.low{background:linear-gradient(135deg,#8d97bd,#6b7390)}.rv-badge.new{background:linear-gradient(135deg,#b58cff,#7c6bd6)}
+.rv-vtxt{color:var(--ink-soft)}.rv-vtxt b{color:var(--ink)}.rv-vtxt p{margin:.25rem 0 0}
+.rv-abil{display:grid;gap:.5rem}
+.rv-ab{display:grid;grid-template-columns:52px 1fr;gap:.7rem;background:#fff;border:2px solid var(--edge);border-radius:var(--r);padding:.6rem .8rem;box-shadow:var(--shadow);border-left-width:6px}
+.rv-ab.ult{border-left-color:#e0556a}.rv-ab.special{border-left-color:#d79a14}.rv-ab.basic{border-left-color:#4a8bd8}.rv-ab.passive{border-left-color:#7c6bd6}
+.rv-ab>img{width:48px;height:48px;border-radius:10px;background:#dbe9f7}
+.rv-abh{display:flex;flex-wrap:wrap;gap:.35rem;align-items:center}.rv-abh b{color:var(--ink)}
+.rv-lab{font-size:.68rem;font-weight:800;letter-spacing:.06em;border-radius:6px;padding:0 .4rem;color:#fff;background:#4a8bd8;line-height:1.6}
+.rv-ab.ult .rv-lab{background:#e0556a}.rv-ab.special .rv-lab{background:#d79a14}.rv-ab.passive .rv-lab{background:#7c6bd6}
+.rv-cd{font-size:.72rem;background:#eef4fc;color:var(--ink);border-radius:999px;padding:0 .5rem;line-height:1.6}
+.rv-ab p{margin:.2rem 0 0;color:var(--ink-soft)}
+.rv-pc{display:grid;grid-template-columns:1fr 1fr;gap:.7rem}
+.rv-pc>div{background:#fff;border:2px solid;border-radius:var(--r);padding:.5rem .9rem;box-shadow:var(--shadow)}
+.rv-pc .pros{border-color:#2fb36b}.rv-pc .cons{border-color:#e0556a}.rv-pc h4{margin:.1rem 0;color:var(--ink)}.rv-pc ul{margin:.2rem 0 .2rem 1.1rem;padding:0;color:var(--ink-soft)}.rv-pc li{margin:.25rem 0}
+.rv-dupes{display:flex;gap:.8rem;align-items:flex-start}.rv-dupes p{margin:0}
+.rv-dbadge{flex:none;border-radius:10px;padding:.2rem .7rem;font-weight:800;color:#fff}.rv-dbadge.no{background:#2fb36b}.rv-dbadge.nice{background:#d79a14}
+.rv-stats{list-style:none;padding:0;margin:.3rem 0;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:.4rem}
+.rv-stats li{display:flex;align-items:center;gap:.4rem;border-radius:12px;padding:.35rem .6rem;border:2px solid var(--line);background:var(--soft)}
+.rv-stats li.focus{border-color:#2fb36b;background:#effaf3}.rv-stats li.mid{border-color:#d79a14;background:#fff8e6}.rv-stats li.skip{opacity:.8}
+.rv-stats .n{width:1.5rem;height:1.5rem;border-radius:50%;background:var(--accent);color:#fff;font-weight:800;display:grid;place-items:center;font-size:.8rem}
+.rv-stats img{width:26px;height:26px}.rv-stats b{color:var(--ink)}.rv-stats em{margin-left:auto;font-style:normal;font-size:.68rem;color:var(--ink-soft)}
+.rv-order{display:flex;flex-wrap:wrap;gap:.3rem;align-items:center;margin:.3rem 0}
+.rv-order span{border-radius:999px;padding:.15rem .8rem;font-weight:800;color:#fff;background:#4a8bd8}.rv-order .o0{background:#e0556a}.rv-order .o1{background:#d79a14}.rv-order .o2{background:#4a8bd8}.rv-order .o3{background:#8d97bd}.rv-order i{color:var(--ink-soft);font-style:normal;font-weight:800}
+.rv-team h3{margin:.1rem 0 .4rem}.rv-who summary{cursor:pointer;font-weight:700;color:var(--ink);margin:.4rem 0}
+.rv-mem{border-top:1px dashed var(--line);padding:.5rem 0}.rv-mem p{margin:.2rem 0;color:var(--ink-soft)}
+.rv-mh{display:flex;align-items:center;gap:.5rem}.rv-mh a{font-weight:700}
+.rv-swap{display:flex;flex-wrap:wrap;gap:.35rem;align-items:flex-start;font-size:.82rem}.rv-swap>span{color:var(--ink-soft);padding-top:.25rem}
+.rv-swap a{display:inline-flex;flex-wrap:wrap;align-items:center;gap:.25rem;background:#eef4fc;border-radius:12px;padding:.2rem .6rem;color:var(--ink);font-weight:700;max-width:100%}
+.rv-swap a img{width:24px;height:24px;border-radius:50%}.rv-swap a small{display:block;flex-basis:100%;font-weight:400;color:var(--ink-soft);font-size:.7rem}
+@media(max-width:720px){.rv-pc{grid-template-columns:1fr}.rv-verdict{flex-direction:column;align-items:flex-start}.rv-badge{min-width:0}}
