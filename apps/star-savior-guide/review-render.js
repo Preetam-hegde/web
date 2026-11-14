@@ -34,14 +34,17 @@ const RV = (() => {
 		const keys = ['basic', 'special', 'ult', 'passive'];
 		const para = (i) => {
 			const nm = ab[i].name, t = p[keys[i]];
-			const body = t.startsWith(nm) ? `<b>${e(nm)}</b>${e(t.slice(nm.length))}` : `<b>${e(nm)}.</b> ${e(t)}`;
-			return `<p><span class="rv-lab ${LCLASS[ab[i].label]}">${ab[i].label === 'Ultimate' ? 'ULT' : ab[i].label.toUpperCase()}</span> ${body}</p>`;
+			const [t1, ...rest] = t.split('¶').map((x) => x.trim());
+			const body = t1.startsWith(nm) ? `<b>${e(nm)}</b>${e(t1.slice(nm.length))}` : `<b>${e(nm)}.</b> ${e(t1)}`;
+			return `<p><span class="rv-lab ${LCLASS[ab[i].label]}">${ab[i].label === 'Ultimate' ? 'ULT' : ab[i].label.toUpperCase()}</span> ${body}</p>${rest.map((x) => `<p>${e(x)}</p>`).join('')}`;
 		};
+		const ps = (t) => String(t).split('¶').map((x) => `<p>${e(x.trim())}</p>`).join('');
 		return `${verdict(slug)}${proscons(slug)}
 		<h2>Review <small class="rv-by">by ${e(r.author)}</small></h2>
-		<div class="rv-prose"><h4>[Overview]</h4><p>${e(p.overview)}</p>
+		<div class="rv-prose"><h4>[Overview]</h4>${ps(p.overview)}
 		<h4>[Abilities]</h4>${keys.map((_, i) => para(i)).join('')}
-		<h4>[Verdict]</h4><p>${e(p.closing)}</p><p class="rv-dup">${e(p.dupes)}</p></div>`;
+		${p.play ? `<h4>[How to play]</h4>${ps(p.play)}` : ''}${p.gear ? `<h4>[Build and upgrades]</h4>${ps(p.gear)}` : ''}
+		<h4>[Verdict]</h4>${ps(p.closing)}<p class="rv-dup">${e(p.dupes)}</p></div>`;
 	}
 	function build(slug) {
 		const r = data[slug], j = r.journey, u = r.upgrade, g = r.gear;
