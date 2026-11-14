@@ -10,7 +10,7 @@
 	const SETS = { Attack: '4P_ATK_RATE', Insight: '2P_CRI_RATE', Precision: '2P_CRI_RATE_EFFECT_RATE', Valor: '2P_ATK_RATE_EFFECT_EVADE', Speed: '4P_TURN_SPD', Defense: '2P_DEF_RATE', Hit: '2P_EFFECT_RATE', Resistance: '2P_EFFECT_EVADE', Health: '4P_HP_RATE', Destruction: '4P_CRI_DMG', Annihilation: '4P_CRI_DMG_EFFECT_RATE', Barrier: '4P_HP_RATE_EFFECT_EVADE' };
 	const SLOTS = { Weapon: 'WEAPON', Gauntlets: 'GLOVES', Armor: 'ARMOR', Boots: 'SHOES', Amulet: 'NECKLACE', Ring: 'RING' };
 	const SKIP = 'NAV,BUTTON,SELECT,OPTION,INPUT,TEXTAREA,H1,SCRIPT,STYLE,SUMMARY'.split(',');
-	const skipSel = '.kw,.legend-box,.card,.tier .row a,.team .m,.topbar,.jump,.sp-tabs,.toc,.g-crumb,.fbar,.ib,.fb,.chip,#qs';
+	const skipSel = '.kw,.legend-box,.card,.tier .row a,.team .m,.topbar,.jump,.sp-tabs,.toc,.g-crumb,.fbar,.ib,.fb,.chip,#qs,.rv-stats';
 	let enemies = null;
 	const mk = (src, cls, alt = '') => { const i = document.createElement('img'); i.src = src.replace(/^\//, ''); i.className = cls; i.alt = alt; i.loading = 'lazy'; i.onerror = () => i.remove(); return i; };
 	const skillMap = () => {

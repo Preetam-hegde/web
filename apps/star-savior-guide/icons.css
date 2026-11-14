@@ -19,3 +19,7 @@
 .sp-art{height:300px}
 .acard{grid-template-columns:96px 1fr}.acard img{width:96px}
 @media(max-width:820px){.grid{grid-template-columns:repeat(auto-fill,minmax(108px,1fr))}.tier .row a{width:84px}.tier .row .ic,.tier .row .ic>img{width:74px;height:74px}.tier .row .ic{width:74px}.sp-art{height:210px}}
+
+/* Journey stat icons are white glyphs: give them a blue badge so they show on white tiles */
+.kw-ic[src*="jstats"],.rv-stats img{background:#2f6fd0;border-radius:50%;padding:3px;box-sizing:border-box}
+.kw-ic[src*="jstats"]{width:1.45em;height:1.45em}

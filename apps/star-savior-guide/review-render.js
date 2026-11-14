@@ -30,11 +30,18 @@ const RV = (() => {
 		return `<div class="rv-pc"><div class="pros"><h4>Pros</h4><ul>${r.pros.map((x) => `<li>${e(x)}</li>`).join('')}</ul></div><div class="cons"><h4>Cons</h4><ul>${r.cons.map((x) => `<li>${e(x)}</li>`).join('')}</ul></div></div>`;
 	}
 	function review(slug) {
-		const r = data[slug];
-		return `${verdict(slug)}<h2>Overview</h2><div class="panel"><p>${e(r.overview)}</p></div>
-		<h2>Abilities</h2>${abilities(slug)}<h2>Pros and cons</h2>${proscons(slug)}
-		${r.play.length ? `<h2>How to play</h2><div class="panel"><ol>${r.play.map((x) => `<li>${e(x)}</li>`).join('')}</ol></div>` : ''}
-		<h2>Do I need dupes?</h2><div class="panel rv-dupes"><div class="rv-dbadge ${r.dupes.level === 'Not needed' ? 'no' : 'nice'}">${e(r.dupes.level)}</div><p>${e(r.dupes.text)}</p></div>`;
+		const r = data[slug], p = r.prose, ab = r.abilities;
+		const keys = ['basic', 'special', 'ult', 'passive'];
+		const para = (i) => {
+			const nm = ab[i].name, t = p[keys[i]];
+			const body = t.startsWith(nm) ? `<b>${e(nm)}</b>${e(t.slice(nm.length))}` : `<b>${e(nm)}.</b> ${e(t)}`;
+			return `<p><span class="rv-lab ${LCLASS[ab[i].label]}">${ab[i].label === 'Ultimate' ? 'ULT' : ab[i].label.toUpperCase()}</span> ${body}</p>`;
+		};
+		return `${verdict(slug)}${proscons(slug)}
+		<h2>Review <small class="rv-by">by ${e(r.author)}</small></h2>
+		<div class="rv-prose"><h4>[Overview]</h4><p>${e(p.overview)}</p>
+		<h4>[Abilities]</h4>${keys.map((_, i) => para(i)).join('')}
+		<h4>[Verdict]</h4><p>${e(p.closing)}</p><p class="rv-dup">${e(p.dupes)}</p></div>`;
 	}
 	function build(slug) {
 		const r = data[slug], j = r.journey, u = r.upgrade, g = r.gear;

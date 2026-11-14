@@ -31,3 +31,15 @@
 .rv-swap a{display:inline-flex;flex-wrap:wrap;align-items:center;gap:.25rem;background:#eef4fc;border-radius:12px;padding:.2rem .6rem;color:var(--ink);font-weight:700;max-width:100%}
 .rv-swap a img{width:24px;height:24px;border-radius:50%}.rv-swap a small{display:block;flex-basis:100%;font-weight:400;color:var(--ink-soft);font-size:.7rem}
 @media(max-width:720px){.rv-pc{grid-template-columns:1fr}.rv-verdict{flex-direction:column;align-items:flex-start}.rv-badge{min-width:0}}
+
+.rv-stats img{width:28px;height:28px}.rv-stats em{white-space:nowrap}
+.rv-stats li{min-width:0}
+
+/* review as prose */
+.rv-by{font-size:.6em;font-weight:500;opacity:.85;margin-left:.4rem}
+.rv-prose{background:#fff;border:2px solid var(--edge);border-radius:var(--r);box-shadow:var(--shadow);padding:.8rem 1.3rem 1rem;color:var(--ink-soft);font-size:1.02rem;line-height:1.7}
+.rv-prose h4{margin:1rem 0 .2rem;color:var(--accent);font-size:.9rem;letter-spacing:.06em}.rv-prose h4:first-child{margin-top:.2rem}
+.rv-prose p{margin:.45rem 0}.rv-prose b{color:var(--ink)}
+.rv-prose .rv-lab{margin-right:.15rem;vertical-align:.1em}
+.rv-dup{padding-top:.4rem;border-top:1px dashed var(--line);font-size:.95rem}
+.rv-pc{margin-top:.6rem}.rv-pc li{margin:.15rem 0}
